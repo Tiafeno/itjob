@@ -1,0 +1,7 @@
+{
+  "require": {
+    "anahkiasen/underscore-php": "^2.0",
+    "mobiledetect/mobiledetectlib": "^2.8",
+    "twig/twig": "^1.0"
+  }
+}
