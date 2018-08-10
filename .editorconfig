@@ -18,7 +18,7 @@ indent_style=space
 indent_size=2
 
 [{content-product,*.module,*.hphp,*.inc,*.phtml,*.php5,*.php4,*.php}]
-indent_style=tab
+indent_style=space
 tab_width=2
 
 [*.js.map]
