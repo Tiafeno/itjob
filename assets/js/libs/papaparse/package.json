@@ -1,0 +1,121 @@
+{
+  "_args": [
+    [
+      "papaparse",
+      "C:\\xampp\\htdocs\\managna\\wp-content\\themes\\itjob\\assets\\js\\libs"
+    ]
+  ],
+  "_from": "papaparse@latest",
+  "_id": "papaparse@4.6.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/papaparse",
+  "_nodeVersion": "10.7.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/papaparse_4.6.0_1533112012698_0.18077150664569497"
+  },
+  "_npmUser": {
+    "email": "sergi@koolpi.com",
+    "name": "pokoli"
+  },
+  "_npmVersion": "6.2.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "papaparse",
+    "raw": "papaparse",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/papaparse/-/papaparse-4.6.0.tgz",
+  "_shasum": "4e3b8d6bf9f7900da437912794ec292207526867",
+  "_shrinkwrap": null,
+  "_spec": "papaparse",
+  "_where": "C:\\xampp\\htdocs\\managna\\wp-content\\themes\\itjob\\assets\\js\\libs",
+  "author": {
+    "name": "Matthew Holt",
+    "url": "https://twitter.com/mholt6"
+  },
+  "bugs": {
+    "url": "https://github.com/mholt/PapaParse/issues"
+  },
+  "dependencies": {},
+  "description": "Fast and powerful CSV parser for the browser that supports web workers and streaming large files. Converts CSV to JSON and JSON to CSV.",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "connect": "^3.3.3",
+    "eslint": "^4.19.1",
+    "grunt": "^1.0.2",
+    "grunt-contrib-uglify": "^3.3.0",
+    "mocha": "^3.5.0",
+    "mocha-phantomjs": "^4.1.0",
+    "open": "0.0.5",
+    "phantomjs-prebuilt": "^2.1.16",
+    "serve-static": "^1.7.1"
+  },
+  "directories": {},
+  "dist": {
+    "fileCount": 20,
+    "integrity": "sha512-ylm8pmgyz9rkS3Ng/ru5tHUF3JxWwKYP0aZZWZ8eCGdSxoqgYiDUXLNQei73mUJOjHw8QNu5ZNCsLoDpkMA6sg==",
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbYW7NCRA9TVsSAnZWagAAWSIP/0NGiBOudJ1SRWm+kMm3\nkpqMIPCo8neiVkb957rkprNjFhb6vjmw0kR3Ee3oGTRYFVa/Vwb4QDOHW/Ye\ncaDDE53Hy2hDhl0xBdiJZIjcfxi0LviIoAzGazGDUMIRRN1zbaWZy2Ugqnni\nZP54Yn2pCvtIm/gVUKWDDb22lrjXWTkrPyGc/hxipOp1XgSf1km7RxjpAdHL\n5zrUF68Zbco0xHZsM0VhlKk0FITTXxIA8qk38jJ9UC8Erx7JIwenAeLxnauo\noqwBvAHpQYVu8HekTpoeTuiEzm7PuI54FsMI9jeMWn6STeDGsHByjjpS422D\nZdbLGcNVA+YU/96LnF5dhewspQuc8GCLFN58h6ShsxI9K3IBUxrCIiONpHyM\nmzjxqePhPbB2ukSWJpe9DmSgZKqB6w+wtxyf6gU0P1DF9PrbB5eRcX3m4N8j\n7pu+Rjzc/nujHtPs6DHkGApt00rf6rQx8bOjS0pc5TbAOuiYW434HJgqvETB\n4IUlmgHxuO2Xe7OF0By6LP6GfN4S3YQiB0bDNMiA0tn0ufP75RFJdXa1bdCR\nBnwbiVmx4CDbj8tn2rdlUFuWx634+0F2w+zubhekSo6gqHTtw/nGQoAcAvp2\nKZTJYI/E8+JTwXz7HlQsg15s+7SsI/bISoxNPqBrHkri36B8ofKs09VEqyWo\nk5mD\r\n=UVpY\r\n-----END PGP SIGNATURE-----\r\n",
+    "shasum": "4e3b8d6bf9f7900da437912794ec292207526867",
+    "tarball": "https://registry.npmjs.org/papaparse/-/papaparse-4.6.0.tgz",
+    "unpackedSize": 230268
+  },
+  "gitHead": "b5739c617f668e258ac21f041a2783d320245d24",
+  "homepage": "http://papaparse.com",
+  "keywords": [
+    "csv",
+    "parser",
+    "parse",
+    "parsing",
+    "delimited",
+    "text",
+    "data",
+    "auto-detect",
+    "comma",
+    "tab",
+    "pipe",
+    "file",
+    "filereader",
+    "stream",
+    "worker",
+    "workers",
+    "thread",
+    "threading",
+    "multi-threaded",
+    "jquery-plugin"
+  ],
+  "license": "MIT",
+  "main": "papaparse.js",
+  "maintainers": [
+    {
+      "email": "Matthew.Holt+npm@gmail.com",
+      "name": "mholt"
+    },
+    {
+      "email": "sergi@koolpi.com",
+      "name": "pokoli"
+    }
+  ],
+  "name": "papaparse",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mholt/PapaParse.git"
+  },
+  "scripts": {
+    "lint": "eslint --no-ignore papaparse.js Gruntfile.js .eslintrc.js 'tests/**/*.js'",
+    "test": "npm run lint && npm run test-node && npm run test-phantomjs",
+    "test-browser": "node tests/test.js",
+    "test-node": "mocha tests/node-tests.js tests/test-cases.js",
+    "test-phantomjs": "node tests/test.js --phantomjs"
+  },
+  "version": "4.6.0"
+}

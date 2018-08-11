@@ -1,1 +1,4 @@
 /composer/vendor
+.idea
+
+*.js.map

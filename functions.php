@@ -18,14 +18,16 @@ define('__SITENAME__', 'itJob');
 define('__google_api__', base64_decode('QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj'));
 define('TWIG_TEMPLATE_PATH', get_template_directory() . '/templates');
 $theme = wp_get_theme('itjob');
-
 $itJob = (object)[
   'version' => $theme->get('Version'),
   'root' => require 'includes/class/class-itjob.php'
 ];
 
+// shortcodes
+require 'includes/shortcodes/class-import-csv.php';
+
 require 'includes/class/class-menu-walker.php';
-require 'includes/filters/engine-filters.php';
+require 'includes/filters/function-filters.php';
 require 'api/itjob-api.php';
 require 'jobs/itjob-cron.php';
 
@@ -35,6 +37,7 @@ require 'composer/vendor/autoload.php';
 try {
   $loader = new Twig_Loader_Filesystem();
   $loader->addPath(TWIG_TEMPLATE_PATH . '/vc', 'VC');
+  $loader->addPath(TWIG_TEMPLATE_PATH . '/shortcodes', 'SC');
 
   /** @var Object $Engine */
   $Engine = new Twig_Environment($loader, array(
@@ -80,7 +83,7 @@ add_action('after_setup_theme', function () {
 
 	// Register menu location
   register_nav_menus(array(
-    'primary' => __('Primary Menu', 'twentyfifteen'),
+    'primary'  => __('Primary Menu', 'twentyfifteen'),
     'menu-top' => __('Top Menu', __SITENAME__)
   ));
 });
