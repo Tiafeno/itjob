@@ -12,4 +12,4 @@ get_header();
   </div>
 
 <?php
-get_footer();s
+get_footer();
