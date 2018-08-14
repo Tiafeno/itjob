@@ -48,4 +48,4 @@ if ( ! class_exists( 'scImport' ) ) :
   }
 endif;
 
-new scImport();
+return new scImport();

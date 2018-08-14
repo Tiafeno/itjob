@@ -24,8 +24,17 @@ $itJob = (object)[
 ];
 
 // shortcodes
-require 'includes/shortcodes/class-import-csv.php';
+$shortcode = (object) [
+  'scImport' => require 'includes/shortcodes/class-import-csv.php'
+];
 
+// Visual composer elements
+$elementsVC = (object) [
+  'vcSearch' => require 'includes/visualcomposer/elements/class-vc-search.php',
+  'vcOffers' => require 'includes/visualcomposer/elements/class-vc-offers.php'
+];
+
+require 'includes/class/class-http-request.php';
 require 'includes/class/class-menu-walker.php';
 require 'includes/filters/function-filters.php';
 require 'api/itjob-api.php';
@@ -96,3 +105,10 @@ if (function_exists('acf_add_options_page')) {
     'redirect' => false
   ));
 }
+
+add_filter('body_class', function($classes) {
+  //$classes[] = 'uk-offcanvas-content';
+  return $classes;
+});
+
+

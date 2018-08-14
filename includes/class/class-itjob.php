@@ -9,6 +9,7 @@ if ( ! class_exists( 'itJob' ) ) {
       }, 20 );
 
       add_action( 'init', function () {
+
       } );
 
       add_action( 'widgets_init', function () {
@@ -27,7 +28,7 @@ if ( ! class_exists( 'itJob' ) ) {
         wp_enqueue_script( 'jquery' );
         wp_enqueue_script( 'numeral', get_template_directory_uri() . '/assets/js/numeral.min.js', [], $itJob->version, true );
         wp_enqueue_script( 'bluebird', get_template_directory_uri() . '/assets/js/bluebird.min.js', [], $itJob->version, true );
-//        wp_enqueue_script( 'uikit', get_template_directory_uri() . '/assets/js/uikit.min.js', ['jquery'], $itJob->version, true );
+        wp_enqueue_script( 'uikit', get_template_directory_uri() . '/assets/js/uikit.min.js', ['jquery'], $itJob->version, true );
 //        wp_enqueue_script( 'uikit-icon', get_template_directory_uri() . '/assets/js/uikit-icons.min.js', ['jquery'], $itJob->version, true );
 
         /** Register scripts */
