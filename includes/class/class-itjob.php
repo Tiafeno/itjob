@@ -33,6 +33,9 @@ if ( ! class_exists( 'itJob' ) ) {
 
         /** Register scripts */
         $this->register_enqueue_scripts();
+
+        wp_enqueue_style('adminca');
+        wp_enqueue_script( 'adminca');
       } );
 
     }

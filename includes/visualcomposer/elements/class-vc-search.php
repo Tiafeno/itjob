@@ -41,3 +41,5 @@ if ( ! class_exists('vcSearch')):
     }
   }
 endif;
+
+return new vcSearch();
