@@ -63,6 +63,10 @@ if ( ! class_exists( 'vcOffers' ) ):
 
     }
 
+    public function vc_offers_render( $attrs ) {
+
+    }
+
     public function vc_featured_offers_render( $attrs ) {
       global $Engine;
       // Params extraction
@@ -75,6 +79,9 @@ if ( ! class_exists( 'vcOffers' ) ):
           $attrs
         )
         , EXTR_OVERWRITE );
+      /** @var string $style */
+      /** @var string $title */
+
     }
 
     public static function vc_our_offers() {
