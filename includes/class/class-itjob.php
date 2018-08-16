@@ -19,7 +19,18 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( is_null( get_role( 'company' ) ) || is_null( get_role( 'candidate' ) ) ) {
           $this->createRoles();
         }
-      } );
+
+        /**
+         * Ajouter une redirection sur certains utilisateurs à la page d'accueil
+         * si la connexion c'est bien effectué.
+         */
+        /** @var bool $userRole */
+        $userRole = current_user_can( 'company' ) || current_user_can( 'candidate' );
+        $redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : home_url( '/' );
+        if ( is_admin() && ! defined( 'DOING_AJAX' ) && $userRole ) {
+          exit( wp_redirect( $redirect, 301 ) );
+        }
+      }, 100 );
 
 
       add_action( 'after_setup_theme', function () {
