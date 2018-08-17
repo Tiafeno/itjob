@@ -65,6 +65,7 @@ final class Offers implements iOffer {
     if ( $this->exist() ) {
       $this->acfElements();
     }
+
     return $this;
   }
 
@@ -75,15 +76,15 @@ final class Offers implements iOffer {
 
       return false;
     }
-    $this->companyId = get_field('itjob_offer_companyid', $this->ID);
-    $this->dateLimit = get_field('itjob_offer_datelimit', $this->ID);
-    $this->reference = get_field('itjob_offer_reference', $this->ID);
-    $this->proposedSalary = get_field('itjob_offer_proposedsallary', $this->ID);
-    $this->contractType = get_field('itjob_offer_contrattype', $this->ID);
-    $this->profile = get_field('itjob_offer_profil', $this->ID);
-    $this->mission = get_field('itjob_offer_mission', $this->ID);
-    $this->otherInformation = get_field('itjob_offer_otherinformation', $this->ID);
-    $this->featured = get_field('itjob_offer_featured', $this->ID);
+    $this->companyId        = get_field( 'itjob_offer_companyid', $this->ID );
+    $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID );
+    $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
+    $this->proposedSalary   = get_field( 'itjob_offer_proposedsallary', $this->ID );
+    $this->contractType     = get_field( 'itjob_offer_contrattype', $this->ID );
+    $this->profile          = get_field( 'itjob_offer_profil', $this->ID );
+    $this->mission          = get_field( 'itjob_offer_mission', $this->ID );
+    $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID );
+    $this->featured         = get_field( 'itjob_offer_featured', $this->ID );
 
     return true;
   }
@@ -113,15 +114,15 @@ final class Offers implements iOffer {
   }
 
   public function removeOffer() {
-    delete_field('itjob_offer_companyid', $this->ID);
-    delete_field('itjob_offer_datelimit', $this->ID);
-    delete_field('itjob_offer_reference', $this->ID);
-    delete_field('itjob_offer_proposedsallary', $this->ID);
-    delete_field('itjob_offer_contrattype', $this->ID);
-    delete_field('itjob_offer_profil', $this->ID);
-    delete_field('itjob_offer_mission', $this->ID);
-    delete_field('itjob_offer_otherinformation', $this->ID);
-    delete_field('itjob_offer_featured', $this->ID);
+    delete_field( 'itjob_offer_companyid', $this->ID );
+    delete_field( 'itjob_offer_datelimit', $this->ID );
+    delete_field( 'itjob_offer_reference', $this->ID );
+    delete_field( 'itjob_offer_proposedsallary', $this->ID );
+    delete_field( 'itjob_offer_contrattype', $this->ID );
+    delete_field( 'itjob_offer_profil', $this->ID );
+    delete_field( 'itjob_offer_mission', $this->ID );
+    delete_field( 'itjob_offer_otherinformation', $this->ID );
+    delete_field( 'itjob_offer_featured', $this->ID );
   }
 
   public function isFeatured() {
