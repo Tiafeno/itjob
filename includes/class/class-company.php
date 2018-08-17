@@ -8,6 +8,7 @@ final class Company implements iCompany {
   use Auth;
 
   public $ID;
+  public $postType;
   public $user;
   public $title;
   public $address;
@@ -26,11 +27,18 @@ final class Company implements iCompany {
     if ( is_null( get_post( $postId ) ) ) {
       return null;
     }
-    $post        = get_post( $postId );
-    $this->ID    = $post->ID;
-    $this->title = $post->post_title;
-    $this->user  = $this->getUserData( $post->post_author );
-    $this->acfElements();
+    $post           = get_post( $postId );
+    $this->ID       = $post->ID;
+    $this->title    = $post->post_title;
+    $this->postType = $post->post_type;
+    $this->user     = jobServices::getUserData( $post->post_author );
+    if ( $this->exist() ) {
+      $this->acfElements();
+    }
+  }
+
+  public function exist() {
+    return $this->post_type === 'company';
   }
 
   private function acfElements() {
@@ -50,23 +58,6 @@ final class Company implements iCompany {
     return true;
   }
 
-  /**
-   * Récuperer les informations nécessaire d'un utilisateur
-   *
-   * @param int $userId - ID d'un utilisateur
-   *
-   * @return stdClass
-   */
-  public function getUserData( $userId ) {
-    $user                    = new WP_User( $userId );
-    $userClass               = new stdClass();
-    $userClass->user_login   = $user->user_login;
-    $userClass->token        = $user->user_pass;
-    $userClass->user_email   = $user->user_email;
-    $userClass->display_name = $user->display_name;
-
-    return $userClass;
-  }
 
   /**
    * @param int $paged
@@ -74,14 +65,14 @@ final class Company implements iCompany {
    *
    * @return array - Un tableau qui contient des objets'Company'
    */
-  public static function getAllCompany( $paged = 10, $order = [ 'orderby' => 'date', 'order' => "DESC" ] ) {
+  public static function getAllCompany( $paged = 10 ) {
     $allCompany = [];
     $args       = [
       'post_type'      => 'company',
       'posts_per_page' => $paged,
       'post_status'    => 'publish',
-      'orderby'        => $order['orderby'],
-      'order'          => $order['order']
+      'orderby'        => 'date',
+      'order'          => 'DESC'
     ];
     $posts      = get_posts( $args );
     foreach ( $posts as $post ) : setup_postdata( $post );
@@ -92,9 +83,6 @@ final class Company implements iCompany {
     return $allCompany;
   }
 
-  public function getCompany() {
-    // TODO: Implement getCompany() method.
-  }
 
   public function updateCompany() {
     // TODO: Implement updateCompany() method.

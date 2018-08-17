@@ -26,7 +26,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       // Les offres à la une
       vc_map(
         array(
-          'name'        => 'Featured Offers',
+          'name'        => 'Offers à la une',
           'base'        => 'vc_featured_offers',
           'description' => 'Afficher les offres à la une.',
           'category'    => 'itJob',
@@ -60,15 +60,68 @@ if ( ! class_exists( 'vcOffers' ) ):
       );
 
       // Les offres
-
+      vc_map(
+        [
+          'name'        => 'Les offres d\'emploi',
+          'base'        => 'vc_offers',
+          'description' => 'Afficher la liste de tous les offres',
+          'category'    => 'itJob',
+          'params'      => [
+            [
+              'type'        => 'textfield',
+              'holder'      => 'h3',
+              'class'       => 'vc-ij-title',
+              'heading'     => 'Ajouter un titre',
+              'param_name'  => 'title',
+              'value'       => '',
+              'admin_label' => false,
+              'weight'      => 0
+            ],
+            [
+              'type'        => 'dropdown',
+              'class'       => 'vc-ij-orderby',
+              'heading'     => 'Désigne l\'ascendant ou descendant',
+              'param_name'  => 'orderby',
+              'value'       => [
+                'Date'  => 'date',
+                'Titre' => 'title'
+              ],
+              'admin_label' => false,
+              'weight'      => 0
+            ],
+            [
+              'type'        => 'dropdown',
+              'class'       => 'vc-ij-order',
+              'heading'     => 'Trier',
+              'param_name'  => 'order',
+              'value'       => [
+                'Ascendant'  => 'ASC',
+                'Descendant' => 'DESC'
+              ],
+              'admin_label' => false,
+              'weight'      => 0
+            ]
+          ]
+        ]
+      );
     }
 
     public function vc_offers_render( $attrs ) {
+      // Params extraction
+      extract(
+        shortcode_atts(
+          array(
+            'title'   => null,
+            'orderby' => 'DATE',
+            'order'   => 'DESC'
+          ),
+          $attrs
+        )
+        , EXTR_OVERWRITE );
 
     }
 
     public function vc_featured_offers_render( $attrs ) {
-      global $Engine;
       // Params extraction
       extract(
         shortcode_atts(
@@ -81,7 +134,53 @@ if ( ! class_exists( 'vcOffers' ) ):
         , EXTR_OVERWRITE );
       /** @var string $style */
       /** @var string $title */
+      if ( trim( $title ) === 'sidebar' ) {
+        return $this->getPositionSidebar( $title );
+      } else {
+        return $this->getPositionContent( $title );
+      }
 
+    }
+
+    /**
+     * Position sidebar
+     *
+     * @param string $title
+     *
+     * @return mixed
+     */
+    public function getPositionSidebar( $title ) {
+      global $Engine;
+      try {
+        return $Engine->render( '@VC/offers/sidebar.html.twig', [
+          'title' => $title,
+        ] );
+      } catch ( Twig_Error_Loader $e ) {
+      } catch ( Twig_Error_Runtime $e ) {
+      } catch ( Twig_Error_Syntax $e ) {
+        return $e->getRawMessage();
+      }
+
+    }
+
+    /**
+     * Position content
+     *
+     * @param string $title
+     *
+     * @return mixed
+     */
+    public function getPositionContent( $title ) {
+      global $Engine;
+      try {
+        return $Engine->render( '@VC/offers/content.html.twig', [
+          'title' => $title,
+        ] );
+      } catch ( Twig_Error_Loader $e ) {
+      } catch ( Twig_Error_Runtime $e ) {
+      } catch ( Twig_Error_Syntax $e ) {
+        return $e->getRawMessage();
+      }
     }
 
     public static function vc_our_offers() {

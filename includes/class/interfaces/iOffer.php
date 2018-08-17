@@ -7,8 +7,6 @@
  */
 
 interface iOffer {
-  public function getOffer();
-
   public function updateOffer();
 
   public function removeOffer();

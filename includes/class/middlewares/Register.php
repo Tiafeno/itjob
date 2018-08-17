@@ -171,5 +171,26 @@ trait Register {
       'rewrite'           => array( 'slug' => 'region' ),
     ] );
 
+    // Now register the taxonomy (Tag)
+    register_taxonomy( 'itjob_tag', [ 'offers' ], [
+      'hierarchical'      => true,
+      'labels'            => array(
+        'name'              => 'Étiquettes',
+        'singular_name'     => 'Étiquette',
+        'search_items'      => 'Trouver une étiquette',
+        'all_items'         => 'Trouver des Étiquettes',
+        'parent_item'       => 'Étiquette parent',
+        'parent_item_colon' => 'Étiquette parent:',
+        'edit_item'         => 'Modifier l\'étiquette',
+        'update_item'       => 'Mettre à jour l\'étiquette',
+        'add_new_item'      => 'Ajouter une nouvelle étiquette',
+        'menu_name'         => 'Étiquettes',
+      ),
+      'show_ui'           => true,
+      'show_admin_column' => false,
+      'query_var'         => true,
+      'rewrite'           => array( 'slug' => 'tag' ),
+    ] );
+
   }
 }

@@ -13,8 +13,21 @@ if ( ! class_exists( 'jobServices' ) ) :
     public function __construct() {
     }
 
-    public function job_get_field_offers() {
 
+    /**
+     * Récuperer les informations nécessaire d'un utilisateur
+     * @param int $userId - ID d'un utilisateur
+     * @return stdClass
+     */
+    public static function getUserData( $userId ) {
+      $user                    = new WP_User( $userId );
+      $userClass               = new stdClass();
+      $userClass->user_login   = $user->user_login;
+      $userClass->token        = $user->user_pass;
+      $userClass->user_email   = $user->user_email;
+      $userClass->display_name = $user->display_name;
+
+      return $userClass;
     }
 
   }

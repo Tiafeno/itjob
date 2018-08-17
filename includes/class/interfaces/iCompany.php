@@ -7,11 +7,9 @@
  */
 
 interface iCompany {
-  public static function getAllCompany( $paged = 10, $order );
+  public static function getAllCompany( $paged = 10 );
 
-  public function getUserData( $userId );
-
-  public function getCompany();
+  public function exist();
 
   public function updateCompany();
 
