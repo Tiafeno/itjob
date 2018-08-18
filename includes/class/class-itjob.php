@@ -10,6 +10,17 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'wp_loaded', function () {
       }, 20 );
 
+      // Add acf google map api
+      add_filter( 'acf/init', function () {
+        acf_update_setting( 'google_api_key', base64_decode( __google_api__ ) );
+      } );
+
+      // Sets the text domain used when translating field and field group settings.
+      // Defaults to ”. Strings will not be translated if this setting is empty
+      add_filter( 'acf/settings/l10n_textdomain', function () {
+        return __SITENAME__;
+      } );
+
       add_action( 'init', function () {
         $this->postTypes();
         $this->taxonomy();
@@ -48,6 +59,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
         // Load uikit stylesheet
         wp_enqueue_style( 'uikit', get_template_directory_uri() . '/assets/css/uikit.min.css', '', '3.0.0rc10' );
+        wp_enqueue_style( 'montserrat', 'https://fonts.googleapis.com/css?family=Montserrat:300,400,600,700' );
         // Load the main stylesheet
         wp_enqueue_style( 'itjob', get_stylesheet_uri(), '', $itJob->version );
 
@@ -61,9 +73,21 @@ if ( ! class_exists( 'itJob' ) ) {
 
         /** Register scripts */
         $this->register_enqueue_scripts();
+        wp_register_style( 'offers', get_template_directory_uri() . '/assets/css/offers/offers.css', [ 'adminca' ], $itJob->version );
 
         wp_enqueue_style( 'adminca' );
         wp_enqueue_script( 'adminca' );
+      } );
+
+      /** Effacer les elements acf avant d'effacer l'article */
+      add_action( 'before_delete_post', function ( $postId ) {
+        $pst = get_post( $postId );
+        if ( $pst->post_type === 'offers' ) {
+          $offer = new Offers( $postId );
+          $offer->removeOffer();
+          unset( $offer );
+        }
+
       } );
 
     }

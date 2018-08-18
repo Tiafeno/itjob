@@ -47,7 +47,7 @@ final class Offers implements iOffer {
   public $otherInformation;
 
   /** @var bool $featured - L'offre est à la une ou pas */
-  public $featured;
+  private $featured;
   public $postType;
 
   public function __construct( $postId = null ) {
@@ -109,6 +109,7 @@ final class Offers implements iOffer {
   }
 
 
+
   public function updateOffer() {
 
   }
@@ -126,6 +127,6 @@ final class Offers implements iOffer {
   }
 
   public function isFeatured() {
-
+    return $this->featured === true;
   }
 }

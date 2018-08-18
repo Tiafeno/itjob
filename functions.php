@@ -41,16 +41,6 @@ foreach ( $interfaces as $interface ) {
 require_once 'includes/class/class-offers.php';
 require_once 'includes/class/class-company.php';
 
-add_action( 'before_delete_post', function($postId) {
-  $pst = get_post($postId);
-  if ($pst->post_type === 'offers') {
-    $offer = new Offers($postId);
-    $offer->removeOffer();
-    unset($offer);
-  }
-
-} );
-
 // shortcodes
 $shortcode = (object) [
   'scImport' => require 'includes/shortcodes/class-import-csv.php'

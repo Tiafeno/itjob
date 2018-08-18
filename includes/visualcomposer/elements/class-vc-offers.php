@@ -10,10 +10,14 @@ if ( ! class_exists( 'WPBakeryShortCode' ) ) {
 if ( ! class_exists( 'vcOffers' ) ):
   class vcOffers {
     public function __construct() {
+      global $itJob;
       add_action( 'init', [ $this, 'vc_offers_mapping' ] );
 
       add_shortcode( 'vc_offers', [ $this, 'vc_offers_render' ] );
       add_shortcode( 'vc_featured_offers', [ $this, 'vc_featured_offers_render' ] );
+      add_action( 'wp_enqueue_scripts', function () {
+        wp_enqueue_style( 'offers' );
+      } );
     }
 
     public function vc_offers_mapping() {
@@ -106,7 +110,15 @@ if ( ! class_exists( 'vcOffers' ) ):
       );
     }
 
+    /**
+     * Afficher les offres recement ajouter
+     *
+     * @param array $attrs
+     *
+     * @return mixed
+     */
     public function vc_offers_render( $attrs ) {
+      global $Engine;
       // Params extraction
       extract(
         shortcode_atts(
@@ -119,8 +131,25 @@ if ( ! class_exists( 'vcOffers' ) ):
         )
         , EXTR_OVERWRITE );
 
+      try {
+        /** @var STRING $title */
+        return $Engine->render( '@VC/offers/offers.html.twig', [
+          'title' => $title,
+        ] );
+      } catch ( Twig_Error_Loader $e ) {
+      } catch ( Twig_Error_Runtime $e ) {
+      } catch ( Twig_Error_Syntax $e ) {
+        return $e->getRawMessage();
+      }
     }
 
+    /**
+     * Affiche les offres à la une par position
+     *
+     * @param array $attrs
+     *
+     * @return mixed
+     */
     public function vc_featured_offers_render( $attrs ) {
       // Params extraction
       extract(
@@ -132,13 +161,15 @@ if ( ! class_exists( 'vcOffers' ) ):
           $attrs
         )
         , EXTR_OVERWRITE );
+
       /** @var string $style */
       /** @var string $title */
-      if ( trim( $title ) === 'sidebar' ) {
-        return $this->getPositionSidebar( $title );
-      } else {
-        return $this->getPositionContent( $title );
-      }
+      $args = [
+        'title'  => $title,
+        'offers' => self::get_featured_offers()
+      ];
+
+      return ( trim( $style ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
 
     }
 
@@ -149,12 +180,10 @@ if ( ! class_exists( 'vcOffers' ) ):
      *
      * @return mixed
      */
-    public function getPositionSidebar( $title ) {
+    public function getPositionSidebar( $args ) {
       global $Engine;
       try {
-        return $Engine->render( '@VC/offers/sidebar.html.twig', [
-          'title' => $title,
-        ] );
+        return $Engine->render( '@VC/offers/sidebar.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {
       } catch ( Twig_Error_Syntax $e ) {
@@ -167,15 +196,12 @@ if ( ! class_exists( 'vcOffers' ) ):
      * Position content
      *
      * @param string $title
-     *
      * @return mixed
      */
-    public function getPositionContent( $title ) {
+    public function getPositionContent( $args ) {
       global $Engine;
       try {
-        return $Engine->render( '@VC/offers/content.html.twig', [
-          'title' => $title,
-        ] );
+        return $Engine->render( '@VC/offers/content.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {
       } catch ( Twig_Error_Syntax $e ) {
@@ -183,8 +209,32 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
     }
 
-    public static function vc_our_offers() {
+    /**
+     * Récuperer les offres à la une
+     * @return array
+     */
+    public static function get_featured_offers() {
+      $featuredOffers = [];
+      $args           = [
+        'post_type'      => 'offers',
+        'posts_per_page' => 4,
+        'orderby'        => 'DATE',
+        'meta_query'     => [
+          [
+            'key'     => 'itjob_offer_featured',
+            'compare' => '=',
+            'value'   => '1'
+          ]
+        ]
+      ];
+      $offers         = get_posts( $args );
+      foreach ( $offers as $offer ) {
+        setup_postdata( $offer );
+        array_push( $featuredOffers, new Offers( $offer->ID ) );
+      }
+      wp_reset_postdata();
 
+      return $featuredOffers;
     }
 
     public static function vc_offer_recently() {
