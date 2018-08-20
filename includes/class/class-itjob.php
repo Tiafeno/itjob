@@ -92,44 +92,72 @@ if ( ! class_exists( 'itJob' ) ) {
 
     }
 
+    /**
+     * Enregistrer des styles et scripts
+     */
     public function register_enqueue_scripts() {
       global $itJob;
       // angular components
-      wp_register_script( 'angular-route', get_template_directory_uri() . '/assets/js/libs/angularjs/angular-route.min.js', [], '1.7.2' );
-      wp_register_script( 'angular-sanitize', get_template_directory_uri() . '/assets/js/libs/angularjs/angular-sanitize.min.js', [], '1.7.2' );
-      wp_register_script( 'angular-messages', get_template_directory_uri() . '/assets/js/libs/angularjs/angular-messages.min.js', [], '1.7.2' );
-      wp_register_script( 'angular-animate', get_template_directory_uri() . '/assets/js/libs/angularjs/angular-animate.min.js', [], '1.7.2' );
-      wp_register_script( 'angular-aria', get_template_directory_uri() . '/assets/js/libs/angularjs/angular-aria.min.js', [], '1.7.2' );
-      wp_register_script( 'angular', get_template_directory_uri() . '/assets/js/libs/angularjs/angular.js', [], '1.7.2' );
+      wp_register_script( 'angular-route',
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-route.min.js', [], '1.7.2' );
+      wp_register_script( 'angular-sanitize',
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-sanitize.min.js', [], '1.7.2' );
+      wp_register_script( 'angular-messages',
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-messages.min.js', [], '1.7.2' );
+      wp_register_script( 'angular-animate',
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-animate.min.js', [], '1.7.2' );
+      wp_register_script( 'angular-aria',
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-aria.min.js', [], '1.7.2' );
+      wp_register_script( 'angular',
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular.js', [], '1.7.2' );
+
+      // plugins depend
+      wp_register_style( 'font-awesome',
+        get_template_directory_uri() . '/assets/vendors/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
+      wp_register_style( 'line-awesome',
+        get_template_directory_uri() . '/assets/vendors/line-awesome/css/line-awesome.min.css', '', '1.1.0' );
+      wp_register_style( 'themify-icons',
+        get_template_directory_uri() . '/assets/vendors/themify-icons/css/themify-icons.css', '', '1.1.0' );
+      wp_register_style( 'select-2',
+        get_template_directory_uri() . "/assets/vendors/select2/dist/css/select2.min.css", '', $itJob->version );
 
       // papaparse
-      wp_register_script( 'papaparse', get_template_directory_uri() . '/assets/js/libs/papaparse/papaparse.min.js', [], '4.6.0' );
+      wp_register_script( 'papaparse',
+        get_template_directory_uri() . '/assets/js/libs/papaparse/papaparse.min.js', [], '4.6.0' );
 
       // Register components adminca stylesheet
-      wp_register_style( 'bootstrap', get_template_directory_uri() . '/assets/vendors/bootstrap/dist/css/bootstrap.min.css', '', '4.0.0' );
-      wp_register_style( 'font-awesome', get_template_directory_uri() . '/assets/vendors/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
-      wp_register_style( 'line-awesome', get_template_directory_uri() . '/assets/vendors/line-awesome/css/line-awesome.min.css', '', '1.1.0' );
-      wp_register_style( 'themify-icons', get_template_directory_uri() . '/assets/vendors/themify-icons/css/themify-icons.css', '', '1.1.0' );
-      wp_register_style( 'adminca-animate', get_template_directory_uri() . '/assets/vendors/animate.css/animate.min.css', '', '3.5.1' );
-      wp_register_style( 'toastr', get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.css', '', '3.5.1' );
-      wp_register_style( 'bootstrap-select', get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/css/bootstrap-select.min.css', '', '1.12.4' );
-      wp_register_style( 'adminca', get_template_directory_uri() . '/assets/adminca/adminca.css', [
+      wp_register_style( 'bootstrap',
+        get_template_directory_uri() . '/assets/vendors/bootstrap/dist/css/bootstrap.min.css', '', '4.0.0' );
+      wp_register_style( 'adminca-animate',
+        get_template_directory_uri() . '/assets/vendors/animate.css/animate.min.css', '', '3.5.1' );
+      wp_register_style( 'toastr',
+        get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.css', '', '3.5.1' );
+      wp_register_style( 'bootstrap-select',
+        get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/css/bootstrap-select.min.css', '', '1.12.4' );
+      wp_register_style( 'style',
+        get_stylesheet_uri(), [ 'font-awesome', 'line-awesome', 'select-2' ], $itJob->version );
+      wp_register_style( 'adminca',
+        get_template_directory_uri() . '/assets/adminca/adminca.css', [
         'bootstrap',
-        'font-awesome',
-        'line-awesome',
-        'themify-icons',
         'adminca-animate',
         'toastr',
-        'bootstrap-select'
+          'bootstrap-select',
+          'style'
       ], $itJob->version );
 
       // Register components adminca scripts
-      wp_register_script( 'popper', get_template_directory_uri() . '/assets/vendors/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );
-      wp_register_script( 'bootstrap', get_template_directory_uri() . '/assets/vendors/bootstrap/dist/js/bootstrap.min.js', [ 'popper' ], '4.0.0-beta', true );
-      wp_register_script( 'jq-slimscroll', get_template_directory_uri() . '/assets/vendors/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
-      wp_register_script( 'idle-timer', get_template_directory_uri() . '/assets/vendors/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
-      wp_register_script( 'toastr', get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
-      wp_register_script( 'bootstrap-select', get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/js/bootstrap-select.min.js', [
+      wp_register_script( 'popper',
+        get_template_directory_uri() . '/assets/vendors/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );
+      wp_register_script( 'bootstrap',
+        get_template_directory_uri() . '/assets/vendors/bootstrap/dist/js/bootstrap.min.js', [ 'popper' ], '4.0.0-beta', true );
+      wp_register_script( 'jq-slimscroll',
+        get_template_directory_uri() . '/assets/vendors/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
+      wp_register_script( 'idle-timer',
+        get_template_directory_uri() . '/assets/vendors/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
+      wp_register_script( 'toastr',
+        get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
+      wp_register_script( 'bootstrap-select',
+        get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/js/bootstrap-select.min.js', [
         'jquery',
         'bootstrap'
       ], '1.12.4', true );

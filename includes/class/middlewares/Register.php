@@ -125,6 +125,30 @@ trait Register {
       'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ]
     ] );
 
+    register_post_type( 'candidate', [
+      'label'           => "Candidat",
+      'labels'          => [
+        'name'               => "Les candidats",
+        'singular_name'      => "Candidat",
+        'add_new'            => 'Ajouter',
+        'add_new_item'       => "Ajouter une nouvelle candidate",
+        'edit_item'          => 'Modifier',
+        'view_item'          => 'Voir',
+        'search_items'       => "Trouver des candidats",
+        'all_items'          => "Tous les candidats",
+        'not_found'          => "Aucun candidat trouver",
+        'not_found_in_trash' => "Aucun candidat dans la corbeille"
+      ],
+      'public'          => true,
+      'hierarchical'    => false,
+      'menu_position'   => null,
+      'show_ui'         => true,
+      'rewrite'         => [ 'slug' => 'candidate' ],
+      'capability_type' => 'post',
+      'menu_icon'       => 'dashicons-welcome-widgets-menus',
+      'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ]
+    ] );
+
   }
 
   public function taxonomy() {
@@ -151,7 +175,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (Région)
-    register_taxonomy( 'region', [ 'offers' ], [
+    register_taxonomy( 'region', [ 'offers', 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Région',
@@ -169,6 +193,27 @@ trait Register {
       'show_admin_column' => false,
       'query_var'         => true,
       'rewrite'           => array( 'slug' => 'region' ),
+    ] );
+
+    // Now register the taxonomy (Langage)
+    register_taxonomy( 'language', [ 'offers', 'candidate' ], [
+      'hierarchical'      => true,
+      'labels'            => array(
+        'name'              => 'Langage',
+        'singular_name'     => 'Langage',
+        'search_items'      => 'Trouver un langage',
+        'all_items'         => 'Trouver des langage',
+        'parent_item'       => 'Langage parent',
+        'parent_item_colon' => 'Langage parent:',
+        'edit_item'         => 'Modifier le langage',
+        'update_item'       => 'Mettre à jour le langage',
+        'add_new_item'      => 'Ajouter un nouveau langage',
+        'menu_name'         => 'Langage',
+      ),
+      'show_ui'           => true,
+      'show_admin_column' => false,
+      'query_var'         => true,
+      'rewrite'           => array( 'slug' => 'langage' ),
     ] );
 
     // Now register the taxonomy (Tag)

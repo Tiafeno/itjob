@@ -11,6 +11,10 @@ Text Domain:  itjob
 Tags:         featured-images, acf
 */
 
+body {
+  font-size: .9rem;
+}
+
 .uk-container {
   box-sizing: border-box !important;
 }

@@ -1,0 +1,182 @@
+<style type="text/css">
+
+  .search-element-default .ibox-body .tab-content {
+    background-color: #ffffff;
+    border-radius: 0px 14px 14px;
+  }
+
+  .search-element-default .ibox-body li a {
+    text-transform: uppercase;
+  }
+
+  .tabs-line-success .nav-link:hover,
+  .search-element-default .ibox-body a.nav-link.active {
+    border-bottom-color: #ffffff;
+    background-color: #ffffff !important;
+    color: #5e5e5e !important;
+  }
+
+  .search-element-default .ibox-body a.nav-link {
+    border-radius: 10px 10px 0px 0px;
+    background-color: #76cb3b;
+    color: #ffffff;
+    margin-right: 5px;
+  }
+
+  .search-element-default input {
+    font-family: Poppins;
+  }
+
+  .search-default select {
+    font-size: 12px;
+  }
+
+</style>
+
+<script type="text/javascript">
+  (function ($) {
+    $(document).ready(function () {
+      var jqSelects = $("select.form-control");
+      $.each(jqSelects, function (index, element) {
+        var selectElement = $(element);
+        var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
+        $(element).select2({
+          placeholder: placeholder,
+          allowClear: true,
+          width: '100%'
+        })
+      });
+    })
+  })(jQuery)
+</script>
+<div class="search-element-default">
+  <div class="ibox-body">
+    <ul class="nav tabs-line tabs-line-success">
+      <li class="nav-item">
+        <a class="nav-link active" href="#tab-8-1" data-toggle="tab" aria-expanded="true">Recherche emplois</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#tab-8-2" data-toggle="tab" aria-expanded="false">recherche candidat</a>
+      </li>
+    </ul>
+    <div class="tab-content pt-4 pb-2">
+      {# Recherche emplois template #}
+      <div class="tab-pane fade active show" id="tab-8-1" aria-expanded="true">
+        <form name="search-default search-offers" action="" method="get" class="ml-4 mr-4">
+          <div class="row">
+            <div class="col-md-3">
+              <input class="form-control" name="s" type="text" placeholder="Mot clé">
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <select class="form-control" name="branch_activity" title="Secteur d'activité">
+                  <option></option>
+                  <option value="AK">Alaska</option>
+                  <option value="HI">Hawaii</option>
+                  <option value="CA">California</option>
+                  <option value="NV">Nevada</option>
+                  <option value="OR">Oregon</option>
+                  <option value="WA">Washington</option>
+                  <option value="AL">Alabama</option>
+                  <option value="AR">Arkansas</option>
+                  <option value="IL">Illinois</option>
+                  <option value="IA">Iowa</option>
+                  <option value="KS">Kansas</option>
+                  <option value="KY">Kentucky</option>
+                  <option value="LA">Louisiana</option>
+                  <option value="MN">Minnesota</option>
+                  <option value="MS">Mississippi</option>
+                  <option value="MO">Missouri</option>
+                  <option value="OK">Oklahoma</option>
+                  <option value="SD">South Dakota</option>
+                  <option value="TX">Texas</option>
+                  <option value="TN">Tennessee</option>
+                  <option value="WI">Wisconsin</option>
+                  </optgroup>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <select class="form-control" name="region" title="Région">
+                  <option></option>
+                  <option value="CA">California</option>
+                  <option value="NV">Nevada</option>
+                  <option value="OR">Oregon</option>
+                  <option value="WA">Washington</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <input type="hidden" name="post_type" value="offers">
+              <button class="btn btn-primary btn-block">Trouver</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      {# Recherche candidat template #}
+      <div class="tab-pane fade" id="tab-8-2" aria-expanded="false">
+        <form name="search-default search-cv" action="" method="get" class="ml-4 mr-4">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <select class="form-control" name="branch_activity" title="Secteur d'activité">
+                  <option></option>
+                  <option value="CA">California</option>
+                  <option value="NV">Nevada</option>
+                  <option value="OR">Oregon</option>
+                  <option value="WA">Washington</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group">
+                <select class="form-control" name="langage" title="Les langues maitrisées">
+                  <option></option>
+                  <option value="CA">California</option>
+                  <option value="NV">Nevada</option>
+                  <option value="OR">Oregon</option>
+                  <option value="WA">Washington</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group">
+                <select class="form-control" name="region" title="Région">
+                  <option></option>
+                  <option value="CA">California</option>
+                  <option value="NV">Nevada</option>
+                  <option value="OR">Oregon</option>
+                  <option value="WA">Washington</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <input class="form-control" name="s" type="text" placeholder="Mot clé">
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <select class="form-control" name="master_software" title="Logiciel Maîtrisés">
+                  <option></option>
+                  <option value="CA">California</option>
+                  <option value="NV">Nevada</option>
+                  <option value="OR">Oregon</option>
+                  <option value="WA">Washington</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <input type="hidden" name="post_type" value="candidate">
+              <button class="btn btn-primary btn-block">Trouver</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

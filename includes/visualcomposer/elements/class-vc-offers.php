@@ -48,13 +48,14 @@ if ( ! class_exists( 'vcOffers' ) ):
             ),
             array(
               'type'        => 'dropdown',
-              'class'       => 'vc-ij-style',
-              'heading'     => 'Style',
-              'param_name'  => 'style',
-              'value'       => [
+              'class'       => 'vc-ij-position',
+              'heading'     => 'Position',
+              'param_name'  => 'position',
+              'value'       => array(
                 'Sur le côté'  => 'sidebar',
                 'Sur le large' => 'content'
-              ],
+              ),
+              'std'         => 'content',
               'description' => "Modifier le mode d'affichage",
               'admin_label' => false,
               'weight'      => 0
@@ -155,21 +156,21 @@ if ( ! class_exists( 'vcOffers' ) ):
       extract(
         shortcode_atts(
           array(
-            'title' => 'Offres à la une',
-            'style' => ''
+            'title'    => 'Offres à la une',
+            'position' => ''
           ),
           $attrs
         )
         , EXTR_OVERWRITE );
 
-      /** @var string $style */
+      /** @var string $position */
       /** @var string $title */
       $args = [
         'title'  => $title,
         'offers' => self::get_featured_offers()
       ];
 
-      return ( trim( $style ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
+      return ( trim( $position ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
 
     }
 
@@ -196,6 +197,7 @@ if ( ! class_exists( 'vcOffers' ) ):
      * Position content
      *
      * @param string $title
+     *
      * @return mixed
      */
     public function getPositionContent( $args ) {

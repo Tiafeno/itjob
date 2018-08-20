@@ -13,6 +13,11 @@ if ( ! class_exists( 'vcSearch' ) ):
     public function __construct() {
       add_action( 'init', [ $this, 'vc_search_mapping' ] );
       add_shortcode( 'vc_itjob_search', [ $this, 'vc_search_template' ] );
+      add_action( 'wp_enqueue_scripts', function () {
+        global $itJob;
+        //wp_enqueue_script('multi-select', get_template_directory_uri() . "/assets/vendors/multiselect/js/jquery.multi-select.js", ['jquery'], $itJob->version);
+        wp_enqueue_script( 'select-2', get_template_directory_uri() . "/assets/vendors/select2/dist/js/select2.full.min.js", [ 'jquery' ], $itJob->version );
+      } );
     }
 
     public function vc_search_mapping() {
@@ -23,7 +28,7 @@ if ( ! class_exists( 'vcSearch' ) ):
       // Map the block with vc_map()
       vc_map(
         array(
-          'name'        => 'VC Search Element',
+          'name'        => 'Récherche d\'emploi',
           'base'        => 'vc_itjob_search',
           'description' => 'Effectuer une recherche sur l\'emplois ou sur les candidats',
           'category'    => 'itJob',
