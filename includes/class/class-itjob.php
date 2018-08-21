@@ -7,6 +7,7 @@ if ( ! class_exists( 'itJob' ) ) {
     use Register;
 
     public function __construct() {
+
       add_action( 'wp_loaded', function () {
       }, 20 );
 
@@ -24,6 +25,19 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'init', function () {
         $this->postTypes();
         $this->taxonomy();
+      } );
+
+      add_action( 'pre_get_posts', function ( $query ) {
+        if ( ! is_admin() && $query->is_main_query() ) {
+          if ( $query->is_search ) {
+            $query->set( 'post_type', [ 'post', 'page', 'company', 'offers', 'candidate' ] );
+          }
+        }
+      } );
+
+      add_action( 'the_post', function ( $post_object ) {
+        global $offers;
+        array_push( $offers, new Offers( $post_object->ID ) );
       } );
 
       add_action( 'admin_init', function () {
@@ -138,12 +152,12 @@ if ( ! class_exists( 'itJob' ) ) {
         get_stylesheet_uri(), [ 'font-awesome', 'line-awesome', 'select-2' ], $itJob->version );
       wp_register_style( 'adminca',
         get_template_directory_uri() . '/assets/adminca/adminca.css', [
-        'bootstrap',
-        'adminca-animate',
-        'toastr',
+          'bootstrap',
+          'adminca-animate',
+          'toastr',
           'bootstrap-select',
           'style'
-      ], $itJob->version );
+        ], $itJob->version );
 
       // Register components adminca scripts
       wp_register_script( 'popper',
@@ -158,9 +172,9 @@ if ( ! class_exists( 'itJob' ) ) {
         get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
       wp_register_script( 'bootstrap-select',
         get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/js/bootstrap-select.min.js', [
-        'jquery',
-        'bootstrap'
-      ], '1.12.4', true );
+          'jquery',
+          'bootstrap'
+        ], '1.12.4', true );
       wp_register_script( 'adminca', get_template_directory_uri() . '/assets/adminca/adminca.js', [
         'bootstrap',
         'jq-slimscroll',

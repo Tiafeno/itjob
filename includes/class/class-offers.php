@@ -61,12 +61,15 @@ final class Offers implements iOffer {
     $this->ID       = $post->ID;
     $this->title    = $post->post_title; // Position Filled
     $this->postType = $post->post_type;
-    $this->user     = jobServices::getUserData( $post->post_author );
     if ( $this->exist() ) {
       $this->acfElements();
     }
 
     return $this;
+  }
+
+  public function exist() {
+    return $this->postType === 'offers';
   }
 
   private function acfElements() {

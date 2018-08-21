@@ -6,6 +6,9 @@
  * Time: 10:21
  */
 
-final class Candidate {
+final class Candidate implements iCandidate {
 
+  public function __construct() {
+  }
 }
+
