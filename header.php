@@ -96,7 +96,9 @@
           <div class="uk-width-1-3@s uk-width-2-3">
             <div class="uk-flex">
               <div class="logo">
-                <img src="<?= get_template_directory_uri() ?>/img/logo.png" class="uk-logo" />
+                <a href="<?= home_url('/') ?>">
+                  <img src="<?= get_template_directory_uri() ?>/img/logo.png" class="uk-logo" />
+                </a>
               </div>
               <div class="header-offcanvas uk-flex">
                 <button class="btn uk-margin-auto-vertical" uk-toggle="target: #offcanvas-push">

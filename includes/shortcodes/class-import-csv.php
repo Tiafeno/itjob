@@ -24,14 +24,13 @@ if ( ! class_exists( 'scImport' ) ) :
           $atts
         )
       );
-      wp_enqueue_style('adminca');
+
       wp_enqueue_script( 'import-csv', get_template_directory_uri() . '/assets/js/app/import/importcsv.js', [
         'angular',
         'angular-sanitize',
         'angular-messages',
         'angular-animate',
         'angular-aria',
-        'adminca',
         'papaparse'
       ], $itJob->version, true );
       try {

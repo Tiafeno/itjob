@@ -1,0 +1,50 @@
+.container-offers .container-offers-title {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.container-offers .card .card-body .card-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.container-offers .card {
+  color: #ffffff;
+}
+
+.container-offers .card .card-footer {
+  background-color: rgb(43, 170, 205);
+}
+
+.container-offers .card .card-footer a.view i {
+  font-size: 23px;
+}
+
+.container-offers .card .card-information {
+  border-top: .1px solid #fff;
+}
+
+.container-offers .card-information .card-info {
+  font-size: 11px;
+  font-weight: lighter;
+  color: #f3f7f7 !important;
+}
+
+.container-offers .card a,
+.container-offers .card p,
+.container-offers .card h4,
+.container-offers .card h2,
+.container-offers .card h3,
+.container-offers .card h1 {
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.container-offers .card .card-body {
+  background: rgb(0, 71, 134);
+}
+
+.container-offers .card .card-body .text-description {
+  font-weight: lighter;
+  font-family: 'Montserrat', sans-serif;
+}
