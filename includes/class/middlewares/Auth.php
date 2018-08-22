@@ -25,4 +25,5 @@ trait Auth {
 
     return $this->authUser->ID === $post->post_author;
   }
+
 }

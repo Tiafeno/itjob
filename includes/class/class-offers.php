@@ -10,6 +10,12 @@ final class Offers implements iOffer {
   /** @var int $ID - Identification de l'offre */
   public $ID;
 
+  /** @var string $postType - Type du poste */
+  public $postType;
+
+  /** @var array|null $tags - Tag pour le réferencement et la recherche interne */
+  public $tags = [];
+
   /** @var string $title - Titre de l'offre équivalent avec la variable `Poste pourvu` */
   public $title;
 
@@ -18,12 +24,6 @@ final class Offers implements iOffer {
 
   /** @var date $dateLimit - Date limite de publication */
   public $dateLimit;
-
-  /** @var  int $companyId - ID of company */
-  public $companyId;
-
-  /** @var string $positionFilled - Poste pourvu */
-  public $positionFilled;
 
   /** @var string $reference -  Référence de l'offre */
   public $reference;
@@ -48,21 +48,25 @@ final class Offers implements iOffer {
 
   /** @var bool $featured - L'offre est à la une ou pas */
   private $featured;
-  public $postType;
+
 
   public function __construct( $postId = null ) {
     if ( is_null( $postId ) ) {
       return false;
     }
-    /** @var Wp_User|0 authUser */
-    $this->authUser = wp_get_current_user();
 
-    $post           = get_post( $postId );
-    $this->ID       = $post->ID;
-    $this->title    = $post->post_title; // Position Filled
-    $this->postType = $post->post_type;
+    /**
+     * @func get_post
+     * (WP_Post|array|null) Type corresponding to $output on success or null on failure.
+     * When $output is OBJECT, a WP_Post instance is returned.
+     */
+    $output           = get_post( $postId );
+    $this->ID         = $output->ID;
+    $this->title      = $output->post_title; // Position Filled
+    $this->postType   = $output->post_type;
+    $this->userAuthor = jobServices::getUserData( $output->post_author );
     if ( $this->exist() ) {
-      $this->acfElements();
+      $this->acfElements()->getOfferTaxonomy();
     }
 
     return $this;
@@ -72,6 +76,21 @@ final class Offers implements iOffer {
     return $this->postType === 'offers';
   }
 
+  /**
+   * Récuperer les tags et la region pour l'annonce
+   */
+  private function getOfferTaxonomy() {
+    // get region
+    $regions      = wp_get_post_terms( $this->ID, 'region', [
+      "fields" => "names"
+    ] );
+    $this->region = reset( $regions );
+    $this->tags   = wp_get_post_terms( $this->ID, 'itjob_tag', [ "fields" => "names" ] );
+    if ( is_wp_error( $this->tags ) ) {
+      $this->tags = null;
+    }
+  }
+
   private function acfElements() {
     global $wp_version;
     if ( ! function_exists( 'get_field' ) ) {
@@ -79,7 +98,9 @@ final class Offers implements iOffer {
 
       return false;
     }
+    // company
     $this->company          = get_field( 'itjob_offer_company', $this->ID ); // Object article
+
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
     $this->proposedSalary   = get_field( 'itjob_offer_proposedsallary', $this->ID );
@@ -87,9 +108,9 @@ final class Offers implements iOffer {
     $this->profile          = get_field( 'itjob_offer_profil', $this->ID ); // WYSIWYG
     $this->mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
-    $this->featured         = get_field( 'itjob_offer_featured', $this->ID );
+    $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
 
-    return true;
+    return $this;
   }
 
   /** return all offers */

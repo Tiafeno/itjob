@@ -16,16 +16,18 @@ if ( ! class_exists( 'jobServices' ) ) :
 
     /**
      * Récuperer les informations nécessaire d'un utilisateur
+     *
      * @param int $userId - ID d'un utilisateur
+     *
      * @return stdClass
      */
     public static function getUserData( $userId ) {
-      $user                    = new WP_User( $userId );
-      $userClass               = new stdClass();
-      $userClass->user_login   = $user->user_login;
-      $userClass->token        = $user->user_pass;
-      $userClass->user_email   = $user->user_email;
-      $userClass->display_name = $user->display_name;
+      $user             = new WP_User( $userId );
+      $userClass        = new stdClass();
+      $userClass->roles = $user->roles;
+      unset( $user->data->user_login );
+      unset( $user->data->user_nicename );
+      $userClass->data = $user->data;
 
       return $userClass;
     }

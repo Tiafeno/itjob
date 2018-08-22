@@ -9,7 +9,7 @@ final class Company implements iCompany {
 
   public $ID;
   public $postType;
-  public $user;
+  public $userAuthor;
   public $title;
   public $address;
   public $nif;
@@ -27,11 +27,20 @@ final class Company implements iCompany {
     if ( is_null( get_post( $postId ) ) ) {
       return null;
     }
-    $post           = get_post( $postId );
-    $this->ID       = $post->ID;
-    $this->title    = $post->post_title;
-    $this->postType = $post->post_type;
-    $this->user     = jobServices::getUserData( $post->post_author );
+
+    /**
+     * @func get_post
+     * (WP_Post|array|null) Type corresponding to $output on success or null on failure.
+     * When $output is OBJECT, a WP_Post instance is returned.
+     */
+    $output = get_post( $postId );
+    if ( is_null( $output ) ) {
+      return false;
+    }
+    $this->ID         = $output->ID;
+    $this->title      = $output->post_title;
+    $this->postType   = $output->post_type;
+    $this->userAuthor = jobServices::getUserData( $output->post_author );
     if ( $this->exist() ) {
       $this->acfElements();
     }

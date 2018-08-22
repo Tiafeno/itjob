@@ -199,7 +199,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (Langage)
-    register_taxonomy( 'language', [ 'offers', 'candidate' ], [
+    register_taxonomy( 'language', [ 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Langage',
