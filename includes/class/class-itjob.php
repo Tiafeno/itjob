@@ -36,8 +36,11 @@ if ( ! class_exists( 'itJob' ) ) {
       } );
 
       add_action( 'the_post', function ( $post_object ) {
-        global $offers;
-        array_push( $offers, new Offers( $post_object->ID ) );
+        $post_types = [ 'offers', 'company', 'candidate' ];
+        if ( ! in_array( $post_object->post_type, $post_types ) ) {
+          return;
+        }
+        array_push( $GLOBALS[ $post_object->post_type ], new Offers( $post_object->ID ) );
       } );
 
       add_action( 'admin_init', function () {
