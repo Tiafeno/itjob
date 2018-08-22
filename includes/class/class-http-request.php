@@ -1,4 +1,6 @@
 <?php
+
+namespace http;
 /**
  * Created by IntelliJ IDEA.
  * User: Tiafeno
@@ -6,7 +8,7 @@
  * Time: 11:28
  */
 
-class httpRequest {
+class Request {
   public static function getValue( $name, $def = false ) {
     if ( ! isset( $name ) || empty( $name ) || ! is_string( $name ) ) {
       return $def;

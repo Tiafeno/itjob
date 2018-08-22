@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: Tiafeno
- * Date: 16/08/2018
- * Time: 11:37
- */
+
+namespace includes\object;
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
@@ -22,8 +18,8 @@ if ( ! class_exists( 'jobServices' ) ) :
      * @return stdClass
      */
     public static function getUserData( $userId ) {
-      $user             = new WP_User( $userId );
-      $userClass        = new stdClass();
+      $user             = new \WP_User( $userId );
+      $userClass        = new \stdClass();
       $userClass->roles = $user->roles;
       unset( $user->data->user_login );
       unset( $user->data->user_nicename );

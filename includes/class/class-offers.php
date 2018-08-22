@@ -1,11 +1,16 @@
 <?php
+
+namespace includes\post;
+
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-final class Offers implements iOffer {
+use includes\object as Object;
+
+final class Offers implements \iOffer {
   // Added Trait Class
-  use Auth;
+  use \Auth;
 
   /** @var int $ID - Identification de l'offre */
   public $ID;
@@ -64,7 +69,7 @@ final class Offers implements iOffer {
     $this->ID         = $output->ID;
     $this->title      = $output->post_title; // Position Filled
     $this->postType   = $output->post_type;
-    $this->userAuthor = jobServices::getUserData( $output->post_author );
+    $this->userAuthor = Object\jobServices::getUserData( $output->post_author );
     if ( $this->exist() ) {
       $this->acfElements()->getOfferTaxonomy();
     }
@@ -99,7 +104,7 @@ final class Offers implements iOffer {
       return false;
     }
     // company
-    $this->company          = get_field( 'itjob_offer_company', $this->ID ); // Object article
+    $this->company = get_field( 'itjob_offer_company', $this->ID ); // Object article
 
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );

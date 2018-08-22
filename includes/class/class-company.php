@@ -1,11 +1,16 @@
 <?php
+
+namespace includes\post;
+
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-final class Company implements iCompany {
+use includes\object as Object;
+
+final class Company implements \iCompany {
   // Added Trait Class
-  use Auth;
+  use \Auth;
 
   public $ID;
   public $postType;
@@ -40,14 +45,14 @@ final class Company implements iCompany {
     $this->ID         = $output->ID;
     $this->title      = $output->post_title;
     $this->postType   = $output->post_type;
-    $this->userAuthor = jobServices::getUserData( $output->post_author );
+    $this->userAuthor = Object\jobServices::getUserData( $output->post_author );
     if ( $this->exist() ) {
       $this->acfElements();
     }
   }
 
   public function exist() {
-    return $this->post_type === 'company';
+    return $this->postType === 'company';
   }
 
   private function acfElements() {

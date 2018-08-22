@@ -1,10 +1,15 @@
 <?php
+namespace includes\object;
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
+
+use http;
+use includes\post as Post;
+
 if ( ! class_exists( 'itJob' ) ) {
   final class itJob {
-    use Register;
+    use \Register;
 
     public function __construct() {
 
@@ -30,7 +35,10 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'pre_get_posts', function ( $query ) {
         if ( ! is_admin() && $query->is_main_query() ) {
           if ( $query->is_search ) {
-            $query->set( 'post_type', [ 'post', 'page', 'company', 'offers', 'candidate' ] );
+            $post_type = http\Request::getValue( 'post_type', false );
+            if ( $post_type ) {
+              $query->set( 'post_type', [ $post_type ] );
+            }
           }
         }
       } );
@@ -40,7 +48,7 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( ! in_array( $post_object->post_type, $post_types ) ) {
           return;
         }
-        array_push( $GLOBALS[ $post_object->post_type ], new Offers( $post_object->ID ) );
+        array_push( $GLOBALS[ $post_object->post_type ], new Post\Offers( $post_object->ID ) );
       } );
 
       add_action( 'admin_init', function () {
@@ -100,7 +108,7 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'before_delete_post', function ( $postId ) {
         $pst = get_post( $postId );
         if ( $pst->post_type === 'offers' ) {
-          $offer = new Offers( $postId );
+          $offer = new \Offers( $postId );
           $offer->removeOffer();
           unset( $offer );
         }

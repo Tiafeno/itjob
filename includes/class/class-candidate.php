@@ -1,12 +1,17 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: Tiafeno
- * Date: 18/08/2018
- * Time: 10:21
- */
 
-final class Candidate implements iCandidate {
+namespace includes\post;
+
+if ( ! defined( 'ABSPATH' ) ) {
+  exit;
+}
+
+use includes\object as Object;
+
+final class Candidate implements \iCandidate {
+  // Added Trait Class
+  use \Auth;
+
   private $ID;
 
   public $title;
@@ -45,7 +50,7 @@ final class Candidate implements iCandidate {
     $this->ID         = $output->ID;
     $this->title      = $this->reference = $output->post_title;
     $this->postType   = $output->post_type;
-    $this->userAuthor = jobServices::getUserData( (int) $output->post_author );
+    $this->userAuthor = Object\jobServices::getUserData( (int) $output->post_author );
   }
 
   public function is_candidate() {
