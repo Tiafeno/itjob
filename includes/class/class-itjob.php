@@ -78,7 +78,18 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( ! in_array( $post_object->post_type, $post_types ) ) {
           return;
         }
-        $GLOBALS[ $post_object->post_type ] = new Post\Offers( $post_object->ID );
+        switch ( $post_object->post_type ) {
+          case 'candidate':
+            $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
+            break;
+          case 'offres':
+            $GLOBALS[ $post_object->post_type ] = new Post\Offers( $post_object->ID );
+            break;
+          case 'company':
+            $GLOBALS[ $post_object->post_type ] = new Post\Company( $post_object->ID );
+            break;
+        }
+
       } );
 
       add_action( 'admin_init', function () {

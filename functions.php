@@ -34,7 +34,8 @@ $itJob = (object) [
 
 $interfaces = [
   'includes/class/interfaces/iOffer.php',
-  'includes/class/interfaces/iCompany.php'
+  'includes/class/interfaces/iCompany.php',
+  'includes/class/interfaces/iCandidate.php'
 ];
 foreach ( $interfaces as $interface ) {
   require $interface;
@@ -43,6 +44,7 @@ foreach ( $interfaces as $interface ) {
 // post type object
 require_once 'includes/class/class-offers.php';
 require_once 'includes/class/class-company.php';
+require_once 'includes/class/class-candidate.php';
 
 // shortcodes
 $shortcode = (object) [
