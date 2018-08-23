@@ -18,7 +18,14 @@ if ( ! class_exists( 'itJob' ) ) {
         $post_type = get_post_type( $post_id );
         switch ( $post_type ):
           case 'candidate':
-            $userEmail     = get_field( 'itjob_cv_email', $post_id );
+            // TODO: Vérifier si l'utilisateur existe déja.
+            $userEmail = get_field( 'itjob_cv_email', $post_id );
+            // (WP_User|false) WP_User object on success, false on failure.
+            $userExist = get_user_by( 'email', $userEmail );
+            if ( false === $userExist ) {
+              break;
+            }
+
             $userFirstName = get_field( 'itjob_vc_firstname', $post_id );
             $userLastName  = get_field( 'itjob_vc_lastname', $post_id );
             $args          = [
