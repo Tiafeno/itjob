@@ -21,8 +21,7 @@ if ( ! class_exists( 'jobServices' ) ) :
       $user             = new \WP_User( $userId );
       $userClass        = new \stdClass();
       $userClass->roles = $user->roles;
-      unset( $user->data->user_login );
-      unset( $user->data->user_nicename );
+      unset( $user->data->user_login, $user->data->user_nicename );
       $userClass->data = $user->data;
 
       return $userClass;

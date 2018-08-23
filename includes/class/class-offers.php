@@ -87,7 +87,7 @@ final class Offers implements \iOffer {
   private function getOfferTaxonomy() {
     // get region
     $regions      = wp_get_post_terms( $this->ID, 'region', [
-      "fields" => "names"
+      "fields" => "all"
     ] );
     $this->region = reset( $regions );
     $this->tags   = wp_get_post_terms( $this->ID, 'itjob_tag', [ "fields" => "names" ] );

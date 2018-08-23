@@ -13,6 +13,36 @@ if ( ! class_exists( 'itJob' ) ) {
 
     public function __construct() {
 
+      add_action( 'save_post', function ( $post_id, $post, $update ) {
+        $chars     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $post_type = get_post_type( $post_id );
+        switch ( $post_type ):
+          case 'candidate':
+            $userEmail     = get_field( 'itjob_cv_email', $post_id );
+            $userFirstName = get_field( 'itjob_vc_firstname', $post_id );
+            $userLastName  = get_field( 'itjob_vc_lastname', $post_id );
+            $args          = [
+              "user_pass"    => substr( str_shuffle( $chars ), 0, 8 ),
+              "user_login"   => $post->post_title,
+              "user_email"   => $userEmail,
+              "display_name" => $post->post_title,
+              "first_name"   => $userFirstName,
+              "last_name"    => $userLastName,
+              "role"         => "candidate"
+            ];
+            $user_id       = wp_insert_user( $args );
+            if ( ! is_wp_error( $user_id ) ) {
+              $user = new \WP_User( $user_id );
+              get_password_reset_key( $user );
+
+              return true;
+            } else {
+              return false;
+            }
+            break;
+        endswitch;
+      }, 10, 3 );
+
       add_action( 'wp_loaded', function () {
       }, 20 );
 
@@ -48,7 +78,7 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( ! in_array( $post_object->post_type, $post_types ) ) {
           return;
         }
-        array_push( $GLOBALS[ $post_object->post_type ], new Post\Offers( $post_object->ID ) );
+        $GLOBALS[ $post_object->post_type ] = new Post\Offers( $post_object->ID );
       } );
 
       add_action( 'admin_init', function () {

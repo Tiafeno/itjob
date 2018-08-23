@@ -3,10 +3,10 @@ get_header();
 ?>
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-small">
-      <h4 class="m-0">LES OFFRES D’EMPLOI</h4>
+      <h4 class="m-0">LES ENTREPRISES</h4>
       <?php
-      while (have_posts()) : the_post();
-        get_template_part( 'partials/content', 'offer' );
+      while ( have_posts() ) : the_post();
+        get_template_part( 'partials/content', 'candidate' );
       endwhile;
       ?>
     </div>
