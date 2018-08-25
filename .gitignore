@@ -1,4 +1,5 @@
 /composer/vendor
+/templates/cache
 .idea
 
 *.js.map
