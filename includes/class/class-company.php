@@ -13,8 +13,8 @@ final class Company implements \iCompany {
   use \Auth;
 
   public $ID;
-  public $postType;
   public $userAuthor;
+  public $email;
   public $title;
   public $address;
   public $nif;
@@ -44,15 +44,20 @@ final class Company implements \iCompany {
     }
     $this->ID         = $output->ID;
     $this->title      = $output->post_title;
-    $this->postType   = $output->post_type;
-    $this->userAuthor = Object\jobServices::getUserData( $output->post_author );
-    if ( $this->exist() ) {
+
+    if ( $this->is_company() ) {
+      // FIX: Corriger une erreur sur l'utilisateur si l'admin ajoute une company
+      $this->email = get_field( 'itjob_company_email', $this->ID );
+      $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
+
+      // TODO: Ajouter ou crée un utilisateur quand un entreprise est publier ou ajouter
+      $this->userAuthor = Object\jobServices::getUserData( $user->ID );
       $this->acfElements();
     }
   }
 
-  public function exist() {
-    return $this->postType === 'company';
+  public function is_company() {
+    return get_post_type( $this->ID ) === 'company';
   }
 
   private function acfElements() {
@@ -79,7 +84,7 @@ final class Company implements \iCompany {
    *
    * @return array - Un tableau qui contient des objets'Company'
    */
-  public static function getAllCompany( $paged = 10 ) {
+  public static function getAllCompany( $paged = - 1 ) {
     $allCompany = [];
     $args       = [
       'post_type'      => 'company',

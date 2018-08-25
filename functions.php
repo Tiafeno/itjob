@@ -18,7 +18,7 @@ define( '__SITENAME__', 'itJob' );
 define( '__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj' );
 define( 'TWIG_TEMPLATE_PATH', get_template_directory() . '/templates' );
 $theme     = wp_get_theme( 'itjob' );
-$offers    = [];
+$offers    = null;
 $company   = null;
 $candidate = null;
 
@@ -34,7 +34,8 @@ $itJob = (object) [
 
 $interfaces = [
   'includes/class/interfaces/iOffer.php',
-  'includes/class/interfaces/iCompany.php'
+  'includes/class/interfaces/iCompany.php',
+  'includes/class/interfaces/iCandidate.php'
 ];
 foreach ( $interfaces as $interface ) {
   require $interface;
@@ -43,6 +44,7 @@ foreach ( $interfaces as $interface ) {
 // post type object
 require_once 'includes/class/class-offers.php';
 require_once 'includes/class/class-company.php';
+require_once 'includes/class/class-candidate.php';
 
 // shortcodes
 $shortcode = (object) [

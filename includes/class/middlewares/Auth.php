@@ -26,4 +26,12 @@ trait Auth {
     return $this->authUser->ID === $post->post_author;
   }
 
+  public static function addCompanyUser() {
+
+  }
+
+  public static function addCandidateUser() {
+
+  }
+
 }

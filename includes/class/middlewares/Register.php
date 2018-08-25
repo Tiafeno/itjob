@@ -9,27 +9,36 @@
 trait Register {
   private function createCompanyRole() {
     $capabilities = array(
-      'read'                   => true,  // true allows this capability
-      'upload_files'           => true,
-      'edit_posts'             => true,
-      'edit_users'             => true,
-      'manage_options'         => false,
-      'remove_users'           => false,
-      'edit_others_posts'      => true,
+      'read'         => true,  // true allows this capability
+      'upload_files' => true,
+
+      'edit_others_pages' => true,
+      'edit_others_posts' => true,
+      'edit_pages'        => true,
+      'edit_posts'        => true,
+      'edit_users'        => true,
+
+      'manage_options' => false,
+
+      'remove_users' => false,
+
       'delete_others_pages'    => true,
-      'delete_published_posts' => true,
-      'edit_others_posts'      => true, // Allows user to edit others posts not just their own
-      'create_posts'           => true, // Allows user to create new posts
-      'manage_categories'      => true, // Allows user to manage post categories
-      'publish_posts'          => true, // Allows the user to publish, otherwise posts stays in draft mode
-      'edit_themes'            => false, // false denies this capability. User can’t edit your theme
-      'install_plugins'        => false, // User cant add new plugins
-      'delete_plugins'         => false,
-      'update_plugin'          => false, // User can’t update any plugins
-      'update_core'            => false, // user cant perform core updatesy
-      'create_users'           => false,
+      'delete_posts'           => false,
+      'delete_pages'           => false,
+      'delete_published_posts' => false,
+      'delete_users'           => false,
       'delete_themes'          => false,
-      'install_themes'         => false,
+      'delete_plugins'         => false,
+
+      'create_posts'      => true, // Allows user to create new posts
+      'manage_categories' => true, // Allows user to manage post categories
+      'publish_posts'     => true, // Allows the user to publish, otherwise posts stays in draft mode
+      'edit_themes'       => false, // false denies this capability. User can’t edit your theme
+      'install_plugins'   => false, // User cant add new plugins
+      'update_plugin'     => false, // User can’t update any plugins
+      'update_core'       => false, // user cant perform core updates
+      'create_users'      => false,
+      'install_themes'    => false,
     );
 
     return add_role(
@@ -96,10 +105,11 @@ trait Register {
       'menu_position'   => null,
       'show_ui'         => true,
       'has_archive'     => true,
-      'rewrite'         => [ 'slug' => 'offres' ],
+      'rewrite'         => [ 'slug' => 'offers' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-businessman',
-      'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ]
+      'supports'        => [ 'title', 'excerpt', 'thumbnail', 'custom-fields' ],
+      'show_in_rest'    => true
     ] );
 
     register_post_type( 'company', [
@@ -121,10 +131,11 @@ trait Register {
       'menu_position'   => null,
       'show_ui'         => true,
       'has_archive'     => true,
-      'rewrite'         => [ 'slug' => 'entreprise' ],
+      'rewrite'         => [ 'slug' => 'company' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-welcome-widgets-menus',
-      'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ]
+      'supports'        => [ 'title', 'excerpt', 'thumbnail', 'custom-fields' ],
+      'show_in_rest'    => true
     ] );
 
     register_post_type( 'candidate', [
@@ -149,7 +160,8 @@ trait Register {
       'rewrite'         => [ 'slug' => 'candidate' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-welcome-widgets-menus',
-      'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ]
+      'supports'        => [ 'title', 'thumbnail', 'custom-fields' ],
+      'show_in_rest'    => true
     ] );
 
   }
@@ -175,6 +187,48 @@ trait Register {
       'show_admin_column' => false,
       'query_var'         => true,
       'rewrite'           => array( 'slug' => 'branch_activity' ),
+    ] );
+
+    // Now register the taxonomy (Emploi)
+    register_taxonomy( 'job_sought', [ 'candidate' ], [
+      'hierarchical'      => true,
+      'labels'            => array(
+        'name'              => 'Emplois',
+        'singular_name'     => 'Emploi',
+        'search_items'      => 'Trouver une emploi',
+        'all_items'         => 'Trouver des emplois',
+        'parent_item'       => 'Emploi parent',
+        'parent_item_colon' => 'Emploi parent:',
+        'edit_item'         => 'Modifier l\'emploi',
+        'update_item'       => 'Mettre à jour l\'emploi',
+        'add_new_item'      => 'Ajouter un emploi',
+        'menu_name'         => 'Emplois',
+      ),
+      'show_ui'           => true,
+      'show_admin_column' => false,
+      'query_var'         => true,
+      'rewrite'           => array( 'slug' => 'emploi' ),
+    ] );
+
+    // Now register the taxonomy (Logiciel maitrisés)
+    register_taxonomy( 'master_software', [ 'candidate' ], [
+      'hierarchical'      => true,
+      'labels'            => array(
+        'name'              => 'Logiciels',
+        'singular_name'     => 'Logiciel',
+        'search_items'      => 'Trouver un logiciel',
+        'all_items'         => 'Trouver des logiciels',
+        'parent_item'       => 'Logiciel parent',
+        'parent_item_colon' => 'Logiciel parent:',
+        'edit_item'         => 'Modifier le logiciel',
+        'update_item'       => 'Mettre à jour le logiciel',
+        'add_new_item'      => 'Ajouter un logiciel',
+        'menu_name'         => 'Logiciels',
+      ),
+      'show_ui'           => true,
+      'show_admin_column' => false,
+      'query_var'         => true,
+      'rewrite'           => array( 'slug' => 'master_software' ),
     ] );
 
     // Now register the taxonomy (Région)

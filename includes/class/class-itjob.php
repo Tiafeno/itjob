@@ -6,12 +6,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use http;
 use includes\post as Post;
-
 if ( ! class_exists( 'itJob' ) ) {
   final class itJob {
     use \Register;
 
+    public $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     public function __construct() {
+
+      add_action( 'init', function () {
+        $this->postTypes();
+        $this->taxonomy();
+      } );
+
+      add_action( 'acf/save_post', [ &$this, 'post_publish_company' ], 20 );
+      add_action( 'acf/save_post', [ &$this, 'post_publish_candidate' ], 20 );
+
+      /**
+       * When there’s no previous status (this means these hooks are always run whenever "save_post" runs).
+       * @Hook: new_post (https://codex.wordpress.org/Post_Status_Transitions)
+       *
+       * @param int $post_ID Post ID.
+       * @param WP_Post $post Post object.
+       * @param bool $update Whether this is an existing post being updated or not.
+       */
+      add_action( 'save_post', function ( $post_id, $post, $update ) {
+
+      }, 10, 3 );
 
       add_action( 'wp_loaded', function () {
       }, 20 );
@@ -27,11 +47,7 @@ if ( ! class_exists( 'itJob' ) ) {
         return __SITENAME__;
       } );
 
-      add_action( 'init', function () {
-        $this->postTypes();
-        $this->taxonomy();
-      } );
-
+      // Ajouter le post dans la requete
       add_action( 'pre_get_posts', function ( $query ) {
         if ( ! is_admin() && $query->is_main_query() ) {
           if ( $query->is_search ) {
@@ -41,14 +57,24 @@ if ( ! class_exists( 'itJob' ) ) {
             }
           }
         }
-      } );
+      });
 
       add_action( 'the_post', function ( $post_object ) {
         $post_types = [ 'offers', 'company', 'candidate' ];
         if ( ! in_array( $post_object->post_type, $post_types ) ) {
           return;
         }
-        array_push( $GLOBALS[ $post_object->post_type ], new Post\Offers( $post_object->ID ) );
+        switch ( $post_object->post_type ) {
+          case 'candidate':
+            $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
+            break;
+          case 'offers':
+            $GLOBALS[ $post_object->post_type ] = new Post\Offers( $post_object->ID );
+            break;
+          case 'company':
+            $GLOBALS[ $post_object->post_type ] = new Post\Company( $post_object->ID );
+            break;
+        }
       } );
 
       add_action( 'admin_init', function () {
@@ -115,6 +141,76 @@ if ( ! class_exists( 'itJob' ) ) {
 
       } );
 
+    }
+
+    public function post_publish_candidate( $post_id ) {
+
+      $post_type = get_post_type( $post_id );
+      if ( $post_type != 'candidate' ) {
+        return false;
+      }
+
+      $post      = get_post( $post_id );
+      $userEmail = get_field( 'itjob_cv_email', $post_id );
+      // (WP_User|false) WP_User object on success, false on failure.
+      $userExist = get_user_by( 'email', $userEmail );
+      if ( true === $userExist ) {
+        return false;
+      }
+
+      $userFirstName = get_field( 'itjob_vc_firstname', $post_id );
+      $userLastName  = get_field( 'itjob_vc_lastname', $post_id );
+      $args          = [
+        "user_pass"    => substr( str_shuffle( $this->chars ), 0, 8 ),
+        "user_login"   => 'user' . $post_id,
+        "user_email"   => $userEmail,
+        "display_name" => $post->post_title,
+        "first_name"   => $userFirstName,
+        "last_name"    => $userLastName,
+        "role"         => $post_type
+      ];
+      $user_id       = wp_insert_user( $args );
+      if ( ! is_wp_error( $user_id ) ) {
+        $user = new \WP_User( $user_id );
+        get_password_reset_key( $user );
+
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    public function post_publish_company( $post_id ) {
+
+      $post_type = get_post_type( $post_id );
+      if ( $post_type != 'company' ) {
+        return false;
+      }
+
+      $post      = get_post( $post_id );
+      $userEmail = get_field( 'itjob_company_email', $post_id );
+      // (WP_User|false) WP_User object on success, false on failure.
+      $userExist = get_user_by( 'email', $userEmail );
+      if ( true === $userExist ) {
+        return false;
+      }
+      $args    = [
+        "user_pass"    => substr( str_shuffle( $this->chars ), 0, 8 ),
+        "user_login"   => 'user' . $post_id,
+        "user_email"   => $userEmail,
+        "display_name" => $post->post_title,
+        "first_name"   => $post->post_title,
+        "role"         => $post_type
+      ];
+      $user_id = wp_insert_user( $args );
+      if ( ! is_wp_error( $user_id ) ) {
+        $user = new \WP_User( $user_id );
+        get_password_reset_key( $user );
+
+        return true;
+      } else {
+        return false;
+      }
     }
 
     /**
