@@ -15,9 +15,6 @@ final class Offers implements \iOffer {
   /** @var int $ID - Identification de l'offre */
   public $ID;
 
-  /** @var string $postType - Type du poste */
-  public $postType;
-
   /** @var array|null $tags - Tag pour le réferencement et la recherche interne */
   public $tags = [];
 
@@ -68,17 +65,16 @@ final class Offers implements \iOffer {
     $output           = get_post( $postId );
     $this->ID         = $output->ID;
     $this->title      = $output->post_title; // Position Filled
-    $this->postType   = $output->post_type;
     $this->userAuthor = Object\jobServices::getUserData( $output->post_author );
-    if ( $this->exist() ) {
+    if ( $this->is_offer() ) {
       $this->acfElements()->getOfferTaxonomy();
     }
 
     return $this;
   }
 
-  public function exist() {
-    return $this->postType === 'offers';
+  public function is_offer() {
+    return get_post_type( $this->ID ) === 'offers';
   }
 
   /**

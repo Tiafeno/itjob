@@ -18,7 +18,7 @@ define( '__SITENAME__', 'itJob' );
 define( '__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj' );
 define( 'TWIG_TEMPLATE_PATH', get_template_directory() . '/templates' );
 $theme     = wp_get_theme( 'itjob' );
-$offers    = [];
+$offers    = null;
 $company   = null;
 $candidate = null;
 

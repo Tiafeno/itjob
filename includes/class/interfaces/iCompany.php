@@ -7,9 +7,9 @@
  */
 
 interface iCompany {
-  public static function getAllCompany( $paged = 10 );
+  public static function getAllCompany( $paged );
 
-  public function exist();
+  public function is_company();
 
   public function updateCompany();
 

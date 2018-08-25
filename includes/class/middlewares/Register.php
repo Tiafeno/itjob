@@ -105,10 +105,11 @@ trait Register {
       'menu_position'   => null,
       'show_ui'         => true,
       'has_archive'     => true,
-      'rewrite'         => [ 'slug' => 'offres' ],
+      'rewrite'         => [ 'slug' => 'offers' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-businessman',
-      'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ]
+      'supports'        => [ 'title', 'excerpt', 'thumbnail', 'custom-fields' ],
+      'show_in_rest'    => true
     ] );
 
     register_post_type( 'company', [
@@ -130,10 +131,11 @@ trait Register {
       'menu_position'   => null,
       'show_ui'         => true,
       'has_archive'     => true,
-      'rewrite'         => [ 'slug' => 'entreprise' ],
+      'rewrite'         => [ 'slug' => 'company' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-welcome-widgets-menus',
-      'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ]
+      'supports'        => [ 'title', 'excerpt', 'thumbnail', 'custom-fields' ],
+      'show_in_rest'    => true
     ] );
 
     register_post_type( 'candidate', [
@@ -158,7 +160,8 @@ trait Register {
       'rewrite'         => [ 'slug' => 'candidate' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-welcome-widgets-menus',
-      'supports'        => [ 'title', 'thumbnail', 'custom-fields' ]
+      'supports'        => [ 'title', 'thumbnail', 'custom-fields' ],
+      'show_in_rest'    => true
     ] );
 
   }

@@ -207,8 +207,31 @@ final class Candidate implements \iCandidate {
     }
   }
 
+  /**
+   * Get candidate ID
+   * @return int
+   */
   public function getId() {
     return $this->ID;
+  }
+
+  public static function getAllCandidate( $paged = - 1 ) {
+    $allCandidate = [];
+    $args         = [
+      'post_type'      => 'company',
+      'posts_per_page' => $paged,
+      'post_status'    => 'publish',
+      'orderby'        => 'date',
+      'order'          => 'DESC'
+    ];
+
+    $posts = get_posts( $args );
+    foreach ( $posts as $post ) : setup_postdata( $post );
+      array_push( $allCandidate, new self( $post->ID ) );
+    endforeach;
+    wp_reset_postdata();
+
+    return $allCandidate;
   }
 }
 

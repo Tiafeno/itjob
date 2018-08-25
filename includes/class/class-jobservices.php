@@ -27,6 +27,7 @@ if ( ! class_exists( 'jobServices' ) ) :
       return $userClass;
     }
 
+
   }
 endif;
 
