@@ -13,7 +13,11 @@ final class Company implements \iCompany {
   use \Auth;
 
   public $ID;
+  public $greeting; // Mr, Mrs
+  // Le nom de l'utilisateur ou le responsable
+  public $name;
   public $userAuthor;
+  // Adresse email de l'utilisateur ou le responsable
   public $email;
   public $title;
   public $address;
@@ -42,15 +46,15 @@ final class Company implements \iCompany {
     if ( is_null( $output ) ) {
       return false;
     }
-    $this->ID         = $output->ID;
-    $this->title      = $output->post_title;
+    $this->ID    = $output->ID;
+    $this->title = $output->post_title;
 
     if ( $this->is_company() ) {
       // FIX: Corriger une erreur sur l'utilisateur si l'admin ajoute une company
       $this->email = get_field( 'itjob_company_email', $this->ID );
       $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
 
-      // TODO: Ajouter ou crée un utilisateur quand un entreprise est publier ou ajouter
+      // FIX: Ajouter ou crée un utilisateur quand un entreprise est publier ou ajouter
       $this->userAuthor = Object\jobServices::getUserData( $user->ID );
       $this->acfElements();
     }
@@ -67,6 +71,8 @@ final class Company implements \iCompany {
 
       return false;
     }
+    $this->greeting     = get_field( 'itjob_company_greeting', $this->ID );
+    $this->name         = get_field( 'itjob_company_name', $this->ID );
     $this->address      = get_field( 'itjob_company_address', $this->ID );
     $this->nif          = get_field( 'itjob_company_nif', $this->ID );
     $this->stat         = get_field( 'itjob_company_stat', $this->ID );

@@ -1,6 +1,6 @@
 <?php
 
-namespace http;
+namespace Http;
 /**
  * Created by IntelliJ IDEA.
  * User: Tiafeno

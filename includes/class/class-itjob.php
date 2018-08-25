@@ -4,13 +4,15 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-use http;
+use Http;
 use includes\post as Post;
+
 if ( ! class_exists( 'itJob' ) ) {
   final class itJob {
     use \Register;
 
     public $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
     public function __construct() {
 
       add_action( 'init', function () {
@@ -20,6 +22,12 @@ if ( ! class_exists( 'itJob' ) ) {
 
       add_action( 'acf/save_post', [ &$this, 'post_publish_company' ], 20 );
       add_action( 'acf/save_post', [ &$this, 'post_publish_candidate' ], 20 );
+
+      // TODO: Envoyer un mail information utilisateur et adminstration (pour s'informer d'un nouveau utilisateur)
+      add_action( 'acf/save_post', function ( $post_id ) {
+        // Code here
+
+      }, 20 );
 
       /**
        * When there’s no previous status (this means these hooks are always run whenever "save_post" runs).
@@ -48,16 +56,17 @@ if ( ! class_exists( 'itJob' ) ) {
       } );
 
       // Ajouter le post dans la requete
+      // @link: https://codex.wordpress.org/Plugin_API/Action_Reference/pre_get_posts
       add_action( 'pre_get_posts', function ( $query ) {
         if ( ! is_admin() && $query->is_main_query() ) {
           if ( $query->is_search ) {
-            $post_type = http\Request::getValue( 'post_type', false );
+            $post_type = Http\Request::getValue( 'post_type', false );
             if ( $post_type ) {
               $query->set( 'post_type', [ $post_type ] );
             }
           }
         }
-      });
+      } );
 
       add_action( 'the_post', function ( $post_object ) {
         $post_types = [ 'offers', 'company', 'candidate' ];
