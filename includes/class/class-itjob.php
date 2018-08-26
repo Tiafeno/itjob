@@ -227,19 +227,27 @@ if ( ! class_exists( 'itJob' ) ) {
      */
     public function register_enqueue_scripts() {
       global $itJob;
+
+      $suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
       // angular components
       wp_register_script( 'angular-route',
-        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-route.min.js', [], '1.7.2' );
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-ui-router' . $suffix . '.js', [], '1.0.20' );
       wp_register_script( 'angular-sanitize',
-        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-sanitize.min.js', [], '1.7.2' );
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-sanitize' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular-messages',
-        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-messages.min.js', [], '1.7.2' );
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-messages' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular-animate',
-        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-animate.min.js', [], '1.7.2' );
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-animate' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular-aria',
-        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-aria.min.js', [], '1.7.2' );
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-aria' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular',
-        get_template_directory_uri() . '/assets/js/libs/angularjs/angular.js', [], '1.7.2' );
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [
+          'angular-route',
+          'angular-sanitize',
+          'angular-messages',
+          'angular-animate',
+          'angular-aria',
+        ], '1.7.2' );
 
       // plugins depend
       wp_register_style( 'font-awesome',

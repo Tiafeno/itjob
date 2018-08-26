@@ -87,9 +87,9 @@ trait Register {
 
   public function postTypes() {
     register_post_type( 'offers', [
-      'label'           => "Offres",
+      'label'           => "Les offres",
       'labels'          => [
-        'name'               => "Offres",
+        'name'               => "Les offres",
         'singular_name'      => "Offre",
         'add_new'            => 'Ajouter',
         'add_new_item'       => "Ajouter une nouvelle offre",
@@ -115,7 +115,7 @@ trait Register {
     register_post_type( 'company', [
       'label'           => "Entreprises",
       'labels'          => [
-        'name'               => "Entreprises",
+        'name'               => "Les entreprises",
         'singular_name'      => "Entreprise",
         'add_new'            => 'Ajouter',
         'add_new_item'       => "Ajouter une nouvelle entreprise",
