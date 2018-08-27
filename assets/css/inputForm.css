@@ -1,0 +1,16 @@
+form .input-message-animation,
+form .input-message-animation div {
+  font-size: 12px;
+  line-height: 14px;
+  overflow: hidden;
+  -webkit-transition: all .3s cubic-bezier(.55, 0, .55, .2);
+  transition: all .3s cubic-bezier(.55, 0, .55, .2);
+  opacity: 1;
+  margin-top: 0;
+  padding-top: 2px;
+  color: rgb(221, 44, 0);
+}
+
+form input.ng-invalid.ng-touched {
+  border-color: rgb(221, 44, 0);
+}

@@ -73,24 +73,32 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       $scope.isSubmit = !1;
       $scope.company = {};
       $scope.company.greeting = 'mr';
-      $scope.company.phones = [
+      $scope.company.cellphone = [
         {
           id: 0,
           value: ''
         }
       ];
       $scope.addPhone = function () {
-        $scope.company.phones.push({id: $scope.countPhone, value: ''});
+        $scope.company.cellphone.push({id: $scope.countPhone, value: ''});
         $scope.countPhone += 1;
       };
       $scope.removePhone = function (id) {
-        $scope.company.phones = _.filter($scope.company.phones, function (phone) {
-          return phone.id != id;
+        $scope.company.cellphone = _.filter($scope.company.cellphone, function (cellphone) {
+          return cellphone.id != id;
         });
-        $log.info($scope.company.phones, id);
       };
 
       $scope.submitForm = function (isValid) {
+
+        if ($scope.formCompany.$invalid) {
+          angular.forEach($scope.formCompany.$error, function (field) {
+            angular.forEach(field, function (errorField) {
+              errorField.$setTouched();
+            });
+          });
+        }
+
         if (!isValid) return;
         $scope.isSubmit = !$scope.isSubmit;
         companyData.formCompanyValue = _.clone($scope.company);
@@ -99,7 +107,8 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
         companyForm.append('greeting', $scope.company.greeting);
         companyForm.append('title', $scope.company.title);
         companyForm.append('address', $scope.company.address);
-        companyForm.append('phones', JSON.stringify($scope.company.phones));
+        companyForm.append('cellphone', JSON.stringify($scope.company.cellphone));
+        companyForm.append('phone', $scope.company.phone);
         companyForm.append('nif', $scope.company.nif);
         companyForm.append('stat', $scope.company.stat);
         companyForm.append('name', $scope.company.name);
@@ -138,7 +147,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
     templateUrl: itOptions.partials_url + '/company/validate.html',
     controller: function (companyData, $location) {
       this.message = _.clone(companyData.message);
-      if (_.isNull(this.message.title))
+      if (_.isNull(this.message.title) || _.isNull(this.message.value))
         $location.path('/form');
 
     }

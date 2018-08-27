@@ -136,7 +136,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'stat'               => Http\Request::getValue( 'stat' ),
         'name'               => Http\Request::getValue( 'name' ),
         'email'              => Http\Request::getValue( 'email' ),
-        'phones'             => Http\Request::getValue( 'phones' ),
+        'phone'              => Http\Request::getValue( 'phone' ),
+        'cellphone'          => Http\Request::getValue( 'cellphone' ),
         'branch_activity_id' => Http\Request::getValue( 'abranchID' ),
         'notification'       => Http\Request::getValue( 'notification' ),
         'newsletter'         => Http\Request::getValue( 'newsletter' )
@@ -173,14 +174,15 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       update_field( 'itjob_company_newsletter', (int) $form->newsletter, $post_id );
       update_field( 'itjob_company_notification', (int) $form->notification, $post_id );
       update_field( 'itjob_company_email', $form->email, $post_id );
+      update_field( 'itjob_company_phone', $form->phone, $post_id );
 
       // save repeater field
       $value  = [];
-      $phones = json_decode( $form->phones );
+      $phones = json_decode( $form->cellphone );
       foreach ( $phones as $row => $phone ) {
-        $value[] = [ 'phone' => $phone->value ];
+        $value[] = [ 'number' => $phone->value ];
       }
-      update_field( 'itjob_company_phones', $value, $post_id );
+      update_field( 'itjob_company_cellphone', $value, $post_id );
 
       return true;
     }
@@ -201,6 +203,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       if ( $form === 'company' || is_null( $form ) ) {
 
         // load script & style
+        wp_enqueue_style( 'input-form', get_template_directory_uri() . '/assets/css/inputForm.css' );
         wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js',
           [
             'angular',

@@ -64,6 +64,8 @@ if ( ! class_exists( 'itJob' ) ) {
               $query->set( 'post_type', [ $post_type ] );
             }
           }
+          // Afficher les posts pour status 'en attente' et 'publier'
+          $query->set( 'post_status', [ 'publish', 'pending' ] );
         }
       } );
 
