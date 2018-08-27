@@ -1,4 +1,6 @@
 <?php
+
+namespace includes\vc;
 /**
  * Class vcOffers
  * @method vc_our_offer - Récuperer les offres à la une
@@ -8,7 +10,7 @@ if ( ! class_exists( 'WPBakeryShortCode' ) ) {
   die( 'WPBakery plugins missing!' );
 }
 if ( ! class_exists( 'vcOffers' ) ):
-  class vcOffers {
+  class vcOffers extends \WPBakeryShortCode {
     public function __construct() {
       global $itJob;
       add_action( 'init', [ $this, 'vc_offers_mapping' ] );
@@ -16,7 +18,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       add_shortcode( 'vc_offers', [ $this, 'vc_offers_render' ] );
       add_shortcode( 'vc_featured_offers', [ $this, 'vc_featured_offers_render' ] );
       add_action( 'wp_enqueue_scripts', function () {
-        wp_enqueue_style( 'offers' );
+
       } );
     }
 
@@ -28,7 +30,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       // Map the block with vc_map()
 
       // Les offres à la une
-      vc_map(
+      \vc_map(
         array(
           'name'        => 'Offers à la une',
           'base'        => 'vc_featured_offers',
@@ -120,6 +122,10 @@ if ( ! class_exists( 'vcOffers' ) ):
      */
     public function vc_offers_render( $attrs ) {
       global $Engine;
+
+      // load script or style
+      wp_enqueue_style( 'offers' );
+
       // Params extraction
       extract(
         shortcode_atts(
@@ -133,7 +139,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         , EXTR_OVERWRITE );
 
       try {
-        /** @var STRING $title */
+        /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/offers/offers.html.twig', [
           'title' => $title,
         ] );
