@@ -20,7 +20,6 @@ if ( ! class_exists( 'itJob' ) ) {
         $this->taxonomy();
       } );
 
-      add_action( 'acf/save_post', [ &$this, 'post_publish_company' ], 20 );
       add_action( 'acf/save_post', [ &$this, 'post_publish_candidate' ], 20 );
 
       // TODO: Envoyer un mail information utilisateur et adminstration (pour s'informer d'un nouveau utilisateur)
@@ -137,6 +136,13 @@ if ( ! class_exists( 'itJob' ) ) {
 
         wp_enqueue_style( 'adminca' );
         wp_enqueue_script( 'adminca' );
+        wp_enqueue_script( 'itjob', get_template_directory_uri() . '/assets/js/itjob.js', [
+          'jquery',
+          'underscore',
+          'numeral',
+          'bluebird',
+          'uikit'
+        ], $itJob->version, true );
       } );
 
       /** Effacer les elements acf avant d'effacer l'article */
@@ -189,39 +195,6 @@ if ( ! class_exists( 'itJob' ) ) {
       }
     }
 
-    public function post_publish_company( $post_id ) {
-
-      $post_type = get_post_type( $post_id );
-      if ( $post_type != 'company' ) {
-        return false;
-      }
-
-      $post      = get_post( $post_id );
-      $userEmail = get_field( 'itjob_company_email', $post_id );
-      // (WP_User|false) WP_User object on success, false on failure.
-      $userExist = get_user_by( 'email', $userEmail );
-      if ( true === $userExist ) {
-        return false;
-      }
-      $args    = [
-        "user_pass"    => substr( str_shuffle( $this->chars ), 0, 8 ),
-        "user_login"   => 'user' . $post_id,
-        "user_email"   => $userEmail,
-        "display_name" => $post->post_title,
-        "first_name"   => $post->post_title,
-        "role"         => $post_type
-      ];
-      $user_id = wp_insert_user( $args );
-      if ( ! is_wp_error( $user_id ) ) {
-        $user = new \WP_User( $user_id );
-        get_password_reset_key( $user );
-
-        return true;
-      } else {
-        return false;
-      }
-    }
-
     /**
      * Enregistrer des styles et scripts
      */
@@ -241,13 +214,7 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_script( 'angular-aria',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular-aria' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular',
-        get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [
-          'angular-route',
-          'angular-sanitize',
-          'angular-messages',
-          'angular-animate',
-          'angular-aria',
-        ], '1.7.2' );
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [], '1.7.2' );
 
       // plugins depend
       wp_register_style( 'font-awesome',

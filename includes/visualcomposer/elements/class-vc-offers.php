@@ -1,4 +1,6 @@
 <?php
+
+namespace includes\vc;
 /**
  * Class vcOffers
  * @method vc_our_offer - Récuperer les offres à la une
@@ -8,7 +10,7 @@ if ( ! class_exists( 'WPBakeryShortCode' ) ) {
   die( 'WPBakery plugins missing!' );
 }
 if ( ! class_exists( 'vcOffers' ) ):
-  class vcOffers extends WPBakeryShortCode {
+  class vcOffers extends \WPBakeryShortCode {
     public function __construct() {
       global $itJob;
       add_action( 'init', [ $this, 'vc_offers_mapping' ] );
@@ -28,7 +30,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       // Map the block with vc_map()
 
       // Les offres à la une
-      vc_map(
+      \vc_map(
         array(
           'name'        => 'Offers à la une',
           'base'        => 'vc_featured_offers',

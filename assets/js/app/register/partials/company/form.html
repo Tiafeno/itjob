@@ -1,0 +1,140 @@
+<form name="formCompany" ng-submit="submitForm(formCompany.$valid)" class="form-horizontal" novalidate>
+  <div class="ibox-body">
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Nom de l'entreprise</label>
+      <div class="col-sm-6">
+        <input class="form-control" name="title" ng-model="company.title" type="text" placeholder="Nom de l'entreprise"
+               required>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Adresse physique de l'entreprise</label>
+      <div class="col-sm-8">
+        <input class="form-control" name="adresse" ng-model="company.address" type="text" placeholder="Adresse"
+               required>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Nif</label>
+      <div class="col-sm-5">
+        <input class="form-control" name="nif" ng-model="company.nif" type="text" placeholder="NIF" required>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Numero statistique</label>
+      <div class="col-sm-5">
+        <input class="form-control" name="stat" ng-model="company.stat" type="text" placeholder="Numero statistique"
+               required>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Numéros de téléphone</label>
+      <div class="col-sm-8">
+        <div ng-repeat="phone in company.phones track by phone.id" class="form-group row">
+          <div class="col-sm-10 pr-0">
+            <input class="form-control mt-1" ng-model="company.phones[ [[$index]] ].value" type="text"
+                   placeholder="Numéros de téléphone" required>
+          </div>
+          <div class="col-sm-2">
+            <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" ng-click="removePhone(phone.id)"><i
+              class="la la-minus-circle"></i></button>
+          </div>
+        </div>
+
+        <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" ng-click="addPhone()"><i
+          class="la la-plus-circle"></i></button>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label"></label>
+
+      <div class="col-sm-3 d-flex align-items-center">
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="greeting" ng-model="company.greeting" value="mr">
+          <span class="input-span"></span>Monsieur</label>
+
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="greeting" ng-model="company.greeting" value="mrs">
+          <span class="input-span"></span>Madame</label>
+      </div>
+
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Nom du responsable</label>
+      <div class="col-sm-6">
+        <input class="form-control" name="stat" ng-model="company.name" type="text" placeholder="Nom et Prénom"
+               required>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Email du responsable</label>
+      <div class="col-sm-6">
+        <input class="form-control" name="title" ng-model="company.email" type="text" placeholder="Ex: exemple@mail.com"
+               required>
+      </div>
+    </div>
+
+
+    <div class="form-group mb-4 row ">
+      <label class="col-sm-4 col-form-label ">Secteur d'activité</label>
+      <div class="col-sm-6">
+        <div class="form-group">
+          <select class="form-control" name="branch_activity" ng-model="company.branch_activity"
+                  title="Secteur d'activité">
+            <option></option>
+            <option ng-repeat="abranch in $ctrl.abranchs" value="[[abranch.term_id]]">[[abranch.name]]</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="ibox-body ibox-footer">
+    <div class="form-group mb-4 row ">
+      <label class="col-sm-10 col-form-label ">Souhaitez-vous recevoir une notiﬁcation quand
+        un nouveau CV est insérer dans Itjobmada?</label>
+      <div class="col-sm-8">
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="notification" ng-model="company.notification" value="1">
+          <span class="input-span"></span>Oui</label>
+
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="notification" ng-model="company.notification" value="0">
+          <span class="input-span"></span>Non</label>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row ">
+      <label class="col-sm-10 col-form-label ">Est ce que vous voulez recevoir notre newsletter?</label>
+      <div class="col-sm-8">
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="newsletter" ng-model="company.newsletter" value="1">
+          <span class="input-span"></span>Oui</label>
+
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="newsletter" ng-model="company.newsletter" value="0">
+          <span class="input-span"></span>Non</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="ibox-footer row">
+    <div class="col-sm-9 d-flex align-items-center">
+          <span class="text-muted text-left" style="font-size: 0.8rem">
+            Tous les champs marqués d'un <span style="color: red">*</span> sont obligatoires
+          </span>
+    </div>
+    <div class="col-sm-3 ml-sm-auto">
+      <button class="btn btn-primary mr-2" ng-disabled="isSubmit" type="submit">Soumettre</button>
+    </div>
+  </div>
+</form>
