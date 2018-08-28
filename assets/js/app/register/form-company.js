@@ -51,6 +51,12 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
   }])
   .factory('companyFactory', ['$http', '$q', function ($http, $q) {
     return {
+      checkLogin: function (log) {
+        return $http.get(itOptions.ajax_url + '?action=ajx_user_exist&log=' + log, {cache: true})
+          .then(function (resp) {
+            return resp.data;
+          });
+      },
       sendPostForm: function (formData) {
         return $http({
           url: itOptions.ajax_url,

@@ -1,5 +1,7 @@
 <?php
 
+namespace includes\shortcode;
+
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }

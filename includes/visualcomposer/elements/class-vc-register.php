@@ -25,7 +25,11 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       add_action( 'wp_ajax_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
       add_action( 'wp_ajax_nopriv_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
+
+      add_action( 'wp_ajax_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
+      add_action( 'wp_ajax_nopriv_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
     }
+
 
     public function post_publish_company( $value, $post_id, $field ) {
 
@@ -101,6 +105,25 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
           )
         )
       );
+    }
+
+    /**
+     * Vérifier si l'utilisateur existe déja
+     */
+    public function ajx_user_exist() {
+      if ( ! \wp_doing_ajax() ) {
+        return;
+      }
+      if ( is_user_logged_in() ) {
+        return;
+      }
+      $log = Http\Request::getValue( 'log', false );
+      if ( filter_var( $log, FILTER_VALIDATE_EMAIL ) ) {
+        $usr = get_user_by( 'email', $log );
+      } else {
+        $usr = get_user_by( 'login', $log );
+      }
+      wp_send_json( $usr );
     }
 
     // AJAX

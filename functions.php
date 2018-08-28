@@ -48,7 +48,8 @@ require_once 'includes/class/class-candidate.php';
 
 // shortcodes
 $shortcode = (object) [
-  'scImport' => require 'includes/shortcodes/class-import-csv.php'
+  'scImport' => require 'includes/shortcodes/class-import-csv.php',
+  'scLogin'  => require 'includes/shortcodes/class-login.php'
 ];
 
 // Visual composer elements
