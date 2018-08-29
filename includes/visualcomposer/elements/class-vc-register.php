@@ -17,6 +17,23 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
     public function __construct() {
       add_action( 'init', [ $this, 'register_mapping' ] );
       add_action( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
+      add_action( 'user_register', function ( $user_id ) {
+        $user       = get_userdata( $user_id );
+        $user_roles = $user->roles;
+        if ( ! in_array( 'company', $user_roles, true ) ) {
+          return false;
+        }
+        $pwd = $_POST['pwd'];
+        if ( isset( $pwd ) ) {
+          $id = wp_update_user( [ 'ID' => $user_id, 'user_pass' => trim( $pwd ) ] );
+          if ( is_wp_error( $user_id ) ) {
+            return true;
+          } else {
+            // Mot de passe utilisateur à etes modifier avec success
+            return false;
+          }
+        }
+      }, 10, 1 );
 
       add_shortcode( 'vc_register', [ $this, 'register_render_html' ] );
 

@@ -67,6 +67,23 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       }
     };
   }])
+  .directive('compareTo', function () {
+    // Directive: Comparer les mots de passes
+    return {
+      require: "ngModel",
+      scope: {
+        repeaterPwd: "=compareTo"
+      },
+      link: function (scope, element, attrs, value) {
+        value.$validators.compareTo = function (val) {
+          return val == scope.repeaterPwd;
+        };
+        scope.$watch('repeaterPwd', function () {
+          value.$validate();
+        })
+      }
+    }
+  })
   .controller('formCompanyCtrl', ['$scope', function ($scope) {
     // Code controller here...
     $scope.loadingPath = itOptions.template_url + '/img/loading.gif';
@@ -122,6 +139,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
         companyForm.append('abranchID', parseInt($scope.company.branch_activity));
         companyForm.append('newsletter', parseInt($scope.company.newsletter));
         companyForm.append('notification', parseInt($scope.company.notification));
+        companyForm.append('pwd', $scope.company.pwdConf);
 
         companyFactory
           .sendPostForm(companyForm)

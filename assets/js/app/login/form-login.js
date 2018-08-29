@@ -17,6 +17,7 @@ angular.module('formLogin', ['ngMessages', 'ngAria'])
   .controller('loginCtrl', ['$scope', '$location', 'loginFactory',
     function ($scope, $location, loginFactory) {
       // itOptions.customer_area_url
+      $scope.buttonDisable = false;
       $scope.error = false;
       $scope.login = null;
       $scope.pwd = null;
@@ -28,6 +29,7 @@ angular.module('formLogin', ['ngMessages', 'ngAria'])
         form.append('log', $scope.login);
         form.append('pwd', $scope.pwd);
         form.append('rememberme', $scope.rememberme);
+        $scope.buttonDisable = true;
         loginFactory
           .sendPostForm(form)
           .then(function (resp) {
@@ -36,6 +38,7 @@ angular.module('formLogin', ['ngMessages', 'ngAria'])
               $location.path(itOptions.customer_area_url);
             } else {
               $scope.error = true;
+              $scope.buttonDisable = false;
             }
           })
       };
