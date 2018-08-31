@@ -53,41 +53,24 @@
             </div>
             <div class="col-md-3">
               <div class="form-group">
-                <select class="form-control" name="branch_activity" title="Secteur d'activité">
+                <select class="form-control" name="ab" title="Secteur d'activité">
                   <option></option>
-                  <option value="AK">Alaska</option>
-                  <option value="HI">Hawaii</option>
-                  <option value="CA">California</option>
-                  <option value="NV">Nevada</option>
-                  <option value="OR">Oregon</option>
-                  <option value="WA">Washington</option>
-                  <option value="AL">Alabama</option>
-                  <option value="AR">Arkansas</option>
-                  <option value="IL">Illinois</option>
-                  <option value="IA">Iowa</option>
-                  <option value="KS">Kansas</option>
-                  <option value="KY">Kentucky</option>
-                  <option value="LA">Louisiana</option>
-                  <option value="MN">Minnesota</option>
-                  <option value="MS">Mississippi</option>
-                  <option value="MO">Missouri</option>
-                  <option value="OK">Oklahoma</option>
-                  <option value="SD">South Dakota</option>
-                  <option value="TX">Texas</option>
-                  <option value="TN">Tennessee</option>
-                  <option value="WI">Wisconsin</option>
+
+                  {% for abranch in abranchs %}
+                    <option value="{{ abranch.term_id }}">{{ abranch.name }}</option>
+                  {% endfor %}
+
                   </optgroup>
                 </select>
               </div>
             </div>
             <div class="col-md-3">
               <div class="form-group">
-                <select class="form-control" name="region" title="Région">
+                <select class="form-control" name="rg" title="Région">
                   <option></option>
-                  <option value="CA">California</option>
-                  <option value="NV">Nevada</option>
-                  <option value="OR">Oregon</option>
-                  <option value="WA">Washington</option>
+                  {% for region in regions %}
+                    <option value="{{ region.term_id }}">{{ region.name }}</option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
@@ -105,36 +88,33 @@
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
-                <select class="form-control" name="branch_activity" title="Secteur d'activité">
+                <select class="form-control" name="ab" title="Secteur d'activité">
                   <option></option>
-                  <option value="CA">California</option>
-                  <option value="NV">Nevada</option>
-                  <option value="OR">Oregon</option>
-                  <option value="WA">Washington</option>
+                  {% for abranch in abranchs %}
+                    <option value="{{ abranch.term_id }}">{{ abranch.name }}</option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
 
             <div class="col-md-4">
               <div class="form-group">
-                <select class="form-control" name="langage" title="Les langues maitrisées">
+                <select class="form-control" name="lg" title="Les langues maitrisées">
                   <option></option>
-                  <option value="CA">California</option>
-                  <option value="NV">Nevada</option>
-                  <option value="OR">Oregon</option>
-                  <option value="WA">Washington</option>
+                  {% for language in languages %}
+                    <option value="{{ language.term_id }}">{{ language.name }}</option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
 
             <div class="col-md-4">
               <div class="form-group">
-                <select class="form-control" name="region" title="Région">
+                <select class="form-control" name="rg" title="Région">
                   <option></option>
-                  <option value="CA">California</option>
-                  <option value="NV">Nevada</option>
-                  <option value="OR">Oregon</option>
-                  <option value="WA">Washington</option>
+                  {% for region in regions %}
+                    <option value="{{ region.term_id }}">{{ region.name }}</option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
@@ -145,12 +125,11 @@
             </div>
             <div class="col-md-4">
               <div class="form-group">
-                <select class="form-control" name="master_software" title="Logiciel Maîtrisés">
+                <select class="form-control" name="ms" title="Logiciel Maîtrisés">
                   <option></option>
-                  <option value="CA">California</option>
-                  <option value="NV">Nevada</option>
-                  <option value="OR">Oregon</option>
-                  <option value="WA">Washington</option>
+                  {% for software in softwares %}
+                    <option value="{{ software.term_id }}">{{ software.name }}</option>
+                  {% endfor %}
                 </select>
               </div>
             </div>
