@@ -249,6 +249,8 @@ trait Register {
       'show_ui'           => true,
       'show_admin_column' => false,
       'query_var'         => true,
+      'public'            => true,
+      'show_in_rest'      => true,
       'rewrite'           => array( 'slug' => 'region' ),
     ] );
 

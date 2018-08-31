@@ -165,6 +165,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
           width: '100%'
         })
       });
+      jQuery('[data-toggle="tooltip"]').tooltip();
     }
   })
   .component('validateComponent', {

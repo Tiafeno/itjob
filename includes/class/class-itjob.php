@@ -64,22 +64,33 @@ if ( ! class_exists( 'itJob' ) ) {
           if ( $query->is_search ) {
 
             $post_type = $query->get( 'post_type' );
+            $region    = Http\Request::getValue( 'rg', '' );
+            $abranch   = Http\Request::getValue( 'ab', '' );
+            $s         = get_query_var( 's' );
+
+            if ( ! empty( $region ) ) {
+              $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+              $tax_query[] = [
+                'taxonomy' => 'region',
+                'field'    => 'term_id',
+                'terms'    => (int) $region,
+                'operator' => 'IN'
+              ];
+            }
+
+            if ( ! empty( $abranch ) ) {
+              $meta_query   = isset( $meta_query ) ? $meta_query : $query->get( 'meta_query' );
+              $meta_query[] = [
+                'key'     => 'itjob_offer_abranch',
+                'value'   => (int) $abranch,
+                'compare' => '=',
+                'type'    => 'NUMERIC'
+              ];
+            }
+
             switch ( $post_type ) {
               // Trouver des offres d'emplois
               case 'offers':
-                $region  = Http\Request::getValue( 'rg', '' );
-                $abranch = Http\Request::getValue( 'ab', '' );
-                $s       = get_query_var( 's' );
-
-                if ( ! empty( $abranch ) ) {
-                  $meta_query   = $query->get( 'meta_query' );
-                  $meta_query[] = [
-                    'key'     => 'itjob_offer_abranch',
-                    'value'   => (int) $abranch,
-                    'compare' => '=',
-                    'type'    => 'NUMERIC'
-                  ];
-                }
 
                 if ( ! empty( $s ) ) {
                   if ( ! isset( $meta_query ) ) {
@@ -115,32 +126,24 @@ if ( ! class_exists( 'itJob' ) ) {
                   $query->meta_query = new \WP_Meta_Query( $meta_query );
                 endif;
 
-                if ( ! empty( $region ) ) {
-                  $tax_query   = $query->get( 'tax_query' );
-                  $tax_query[] = [
-                    'taxonomy' => 'region',
-                    'field'    => 'term_id',
-                    'terms'    => (int) $region,
-                    'operator' => 'IN'
-                  ];
+                if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
                   //$query->set( 'tax_query', $tax_query );
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
                   //$query->query_vars['tax_query'] = $query->tax_query->queries;
                 }
-
-                // TODO: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
-                $query->query['s']      = '';
-                $query->query_vars['s'] = '';
-
-
                 break;
 
               // Touver des candidates
               case 'candidate':
 
                 break;
-            }
-          }
+            } // .end switch
+
+            // TODO: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
+            $query->query['s']      = '';
+            $query->query_vars['s'] = '';
+
+          } // .end if - search conditional
 
 
         }

@@ -18,3 +18,8 @@ body {
 .uk-container {
   box-sizing: border-box !important;
 }
+
+p.mention-text {
+  font-size: 11px;
+  color: #a5a5a5;
+}

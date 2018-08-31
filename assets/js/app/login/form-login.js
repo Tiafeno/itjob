@@ -14,8 +14,8 @@ angular.module('formLogin', ['ngMessages', 'ngAria'])
       }
     };
   }])
-  .controller('loginCtrl', ['$scope', '$location', 'loginFactory',
-    function ($scope, $location, loginFactory) {
+  .controller('loginCtrl', ['$scope', '$window', 'loginFactory',
+    function ($scope, $window, loginFactory) {
       // itOptions.customer_area_url
       $scope.buttonDisable = false;
       $scope.error = false;
@@ -35,7 +35,7 @@ angular.module('formLogin', ['ngMessages', 'ngAria'])
           .then(function (resp) {
             var data = resp.data;
             if (data.logged) {
-              $location.path(itOptions.customer_area_url);
+              $window.location.href = itOptions.customer_area_url;
             } else {
               $scope.error = true;
               $scope.buttonDisable = false;

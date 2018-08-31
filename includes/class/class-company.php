@@ -12,6 +12,7 @@ final class Company implements \iCompany {
   // Added Trait Class
   use \Auth;
 
+  public $addDate;
   public $ID;
   public $greeting; // Mr, Mrs
   // Le nom de l'utilisateur ou le responsable
@@ -32,9 +33,17 @@ final class Company implements \iCompany {
    *
    * @param int $postId - ID du post de type 'company'
    */
-  public function __construct( $postId ) {
-    if ( is_null( get_post( $postId ) ) ) {
-      return null;
+  public function __construct( $post ) {
+    if ( is_int( $post ) ) {
+      if ( ! is_null( get_post( $post ) ) ) {
+        $output = get_post( $post );
+      } else {
+        return null;
+      }
+    }
+
+    if ( $post instanceof \WP_Post ) {
+      $output = $post;
     }
 
     /**
@@ -42,12 +51,12 @@ final class Company implements \iCompany {
      * (WP_Post|array|null) Type corresponding to $output on success or null on failure.
      * When $output is OBJECT, a WP_Post instance is returned.
      */
-    $output = get_post( $postId );
     if ( is_null( $output ) ) {
       return false;
     }
     $this->ID    = $output->ID;
     $this->title = $output->post_title;
+    $this->addDate = get_the_date( 'l, j F Y', $output);
 
     if ( $this->is_company() ) {
       // FIX: Corriger une erreur sur l'utilisateur si l'admin ajoute une company

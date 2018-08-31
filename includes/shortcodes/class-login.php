@@ -37,11 +37,11 @@ if ( ! class_exists( 'scLogin' ) ) :
           'user_password' => $pwd,
           'remember'      => $remember
         );
-        $user  = wp_signon( $creds, false );
+        $user  = wp_signon( $creds, false ); // WP_Error|WP_User
         if ( is_wp_error( $user ) ) {
           wp_send_json( [ 'logged' => false, 'msg' => __( 'Wrong username or password.' ) ] );
         } else {
-          wp_send_json( [ 'logged' => true, 'msg' => 'Connexion réussie' ] );
+          wp_send_json( [ 'logged' => true, 'msg' => 'Connexion réussie', 'user' => $user ] );
         }
       } else {
         wp_send_json( [ 'logged' => false, 'msg' => __( 'Wrong username or password.' ) ] );
@@ -63,11 +63,14 @@ if ( ! class_exists( 'scLogin' ) ) :
       extract(
         shortcode_atts(
           array(
-            'title' => ''
+            'title'        => '',
+            'redirect_url' => home_url( '/' )
           ),
           $attrs
         )
       );
+
+      // get customer area url
 
       wp_enqueue_script( 'login', get_template_directory_uri() . '/assets/js/app/login/form-login.js', [
         'angular',
@@ -76,9 +79,11 @@ if ( ! class_exists( 'scLogin' ) ) :
         'angular-animate',
         'angular-aria',
       ], $itJob->version, true );
+
+      /** @var STRING $redirect_url */
       wp_localize_script( 'login', 'itOptions', [
         'ajax_url'          => admin_url( 'admin-ajax.php' ),
-        'customer_area_url' => '#no-link'
+        'customer_area_url' => $redirect_url
       ] );
 
       try {

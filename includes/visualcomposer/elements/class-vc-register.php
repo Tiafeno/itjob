@@ -35,7 +35,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         }
       }, 10, 1 );
 
-      add_shortcode( 'vc_register', [ $this, 'register_render_html' ] );
+      add_shortcode( 'vc_register', [ &$this, 'register_render_html' ] );
 
       add_action( 'wp_ajax_ajx_insert_company', [ &$this, 'ajx_insert_company' ] );
       add_action( 'wp_ajax_nopriv_ajx_insert_company', [ &$this, 'ajx_insert_company' ] );
@@ -59,7 +59,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       $userEmail = &$value;
       // (WP_User|false) WP_User object on success, false on failure.
       $userExist = get_user_by( 'email', $userEmail );
-      if ( true === $userExist ) {
+      if ( true == $userExist ) {
         return false;
       }
       $args    = [

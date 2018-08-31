@@ -1,7 +1,7 @@
 <form name="formCompany" ng-submit="submitForm(formCompany.$valid)" class="form-horizontal" novalidate>
   <div class="ibox-body">
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Nom de l'entreprise</label>
+      <label class="col-sm-4 col-form-label">Nom de l'entreprise <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="title" ng-model="company.title" type="text" placeholder="Nom de l'entreprise"
                required>
@@ -13,7 +13,7 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Adresse physique de l'entreprise</label>
+      <label class="col-sm-4 col-form-label">Adresse physique de l'entreprise <span style="color: red">*</span></label>
       <div class="col-sm-8">
         <input class="form-control" name="address" ng-model="company.address" type="text" placeholder="Adresse"
                required>
@@ -25,7 +25,7 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">NIF</label>
+      <label class="col-sm-4 col-form-label">NIF <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="nif" ng-model="company.nif" type="text" placeholder="NIF" required>
         <div ng-messages="formCompany.nif.$error" role="alert" class="input-message-animation"
@@ -36,7 +36,7 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Numero statistique</label>
+      <label class="col-sm-4 col-form-label">Numero statistique <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="stat" ng-model="company.stat" type="text" placeholder="Numero statistique"
                required>
@@ -48,7 +48,7 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Téléphone fixe de l'entreprise</label>
+      <label class="col-sm-4 col-form-label">Téléphone fixe de l'entreprise <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="phone" ng-model="company.phone" type="text"
                placeholder="Téléphone fixe de l'entreprise"
@@ -70,13 +70,25 @@
                    placeholder="Numéro de téléphone">
           </div>
           <div class="col-sm-2">
-            <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" ng-click="removePhone(phone.id)"><i
-              class="la la-minus-circle"></i></button>
+            <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" tabindex="0"
+                    data-toggle="tooltip" data-placement="left" title="Enlever ce numero"
+                    ng-click="removePhone(phone.id)">
+              <i class="la la-minus-circle"></i></button>
           </div>
         </div>
 
-        <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" ng-click="addPhone()"><i
+        <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" data-placement="right"
+                data-toggle="tooltip" title="Ajouter un numero" ng-click="addPhone()"><i
           class="la la-plus-circle"></i></button>
+
+        <p class="mt-4 mention-text">
+          Ajouter le numéro téléphone un par un.
+          <br>Cliquer sur le bouton « + » pour ajouter un autre numéro.
+          <span class="mt-1 d-block"></span>
+          <br>Les formats de numéro téléphone validé intègre les préﬁxes suivants (034 ... ou 039... ou +26133.. ou
+          0026132...
+          ou 00261 39 12 345 67).
+        </p>
       </div>
     </div>
 
@@ -96,7 +108,7 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Nom du responsable</label>
+      <label class="col-sm-4 col-form-label">Nom du responsable <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="responsible" ng-model="company.name" type="text" placeholder="Nom et Prénom"
                required>
@@ -124,7 +136,8 @@
 
   <div class="ibox-body ibox-footer">
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Email du responsable</label>
+      <label class="col-sm-4 col-form-label">Email du responsable de l'entreprise<span
+        style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="email" ng-model="company.email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/"
                type="text" placeholder="Ex: exemple@mail.com" required>
@@ -137,7 +150,7 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Mot de passe</label>
+      <label class="col-sm-4 col-form-label">Mot de passe <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="pwd" ng-model="company.pwd" type="password" placeholder="Mot de passe"
                required>
@@ -149,7 +162,7 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Confirmation mot de passe</label>
+      <label class="col-sm-4 col-form-label">Confirmation mot de passe <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="pwdConf" ng-model="company.pwdConf" type="password" placeholder="Mot de passe"
                compare-to="company.pwd" required>

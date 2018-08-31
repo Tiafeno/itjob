@@ -6,7 +6,7 @@ get_header();
       <h4 class="m-0">LES OFFRES D’EMPLOI</h4>
       <?php
       while (have_posts()) : the_post();
-        get_template_part( 'partials/content', 'offer' );
+        get_template_part( 'partials/content', 'offers' );
       endwhile;
       ?>
     </div>
