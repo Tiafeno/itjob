@@ -169,7 +169,7 @@ trait Register {
   public function taxonomy() {
 
     // Now register the taxonomy (Secteur d'activité)
-    register_taxonomy( 'branch_activity', [ 'company' ], [
+    register_taxonomy( 'branch_activity', [ 'company', 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Secteur d\'activité',

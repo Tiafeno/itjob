@@ -90,8 +90,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
             switch ( $post_type ) {
               // Trouver des offres d'emplois
-              case 'offers':
-
+              CASE 'offers':
                 if ( ! empty( $s ) ) {
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
@@ -131,12 +130,37 @@ if ( ! class_exists( 'itJob' ) ) {
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
                   //$query->query_vars['tax_query'] = $query->tax_query->queries;
                 }
-                break;
+                BREAK;
 
-              // Touver des candidates
-              case 'candidate':
+              // Trouver des candidates
+              CASE 'candidate':
+                $language = Http\Request::getValue( 'lg', '' );
+                $software = Http\Request::getValue( 'ms', '' );
+                if ( ! empty( $language ) ) {
+                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query[] = [
+                    'taxonomy' => 'language',
+                    'field'    => 'term_id',
+                    'terms'    => (int) $language,
+                    'include_children' => false
+                  ];
+                }
 
-                break;
+                if ( ! empty( $software ) ) {
+                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query[] = [
+                    'taxonomy' => 'master_software',
+                    'field'    => 'term_id',
+                    'terms'    => (int) $software,
+                    'include_children' => false
+                  ];
+                }
+
+                if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
+                  $query->set( 'tax_query', $tax_query );
+                  $query->tax_query = new \WP_Tax_Query( $tax_query );
+                }
+                BREAK;
             } // .end switch
 
             // TODO: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
@@ -360,15 +384,6 @@ if ( ! class_exists( 'itJob' ) ) {
       ], $itJob->version, true );
     }
 
-    public function added_user() {
-    }
-
-    public function added_offer() {
-    }
-
-    public function added_company() {
-
-    }
   }
 }
 
