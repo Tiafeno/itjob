@@ -58,14 +58,51 @@ if ( ! class_exists( 'itJob' ) ) {
       // @link: https://codex.wordpress.org/Plugin_API/Action_Reference/pre_get_posts
       add_action( 'pre_get_posts', function ( $query ) {
         if ( ! is_admin() && $query->is_main_query() ) {
-          if ( $query->is_search ) {
-            $post_type = Http\Request::getValue( 'post_type', false );
-            if ( $post_type ) {
-              $query->set( 'post_type', [ $post_type ] );
-            }
-          }
           // Afficher les posts pour status 'en attente' et 'publier'
           $query->set( 'post_status', [ 'publish', 'pending' ] );
+
+          if ( $query->is_search ) {
+
+            $post_type = $query->get( 'post_type' );
+            switch ( $post_type ) {
+              case 'offers':
+                $region  = Http\Request::getValue( 'rg', '' );
+                $abranch = Http\Request::getValue( 'ab', '' );
+                //$s       = get_query_var( 's' );
+
+                if ( ! empty( $abranch ) ) {
+                  $meta_query   = $query->get( 'meta_query' );
+                  $meta_query[] = [
+                    'key'     => 'itjob_offer_abranch',
+                    'value'   => (int) $abranch,
+                    'compare' => '=',
+                    'type'    => 'NUMERIC'
+                  ];
+                  $query->set( 'meta_query', $meta_query );
+                }
+
+                if ( ! empty( $region ) ) {
+                  $tax_query   = $query->get( 'tax_query' );
+                  $tax_query[] = [
+                    'taxonomy' => 'region',
+                    'field'    => 'term_id',
+                    'terms'    => (int) $region
+                  ];
+                  $query->set( 'tax_query', $tax_query );
+                }
+
+                // TODO: Recherché aussi dans le profil recherché et mission
+
+
+                break;
+
+              case 'candidate':
+
+                break;
+            }
+          }
+
+
         }
       } );
 
@@ -121,8 +158,6 @@ if ( ! class_exists( 'itJob' ) ) {
         // Load uikit stylesheet
         wp_enqueue_style( 'uikit', get_template_directory_uri() . '/assets/css/uikit.min.css', '', '3.0.0rc10' );
         wp_enqueue_style( 'montserrat', 'https://fonts.googleapis.com/css?family=Montserrat:300,400,600,700' );
-        // Load the main stylesheet
-        wp_enqueue_style( 'itjob', get_stylesheet_uri(), '', $itJob->version );
 
         // scripts
         wp_enqueue_script( 'underscore' );
@@ -241,8 +276,13 @@ if ( ! class_exists( 'itJob' ) ) {
         get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.css', '', '3.5.1' );
       wp_register_style( 'bootstrap-select',
         get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/css/bootstrap-select.min.css', '', '1.12.4' );
-      wp_register_style( 'style',
-        get_stylesheet_uri(), [ 'font-awesome', 'line-awesome', 'select-2' ], $itJob->version );
+
+      // Load the main stylesheet
+      wp_register_style( 'style', get_stylesheet_uri(), [
+        'font-awesome',
+        'line-awesome',
+        'select-2'
+      ], $itJob->version );
       wp_register_style( 'adminca',
         get_template_directory_uri() . '/assets/adminca/adminca.css', [
           'bootstrap',
