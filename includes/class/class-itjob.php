@@ -56,7 +56,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
       // Ajouter le post dans la requete
       // @link: https://codex.wordpress.org/Plugin_API/Action_Reference/pre_get_posts
-      add_action( 'pre_get_posts', function ( $query ) {
+      add_action( 'pre_get_posts', function ( &$query ) {
         if ( ! is_admin() && $query->is_main_query() ) {
           // Afficher les posts pour status 'en attente' et 'publier'
           $query->set( 'post_status', [ 'publish', 'pending' ] );
@@ -65,10 +65,11 @@ if ( ! class_exists( 'itJob' ) ) {
 
             $post_type = $query->get( 'post_type' );
             switch ( $post_type ) {
+              // Trouver des offres d'emplois
               case 'offers':
                 $region  = Http\Request::getValue( 'rg', '' );
                 $abranch = Http\Request::getValue( 'ab', '' );
-                //$s       = get_query_var( 's' );
+                $s       = get_query_var( 's' );
 
                 if ( ! empty( $abranch ) ) {
                   $meta_query   = $query->get( 'meta_query' );
@@ -78,24 +79,63 @@ if ( ! class_exists( 'itJob' ) ) {
                     'compare' => '=',
                     'type'    => 'NUMERIC'
                   ];
-                  $query->set( 'meta_query', $meta_query );
                 }
+
+                if ( ! empty( $s ) ) {
+                  if ( ! isset( $meta_query ) ) {
+                    $meta_query = $query->get( 'meta_query' );
+                  }
+                  // Feature: Recherché aussi dans le profil recherché et mission
+                  $meta_query[] = [
+                    'relation' => 'OR',
+                    [
+                      'key'     => 'itjob_offer_mission',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ],
+                    [
+                      'key'     => 'itjob_offer_profil',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ],
+                    [
+                      'key'     => 'itjob_offer_post',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ]
+                  ];
+
+                }
+
+                if ( isset( $meta_query ) && ! empty( $meta_query ) ):
+                  //$query->set( 'meta_query', $meta_query );
+                  $query->meta_query = new \WP_Meta_Query( $meta_query );
+                endif;
 
                 if ( ! empty( $region ) ) {
                   $tax_query   = $query->get( 'tax_query' );
                   $tax_query[] = [
                     'taxonomy' => 'region',
                     'field'    => 'term_id',
-                    'terms'    => (int) $region
+                    'terms'    => (int) $region,
+                    'operator' => 'IN'
                   ];
-                  $query->set( 'tax_query', $tax_query );
+                  //$query->set( 'tax_query', $tax_query );
+                  $query->tax_query = new \WP_Tax_Query( $tax_query );
+                  //$query->query_vars['tax_query'] = $query->tax_query->queries;
                 }
 
-                // TODO: Recherché aussi dans le profil recherché et mission
+                // TODO: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
+                $query->query['s']      = '';
+                $query->query_vars['s'] = '';
 
 
                 break;
 
+              // Touver des candidates
               case 'candidate':
 
                 break;
