@@ -1,19 +1,21 @@
 <script type="text/javascript">
   (function ($) {
     $(document).ready(function () {
-      $('#products-table').DataTable({
+      var table = $('#products-table').DataTable({
         pageLength: 10,
-        fixedHeader: true,
+        fixedHeader: false,
         responsive: true,
         "sDom": 'rtip',
+        language: {
+          url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+        }
       });
-      var table = $('#products-table').DataTable();
       $('#key-search').on('keyup', function () {
         table.search(this.value).draw();
       });
-      $('#type-filter').on('change', function () {
-        table.column(2).search($(this).val()).draw();
-      });
+      // $('#type-filter').on('change', function () {
+      //   table.column(2).search($(this).val()).draw();
+      // });
     });
 
   })(jQuery);
@@ -77,7 +79,7 @@
                 <div class="input-group-icon input-group-icon-left mr-3">
                   <span class="input-icon input-icon-right font-16"><i class="ti-search"></i></span>
                   <input class="form-control form-control-rounded form-control-solid" id="key-search" type="text"
-                         placeholder="Search ...">
+                         placeholder="Rechercher ...">
                 </div>
                 <a class="btn btn-primary" href="{{ url['add_offer'] }}">Ajouter une offre</a>
               </div>
@@ -86,7 +88,7 @@
               <table class="table table-bordered table-hover" id="products-table">
 
                 <thead class="thead-default thead-lg">
-                <tr>
+                  <tr>
                   <th>ID</th>
                   <th>Product</th>
                   <th>Category</th>
@@ -98,213 +100,53 @@
                 </thead>
 
                 <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>
-                    Samsung UE32M5503AUX
-                  </td>
-                  <td>TV & Video</td>
-                  <td>$425</td>
-                  <td>F0522</td>
-                  <td>
-                    <span class="badge badge-danger badge-pill">Out of stock</span>
-                  </td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>2</td>
-                  <td>
-                    Dell XPS 13 2-in-1
-                    9365-4429
-                  </td>
-                  <td>Computers & Tablets</td>
-                  <td>$1636</td>
-                  <td>A1274</td>
-                  <td>120</td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>3</td>
-                  <td>
-                    Evaflor "Whisky"
-                  </td>
-                  <td>Health & Beauty</td>
-                  <td>$12</td>
-                  <td>A5474</td>
-                  <td>148</td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>4</td>
-                  <td>
-                    Evaflor "Whisky Silver"
-                  </td>
-                  <td>Health & Beauty</td>
-                  <td>$12</td>
-                  <td>60781</td>
-                  <td>205</td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>5</td>
-                  <td>
-                    HP Elitebook Revolve 810 G3
-                  </td>
-                  <td>Computers & Tablets</td>
-                  <td>$3287</td>
-                  <td>U7822</td>
-                  <td>
-                    <span class="badge badge-warning badge-pill">Low of stock</span>
-                  </td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>6</td>
-                  <td>
-                    Women's wrist watch "Moschino"
-                  </td>
-                  <td>Jewelry and Watches</td>
-                  <td>$335</td>
-                  <td>Q5497</td>
-                  <td>47</td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>7</td>
-                  <td>
-                    Ralf Ringer Modern
-                    Shoes
-                  </td>
-                  <td>Shoes</td>
-                  <td>$53.80</td>
-                  <td>K2397</td>
-                  <td>178</td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>8</td>
-                  <td>
-                    Canon EOS 200D Kit
-                  </td>
-                  <td>Cameras & Photo</td>
-                  <td>$1328</td>
-                  <td>R4592</td>
-                  <td>
-                    <span class="badge badge-warning badge-pill">Low of stock</span>
-                  </td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>9</td>
-                  <td>
-                    Archos 133 Oxygen
-                  </td>
-                  <td>Computers & Tablets</td>
-                  <td>$244</td>
-                  <td>T7812</td>
-                  <td>112</td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>10</td>
-                  <td>
-                    Women's bag Cromia
-                    "Luxor"
-                  </td>
-                  <td>Handbags & Purses</td>
-                  <td>$430</td>
-                  <td>M7894</td>
-                  <td>547</td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>11</td>
-                  <td>
-                    Sony KD-43XE8096BR2
-                  </td>
-                  <td>TV & Video</td>
-                  <td>$1080</td>
-                  <td>C3258</td>
-                  <td>78</td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>12</td>
-                  <td>
-                    Brogi Ralf Ringer Modern
-                  </td>
-                  <td>Shoes</td>
-                  <td>$24</td>
-                  <td>T9485</td>
-                  <td>
-                    <span class="badge badge-danger badge-pill">Out of stock</span>
-                  </td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>13</td>
-                  <td>
-                    Women's bag Cromia "Starlight"
-                  </td>
-                  <td>Handbags & Purses</td>
-                  <td>$416</td>
-                  <td>Z6219</td>
-                  <td>244</td>
-                  <td>
-                    <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                    <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                  </td>
-                </tr>
-
+                  <tr>
+                    <td>1</td>
+                    <td>
+                      Samsung UE32M5503AUX
+                    </td>
+                    <td>TV & Video</td>
+                    <td>$425</td>
+                    <td>F0522</td>
+                    <td>
+                      <span class="badge badge-danger badge-pill">Out of stock</span>
+                    </td>
+                    <td>
+                      <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
+                      <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>
+                      Dell XPS 13 2-in-1
+                      9365-4429
+                    </td>
+                    <td>Computers & Tablets</td>
+                    <td>$1636</td>
+                    <td>A1274</td>
+                    <td>120</td>
+                    <td>
+                      <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
+                      <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>
+                      Evaflor "Whisky"
+                    </td>
+                    <td>Health & Beauty</td>
+                    <td>$12</td>
+                    <td>A5474</td>
+                    <td>148</td>
+                    <td>
+                      <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
+                      <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
+                    </td>
+                  </tr>
                 </tbody>
+
               </table>
             </div>
           </div>
