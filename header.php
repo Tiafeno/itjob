@@ -150,7 +150,7 @@
                     <li>
                       <div class="btn-group">
                         <a class="btn btn-outline-primary"
-                           href="<?= $espace_client_link ?>"><?= $crUser->display_name ?></a>
+                           href="<?= $espace_client_link ?>"><?= ucfirst($crUser->display_name) ?></a>
                         <button class="btn btn-outline-primary dropdown-toggle dropdown-arrow"
                                 data-toggle="dropdown"></button>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -159,7 +159,6 @@
                       </div>
                     </li>
                     <?php
-
                   }
                   ?>
 
