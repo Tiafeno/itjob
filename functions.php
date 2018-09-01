@@ -23,6 +23,7 @@ $company   = null;
 $candidate = null;
 
 // middlewares
+require 'includes/itjob-configs.php';
 require 'includes/class/middlewares/Auth.php';
 require 'includes/class/middlewares/Register.php';
 
@@ -48,7 +49,9 @@ require_once 'includes/class/class-candidate.php';
 
 // shortcodes
 $shortcode = (object) [
-  'scImport' => require 'includes/shortcodes/class-import-csv.php'
+  'scImport' => require 'includes/shortcodes/class-import-csv.php',
+  'scLogin'  => require 'includes/shortcodes/class-login.php',
+  'scClient' => require 'includes/shortcodes/scClient.php'
 ];
 
 // Visual composer elements

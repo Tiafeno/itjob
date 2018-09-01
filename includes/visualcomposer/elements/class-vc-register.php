@@ -17,15 +17,36 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
     public function __construct() {
       add_action( 'init', [ $this, 'register_mapping' ] );
       add_action( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
+      add_action( 'user_register', function ( $user_id ) {
+        $user       = get_userdata( $user_id );
+        $user_roles = $user->roles;
+        if ( ! in_array( 'company', $user_roles, true ) ) {
+          return false;
+        }
+        $pwd = $_POST['pwd'];
+        if ( isset( $pwd ) ) {
+          $id = wp_update_user( [ 'ID' => $user_id, 'user_pass' => trim( $pwd ) ] );
+          if ( is_wp_error( $user_id ) ) {
+            return true;
+          } else {
+            // Mot de passe utilisateur à etes modifier avec success
+            return false;
+          }
+        }
+      }, 10, 1 );
 
-      add_shortcode( 'vc_register', [ $this, 'register_render_html' ] );
+      add_shortcode( 'vc_register', [ &$this, 'register_render_html' ] );
 
       add_action( 'wp_ajax_ajx_insert_company', [ &$this, 'ajx_insert_company' ] );
       add_action( 'wp_ajax_nopriv_ajx_insert_company', [ &$this, 'ajx_insert_company' ] );
 
       add_action( 'wp_ajax_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
       add_action( 'wp_ajax_nopriv_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
+
+      add_action( 'wp_ajax_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
+      add_action( 'wp_ajax_nopriv_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
     }
+
 
     public function post_publish_company( $value, $post_id, $field ) {
 
@@ -38,7 +59,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       $userEmail = &$value;
       // (WP_User|false) WP_User object on success, false on failure.
       $userExist = get_user_by( 'email', $userEmail );
-      if ( true === $userExist ) {
+      if ( true == $userExist ) {
         return false;
       }
       $args    = [
@@ -103,6 +124,25 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       );
     }
 
+    /**
+     * Vérifier si l'utilisateur existe déja
+     */
+    public function ajx_user_exist() {
+      if ( ! \wp_doing_ajax() ) {
+        return;
+      }
+      if ( is_user_logged_in() ) {
+        return;
+      }
+      $log = Http\Request::getValue( 'log', false );
+      if ( filter_var( $log, FILTER_VALIDATE_EMAIL ) ) {
+        $usr = get_user_by( 'email', $log );
+      } else {
+        $usr = get_user_by( 'login', $log );
+      }
+      wp_send_json( $usr );
+    }
+
     // AJAX
 
     public function ajx_get_branch_activity() {
@@ -136,7 +176,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'stat'               => Http\Request::getValue( 'stat' ),
         'name'               => Http\Request::getValue( 'name' ),
         'email'              => Http\Request::getValue( 'email' ),
-        'phones'             => Http\Request::getValue( 'phones' ),
+        'phone'              => Http\Request::getValue( 'phone' ),
+        'cellphone'          => Http\Request::getValue( 'cellphone' ),
         'branch_activity_id' => Http\Request::getValue( 'abranchID' ),
         'notification'       => Http\Request::getValue( 'notification' ),
         'newsletter'         => Http\Request::getValue( 'newsletter' )
@@ -173,14 +214,15 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       update_field( 'itjob_company_newsletter', (int) $form->newsletter, $post_id );
       update_field( 'itjob_company_notification', (int) $form->notification, $post_id );
       update_field( 'itjob_company_email', $form->email, $post_id );
+      update_field( 'itjob_company_phone', $form->phone, $post_id );
 
       // save repeater field
       $value  = [];
-      $phones = json_decode( $form->phones );
+      $phones = json_decode( $form->cellphone );
       foreach ( $phones as $row => $phone ) {
-        $value[] = [ 'phone' => $phone->value ];
+        $value[] = [ 'number' => $phone->value ];
       }
-      update_field( 'itjob_company_phones', $value, $post_id );
+      update_field( 'itjob_company_cellphone', $value, $post_id );
 
       return true;
     }
@@ -201,6 +243,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       if ( $form === 'company' || is_null( $form ) ) {
 
         // load script & style
+        wp_enqueue_style( 'input-form', get_template_directory_uri() . '/assets/css/inputForm.css' );
         wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js',
           [
             'angular',

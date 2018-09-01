@@ -66,15 +66,39 @@ if ( ! class_exists( 'vcSearch' ) ):
         )
         , EXTR_OVERWRITE );
 
+      $abranchs = get_terms( 'branch_activity', [
+        'hide_empty' => false,
+        'fields'     => 'all'
+      ] );
+      $regions  = get_terms( 'region', [
+        'hide_empty' => false,
+        'fields'     => 'all'
+      ] );
       // Twig template variables
       /** @var string $type */
       /** @var string $title */
+
       $data = [
-        'title' => $title
+        'title'    => $title,
+        'abranchs' => $abranchs,
+        'regions'   => $regions
       ];
 
       if ( $type === 'default' ) {
         try {
+          $langage = get_terms( 'language', [
+            'hide_empty' => false,
+            'fields'     => 'all'
+          ] );
+          $master_software = get_terms( 'master_software', [
+            'hide_empty' => false,
+            'fields'     => 'all'
+          ] );
+          $sub_data = [
+            'languages' => $langage,
+            'softwares' => $master_software
+          ];
+          $data = array_merge($data, $sub_data);
           return $Engine->render( '@VC/search/search.html.twig', $data );
         } catch ( Twig_Error_Loader $e ) {
         } catch ( Twig_Error_Runtime $e ) {

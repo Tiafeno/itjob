@@ -121,7 +121,7 @@ if ( ! class_exists( 'vcOffers' ) ):
      * @return mixed
      */
     public function vc_offers_render( $attrs ) {
-      global $Engine;
+      global $Engine, $itJob;
 
       // load script or style
       wp_enqueue_style( 'offers' );
@@ -138,6 +138,20 @@ if ( ! class_exists( 'vcOffers' ) ):
         )
         , EXTR_OVERWRITE );
 
+      wp_enqueue_script( 'form-offer', get_template_directory_uri() . '/assets/js/app/register/form-offer.js',
+        [
+          'angular',
+          'angular-route',
+          'angular-sanitize',
+          'angular-messages',
+          'angular-animate',
+          'angular-aria',
+        ], $itJob->version, true );
+      wp_localize_script( 'form-offer', 'itOptions', [
+        'ajax_url'     => admin_url( 'admin-ajax.php' ),
+        'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
+        'template_url' => get_template_directory_uri()
+      ] );
       try {
         /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/offers/offers.html.twig', [

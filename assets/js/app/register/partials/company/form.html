@@ -1,52 +1,94 @@
 <form name="formCompany" ng-submit="submitForm(formCompany.$valid)" class="form-horizontal" novalidate>
   <div class="ibox-body">
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Nom de l'entreprise</label>
+      <label class="col-sm-4 col-form-label">Nom de l'entreprise <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="title" ng-model="company.title" type="text" placeholder="Nom de l'entreprise"
                required>
+        <div ng-messages="formCompany.title.$error" role="alert" class="input-message-animation"
+             ng-show="formCompany.title.$invalid && formCompany.title.$touched">
+          <div ng-message="required">Le nom de l'entreprise est obligatoire.</div>
+        </div>
       </div>
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Adresse physique de l'entreprise</label>
+      <label class="col-sm-4 col-form-label">Adresse physique de l'entreprise <span style="color: red">*</span></label>
       <div class="col-sm-8">
-        <input class="form-control" name="adresse" ng-model="company.address" type="text" placeholder="Adresse"
+        <input class="form-control" name="address" ng-model="company.address" type="text" placeholder="Adresse"
                required>
+        <div ng-messages="formCompany.address.$error" role="alert" class="input-message-animation"
+             ng-show="formCompany.address.$invalid && formCompany.address.$touched">
+          <div ng-message="required">Le champ adresse est obligatoire.</div>
+        </div>
       </div>
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Nif</label>
-      <div class="col-sm-5">
+      <label class="col-sm-4 col-form-label">NIF <span style="color: red">*</span></label>
+      <div class="col-sm-6">
         <input class="form-control" name="nif" ng-model="company.nif" type="text" placeholder="NIF" required>
+        <div ng-messages="formCompany.nif.$error" role="alert" class="input-message-animation"
+             ng-show="formCompany.nif.$invalid && formCompany.nif.$touched">
+          <div ng-message="required">Ce champ est obligatoire.</div>
+        </div>
       </div>
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Numero statistique</label>
-      <div class="col-sm-5">
+      <label class="col-sm-4 col-form-label">Numero statistique <span style="color: red">*</span></label>
+      <div class="col-sm-6">
         <input class="form-control" name="stat" ng-model="company.stat" type="text" placeholder="Numero statistique"
                required>
+        <div ng-messages="formCompany.stat.$error" role="alert" class="input-message-animation"
+             ng-show="formCompany.stat.$invalid && formCompany.stat.$touched">
+          <div ng-message="required">Ce champ est obligatoire.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Téléphone fixe de l'entreprise <span style="color: red">*</span></label>
+      <div class="col-sm-6">
+        <input class="form-control" name="phone" ng-model="company.phone" type="text"
+               placeholder="Téléphone fixe de l'entreprise"
+               required>
+        <div ng-messages="formCompany.phone.$error" role="alert" class="input-message-animation"
+             ng-show="formCompany.phone.$invalid && formCompany.phone.$touched">
+          <div ng-message="required">Ce champ est obligatoire.</div>
+        </div>
       </div>
     </div>
 
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Numéros de téléphone</label>
       <div class="col-sm-8">
-        <div ng-repeat="phone in company.phones track by phone.id" class="form-group row">
+        <div ng-repeat="phone in company.cellphone track by phone.id" class="form-group row">
           <div class="col-sm-10 pr-0">
-            <input class="form-control mt-1" ng-model="company.phones[ [[$index]] ].value" type="text"
-                   placeholder="Numéros de téléphone" required>
+            <input class="form-control mt-1" name="cellphone" ng-model="company.cellphone[ [[$index]] ].value"
+                   type="text"
+                   placeholder="Numéro de téléphone">
           </div>
           <div class="col-sm-2">
-            <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" ng-click="removePhone(phone.id)"><i
-              class="la la-minus-circle"></i></button>
+            <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" tabindex="0"
+                    data-toggle="tooltip" data-placement="left" title="Enlever ce numero"
+                    ng-click="removePhone(phone.id)">
+              <i class="la la-minus-circle"></i></button>
           </div>
         </div>
 
-        <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" ng-click="addPhone()"><i
+        <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" data-placement="right"
+                data-toggle="tooltip" title="Ajouter un numero" ng-click="addPhone()"><i
           class="la la-plus-circle"></i></button>
+
+        <p class="mt-4 mention-text">
+          Ajouter le numéro téléphone un par un.
+          <br>Cliquer sur le bouton « + » pour ajouter un autre numéro.
+          <span class="mt-1 d-block"></span>
+          <br>Les formats de numéro téléphone validé intègre les préﬁxes suivants (034 ... ou 039... ou +26133.. ou
+          0026132...
+          ou 00261 39 12 345 67).
+        </p>
       </div>
     </div>
 
@@ -66,21 +108,16 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Nom du responsable</label>
+      <label class="col-sm-4 col-form-label">Nom du responsable <span style="color: red">*</span></label>
       <div class="col-sm-6">
-        <input class="form-control" name="stat" ng-model="company.name" type="text" placeholder="Nom et Prénom"
+        <input class="form-control" name="responsible" ng-model="company.name" type="text" placeholder="Nom et Prénom"
                required>
+        <div ng-messages="formCompany.responsible.$error" role="alert" class="input-message-animation"
+             ng-show="formCompany.responsible.$invalid && formCompany.responsible.$touched">
+          <div ng-message="required">Le nom du résponsable est obligatoire.</div>
+        </div>
       </div>
     </div>
-
-    <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Email du responsable</label>
-      <div class="col-sm-6">
-        <input class="form-control" name="title" ng-model="company.email" type="text" placeholder="Ex: exemple@mail.com"
-               required>
-      </div>
-    </div>
-
 
     <div class="form-group mb-4 row ">
       <label class="col-sm-4 col-form-label ">Secteur d'activité</label>
@@ -95,6 +132,47 @@
       </div>
     </div>
 
+  </div>
+
+  <div class="ibox-body ibox-footer">
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Email du responsable de l'entreprise<span
+        style="color: red">*</span></label>
+      <div class="col-sm-6">
+        <input class="form-control" name="email" ng-model="company.email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/"
+               type="text" placeholder="Ex: exemple@mail.com" required>
+        <div ng-messages="formCompany.email.$error" role="alert" class="input-message-animation"
+             ng-show="formCompany.email.$invalid && formCompany.email.$touched">
+          <div ng-message="required">Adresse email est obligatoire.</div>
+          <div ng-message="pattern">Veuillez entrer une adresse e-mail valide</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Mot de passe <span style="color: red">*</span></label>
+      <div class="col-sm-6">
+        <input class="form-control" name="pwd" ng-model="company.pwd" type="password" placeholder="Mot de passe"
+               required>
+        <div ng-messages="formCompany.pwd.$error" role="alert" class="input-message-animation"
+             ng-show="formCompany.pwd.$invalid && formCompany.pwd.$touched">
+          <div ng-message="required">Le mot de passe est obligatoire.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Confirmation mot de passe <span style="color: red">*</span></label>
+      <div class="col-sm-6">
+        <input class="form-control" name="pwdConf" ng-model="company.pwdConf" type="password" placeholder="Mot de passe"
+               compare-to="company.pwd" required>
+        <div ng-messages="formCompany.pwdConf.$error" role="alert" class="input-message-animation"
+             ng-show="(formCompany.pwdConf.$invalid && formCompany.pwdConf.$touched) && ! _.isEmpty(company.pwd)">
+          <div ng-message="required">Vous devez saisir votre mot de passe.</div>
+          <div ng-message="compareTo">Les mots de passes ne sont pas identiques.</div>
+        </div>
+      </div>
+    </div>
 
   </div>
 
