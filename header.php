@@ -66,28 +66,26 @@
       -webkit-box-shadow: 0 5px 20px #d6dee4;
       box-shadow: 0 5px 20px #d6dee4;
     }
-
     .logo img.uk-logo {
       width: 80%;
     }
-
     .menu-header-top ul li {
       display: inline-block;
       margin-left: 10px;
     }
-
     .container-menu-header-top {
       height: 100%;
     }
-
     .header-offcanvas > .btn {
       background: transparent;
       color: #a7a9ac;
     }
-
     .header-offcanvas > .btn i {
       font-size: 26px;
       color: #a7a9ac;
+    }
+    .btn.dropdown-arrow:after {
+      margin-left: 0 !important;
     }
   </style>
 </head>
