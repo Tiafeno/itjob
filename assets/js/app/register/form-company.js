@@ -52,10 +52,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
   .factory('companyFactory', ['$http', '$q', function ($http, $q) {
     return {
       checkLogin: function (log) {
-        return $http.get(itOptions.ajax_url + '?action=ajx_user_exist&log=' + log, {cache: true})
-          .then(function (resp) {
-            return resp.data;
-          });
+        return $http.get(itOptions.ajax_url + '?action=ajx_user_exist&log=' + log, {cache: true});
       },
       sendPostForm: function (formData) {
         return $http({
@@ -84,6 +81,43 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       }
     }
   })
+  .directive('ngMail', ['companyFactory', function (companyFactory) {
+    return {
+      require: 'ngModel',
+      scope: {
+        ngMail: "=ngMail"
+      },
+      link: function (scope, element, attrs, model) {
+        var valid = false;
+
+        function mailCheck(email) {
+          return new Promise(function (resolve) {
+            if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+              companyFactory
+                .checkLogin(email)
+                .then(function (resp) {
+                  resolve(resp.data ? true : false);
+                });
+            } else {
+              resolve(false);
+            }
+          });
+        }
+
+        model.$validators.ngMail = function () {
+          return valid;
+        };
+
+        element.bind('blur', function () {
+          mailCheck(model.$viewValue)
+            .then(function (resp) {
+              valid = resp;
+              model.$validate();
+            })
+        });
+      }
+    }
+  }])
   .controller('formCompanyCtrl', ['$scope', function ($scope) {
     // Code controller here...
     $scope.loadingPath = itOptions.template_url + '/img/loading.gif';
@@ -113,7 +147,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       };
 
       $scope.submitForm = function (isValid) {
-
+        // TODO: Vérifier si l'adresse e-mail existe déja
         if ($scope.formCompany.$invalid) {
           angular.forEach($scope.formCompany.$error, function (field) {
             angular.forEach(field, function (errorField) {
