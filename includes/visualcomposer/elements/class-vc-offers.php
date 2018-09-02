@@ -17,6 +17,9 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       add_shortcode( 'vc_offers', [ $this, 'vc_offers_render' ] );
       add_shortcode( 'vc_featured_offers', [ $this, 'vc_featured_offers_render' ] );
+      // Shortcode pour ajouter un offre
+      add_shortcode( 'vc_added_offer', [ &$this, 'vc_added_offer_render' ] );
+
       add_action( 'wp_enqueue_scripts', function () {
 
       } );
@@ -111,6 +114,29 @@ if ( ! class_exists( 'vcOffers' ) ):
           ]
         ]
       );
+
+      // Formulaire d'ajout d'offre
+      \vc_map(
+        array(
+          'name'        => 'Ajouter une offre',
+          'base'        => 'vc_added_offer',
+          'description' => 'Offre d\'une entreprise',
+          'category'    => 'itJob',
+          'params'      => array(
+            array(
+              'type'        => 'textfield',
+              'holder'      => 'h3',
+              'class'       => 'vc-ij-title',
+              'heading'     => 'Titre',
+              'param_name'  => 'title',
+              'value'       => 'Ajouter une offre',
+              'description' => "Une titre pour le formulaire",
+              'admin_label' => true,
+              'weight'      => 0
+            )
+          )
+        )
+      );
     }
 
     /**
@@ -138,28 +164,14 @@ if ( ! class_exists( 'vcOffers' ) ):
         )
         , EXTR_OVERWRITE );
 
-      wp_enqueue_script( 'form-offer', get_template_directory_uri() . '/assets/js/app/register/form-offer.js',
-        [
-          'angular',
-          'angular-route',
-          'angular-sanitize',
-          'angular-messages',
-          'angular-animate',
-          'angular-aria',
-        ], $itJob->version, true );
-      wp_localize_script( 'form-offer', 'itOptions', [
-        'ajax_url'     => admin_url( 'admin-ajax.php' ),
-        'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
-        'template_url' => get_template_directory_uri()
-      ] );
       try {
         /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/offers/offers.html.twig', [
           'title' => $title,
         ] );
-      } catch ( Twig_Error_Loader $e ) {
-      } catch ( Twig_Error_Runtime $e ) {
-      } catch ( Twig_Error_Syntax $e ) {
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
         return $e->getRawMessage();
       }
     }
@@ -191,6 +203,55 @@ if ( ! class_exists( 'vcOffers' ) ):
       ];
 
       return ( trim( $position ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
+    }
+
+    public function vc_added_offer_render( $attrs ) {
+      if ( is_user_logged_in() ) {
+        $logoutUrl          = wp_logout_url( home_url( '/' ) );
+        $user               = wp_get_current_user();
+        $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
+        $output             = 'Vous êtes déjà connecté avec ce compte: <b>' . $user->display_name . '</b><br>';
+        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4" href="' . $espace_client_link . '">Espace client</a>';
+        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4 ml-2" href="' . $logoutUrl . '">Déconnecter</a>';
+
+        return $output;
+      }
+      global $Engine, $itJob;
+      // Params extraction
+      extract(
+        shortcode_atts(
+          array(
+            'title' => null
+          ),
+          $attrs
+        )
+        , EXTR_OVERWRITE );
+      try {
+
+        wp_enqueue_script( 'offers', get_template_directory_uri() . '/assets/js/app/offers/form.js',
+          [
+            'angular',
+            'angular-route',
+            'angular-sanitize',
+            'angular-messages',
+            'angular-animate',
+            'angular-aria',
+          ], $itJob->version, true );
+        wp_localize_script( 'offers', 'itOptions', [
+          'ajax_url'     => admin_url( 'admin-ajax.php' ),
+          'partials_url' => get_template_directory_uri() . '/assets/js/app/offers/partials',
+          'template_url' => get_template_directory_uri()
+        ] );
+
+        /** @var STRING $title - Titre de l'element VC */
+        return $Engine->render( '@VC/offers/form-offer.html.twig', [
+          'title' => $title
+        ] );
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
+        return $e->getRawMessage();
+      }
 
     }
 

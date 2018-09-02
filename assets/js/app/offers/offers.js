@@ -1,5 +1,5 @@
 (function () {
-  angular.module('formOfferApp', ['ngMessages', 'ngSanitize'])
+  angular.module('OfferApp', ['ngMessages', 'ngSanitize'])
     .factory('offerFactory', ['$http', '$q', function ($http, $q) {
       return {
         sendPostForm: function (formData) {

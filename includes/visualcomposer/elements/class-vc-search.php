@@ -81,12 +81,12 @@ if ( ! class_exists( 'vcSearch' ) ):
       $data = [
         'title'    => $title,
         'abranchs' => $abranchs,
-        'regions'   => $regions
+        'regions'  => $regions
       ];
 
       if ( $type === 'default' ) {
         try {
-          $langage = get_terms( 'language', [
+          $langage         = get_terms( 'language', [
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
@@ -94,11 +94,11 @@ if ( ! class_exists( 'vcSearch' ) ):
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
-          $sub_data = [
+          $sub_data        = [
             'languages' => $langage,
             'softwares' => $master_software
           ];
-          $data = array_merge($data, $sub_data);
+          $data            = array_merge( $data, $sub_data );
           return $Engine->render( '@VC/search/search.html.twig', $data );
         } catch ( Twig_Error_Loader $e ) {
         } catch ( Twig_Error_Runtime $e ) {
