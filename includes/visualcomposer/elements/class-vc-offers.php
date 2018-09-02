@@ -245,7 +245,8 @@ if ( ! class_exists( 'vcOffers' ) ):
 
         /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/offers/form-offer.html.twig', [
-          'title' => $title
+          'title'        => $title,
+          'template_url' => get_template_directory_uri()
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {

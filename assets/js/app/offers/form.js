@@ -1,4 +1,4 @@
-angular.module('addeOfferApp', ['ui.router', 'ngMessages', 'ngAria', 'ngSanitize'])
+angular.module('addOfferApp', ['ui.router', 'ngMessages', 'ngAria', 'ngSanitize'])
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
 
@@ -76,28 +76,12 @@ angular.module('addeOfferApp', ['ui.router', 'ngMessages', 'ngAria', 'ngSanitize
       }
     };
   }])
-  .directive('compareTo', function () {
-    // Directive: Comparer les mots de passes
-    return {
-      require: "ngModel",
-      scope: {
-        repeaterPwd: "=compareTo"
-      },
-      link: function (scope, element, attrs, value) {
-        value.$validators.compareTo = function (val) {
-          return val == scope.repeaterPwd;
-        };
-        scope.$watch('repeaterPwd', function () {
-          value.$validate();
-        })
-      }
-    }
-  })
   .component('formComponent', {
     bindings: {abranchs: '<', regions: '<'},
-    templateUrl: itOptions.partials_url + '/offers/form.html',
+    templateUrl: itOptions.partials_url + '/form.html',
     controller: ["$location", "$scope", "offerData", "offerService", "offerFactory",
       function ($location, $scope, offerData, offerService, offerFactory) {
+        // Code controller here...
         $scope.offers = {};
       }]
   })
@@ -106,7 +90,4 @@ angular.module('addeOfferApp', ['ui.router', 'ngMessages', 'ngAria', 'ngSanitize
 
     }]
   })
-  .controller('addCtrl', ['$scope', function ($scope) {
-    // Code controller here...
-    $scope.loadingPath = itOptions.template_url + '/img/loading.gif';
-  }])
+  .run()

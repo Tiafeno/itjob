@@ -1,0 +1,15 @@
+<form name="formOffer" class="form-horizontal" novalidate>
+  <div class="ibox-body">
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Poste à pourvoir <span style="color: red">*</span></label>
+      <div class="col-sm-6">
+        <input class="form-control" name="post" ng-model="offers.title" type="text" placeholder="Poste à pourvoir"
+               required>
+        <div ng-messages="formOffer.title.$error" role="alert" class="input-message-animation"
+             ng-show="formOffer.title.$invalid && formOffer.title.$touched">
+          <div ng-message="required">Le nom de l'entreprise est obligatoire.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
