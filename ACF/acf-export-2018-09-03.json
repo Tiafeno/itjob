@@ -804,7 +804,7 @@
       {
         "key": "field_5b78985d33470",
         "label": "Téléphone mobile du responsable",
-        "name": "itjob_company_phones",
+        "name": "itjob_company_cellphone",
         "type": "repeater",
         "instructions": "",
         "required": 1,
@@ -823,7 +823,7 @@
           {
             "key": "field_5b78987f33471",
             "label": "Phone",
-            "name": "phone",
+            "name": "number",
             "type": "text",
             "instructions": "",
             "required": 0,
@@ -840,6 +840,25 @@
             "maxlength": ""
           }
         ]
+      },
+      {
+        "key": "field_5b83da1dc08bf",
+        "label": "Téléphone Fix",
+        "name": "itjob_company_phone",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
       },
       {
         "key": "field_5b81cba9e237f",
@@ -891,7 +910,7 @@
         "key": "field_5b7899101a658",
         "label": "Adresse email",
         "name": "itjob_company_email",
-        "type": "email",
+        "type": "text",
         "instructions": "",
         "required": 1,
         "conditional_logic": 0,
@@ -903,7 +922,8 @@
         "default_value": "",
         "placeholder": "",
         "prepend": "",
-        "append": ""
+        "append": "",
+        "maxlength": ""
       },
       {
         "key": "field_5b78993e13dd6",
@@ -966,6 +986,25 @@
     "key": "group_5b7886315b8b9",
     "title": "Offres",
     "fields": [
+      {
+        "key": "field_5b8904a232984",
+        "label": "Poste à promouvoir",
+        "name": "itjob_offer_post",
+        "type": "text",
+        "instructions": "Ce champ est égale au titre de l'article",
+        "required": 1,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "60",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
       {
         "key": "field_5b788a40dcbf9",
         "label": "A la une",
@@ -1167,6 +1206,28 @@
         "multiple": 0,
         "return_format": "object",
         "ui": 1
+      },
+      {
+        "key": "field_5b87159acf7cb",
+        "label": "Secteur d'activité",
+        "name": "itjob_offer_abranch",
+        "type": "taxonomy",
+        "instructions": "",
+        "required": 1,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "60",
+          "class": "",
+          "id": ""
+        },
+        "taxonomy": "branch_activity",
+        "field_type": "select",
+        "allow_null": 0,
+        "add_term": 0,
+        "save_terms": 0,
+        "load_terms": 0,
+        "return_format": "id",
+        "multiple": 0
       }
     ],
     "location": [
@@ -1175,6 +1236,158 @@
           "param": "post_type",
           "operator": "==",
           "value": "offers"
+        }
+      ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": 1,
+    "description": ""
+  },
+  {
+    "key": "group_5b891e91bca5f",
+    "title": "Options",
+    "fields": [
+      {
+        "key": "field_5b891ea2f960a",
+        "label": "Page de connexion",
+        "name": "login_page_id",
+        "type": "post_object",
+        "instructions": "Ajouter ici la page pour se connecter",
+        "required": 1,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "post_type": [
+          "page",
+          "post"
+        ],
+        "taxonomy": [],
+        "allow_null": 0,
+        "multiple": 0,
+        "return_format": "id",
+        "ui": 1
+      },
+      {
+        "key": "field_5b89200e21ff2",
+        "label": "Espace client",
+        "name": "espace_client",
+        "type": "post_object",
+        "instructions": "La page pour l'espace client",
+        "required": 1,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "post_type": [
+          "page"
+        ],
+        "taxonomy": [],
+        "allow_null": 0,
+        "multiple": 0,
+        "return_format": "id",
+        "ui": 1
+      },
+      {
+        "key": "field_5b89215bdbfbb",
+        "label": "Page d'enregistrement",
+        "name": "register_page_id",
+        "type": "post_object",
+        "instructions": "",
+        "required": 1,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "post_type": [
+          "page",
+          "post"
+        ],
+        "taxonomy": [],
+        "allow_null": 0,
+        "multiple": 0,
+        "return_format": "id",
+        "ui": 1
+      },
+      {
+        "key": "field_5b8923bf1b6a4",
+        "label": "Formulaire d'ajoute",
+        "name": "",
+        "type": "message",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "message": "Ci-joint les formulaires d'ajout.",
+        "new_lines": "wpautop",
+        "esc_html": 0
+      },
+      {
+        "key": "field_5b892415d4bf6",
+        "label": "Page d'ajout d'offre",
+        "name": "add_offer_page_id",
+        "type": "post_object",
+        "instructions": "",
+        "required": 1,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "post_type": [
+          "page"
+        ],
+        "taxonomy": [],
+        "allow_null": 0,
+        "multiple": 0,
+        "return_format": "id",
+        "ui": 1
+      },
+      {
+        "key": "field_5b892448d4bf7",
+        "label": "Page d'ajout d'un utilisateur (Entreprise)",
+        "name": "add_company_page_id",
+        "type": "post_object",
+        "instructions": "",
+        "required": 1,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "post_type": [
+          "page"
+        ],
+        "taxonomy": [],
+        "allow_null": 0,
+        "multiple": 0,
+        "return_format": "id",
+        "ui": 1
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "options_page",
+          "operator": "==",
+          "value": "acf-options-itjob-settings"
         }
       ]
     ],

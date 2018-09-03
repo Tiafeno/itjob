@@ -65,7 +65,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       // (WP_User|false) WP_User object on success, false on failure.
       $userExist = get_user_by( 'email', $userEmail );
       if ( true == $userExist ) {
-        return false;
+        return $value;
       }
       $args    = [
         "user_pass"    => substr( str_shuffle( $this->chars ), 0, 8 ),
