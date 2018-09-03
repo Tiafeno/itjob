@@ -9,10 +9,14 @@ namespace includes\vc;
 if ( ! class_exists( 'WPBakeryShortCode' ) ) {
   die( 'WPBakery plugins missing!' );
 }
+
+use Http;
+use includes\post\Company;
+use includes\post\Offers;
+
 if ( ! class_exists( 'vcOffers' ) ):
   class vcOffers extends \WPBakeryShortCode {
     public function __construct() {
-      global $itJob;
       add_action( 'init', [ $this, 'vc_offers_mapping' ] );
 
       add_shortcode( 'vc_offers', [ $this, 'vc_offers_render' ] );
@@ -20,9 +24,13 @@ if ( ! class_exists( 'vcOffers' ) ):
       // Shortcode pour ajouter un offre
       add_shortcode( 'vc_added_offer', [ &$this, 'vc_added_offer_render' ] );
 
+      add_action( 'wp_ajax_ajx_insert_offers', [ &$this, 'ajx_insert_offers' ] );
+      add_action( 'wp_ajax_nopriv_ajx_insert_offers', [ &$this, 'ajx_insert_offers' ] );
+
       add_action( 'wp_enqueue_scripts', function () {
 
       } );
+
     }
 
     public function vc_offers_mapping() {
@@ -70,7 +78,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       );
 
       // Les offres
-      vc_map(
+      \vc_map(
         [
           'name'        => 'Les offres d\'emploi',
           'base'        => 'vc_offers',
@@ -137,6 +145,67 @@ if ( ! class_exists( 'vcOffers' ) ):
           )
         )
       );
+    }
+
+    public function ajx_insert_offers() {
+      /**
+       * @func wp_doing_ajax
+       * (bool) True if it's a WordPress Ajax request, false otherwise.
+       */
+      if ( ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
+        return;
+      }
+
+      $User    = wp_get_current_user();
+      $Company = Company::get_company_by( 'user_id', $User->ID );
+      if ( ! $Company->is_company() ) {
+        wp_send_json( [ 'success' => false, 'msg' => 'Utilisateur n\'est pas une entreprise', 'user' => $Company ] );
+      }
+
+      $form = (object) [
+        'post'            => Http\Request::getValue( 'post' ),
+        'reference'       => Http\Request::getValue( 'reference' ),
+        'ctt'             => Http\Request::getValue( 'ctt' ),
+        'salary_proposed' => Http\Request::getValue( 'salary_proposed', 0 ),
+        'region'          => Http\Request::getValue( 'region' ),
+        'branch_activity' => Http\Request::getValue( 'ba' ),
+        'datelimit'       => Http\Request::getValue( 'datelimit' ),
+        'mission'         => Http\Request::getValue( 'mission' ),
+        'profil'          => Http\Request::getValue( 'profil' ),
+        'other'           => Http\Request::getValue( 'other' ),
+        'company_id'      => $Company->ID
+      ];
+
+      $result = wp_insert_post( [
+        'post_title'   => $form->post,
+        'post_content' => '',
+        'post_status'  => 'pending',
+        'post_author'  => $User->ID,
+        'post_type'    => 'offers'
+      ] );
+      if ( is_wp_error( $result ) ) {
+        wp_send_json( [ 'success' => false, 'msg' => $result->get_error_message() ] );
+      }
+
+      // update acf field
+      $post_id = &$result;
+      $this->update_acf_field( $post_id, $form );
+      wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
+      wp_send_json( [ 'success' => true, 'msg' => new Offers( $post_id ), 'form' => $form ] );
+    }
+
+    private function update_acf_field( $post_id, $form ) {
+      update_field( 'itjob_offer_post', $form->post, $post_id );
+      update_field( 'itjob_offer_reference', $form->reference, $post_id );
+      update_field( 'itjob_offer_datelimit', $form->datelimit, $post_id );
+      update_field( 'itjob_offer_contrattype', $form->ctt, $post_id );
+      update_field( 'itjob_offer_profil', $form->profil, $post_id );
+      update_field( 'itjob_offer_mission', $form->mission, $post_id );
+      update_field( 'itjob_offer_proposedsallary', $form->salary_proposed, $post_id );
+      update_field( 'itjob_offer_otherinformation', $form->other, $post_id );
+      update_field( 'itjob_offer_abranch', $form->branch_activity, $post_id );
+
+      update_field( 'itjob_offer_company', $form->company_id, $post_id );
     }
 
     /**
@@ -206,15 +275,8 @@ if ( ! class_exists( 'vcOffers' ) ):
     }
 
     public function vc_added_offer_render( $attrs ) {
-      if ( is_user_logged_in() ) {
-        $logoutUrl          = wp_logout_url( home_url( '/' ) );
-        $user               = wp_get_current_user();
-        $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
-        $output             = 'Vous êtes déjà connecté avec ce compte: <b>' . $user->display_name . '</b><br>';
-        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4" href="' . $espace_client_link . '">Espace client</a>';
-        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4 ml-2" href="' . $logoutUrl . '">Déconnecter</a>';
-
-        return $output;
+      if ( ! is_user_logged_in() ) {
+        return false;
       }
       global $Engine, $itJob;
       // Params extraction
@@ -227,7 +289,12 @@ if ( ! class_exists( 'vcOffers' ) ):
         )
         , EXTR_OVERWRITE );
       try {
-
+        define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
+        wp_enqueue_style( 'b-datepicker-3', VENDOR_URL . '/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css', '', '1.7.1' );
+        wp_enqueue_style( 'themify-icons' );
+        wp_enqueue_style( 'froala' );
+        wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
+        wp_enqueue_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', [ 'jquery' ], '1.7.1' );
         wp_enqueue_script( 'offers', get_template_directory_uri() . '/assets/js/app/offers/form.js',
           [
             'angular',
@@ -236,6 +303,7 @@ if ( ! class_exists( 'vcOffers' ) ):
             'angular-messages',
             'angular-animate',
             'angular-aria',
+            'froala',
           ], $itJob->version, true );
         wp_localize_script( 'offers', 'itOptions', [
           'ajax_url'     => admin_url( 'admin-ajax.php' ),

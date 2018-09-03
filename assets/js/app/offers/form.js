@@ -1,4 +1,9 @@
-angular.module('addOfferApp', ['ui.router', 'ngMessages', 'ngAria', 'ngSanitize'])
+angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'ngSanitize'])
+  .value('froalaConfig', {
+    toolbarInline: false,
+    quickInsertTags: null,
+    toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
+  })
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
 
@@ -82,12 +87,73 @@ angular.module('addOfferApp', ['ui.router', 'ngMessages', 'ngAria', 'ngSanitize'
     controller: ["$location", "$scope", "offerData", "offerService", "offerFactory",
       function ($location, $scope, offerData, offerService, offerFactory) {
         // Code controller here...
+        $scope.froalaOptions = {
+          theme: 'gray',
+          placeholderText: 'Ajouter une description',
+        };
+        $scope.isSubmit = false;
         $scope.offers = {};
+        $scope.formSubmit = function (isValid) {
+          if ($scope.formOffer.$invalid) {
+            angular.forEach($scope.formOffer.$error, function (field) {
+              angular.forEach(field, function (errorField) {
+                errorField.$setTouched();
+              });
+            });
+          }
+          if (!isValid) return;
+          $scope.isSubmit = !$scope.isSubmit;
+          offerData.formOfferValue = _.clone($scope.offers);
+          var offerForm = new FormData();
+          offerForm.append('action', 'ajx_insert_offers');
+          offerForm.append('post', $scope.offers.postpromote);
+          offerForm.append('reference', $scope.offers.reference);
+          offerForm.append('ctt', $scope.offers.contrattype);
+          offerForm.append('salary_proposed', $scope.offers.proposedsallary);
+          offerForm.append('region', parseInt($scope.offers.region));
+          offerForm.append('ba', parseInt($scope.offers.branch_activity));
+          offerForm.append('datelimit', $scope.offers.datelimit);
+          offerForm.append('mission', $scope.offers.mission);
+          offerForm.append('profil', $scope.offers.profil);
+          offerForm.append('other', $scope.offers.otherinformation);
+
+          offerFactory
+            .sendPostForm(offerForm)
+            .then(function (response) {
+              $scope.$apply(function () {
+                var data = response.data;
+                if (data.success) {
+                  offerData.setMessage('Info', 'Offre publier avec succes');
+                  $location.path('/confirmation');
+                } else {
+                  $scope.isSubmit = !1;
+                }
+              });
+            })
+        };
+        // Listening offers variable scope
+        $scope.$watch('offers', function (value) {
+          // Watch variable here...
+
+        }, true);
+
+        var jqSelects = jQuery("select.form-control");
+        jQuery.each(jqSelects, function (index, element) {
+          var selectElement = jQuery(element);
+          var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
+          jQuery(element).select2({
+            placeholder: placeholder,
+            allowClear: true,
+            width: '100%'
+          })
+        });
+        jQuery('[data-toggle="tooltip"]').tooltip();
       }]
   })
   .component('confComponent', {
-    controller: ["$scope", function ($scope) {
-
+    templateUrl: itOptions.partials_url + '/confirmation.html',
+    controller: ["$scope", 'offerData', function ($scope, offerData) {
+      this.message = _.clone(offerData.message);
     }]
   })
-  .run()
+  .run();

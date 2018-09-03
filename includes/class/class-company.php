@@ -29,6 +29,28 @@ final class Company implements \iCompany {
   public $notification = false;
 
   /**
+   * @param string $handler - user_id, post_id (company post type) & email
+   * @param int|string $value
+   */
+  public static function get_company_by( $handler = 'user_id', $value ) {
+    switch ( $handler ):
+      case 'user_id':
+        $User = get_user_by( 'ID', (int) $value );
+        $args = [
+          'post_status'  => [ 'pending', 'publish' ],
+          'post_type'    => 'company',
+          'meta_key'     => 'itjob_company_email',
+          'meta_value'   => $User->user_email,
+          'meta_compare' => '='
+        ];
+        $pts  = get_posts( $args );
+        $pt   = reset( $pts );
+
+        return new Company( $pt->ID );
+        break;
+    endswitch;
+  }
+  /**
    * Company constructor.
    *
    * @param int $postId - ID du post de type 'company'
@@ -65,7 +87,7 @@ final class Company implements \iCompany {
 
       // FIX: Ajouter ou crée un utilisateur quand un entreprise est publier ou ajouter
       $this->userAuthor = Object\jobServices::getUserData( $user->ID );
-      $this->acfElements();
+      $this->init();
     }
   }
 
@@ -73,7 +95,7 @@ final class Company implements \iCompany {
     return get_post_type( $this->ID ) === 'company';
   }
 
-  private function acfElements() {
+  private function init() {
     global $wp_version;
     if ( ! function_exists( 'get_field' ) ) {
       _doing_it_wrong( 'get_field', 'Function get_field n\'existe pas', $wp_version );
