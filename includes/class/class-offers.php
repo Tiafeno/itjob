@@ -15,6 +15,8 @@ final class Offers implements \iOffer {
   /** @var int $ID - Identification de l'offre */
   public $ID;
 
+  public $postPromote;
+
   /** @var array|null $tags - Tag pour le réferencement et la recherche interne */
   public $tags = [];
 
@@ -103,6 +105,7 @@ final class Offers implements \iOffer {
     $this->company = get_field( 'itjob_offer_company', $this->ID ); // Object article
 
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
+    $this->postPromote      = get_field( 'itjob_offer_post', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
     $this->proposedSalary   = get_field( 'itjob_offer_proposedsallary', $this->ID );
     $this->contractType     = get_field( 'itjob_offer_contrattype', $this->ID );

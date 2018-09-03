@@ -1,0 +1,110 @@
+{
+  "_args": [
+    [
+      "froala-editor",
+      "H:\\CREA\\itJob\\Angular Librarie"
+    ]
+  ],
+  "_from": "froala-editor@latest",
+  "_id": "froala-editor@2.8.4",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/froala-editor",
+  "_nodeVersion": "8.7.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/froala-editor_2.8.4_1529794069421_0.2257922936724217"
+  },
+  "_npmUser": {
+    "email": "stefan@froala.com",
+    "name": "froala"
+  },
+  "_npmVersion": "5.5.1",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "froala-editor",
+    "raw": "froala-editor",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/froala-editor/-/froala-editor-2.8.4.tgz",
+  "_shasum": "b50c20799218e9e02e195d0616decfd5679c4b53",
+  "_shrinkwrap": null,
+  "_spec": "froala-editor",
+  "_where": "H:\\CREA\\itJob\\Angular Librarie",
+  "bugs": {
+    "url": "https://github.com/froala/wysiwyg-editor/issues"
+  },
+  "dependencies": {
+    "font-awesome": ">=4.4.0",
+    "jquery": ">=1.11.0"
+  },
+  "description": "A beautiful Javascript WYSIWYG HTML rich text editor. High performance and modern design make it easy to use for developers and loved by users.",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "fileCount": 251,
+    "integrity": "sha512-DObeh8j8mmRDprgCOnUvtYqJ0IVsKUFxvzCFX1hoEVMt3l659QaKLcQDYoaiPtecIIjGHWvARYh1YpR4FpAAjw==",
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJbLs4VCRA9TVsSAnZWagAA98QP/1E6UkWE87bZEKm3kK6Z\nHbyWMtyA//SHh4rwIgl2VJFGAsubSpML6o+blemUQ9XM6x14bM/K8tJVAtZ2\nOwkGeJv2Tm9s+tcHuD8AJWdDLUFdBt8jrD6mCAncMCvaEGxXVG1MO5BsnHqc\n2/+EIl2a/PJY9Pr4+fPjV0i8ipKttF+UWd4HV+YdVvvU3CHiY3ldPDmalEeM\n0v2awgaj10dsj3d6Z4dZRYy/mIp4c0xZWW2X9o9p5+Aq10Pl7AiOv7Trns9h\npWVGnx+xsEIQlq1gJ6ez4taetHgK+7FYTp4CT9V2O3rRN8l4cOZJfxMvLRB7\nNn2SBn1FSax+dGmryjBgjO/vt5kyKdU/Z+Gp1UhD13dyZ2Ks3BXK2wvsXvda\nqxi3XFE2k9NnxNxc+LJ6GVNa67otHNpXSsBtPVvtfl7hbytBmx4Lpp/fb5rw\nP04M79Ny4kxbazcjNPIY9OWYlpPSVvemlTTFq7koxh2vSZryRTZ8x4x1Di7l\nB1u1pBjXXUl98/65MBRbfxmqIgDXekO34ezhwTtgR+5t6tC5YtiSmiknx1A/\nF1FA6mrKPHLMrYhA/DK4cfD3f5TfGzKWzG/I+eViutZVrKvWha++CjtyK5t5\nDzmBaa2Lcf8Vz1fXQzQrleSAEncTdqEsOY8tjQ15VPiq2NwPVJpAcpsJeBib\nhTRx\r\n=VltB\r\n-----END PGP SIGNATURE-----\r\n",
+    "shasum": "b50c20799218e9e02e195d0616decfd5679c4b53",
+    "tarball": "https://registry.npmjs.org/froala-editor/-/froala-editor-2.8.4.tgz",
+    "unpackedSize": 3567492
+  },
+  "filename": "js/froala_editor.min.js",
+  "gitHead": "db00a7694d8a694f78e87c2bd429f72c5a92dc5e",
+  "homepage": "https://www.froala.com/wysiwyg-editor",
+  "keywords": [
+    "froala",
+    "froala-editor",
+    "froala-wysiwyg",
+    "html",
+    "text",
+    "editor",
+    "wysiwyg",
+    "jquery-plugin",
+    "rich editor",
+    "rich text editor",
+    "rte",
+    "javascript",
+    "jquery"
+  ],
+  "license": "https://www.froala.com/wysiwyg-editor/pricing",
+  "main": "js/froala_editor.min.js",
+  "maintainers": [
+    {
+      "email": "stefan@froala.com",
+      "name": "froala"
+    }
+  ],
+  "name": "froala-editor",
+  "npmFileMap": [
+    {
+      "basePath": "/",
+      "files": [
+        "js/plugins/*.min.js",
+        "js/third_party/*.min.js",
+        "js/froala_editor.min.js",
+        "js/froala_editor.pkgd.min.js",
+        "css/froala_editor.min.css",
+        "css/froala_editor.pkgd.min.css",
+        "css/froala_style.min.css",
+        "css/plugins/*.min.css",
+        "css/third_party/*.min.css",
+        "css/themes/*.min.css"
+      ]
+    }
+  ],
+  "npmName": "froala-editor",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/froala/wysiwyg-editor.git"
+  },
+  "version": "2.8.4"
+}

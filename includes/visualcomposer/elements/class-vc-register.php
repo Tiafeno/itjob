@@ -17,6 +17,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
     public function __construct() {
       add_action( 'init', [ $this, 'register_mapping' ] );
       add_action( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
+
+      // Ajouter le mot de passe de l'utilisateur
       add_action( 'user_register', function ( $user_id ) {
         $user       = get_userdata( $user_id );
         $user_roles = $user->roles;
@@ -42,6 +44,9 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       add_action( 'wp_ajax_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
       add_action( 'wp_ajax_nopriv_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
+
+      add_action( 'wp_ajax_ajx_get_taxonomy', [ &$this, 'ajx_get_taxonomy' ] );
+      add_action( 'wp_ajax_nopriv_ajx_get_taxonomy', [ &$this, 'ajx_get_taxonomy' ] );
 
       add_action( 'wp_ajax_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
       add_action( 'wp_ajax_nopriv_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
@@ -160,6 +165,28 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       wp_send_json( $terms );
     }
 
+    public function ajx_get_taxonomy() {
+      /**
+       * @func wp_doing_ajax
+       * (bool) True if it's a WordPress Ajax request, false otherwise.
+       */
+      if ( ! \wp_doing_ajax() || empty( $_GET ) ) {
+        return false;
+      }
+
+      $taxonomy = Http\Request::getValue( 'tax', false );
+      if ( $taxonomy ) {
+        $terms = get_terms( $taxonomy, [
+          'hide_empty' => false,
+          'fields'     => 'all'
+        ] );
+        wp_send_json( $terms );
+      } else {
+        return false;
+      }
+
+    }
+
     public function ajx_insert_company() {
       /**
        * @func wp_doing_ajax
@@ -168,6 +195,13 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       if ( ! \wp_doing_ajax() ) {
         return;
       }
+
+      $userEmail = Http\Request::getValue( 'email', false );
+      $userExist = get_user_by( 'email', $userEmail );
+      if ( true == $userExist ) {
+        wp_send_json( [ 'success' => false, 'msg' => 'L\'adresse e-mail ou l\'utilisateur existe déja' ] );
+      }
+
       $form = (object) [
         'greeting'           => Http\Request::getValue( 'greeting' ),
         'title'              => Http\Request::getValue( 'title' ),
@@ -229,6 +263,18 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
     public function register_render_html( $attrs ) {
       global $Engine, $itJob;
+
+      if ( is_user_logged_in() ) {
+        $logoutUrl          = wp_logout_url( home_url( '/' ) );
+        $user               = wp_get_current_user();
+        $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
+        $output             = 'Vous êtes déjà connecté avec ce compte: <b>' . $user->display_name . '</b><br>';
+        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4" href="' . $espace_client_link . '">Espace client</a>';
+        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4 ml-2" href="' . $logoutUrl . '">Déconnecter</a>';
+
+        return $output;
+      }
+
       // Params extraction
       extract(
         shortcode_atts(
@@ -263,9 +309,9 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
           return $Engine->render( '@VC/register/company.html.twig', [
             'title' => $title
           ] );
-        } catch ( Twig_Error_Loader $e ) {
-        } catch ( Twig_Error_Runtime $e ) {
-        } catch ( Twig_Error_Syntax $e ) {
+        } catch ( \Twig_Error_Loader $e ) {
+        } catch ( \Twig_Error_Runtime $e ) {
+        } catch ( \Twig_Error_Syntax $e ) {
           return $e->getRawMessage();
         }
       } else {
@@ -278,9 +324,9 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
           return $Engine->render( '@VC/register/candidate.html.twig', [
             'title' => $title
           ] );
-        } catch ( Twig_Error_Loader $e ) {
-        } catch ( Twig_Error_Runtime $e ) {
-        } catch ( Twig_Error_Syntax $e ) {
+        } catch ( \Twig_Error_Loader $e ) {
+        } catch ( \Twig_Error_Runtime $e ) {
+        } catch ( \Twig_Error_Syntax $e ) {
           return $e->getRawMessage();
         }
       }

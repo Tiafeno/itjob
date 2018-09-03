@@ -52,11 +52,12 @@ if ( ! class_exists( 'scLogin' ) ) :
       global $Engine, $itJob;
 
       if ( is_user_logged_in() ) {
-        $logoutUrl = wp_logout_url( home_url( '/' ) );
-        $user      = wp_get_current_user();
-        $output    = 'Vous êtes déjà connecté avec ce compte: <b>' . $user->display_name . '</b><br>';
-        $output    .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4" href="#espace_client">Espace client</a>';
-        $output    .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4 ml-2" href="' . $logoutUrl . '">Déconnecter</a>';
+        $logoutUrl          = wp_logout_url( home_url( '/' ) );
+        $user               = wp_get_current_user();
+        $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
+        $output             = 'Vous êtes déjà connecté avec ce compte: <b>' . $user->display_name . '</b><br>';
+        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4" href="' . $espace_client_link . '">Espace client</a>';
+        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4 ml-2" href="' . $logoutUrl . '">Déconnecter</a>';
 
         return $output;
       }

@@ -232,7 +232,6 @@ if ( ! class_exists( 'itJob' ) ) {
         wp_enqueue_script( 'numeral', get_template_directory_uri() . '/assets/js/numeral.min.js', [], $itJob->version, true );
         wp_enqueue_script( 'bluebird', get_template_directory_uri() . '/assets/js/bluebird.min.js', [], $itJob->version, true );
         wp_enqueue_script( 'uikit', get_template_directory_uri() . '/assets/js/uikit.min.js', [ 'jquery' ], $itJob->version, true );
-//        wp_enqueue_script( 'uikit-icon', get_template_directory_uri() . '/assets/js/uikit-icons.min.js', ['jquery'], $itJob->version, true );
 
         /** Register scripts */
         $this->register_enqueue_scripts();
@@ -253,7 +252,7 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'before_delete_post', function ( $postId ) {
         $pst = get_post( $postId );
         if ( $pst->post_type === 'offers' ) {
-          $offer = new \Offers( $postId );
+          $offer = new Post\Offers( $postId );
           $offer->removeOffer();
           unset( $offer );
         }
@@ -320,6 +319,11 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_script( 'angular',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [], '1.7.2' );
 
+      wp_register_script( 'angular-froala',
+        get_template_directory_uri() . '/assets/vendors/froala-editor/src/angular-froala.js', [], '2.8.4' );
+      wp_register_script( 'froala',
+        get_template_directory_uri() . '/assets/vendors/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
+
       // plugins depend
       wp_register_style( 'font-awesome',
         get_template_directory_uri() . '/assets/vendors/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
@@ -358,6 +362,14 @@ if ( ! class_exists( 'itJob' ) ) {
           'bootstrap-select',
           'style'
         ], $itJob->version );
+
+      wp_register_style( 'froala-editor',
+        get_template_directory_uri() . '/assets/vendors/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
+      wp_register_style( 'froala',
+        get_template_directory_uri() . '/assets/vendors/froala-editor/css/froala_style.min.css', [
+          'froala-editor',
+          'font-awesome'
+        ], '2.8.4' );
 
       // Register components adminca scripts
       wp_register_script( 'popper',
