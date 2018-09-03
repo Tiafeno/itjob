@@ -283,7 +283,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       extract(
         shortcode_atts(
           array(
-            'title' => null
+            'title' => 'Ajouter une offre'
           ),
           $attrs
         )
