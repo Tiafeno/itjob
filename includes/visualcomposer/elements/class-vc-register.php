@@ -52,12 +52,20 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       add_action( 'wp_ajax_nopriv_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
     }
 
-
+    /**
+     * This hook allows you to modify the value of a field before it is saved to the database.
+     *
+     * @param $value – the value of the field as found in the $_POST object
+     * @param $post_id - the post id to save against
+     * @param $field – the field object (actually an array, not object)
+     *
+     * @return bool|string
+     */
     public function post_publish_company( $value, $post_id, $field ) {
-
+      $chars     = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       $post_type = get_post_type( $post_id );
       if ( $post_type != 'company' ) {
-        return false;
+        return $value;
       }
 
       $post      = get_post( $post_id );
@@ -68,7 +76,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         return $value;
       }
       $args    = [
-        "user_pass"    => substr( str_shuffle( $this->chars ), 0, 8 ),
+        "user_pass"    => substr( str_shuffle( $chars ), 0, 8 ),
         "user_login"   => 'user' . $post_id,
         "user_email"   => $userEmail,
         "display_name" => $post->post_title,
