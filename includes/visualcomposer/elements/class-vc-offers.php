@@ -204,6 +204,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       update_field( 'itjob_offer_proposedsallary', $form->salary_proposed, $post_id );
       update_field( 'itjob_offer_otherinformation', $form->other, $post_id );
       update_field( 'itjob_offer_abranch', $form->branch_activity, $post_id );
+      update_field( 'itjob_offer_featured', 0, $post_id );
 
       update_field( 'itjob_offer_company', $form->company_id, $post_id );
     }
