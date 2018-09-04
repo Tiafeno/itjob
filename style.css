@@ -22,3 +22,33 @@ p.mention-text {
   font-size: 11px;
   color: #a5a5a5;
 }
+
+/*** Menu home ***/
+ul.it-home-menu {
+  display: inline-block;
+  margin: auto;
+}
+
+ul.it-home-menu li {
+  display: inline-block;
+  margin-right: 1.2rem;
+}
+
+ul.it-home-menu li > a {
+  background-color: #76cb3b;
+  color: aliceblue;
+  padding: 14px;
+  width: 105px;
+  border-radius: 57px;
+  display: block;
+  text-align: center;
+  margin-top: 4px;
+  -webkit-transition: all ease-in-out .5s;
+  -o-transition: all ease-in-out .5s;
+  transition: all ease-in-out .5s;
+}
+
+ul.it-home-menu li > a:hover,
+ul.it-home-menu li.current-menu-item > a {
+  background-color: #E5B62B;
+}
