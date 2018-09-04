@@ -170,6 +170,9 @@ if ( ! class_exists( 'itJob' ) ) {
         }
       } );
 
+      /**
+       * Ajouter dans les variables global pour nom post-types le contenue du post
+       */
       add_action( 'the_post', function ( $post_object ) {
         $post_types = [ 'offers', 'company', 'candidate' ];
         if ( ! in_array( $post_object->post_type, $post_types ) ) {
