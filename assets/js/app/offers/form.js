@@ -120,15 +120,13 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'n
           offerFactory
             .sendPostForm(offerForm)
             .then(function (response) {
-              $scope.$apply(function () {
-                var data = response.data;
-                if (data.success) {
-                  offerData.setMessage('Info', 'Offre publier avec succes');
-                  $location.path('/confirmation');
-                } else {
-                  $scope.isSubmit = !1;
-                }
-              });
+              var data = response.data;
+              if (data.success) {
+                offerData.setMessage('Info', 'Offre publier avec succes');
+                $location.path('/confirmation');
+              } else {
+                $scope.isSubmit = !1;
+              }
             })
         };
         // Listening offers variable scope
