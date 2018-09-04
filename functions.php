@@ -141,4 +141,31 @@ add_filter( 'body_class', function ( $classes ) {
   return $classes;
 } );
 
+/**
+ * Personnaliser le menu d'accueil
+ * (ajouter un walker)
+ */
+add_filter( 'wp_nav_menu_args', function ( $args ) {
+  /**
+   * [term_id] => 219
+   * [name] => REF219M
+   * [slug] =>
+   * [term_group] => 0
+   * [term_taxonomy_id] => 219
+   * [taxonomy] => nav_menu
+   * [description] =>
+   * [parent] => 0
+   * [count] => 6
+   * [filter] => raw
+   */
+  $menu = $args['menu'];
+  if ( $menu->name === 'REF219M' ) :
+    $args['menu_class']      = "it-home-menu uk-padding-remove";
+    $args['container_class'] = "d-flex";
+    $args['walker']          = new Home_Menu_Walker();
+  endif;
+
+  return $args;
+} );
+
 
