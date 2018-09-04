@@ -28,11 +28,14 @@ if ( ! class_exists( 'vcSearch' ) ):
       // Map the block with vc_map()
       vc_map(
         array(
-          'name'        => 'Récherche d\'emploi',
-          'base'        => 'vc_itjob_search',
-          'description' => 'Effectuer une recherche sur l\'emplois ou sur les candidats',
-          'category'    => 'itJob',
-          'params'      => array(
+          'name'                    => 'Récherche d\'emploi',
+          'base'                    => 'vc_itjob_search',
+          'content_element'         => true,
+          'show_settings_on_create' => true,
+          "js_view"                 => 'VcColumnView',
+          'description'             => 'Effectuer une recherche sur l\'emplois ou sur les candidats',
+          'category'                => 'itJob',
+          'params'                  => array(
             array(
               'type'        => 'dropdown',
               'class'       => 'vc-ij-type',
@@ -99,6 +102,7 @@ if ( ! class_exists( 'vcSearch' ) ):
             'softwares' => $master_software
           ];
           $data            = array_merge( $data, $sub_data );
+
           return $Engine->render( '@VC/search/search.html.twig', $data );
         } catch ( Twig_Error_Loader $e ) {
         } catch ( Twig_Error_Runtime $e ) {
@@ -147,5 +151,8 @@ if ( ! class_exists( 'vcSearch' ) ):
     }
   }
 endif;
+
+class WPBakeryShortCode_Vc_itjob_search extends \WPBakeryShortCodesContainer {
+}
 
 return new vcSearch();

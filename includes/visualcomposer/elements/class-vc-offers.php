@@ -432,4 +432,7 @@ if ( ! class_exists( 'vcOffers' ) ):
   }
 endif;
 
+class WPBakeryShortCode_Vc_featured_offers extends \WPBakeryShortCodesContainer {
+}
+
 return new vcOffers();

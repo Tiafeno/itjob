@@ -25,7 +25,7 @@ wp_enqueue_style( 'themify-icons' );
     }
   </style>
   <div class="uk-section uk-section-transparent">
-    <div class="uk-container uk-container-small">
+    <div class="uk-container uk-container-medium">
       <div uk-grid>
         <div class="uk-width-2-3@s">
           <!--          Content here ... -->
