@@ -166,10 +166,7 @@ if ( ! class_exists( 'itJob' ) ) {
             // TODO: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
             $query->query['s']      = '';
             $query->query_vars['s'] = '';
-
           } // .end if - search conditional
-
-
         }
       } );
 
@@ -256,9 +253,7 @@ if ( ! class_exists( 'itJob' ) ) {
           $offer->removeOffer();
           unset( $offer );
         }
-
       } );
-
     }
 
     public function post_publish_candidate( $post_id ) {
@@ -272,7 +267,7 @@ if ( ! class_exists( 'itJob' ) ) {
       $userEmail = get_field( 'itjob_cv_email', $post_id );
       // (WP_User|false) WP_User object on success, false on failure.
       $userExist = get_user_by( 'email', $userEmail );
-      if ( true === $userExist ) {
+      if ( true == $userExist ) {
         return false;
       }
 
