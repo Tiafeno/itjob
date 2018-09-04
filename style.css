@@ -52,3 +52,9 @@ ul.it-home-menu li > a:hover,
 ul.it-home-menu li.current-menu-item > a {
   background-color: #E5B62B;
 }
+
+/** Offers **/
+.row .row-offer {
+  padding-right: 5px !important;
+  padding-left: 5px !important;
+}

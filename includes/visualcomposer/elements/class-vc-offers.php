@@ -274,6 +274,13 @@ if ( ! class_exists( 'vcOffers' ) ):
       return ( trim( $position ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
     }
 
+    /**
+     * Shortcode - Crée une formulaire d'ajout d'offre
+     *
+     * @param  array $attrs
+     *
+     * @return bool|string
+     */
     public function vc_added_offer_render( $attrs ) {
       if ( ! is_user_logged_in() ) {
         return false;
