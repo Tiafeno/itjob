@@ -55,86 +55,97 @@
   <h5 class="vc-element-title">{{ title }}</h5>
   <div class="row mb-5">
 
-    <div class="col-md-12">
-      <div class="card ibox mb-4">
-        <div class="rel">
-          <div class="fab fab-bottom card-overlay-fab">
-            <button class="btn btn-primary btn-icon-only btn-circle btn-air" data-toggle="button">
-              <i class="la la-share-alt fab-icon"></i>
-              <i class="la la-close fab-icon-active"></i>
-            </button>
-            <ul class="fab-menu">
-              <li>
-                <a class="btn btn-soc-facebook btn-icon-only btn-circle btn-air" href="javascript:;">
-                  <i class="fa fa-facebook"></i>
-                </a>
-              </li>
-              <li>
-                <a class="btn btn-soc-twitter btn-icon-only btn-circle btn-air" href="javascript:;">
-                  <i class="fa fa-twitter"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="card-body">
-          <h4 class="card-title mb-4">
-            <a class="text-primary">Recrute dans l’immédiat une assistante Qualité</a>
-          </h4>
-          <div class="card-description">
+    {% if offers is empty %}
+      <div class="col-md-12 mt-4">
+        <b>Nous sommes actuellement en train d’alimenter la plateforme avec de nouvelles fiches.</b><br>
+        En attendant, faites une recherche ou revenez dans quelques temps ;-) Merci de votre compréhension.</p>
+      </div>
+    {% endif %}
 
-            <div class="row">
-              <div class="col-8 uk-padding-remove-right">
-                <table class="table">
-                  <tbody>
-                  <tr>
-                    <td>Région:</td>
-                    <td>Analamagna</td>
-                  </tr>
-                  <tr>
-                    <td>Mission:</td>
-                    <td>Assister à la construction du Système...</td>
-                  </tr>
-                  <tr>
-                    <td>Profil:</td>
-                    <td>Issue d'une formation Bac +2/3 avec...</td>
-                  </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="col-4">
-                <div class="uk-flex">
-                  <button class="btn btn-warning btn-fix uk-margin-auto-left">
-                    <span class="btn-icon">Voir l'offre <i class="la la-plus"></i></span>
-                  </button>
+    {% for offer in offers %}
+      <div class="col-md-12">
+        <div class="card ibox mb-4">
+          <div class="rel">
+            <div class="fab fab-bottom card-overlay-fab">
+              <button class="btn btn-primary btn-icon-only btn-circle btn-air" data-toggle="button">
+                <i class="la la-share-alt fab-icon"></i>
+                <i class="la la-close fab-icon-active"></i>
+              </button>
+              <ul class="fab-menu">
+                <li>
+                  <a class="btn btn-soc-facebook btn-icon-only btn-circle btn-air" href="javascript:;">
+                    <i class="fa fa-facebook"></i>
+                  </a>
+                </li>
+                <li>
+                  <a class="btn btn-soc-twitter btn-icon-only btn-circle btn-air" href="javascript:;">
+                    <i class="fa fa-twitter"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title mb-4">
+              <a href="{{ offer.ID|get_permalink }}" class="text-primary">{{ offer.postPromote }}</a>
+            </h4>
+            <div class="card-description">
+
+              <div class="row">
+                <div class="col-8 uk-padding-remove-right">
+                  <table class="table">
+                    <tbody>
+                    <tr>
+                      <td>Région:</td>
+                      <td>{{ offer.region.name }}</td>
+                    </tr>
+                    <tr>
+                      <td>Mission:</td>
+                      <td>{{ offer.mission|striptags('<b>')|raw[:38] }} {% if offer.mission|length > 38 %}...{% endif %}</td>
+                    </tr>
+                    <tr>
+                      <td>Profil:</td>
+                      <td>{{ offer.profil|striptags('<b>')|raw[:38] }} {% if offer.profil|length > 38 %}...{% endif %}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="col-4 uk-flex">
+                  <div class="uk-flex">
+                    <a href="{{ offer.ID|get_permalink }}" class="uk-margin-auto uk-margin-auto-vertical">
+                      <button class="btn btn-warning btn-fix">
+                        <span class="btn-icon">Voir l'offre <i class="la la-plus"></i></span>
+                      </button>
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-12">
-                <table class="table">
-                  <tbody>
-                  <tr>
-                    <td class="no-bold uk-text-bold">Ref: BTP1328</td>
-                    <td class="text-center uk-text-bold">Date limite de candidature: 31/08/2018</td>
-                    <td class="text-right">Publier le 01/07/2018</td>
-                  </tr>
-                </table>
+              <div class="row">
+                <div class="col-12">
+                  <table class="table">
+                    <tbody>
+                    <tr>
+                      <td class="no-bold uk-text-bold">Ref: {{ offer.reference }}</td>
+                      <td class="text-center uk-text-bold">Date limite: {{ offer.dateLimit }}</td>
+                      <td class="text-right">Publier le {{ offer.datePublication }}</td>
+                    </tr>
+                  </table>
+                </div>
               </div>
+
             </div>
-
           </div>
-        </div>
 
-        <div class="card-footer">
-          <div class="d-flex align-items-center justify-content-between">
-            <div class="text-primary">
-              <b>TAG: </b> <span class="card-tag">assistante, construction, management</span>
+          <div class="card-footer">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="text-primary">
+                <b>TAG: </b> <span class="card-tag">{{ offer.tags|join(', ') }}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    {% endfor %}
 
   </div>
 </div>

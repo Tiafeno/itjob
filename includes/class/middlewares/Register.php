@@ -186,6 +186,8 @@ trait Register {
       'show_ui'           => true,
       'show_admin_column' => false,
       'query_var'         => true,
+      'public'            => true,
+      'show_in_rest'      => true,
       'rewrite'           => array( 'slug' => 'branch_activity' ),
     ] );
 
@@ -207,6 +209,8 @@ trait Register {
       'show_ui'           => true,
       'show_admin_column' => false,
       'query_var'         => true,
+      'public'            => true,
+      'show_in_rest'      => true,
       'rewrite'           => array( 'slug' => 'emploi' ),
     ] );
 
@@ -228,6 +232,8 @@ trait Register {
       'show_ui'           => true,
       'show_admin_column' => false,
       'query_var'         => true,
+      'public'            => true,
+      'show_in_rest'      => true,
       'rewrite'           => array( 'slug' => 'master_software' ),
     ] );
 
@@ -272,6 +278,8 @@ trait Register {
       'show_ui'           => true,
       'show_admin_column' => false,
       'query_var'         => true,
+      'public'            => true,
+      'show_in_rest'      => true,
       'rewrite'           => array( 'slug' => 'langage' ),
     ] );
 
@@ -293,6 +301,8 @@ trait Register {
       'show_ui'           => true,
       'show_admin_column' => false,
       'query_var'         => true,
+      'public'            => true,
+      'show_in_rest'      => true,
       'rewrite'           => array( 'slug' => 'tag' ),
     ] );
 
