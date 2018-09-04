@@ -38,11 +38,11 @@ final class Offers implements \iOffer {
   /** @var string $region - Region où se trouve l'offre */
   public $region;
 
-  /** @var string $contractType -  Type de contrat */
+  /** @var array $contractType -  Type de contrat */
   public $contractType;
 
-  /** @var string $profile - Type de profil réchercher pour l'offre */
-  public $profile;
+  /** @var string $profil - Type de profil réchercher pour l'offre */
+  public $profil;
 
   /** @var string $mission - Les mission qui seront effectuer par le ou les candidats */
   public $mission;
@@ -64,10 +64,11 @@ final class Offers implements \iOffer {
      * (WP_Post|array|null) Type corresponding to $output on success or null on failure.
      * When $output is OBJECT, a WP_Post instance is returned.
      */
-    $output           = get_post( $postId );
-    $this->ID         = $output->ID;
-    $this->title      = $output->post_title; // Position Filled
-    $this->userAuthor = Object\jobServices::getUserData( $output->post_author );
+    $output                = get_post( $postId );
+    $this->ID              = $output->ID;
+    $this->title           = $output->post_title; // Position Filled
+    $this->userAuthor      = Object\jobServices::getUserData( $output->post_author );
+    $this->datePublication = get_the_date( 'j F, Y', $output );
     if ( $this->is_offer() ) {
       $this->acfElements()->getOfferTaxonomy();
     }
@@ -109,7 +110,7 @@ final class Offers implements \iOffer {
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
     $this->proposedSalary   = get_field( 'itjob_offer_proposedsallary', $this->ID );
     $this->contractType     = get_field( 'itjob_offer_contrattype', $this->ID );
-    $this->profile          = get_field( 'itjob_offer_profil', $this->ID ); // WYSIWYG
+    $this->profil           = get_field( 'itjob_offer_profil', $this->ID ); // WYSIWYG
     $this->mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
     $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
