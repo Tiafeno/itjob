@@ -58,11 +58,11 @@ wp_enqueue_style( 'themify-icons' );
                 <div class="offer-description mt-4">
                   <h5 class="mt-3">Description</h5>
                   <div class="row mt-4">
-                    <div class="col-md-auto pr-lg-5">
+                    <div class="col-md-3 pt-4 pr-lg-5">
                       <p class="offer-field-title m-0">Région:</p>
                       <p class="offer-field-value m-0"><?= $offers->region->name ?></p>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col-md-3 pt-4">
                       <p class="offer-field-title m-0">Type de contrat: </p>
                       <p class="offer-field-value m-0"><?= $offers->contractType['label'] ?></p>
                     </div>
