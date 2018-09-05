@@ -31,6 +31,12 @@
     font-size: 12px;
   }
 
+  @media (min-width: 768px) {
+    .search-element-default .col-md-3:not(.no-pd) {
+      padding-left: 0px;
+    }
+  }
+
 </style>
 
 <div class="search-element-default">
@@ -48,8 +54,10 @@
       <div class="tab-pane fade active show" id="tab-8-1" aria-expanded="true">
         <form name="search-default search-offers" action="" method="get" class="ml-4 mr-4">
           <div class="row">
-            <div class="col-md-3">
-              <input class="form-control" name="s" type="text" placeholder="Mot clé">
+            <div class="col-md-3 no-pd">
+              <div class="form-group">
+                <input class="form-control" name="s" type="text" placeholder="Mot clé">
+              </div>
             </div>
             <div class="col-md-3">
               <div class="form-group">
@@ -121,7 +129,9 @@
           </div>
           <div class="row">
             <div class="col-md-4">
-              <input class="form-control" name="s" type="text" placeholder="Mot clé">
+              <div class="form-group">
+                <input class="form-control" name="s" type="text" placeholder="Mot clé">
+              </div>
             </div>
             <div class="col-md-4">
               <div class="form-group">

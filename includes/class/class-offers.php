@@ -17,6 +17,8 @@ final class Offers implements \iOffer {
 
   public $postPromote;
 
+  public $branch_activity;
+
   /** @var array|null $tags - Tag pour le réferencement et la recherche interne */
   public $tags = [];
 
@@ -114,6 +116,7 @@ final class Offers implements \iOffer {
     $this->mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
     $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
+    $this->branch_activity = get_field( 'itjob_offer_abranch', $this->ID );
 
     return $this;
   }
@@ -124,7 +127,7 @@ final class Offers implements \iOffer {
     $args      = [
       'post_type'      => 'offers',
       'posts_per_page' => $paged,
-      'post_status'    => 'publish',
+      'post_status'    => [ 'publish', 'pending' ],
       'orderby'        => 'date',
       'order'          => 'DESC'
     ];

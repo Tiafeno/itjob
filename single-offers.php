@@ -25,7 +25,7 @@ wp_enqueue_style( 'themify-icons' );
     }
   </style>
   <div class="uk-section uk-section-transparent">
-    <div class="uk-container uk-container-small">
+    <div class="uk-container uk-container-medium">
       <div uk-grid>
         <div class="uk-width-2-3@s">
           <!--          Content here ... -->
@@ -33,7 +33,7 @@ wp_enqueue_style( 'themify-icons' );
           while ( have_posts() ) : the_post();
             ?>
             <div class="offer-section">
-              <div class="offer-top d-inline-block pb-lg-4">
+              <div class="offer-top d-inline-block pb-4">
                 <div class="row">
                   <div class="col-md-5 d-flex">
                     <h5 class="text-uppercase uk-margin-auto-vertical">
@@ -58,11 +58,11 @@ wp_enqueue_style( 'themify-icons' );
                 <div class="offer-description mt-4">
                   <h5 class="mt-3">Description</h5>
                   <div class="row mt-4">
-                    <div class="col-md-auto pr-lg-5">
+                    <div class="col-md-3 pt-4 pr-lg-5">
                       <p class="offer-field-title m-0">Région:</p>
                       <p class="offer-field-value m-0"><?= $offers->region->name ?></p>
                     </div>
-                    <div class="col-md-auto">
+                    <div class="col-md-3 pt-4">
                       <p class="offer-field-title m-0">Type de contrat: </p>
                       <p class="offer-field-value m-0"><?= $offers->contractType['label'] ?></p>
                     </div>
@@ -95,7 +95,7 @@ wp_enqueue_style( 'themify-icons' );
                   endif;
                   ?>
 
-                  <div class="mt-lg-5">
+                  <div class="m-5">
                     <p class="uk-text-bold">Merci d'envoyer vos dossiers de candidatures ( CV + LM ) à l'adresse :
                       recrutement@itjobmada.com</p>
                   </div>
@@ -103,8 +103,8 @@ wp_enqueue_style( 'themify-icons' );
                 </div>
               </div>
 
-              <div class="offer-footer mt-lg-5">
-                <div class="row pt-lg-3">
+              <div class="offer-footer mt-lg-3">
+                <div class="row pt-3">
                   <div class="col-md-8"></div>
                   <div class="col-md-4">
                     <a href="<?= get_post_type_archive_link( 'offers' ) ?>">

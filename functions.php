@@ -27,6 +27,10 @@ require 'includes/itjob-configs.php';
 require 'includes/class/middlewares/Auth.php';
 require 'includes/class/middlewares/Register.php';
 
+// widgets
+require 'includes/class/widgets/widget-publicity.php';
+require 'includes/class/widgets/widget-shortcode.php';
+
 $itJob = (object) [
   'version'  => $theme->get( 'Version' ),
   'root'     => require 'includes/class/class-itjob.php',
@@ -81,13 +85,13 @@ try {
     'cache'       => TWIG_TEMPLATE_PATH . '/cache',
     'auto_reload' => WP_DEBUG
   ) );
-
   // Ajouter des filtres
   itjob_filter_engine( $Engine );
 
 } catch ( Twig_Error_Loader $e ) {
   die( $e->getRawMessage() );
 }
+
 
 add_action( 'after_setup_theme', function () {
   load_theme_textdomain( 'twentyfifteen' );
@@ -167,5 +171,6 @@ add_filter( 'wp_nav_menu_args', function ( $args ) {
 
   return $args;
 } );
+
 
 

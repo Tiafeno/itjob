@@ -4,7 +4,7 @@ Theme URI:    http://itjob.com
 Author:       Falicrea Inc.
 Author URI:   https://falicrea.com/
 Description:  Designed and developed by Falicrea 
-Version:      0.0.4
+Version:      0.0.6
 License:      GNU General Public License v2 or later
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:  itjob
@@ -57,4 +57,55 @@ ul.it-home-menu li.current-menu-item > a {
 .row .row-offer {
   padding-right: 5px !important;
   padding-left: 5px !important;
+}
+
+.container-list-posts .card .card-overlay-fab {
+  bottom: -30px;
+}
+
+.vc-element-title {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.container-list-posts h4.card-title {
+  font-size: 16px;
+}
+
+.container-list-posts .card .card-description p {
+  font-size: 12px;
+}
+
+.container-list-posts .card .card-description td {
+  font-size: 12px;
+  padding: .1rem;
+  border-top: none;
+  vertical-align: top;
+}
+
+.container-list-posts .card-footer .card-tag {
+  font-size: 12px;
+}
+
+.container-list-posts .card .card-body {
+  background: rgb(236, 236, 236);
+}
+
+.container-list-posts .card .card-footer {
+  background-color: rgb(217, 217, 217);
+}
+
+.container-list-posts .card .card-description tr td:first-child:not(.no-bold) {
+  font-weight: bold;
+}
+
+.card-description .btn-icon:not(.btn-labeled) > i {
+  padding-right: 0;
+  padding-left: .5rem;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.card-description button {
+  font-size: 12px;
 }

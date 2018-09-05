@@ -99,19 +99,19 @@
 <div class="uk-section uk-section-small uk-padding-remove uk-offcanvas-content">
 
   <div class="uk-section uk-section-small header-top">
-    <div class="uk-container-small uk-container">
+    <div class="uk-container-medium uk-container">
       <header>
         <div uk-grid>
           <div class="uk-width-1-3@s uk-width-2-3">
             <div class="uk-flex">
-              <div class="logo">
-                <a href="<?= home_url( '/' ) ?>">
-                  <img src="<?= get_template_directory_uri() ?>/img/logo.png" class="uk-logo"/>
+              <div class="logo uk-margin-medium-right" style="width: 30%">
+                <a href="<?= home_url( '/' ) ?>" class="d-block p-relative">
+                  <img src="<?= get_template_directory_uri() ?>/img/logo.png"/>
                 </a>
               </div>
               <div class="header-offcanvas uk-flex">
                 <button class="btn uk-margin-auto-vertical" uk-toggle="target: #offcanvas-push">
-                  <span class="btn-icon"><i class="fa fa-bars"></i>MENU</span>
+                  <span class="btn-icon"><i class="ti-align-left"></i>MENU</span>
                 </button>
 
                 <div id="offcanvas-push" uk-offcanvas="mode: push; overlay: true">
