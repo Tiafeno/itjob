@@ -60,6 +60,7 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( ! is_admin() && $query->is_main_query() ) {
           // Afficher les posts pour status 'en attente' et 'publier'
           $query->set( 'post_status', [ 'publish', 'pending' ] );
+          $query->set( 'posts_per_page', 1 );
 
           if ( $query->is_search ) {
 
@@ -217,6 +218,36 @@ if ( ! class_exists( 'itJob' ) ) {
       } );
 
       add_action( 'widgets_init', function () {
+        // Register sidebar
+        // Offers
+        register_sidebar( array(
+          'name'          => 'Archive Offre Haut',
+          'id'            => 'archive-offer-top',
+          'description'   => 'Afficher des widgets en haut de la page archive',
+          'before_widget' => '<div id="%1$s" class="widget mt-4 %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Archive Offre Sidebar',
+          'id'            => 'archive-offer-sidebar',
+          'description'   => 'Afficher des widgets sur côté de la page archive',
+          'before_widget' => '<div id="%1$s" class="widget mt-4 %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        // CV
+        register_sidebar( array(
+          'name'          => 'Archive CV Haut',
+          'id'            => 'archive-cv-top',
+          'description'   => 'Afficher des widgets en haut de la page archive',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        // Register widget
+        register_widget( 'Widget_Publicity' );
+        register_widget( 'Widget_Shortcode' );
+
       } );
 
       add_action( 'wp_enqueue_scripts', function () {
