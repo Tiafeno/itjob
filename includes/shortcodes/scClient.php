@@ -52,10 +52,11 @@ if ( ! class_exists( 'scClient' ) ) :
         ] );
       $company      = reset( $allCompany );
       try {
+        $offers = $this->get_company_offers();
         if ( in_array( 'company', $client_roles, true ) ) {
           return $Engine->render( '@SC/client-company.html.twig', [
             'client' => new Company( $company->ID ),
-            'offers' => $this->get_company_offers(),
+            'offers' => $offers,
             'url'    => [
               'add_offer' => get_permalink( (int) ADD_OFFER_PAGE )
             ]
@@ -80,19 +81,16 @@ if ( ! class_exists( 'scClient' ) ) :
       $resolve = [];
       $User    = wp_get_current_user();
       $offers  = get_posts( [
-        'numberposts' => - 1,
-        'post_type'   => 'offers',
-        'orderby'     => 'post_date',
-        'order'       => 'ASC',
-        'author'      => $User->ID,
-        'post_status' => 'publish',
+        'posts_per_page' => - 1,
+        'post_type'      => 'offers',
+        'orderby'        => 'post_date',
+        'order'          => 'ASC',
+        'post_author'    => $User->ID,
+        'post_status'    => [ 'publish', 'pending' ],
       ] );
       foreach ( $offers as $offer ) {
-        setup_postdata( $offer );
-        array_push( $resolve, new Offers( get_the_ID() ) );
+        array_push( $resolve, new Offers( $offer->ID ) );
       }
-      wp_reset_postdata();
-
       return $resolve;
     }
   }

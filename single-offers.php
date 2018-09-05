@@ -33,7 +33,7 @@ wp_enqueue_style( 'themify-icons' );
           while ( have_posts() ) : the_post();
             ?>
             <div class="offer-section">
-              <div class="offer-top d-inline-block pb-lg-4">
+              <div class="offer-top d-inline-block pb-4">
                 <div class="row">
                   <div class="col-md-5 d-flex">
                     <h5 class="text-uppercase uk-margin-auto-vertical">
@@ -95,7 +95,7 @@ wp_enqueue_style( 'themify-icons' );
                   endif;
                   ?>
 
-                  <div class="mt-lg-5">
+                  <div class="m-5">
                     <p class="uk-text-bold">Merci d'envoyer vos dossiers de candidatures ( CV + LM ) à l'adresse :
                       recrutement@itjobmada.com</p>
                   </div>
@@ -103,8 +103,8 @@ wp_enqueue_style( 'themify-icons' );
                 </div>
               </div>
 
-              <div class="offer-footer mt-lg-5">
-                <div class="row pt-lg-3">
+              <div class="offer-footer mt-lg-3">
+                <div class="row pt-3">
                   <div class="col-md-8"></div>
                   <div class="col-md-4">
                     <a href="<?= get_post_type_archive_link( 'offers' ) ?>">

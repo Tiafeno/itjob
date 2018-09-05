@@ -43,8 +43,8 @@
         </div>
         <div class="d-inline-flex">
           <div class="px-4 text-center">
-            <div class="text-muted font-13">OFFRES</div>
-            <div class="h2 mt-2">134</div>
+            <div class="text-muted font-13">OFFRE{% if offers|length > 1 %}S{% endif %}</div>
+            <div class="h2 mt-2">{{ offers|length }}</div>
           </div>
         </div>
       </div>
@@ -66,9 +66,14 @@
 
     <div class="tab-content">
       <div class="tab-pane fade text-center" id="profil">
-        <div class="h1 mt-5 mb-3">TAB 1</div>
-        <p class="mb-5">Laborum dolore consectetur occaecat in ex sunt et dolore dolore aliqua aute qui cupidatat et
-          ullamco in pariatur dolor quis laboris ut.</p>
+        <div class="page-content">
+          <div class="ibox-body">
+            <div class="h1 mt-5 mb-3">Information générale</div>
+            <p class="mb-5">Laborum dolore consectetur occaecat in ex sunt et dolore dolore aliqua aute qui cupidatat et
+              ullamco in pariatur dolor quis laboris ut.</p>
+          </div>
+        </div>
+
       </div>
 
       <div class="tab-pane fade text-center active show" id="offers">
@@ -78,7 +83,7 @@
               <div class="flexbox">
                 <div class="input-group-icon input-group-icon-left mr-3">
                   <span class="input-icon input-icon-right font-16"><i class="ti-search"></i></span>
-                  <input class="form-control form-control-rounded form-control-solid" id="key-search" type="text"
+                  <input class="form-control form-control-solid" id="key-search" type="text"
                          placeholder="Rechercher ...">
                 </div>
                 <a class="btn btn-primary" href="{{ url['add_offer'] }}">Ajouter une offre</a>
@@ -88,63 +93,36 @@
               <table class="table table-bordered table-hover" id="products-table">
 
                 <thead class="thead-default thead-lg">
-                  <tr>
+                <tr>
                   <th>ID</th>
-                  <th>Product</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>SKU</th>
-                  <th>Quantity</th>
+                  <th>Poste à promouvoir</th>
+                  <th>Type de contrat</th>
+                  <th>Secteur d'activité</th>
+                  <th>Région</th>
+                  <th>Réference</th>
                   <th>Actions</th>
                 </tr>
                 </thead>
 
                 <tbody>
+                {% for offer in offers %}
                   <tr>
-                    <td>1</td>
+                    <td>{{ offer.ID }}</td>
                     <td>
-                      Samsung UE32M5503AUX
+                      <a href="{{ offer.ID|get_permalink }}" title="{{ offer.postPromote }}">{{ offer.postPromote }}</a>
                     </td>
-                    <td>TV & Video</td>
-                    <td>$425</td>
-                    <td>F0522</td>
+                    <td>{{ offer.contractType[ 'label' ] }}</td>
+                    <td>{{ offer.branch_activity.name }}</td>
+                    <td>{{ offer.region.name }}</td>
                     <td>
-                      <span class="badge badge-danger badge-pill">Out of stock</span>
+                      <span class="badge badge-info badge-pill">{{ offer.reference }}</span>
                     </td>
                     <td>
                       <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
                       <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
                     </td>
                   </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>
-                      Dell XPS 13 2-in-1
-                      9365-4429
-                    </td>
-                    <td>Computers & Tablets</td>
-                    <td>$1636</td>
-                    <td>A1274</td>
-                    <td>120</td>
-                    <td>
-                      <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                      <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>
-                      Evaflor "Whisky"
-                    </td>
-                    <td>Health & Beauty</td>
-                    <td>$12</td>
-                    <td>A5474</td>
-                    <td>148</td>
-                    <td>
-                      <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                      <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
-                    </td>
-                  </tr>
+                {% endfor %}
                 </tbody>
 
               </table>
