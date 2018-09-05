@@ -60,7 +60,7 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( ! is_admin() && $query->is_main_query() ) {
           // Afficher les posts pour status 'en attente' et 'publier'
           $query->set( 'post_status', [ 'publish', 'pending' ] );
-          $query->set( 'posts_per_page', 1 );
+          //$query->set( 'posts_per_page', 1 );
 
           if ( $query->is_search ) {
 

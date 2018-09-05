@@ -23,13 +23,20 @@ wp_enqueue_style( 'offers' );
       border: 1px solid #efefef;
     }
 
+    .navigation li a:hover {
+      background-color: #e9ecef;
+      border-radius: 50%;
+    }
+
     .navigation li span.current {
       display: block;
       float: left;
-      padding: 4px 9px;
+      padding: 5px 11px;
       margin-right: 7px;
       border: 1px solid #efefef;
-      background-color: #f5f5f5;
+      background-color: #004786;
+      color: aliceblue;
+      border-radius: 26px;
     }
 
     .navigation li span.dots {
@@ -58,7 +65,7 @@ wp_enqueue_style( 'offers' );
               while ( have_posts() ) : the_post();
                 get_template_part( 'partials/content', 'offers' );
               endwhile;
-
+              echo '<div class="navigation">';
               echo paginate_links( array(
                 'base'     => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
                 'format'   => '?paged=%#%',
@@ -67,6 +74,7 @@ wp_enqueue_style( 'offers' );
                 'mid_size' => 4,
                 'type'     => 'list'
               ) );
+              echo '</div>';
 
               ?>
             </div>
