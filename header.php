@@ -98,15 +98,15 @@
 
 <div class="uk-section uk-section-small uk-padding-remove uk-offcanvas-content">
 
-  <div class="uk-section uk-section-small header-top">
+  <div class="uk-section uk-section-small uk-padding-remove header-top">
     <div class="uk-container-medium uk-container">
-      <header>
+      <header class="header">
         <div uk-grid>
-          <div class="uk-width-1-3@s uk-width-2-3">
+          <div class="uk-width-1-3@s uk-width-2-3 uk-flex">
             <div class="uk-flex">
-              <div class="logo uk-margin-medium-right" style="width: 30%">
-                <a href="<?= home_url( '/' ) ?>" class="d-block p-relative">
-                  <img src="<?= get_template_directory_uri() ?>/img/logo.png"/>
+              <div class="logo uk-margin-medium-right uk-flex" style="width: 30%">
+                <a href="<?= home_url( '/' ) ?>" class=" p-relative uk-flex">
+                  <img src="<?= get_template_directory_uri() ?>/img/logo.png" class="uk-margin-auto-vertical"/>
                 </a>
               </div>
               <div class="header-offcanvas uk-flex">
@@ -126,7 +126,7 @@
             </div>
 
           </div>
-          <div class="uk-width-2-3@s uk-width-1-1">
+          <div class="uk-width-2-3@s uk-width-1-3">
             <div class="uk-flex container-menu-header-top">
               <div class="menu-header-top uk-margin-auto-vertical uk-margin-auto-left">
                 <ul class="uk-display-inline-block uk-margin-remove">
@@ -140,14 +140,39 @@
                     $crUser             = wp_get_current_user();
                     $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
                     ?>
-                    <li>
-                      <div class="btn-group">
-                        <a class="btn btn-outline-primary"
-                           href="<?= $espace_client_link ?>"><?= ucfirst($crUser->display_name) ?></a>
-                        <button class="btn btn-outline-primary dropdown-toggle dropdown-arrow"
-                                data-toggle="dropdown"></button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                          <a class="dropdown-item" href="<?= wp_logout_url( home_url( '/' ) ) ?>">Se déconnecter</a>
+                    <li class="dropdown dropdown-user">
+                      <a class="nav-link dropdown-toggle link" data-toggle="dropdown">
+                        <span class="mr-2 text-uppercase p-relative" style="bottom: 3px;">
+                          Espace Client
+                        </span>
+                        <i class="ti-user uk-text-large"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-arrow dropdown-menu-right admin-dropdown-menu">
+                        <div class="dropdown-arrow"></div>
+                        <div class="dropdown-header">
+                          <div class="mr-4">
+                            <img src="<?= get_template_directory_uri() . '/img/user.png' ?>" alt="image">
+                          </div>
+                          <div>
+                            <h5 class="font-strong text-white"><?= ucfirst($crUser->display_name) ?></h5>
+                            <div>
+                              <span class="admin-badge "><i class="ti-lock mr-2"></i><?= ucfirst($crUser->roles[0]) ?></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="admin-menu-features">
+                          <a class="admin-features-item text-uppercase" href="<?= $espace_client_link ?>"><i class="ti-user"></i>
+                            <span>Mon profile</span>
+                          </a>
+                          <a class="admin-features-item" href="javascript:;"><i class="ti-settings"></i>
+                            <span>SETTINGS</span>
+                          </a>
+                        </div>
+                        <div class="admin-menu-content">
+                          <div class="d-flex justify-content-between mt-2">
+                            <a class="text-muted uk-invisible" href="javascript:;">Earnings history</a>
+                            <a class="d-flex align-items-center" href="<?= wp_logout_url( home_url( '/' ) ) ?>">Déconnecter<i class="ti-shift-right ml-2 font-20"></i></a>
+                          </div>
                         </div>
                       </div>
                     </li>

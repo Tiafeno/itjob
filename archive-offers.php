@@ -38,7 +38,7 @@ wp_enqueue_style( 'offers' );
             </div>
           </div>
         </div>
-        <div class="cold-md-3">
+        <div class="col-md-3">
           <?php
           if ( is_active_sidebar( 'archive-offer-sidebar' ) ) {
             dynamic_sidebar( 'archive-offer-sidebar' );

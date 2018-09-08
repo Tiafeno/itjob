@@ -175,11 +175,11 @@ if ( ! class_exists( 'vcOffers' ) ):
         'other'           => Http\Request::getValue( 'other' ),
         'company_id'      => $Company->ID
       ];
-
+      // Ajouter l'offre dans la base de donnée
       $result = wp_insert_post( [
         'post_title'   => $form->post,
         'post_content' => '',
-        'post_status'  => 'pending',
+        'post_status'  => 'publish',
         'post_author'  => $User->ID,
         'post_type'    => 'offers'
       ] );
@@ -286,10 +286,17 @@ if ( ! class_exists( 'vcOffers' ) ):
      * @return bool|string
      */
     public function vc_added_offer_render( $attrs ) {
-      if ( ! is_user_logged_in() ) {
-        return false;
-      }
       global $Engine, $itJob;
+      if ( ! is_user_logged_in() ) {
+        return $Engine->render( '@ERROR/403.html.twig', [
+          'template_url' => get_template_directory_uri()
+        ] );
+      }
+
+      // TODO: Verifier si l'utilicateur est une entreprise
+      // Réfuser l'access s'il n'est pas une entreprise
+
+
       // Params extraction
       extract(
         shortcode_atts(
