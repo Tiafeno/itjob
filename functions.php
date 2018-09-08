@@ -80,6 +80,7 @@ try {
   $loader->addPath( TWIG_TEMPLATE_PATH . '/vc', 'VC' );
   $loader->addPath( TWIG_TEMPLATE_PATH . '/shortcodes', 'SC' );
   $loader->addPath( TWIG_TEMPLATE_PATH . '/widgets', 'WG' );
+  $loader->addPath( TWIG_TEMPLATE_PATH . '/error', 'ERROR' );
 
   /** @var Object $Engine */
   $Engine = new Twig_Environment( $loader, array(
