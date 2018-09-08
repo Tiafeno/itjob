@@ -137,6 +137,7 @@
                     echo sprintf( '<li><a class="btn btn-outline-primary btn-fix btn-thick" href="%s">S\'enregister</a></li>', $register_link );
                     echo sprintf( '<li><a class="btn btn-outline-primary btn-fix btn-thick" href="%s">%s</a></li><li>', $login_link, 'Connexion' );
                   } else {
+                    global $wp_roles;
                     $crUser             = wp_get_current_user();
                     $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
                     ?>
@@ -156,7 +157,7 @@
                           <div>
                             <h5 class="font-strong text-white"><?= ucfirst($crUser->display_name) ?></h5>
                             <div>
-                              <span class="admin-badge "><i class="ti-lock mr-2"></i><?= ucfirst($crUser->roles[0]) ?></span>
+                              <span class="admin-badge "><i class="ti-lock mr-2"></i><?= $wp_roles->roles[$crUser->roles[0]]['name'] ?></span>
                             </div>
                           </div>
                         </div>
@@ -164,6 +165,7 @@
                           <a class="admin-features-item text-uppercase" href="<?= $espace_client_link ?>"><i class="ti-user"></i>
                             <span>Mon compte</span>
                           </a>
+
                           <?php if (in_array('company', array_values($crUser->roles))) : ?>
                             <a class="admin-features-item pr-2 pl-2" href="<?= get_permalink( (int) ADD_OFFER_PAGE ) ?>">
                               <i class="ti-pencil-alt"></i>
