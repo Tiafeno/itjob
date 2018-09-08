@@ -126,8 +126,11 @@ add_action( 'after_setup_theme', function () {
 
   // Register menu location
   register_nav_menus( array(
-    'primary'  => __( 'Primary Menu', 'twentyfifteen' ),
-    'menu-top' => __( 'Top Menu', __SITENAME__ )
+    'primary'            => 'Menu Principal',
+    'menu-top'           => 'Menu Supérieur (Top)',
+    'menu-footer-left'   => 'Menu à gauche, bas de page',
+    'menu-footer-middle' => 'Menu aux milieux, bas de page',
+    'social-network'     => 'Réseau social',
   ) );
 } );
 
@@ -163,6 +166,9 @@ add_filter( 'wp_nav_menu_args', function ( $args ) {
    * [filter] => raw
    */
   $menu = $args['menu'];
+  if ( empty( $menu ) ) {
+    return $args;
+  }
   if ( $menu->name === 'REF219M' ) :
     $args['menu_class']      = "it-home-menu uk-padding-remove";
     $args['container_class'] = "d-flex";
