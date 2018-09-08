@@ -1,7 +1,7 @@
 <footer class="uk-section uk-section-secondary">
   <div class="uk-container uk-container-medium">
     <div class="row mt-4 mb-5">
-      <div class="col-md-4 col-sm-6">
+      <div class="col-md-4 col-sm-6 mt-4">
         <div class="footer-body">
           <?php
           $locations        = get_nav_menu_locations();
@@ -21,7 +21,7 @@
           ?>
         </div>
       </div>
-      <div class="col-md-4 col-sm-6">
+      <div class="col-md-4 col-sm-6 mt-4">
         <div class="footer-body">
           <?php
           if ( has_nav_menu( "menu-footer-middle" ) ) :
@@ -40,7 +40,7 @@
           ?>
         </div>
       </div>
-      <div class="col-md-4 col-sm-6">
+      <div class="col-md-4 col-sm-6 mt-4">
         <!-- Les reseaux sociaux -->
         <div class="footer-body">
           <?php

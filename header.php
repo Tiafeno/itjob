@@ -180,7 +180,9 @@
                         <div class="admin-menu-content">
                           <div class="d-flex justify-content-between mt-2">
                             <a class="text-muted uk-invisible" href="javascript:;">Earnings history</a>
-                            <a class="d-flex align-items-center" href="<?= wp_logout_url( home_url( '/' ) ) ?>">Déconnecter<i class="ti-shift-right ml-2 font-20"></i></a>
+                            <a class="d-flex align-items-center" href="<?= wp_logout_url( home_url( '/' ) ) ?>">Déconnecter
+                              <i class="ti-shift-right ml-2 font-20"></i>
+                            </a>
                           </div>
                         </div>
                       </div>
