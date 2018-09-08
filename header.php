@@ -117,13 +117,8 @@
                 <div id="offcanvas-push" uk-offcanvas="mode: push; overlay: true">
                   <div class="uk-offcanvas-bar">
                     <button class="uk-offcanvas-close" type="button" uk-close></button>
-                    <h3>MENU</h3>
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                      eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-                      ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                      ex ea commodo consequat.
-                    </p>
+<!--                    <h3>MENU</h3>-->
+                    <?php get_template_part('partials/principal', 'menu') ?>
                   </div>
                 </div>
 
