@@ -175,11 +175,11 @@ if ( ! class_exists( 'vcOffers' ) ):
         'other'           => Http\Request::getValue( 'other' ),
         'company_id'      => $Company->ID
       ];
-
+      // Ajouter l'offre dans la base de donnée
       $result = wp_insert_post( [
         'post_title'   => $form->post,
         'post_content' => '',
-        'post_status'  => 'pending',
+        'post_status'  => 'publish',
         'post_author'  => $User->ID,
         'post_type'    => 'offers'
       ] );

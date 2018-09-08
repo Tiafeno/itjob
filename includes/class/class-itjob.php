@@ -183,9 +183,11 @@ if ( ! class_exists( 'itJob' ) ) {
           case 'candidate':
             $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
             break;
+
           case 'offers':
             $GLOBALS[ $post_object->post_type ] = new Post\Offers( $post_object->ID );
             break;
+
           case 'company':
             $GLOBALS[ $post_object->post_type ] = new Post\Company( $post_object->ID );
             break;
@@ -247,9 +249,10 @@ if ( ! class_exists( 'itJob' ) ) {
         // Register widget
         register_widget( 'Widget_Publicity' );
         register_widget( 'Widget_Shortcode' );
+        register_widget( 'Widget_Accordion' );
 
       } );
-
+      add_action( 'admin_enqueue_scripts', [$this, 'register_enqueue_scripts']);
       add_action( 'wp_enqueue_scripts', function () {
         global $itJob;
 
@@ -392,6 +395,9 @@ if ( ! class_exists( 'itJob' ) ) {
           'bootstrap-select',
           'style'
         ], $itJob->version );
+
+      wp_register_style('admin-adminca',
+        get_template_directory_uri().'/assets/css/admin-custom.css', ['adminca'], $itJob->version);
 
       wp_register_style( 'froala-editor',
         get_template_directory_uri() . '/assets/vendors/froala-editor/css/froala_editor.min.css', '', '2.8.4' );

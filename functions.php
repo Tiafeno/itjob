@@ -30,6 +30,7 @@ require 'includes/class/middlewares/Register.php';
 // widgets
 require 'includes/class/widgets/widget-publicity.php';
 require 'includes/class/widgets/widget-shortcode.php';
+require 'includes/class/widgets/widget-accordion.php';
 
 $itJob = (object) [
   'version'  => $theme->get( 'Version' ),
@@ -78,6 +79,7 @@ try {
   $loader = new Twig_Loader_Filesystem();
   $loader->addPath( TWIG_TEMPLATE_PATH . '/vc', 'VC' );
   $loader->addPath( TWIG_TEMPLATE_PATH . '/shortcodes', 'SC' );
+  $loader->addPath( TWIG_TEMPLATE_PATH . '/widgets', 'WG' );
 
   /** @var Object $Engine */
   $Engine = new Twig_Environment( $loader, array(
