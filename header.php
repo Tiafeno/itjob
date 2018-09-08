@@ -162,8 +162,15 @@
                         </div>
                         <div class="admin-menu-features">
                           <a class="admin-features-item text-uppercase" href="<?= $espace_client_link ?>"><i class="ti-user"></i>
-                            <span>Mon profile</span>
+                            <span>Mon compte</span>
                           </a>
+                          <?php if (in_array('company', array_values($crUser->roles))) : ?>
+                            <a class="admin-features-item pr-2 pl-2" href="<?= get_permalink( (int) ADD_OFFER_PAGE ) ?>">
+                              <i class="ti-pencil-alt"></i>
+                              <span class="text-uppercase">Ajouter une annonce</span>
+                            </a>
+                          <?php endif; ?>
+
                           <a class="admin-features-item" href="javascript:;"><i class="ti-settings"></i>
                             <span>SETTINGS</span>
                           </a>
