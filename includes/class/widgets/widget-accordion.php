@@ -35,6 +35,7 @@ class Widget_Accordion extends WP_Widget {
     wp_enqueue_script( 'adminca' );
 
     $page_ids = isset( $instance['page_ids'] ) ? $instance['page_ids'] : '';
+    $page_ids = empty($page_ids) ? [] : $page_ids;
     $page_ids = array_values($page_ids);
     ?>
     <script type="text/javascript">
