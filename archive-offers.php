@@ -5,48 +5,6 @@ $total = $wp_query->max_num_pages;
 get_header();
 wp_enqueue_style( 'offers' );
 ?>
-  <style type="text/css">
-    .navigation {
-      list-style: none;
-      font-size: 12px;
-    }
-
-    .navigation li {
-      display: inline;
-    }
-
-    .navigation li a {
-      display: block;
-      float: left;
-      padding: 4px 9px;
-      margin-right: 7px;
-      border: 1px solid #efefef;
-    }
-
-    .navigation li a:hover {
-      background-color: #e9ecef;
-      border-radius: 50%;
-    }
-
-    .navigation li span.current {
-      display: block;
-      float: left;
-      padding: 5px 11px;
-      margin-right: 7px;
-      border: 1px solid #efefef;
-      background-color: #004786;
-      color: aliceblue;
-      border-radius: 26px;
-    }
-
-    .navigation li span.dots {
-      display: block;
-      float: left;
-      padding: 4px 9px;
-      margin-right: 7px;
-    }
-
-  </style>
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
       <div class="widget">
