@@ -58,7 +58,6 @@ if ( ! class_exists( 'scLogin' ) ) :
 
     public function sc_render_html( $attrs, $content = '' ) {
       global $Engine, $itJob, $wp_query;
-      $singup_url = '';
       if (empty($wp_query->query_vars['ptype'])) return;
       if ( is_user_logged_in() ) {
         $logoutUrl          = wp_logout_url( home_url( '/' ) );
