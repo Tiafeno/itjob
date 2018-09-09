@@ -66,6 +66,14 @@
       -webkit-box-shadow: 0 5px 20px #d6dee4;
       box-shadow: 0 5px 20px #d6dee4;
     }
+    .header .admin-dropdown-menu .admin-features-item img {
+      display: block;
+      margin-bottom: 16px;
+      width: 30px;
+      margin-left: auto;
+      margin-right: auto;
+      color: #ffffff;
+    }
     .logo img.uk-logo {
       width: 80%;
     }
@@ -132,10 +140,36 @@
                 <ul class="uk-display-inline-block uk-margin-remove">
                   <?php
                   if ( ! is_user_logged_in() ) {
-                    $register_link = REGISTER_PAGE ? get_the_permalink( (int) REGISTER_PAGE ) : '#no-link';
-                    $login_link    = LOGIN_PAGE ? get_the_permalink( (int) LOGIN_PAGE ) : '#no-link';
-                    echo sprintf( '<li><a class="btn btn-outline-primary btn-fix btn-thick" href="%s">S\'enregister</a></li>', $register_link );
-                    echo sprintf( '<li><a class="btn btn-outline-primary btn-fix btn-thick" href="%s">%s</a></li><li>', $login_link, 'Connexion' );
+                    $page_login_id    = LOGIN_PAGE ? (int) LOGIN_PAGE : 0;
+                    ?>
+                    <li class="dropdown dropdown-user">
+                      <a class="nav-link dropdown-toggle link" data-toggle="dropdown">
+                        <span class="mr-2 text-uppercase p-relative" style="bottom: 3px;">
+                          Connexion
+                        </span>
+                        <i class="ti-user uk-text-large"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-arrow dropdown-menu-right admin-dropdown-menu">
+                        <div class="dropdown-arrow"></div>
+                        <div class="dropdown-header">
+                          <div class="admin-menu-features">
+                            <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/candidate') ?>">
+<!--                              <i class="fa fa-user-tie"></i>-->
+                              <img src="<?= get_template_directory_uri() ?>/img/icons/user-graduate-solid.svg" />
+                              <span class="text-white">Candidat</span>
+                            </a>
+
+                            <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/company') ?>">
+                              <img src="<?= get_template_directory_uri() ?>/img/icons/user-tie-solid.svg" />
+                              <span class="text-white">Recruteur</span>
+                            </a>
+
+                          </div>
+                        </div>
+
+                      </div>
+                    </li>
+                    <?php
                   } else {
                     global $wp_roles;
                     $crUser             = wp_get_current_user();
@@ -157,23 +191,28 @@
                           <div>
                             <h5 class="font-strong text-white"><?= ucfirst($crUser->display_name) ?></h5>
                             <div>
-                              <span class="admin-badge "><i class="ti-lock mr-2"></i><?= $wp_roles->roles[reset($crUser->roles)]['name'] ?></span>
+                              <span class="admin-badge ">
+                                <i class="ti-lock mr-2"></i>
+                                <?= $wp_roles->roles[reset($crUser->roles)]['name'] ?>
+                              </span>
                             </div>
                           </div>
                         </div>
-                        <div class="admin-menu-features">f
-                          <a class="admin-features-item text-uppercase" href="<?= $espace_client_link ?>"><i class="ti-user"></i>
+                        <div class="admin-menu-features">
+                          <a class="admin-features-item text-uppercase" href="<?= $espace_client_link ?>">
+                            <i class="ti-user"></i>
                             <span>Mon compte</span>
                           </a>
 
                           <?php if (in_array('company', array_values($crUser->roles))) : ?>
                             <a class="admin-features-item pr-2 pl-2" href="<?= get_permalink( (int) ADD_OFFER_PAGE ) ?>">
                               <i class="ti-pencil-alt"></i>
-                              <span class="text-uppercase">Ajouter une annonce</span>
+                              <span class="text-uppercase">Ajouter un offre</span>
                             </a>
                           <?php endif; ?>
 
-                          <a class="admin-features-item" href="javascript:;"><i class="ti-settings"></i>
+                          <a class="admin-features-item" href="javascript:;">
+                            <i class="ti-settings"></i>
                             <span>SETTINGS</span>
                           </a>
                         </div>
