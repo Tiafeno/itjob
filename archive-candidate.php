@@ -1,4 +1,6 @@
 <?php
+global $wp_query;
+$total = $wp_query->max_num_pages;
 get_header();
 ?>
   <div class="uk-section uk-section-transparent">

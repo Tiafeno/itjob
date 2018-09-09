@@ -157,11 +157,11 @@
                           <div>
                             <h5 class="font-strong text-white"><?= ucfirst($crUser->display_name) ?></h5>
                             <div>
-                              <span class="admin-badge "><i class="ti-lock mr-2"></i><?= $wp_roles->roles[$crUser->roles[0]]['name'] ?></span>
+                              <span class="admin-badge "><i class="ti-lock mr-2"></i><?= $wp_roles->roles[reset($crUser->roles)]['name'] ?></span>
                             </div>
                           </div>
                         </div>
-                        <div class="admin-menu-features">
+                        <div class="admin-menu-features">f
                           <a class="admin-features-item text-uppercase" href="<?= $espace_client_link ?>"><i class="ti-user"></i>
                             <span>Mon compte</span>
                           </a>
