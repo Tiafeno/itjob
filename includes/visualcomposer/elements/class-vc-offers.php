@@ -212,12 +212,13 @@ if ( ! class_exists( 'vcOffers' ) ):
     // This is "itjob_offer_abranch" field
     // Cette fonction permet de mettre à jour la reference par rapport à son secteur d'activité
     public function update_offer_reference( $value, $post_id, $field ) {
-      $taxonomy = "branch_activity";
-      $term_abranch_id = (int)$value;
-      if (term_exists($term_abranch_id, $taxonomy)) {
-        $branch_activity_obj = get_term($term_abranch_id, $taxonomy);
-        update_field('itjob_offer_reference', strtoupper($branch_activity_obj->slug) . $post_id);
+      $taxonomy        = "branch_activity";
+      $term_abranch_id = (int) $value;
+      if ( term_exists( $term_abranch_id, $taxonomy ) ) {
+        $branch_activity_obj = get_term( $term_abranch_id, $taxonomy );
+        update_field( 'itjob_offer_reference', strtoupper( $branch_activity_obj->slug ) . $post_id );
       }
+
       return $value;
     }
 
@@ -412,6 +413,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         ]
       ];
       self::get_offers( $args, $featuredOffers );
+
       return $featuredOffers;
     }
 
