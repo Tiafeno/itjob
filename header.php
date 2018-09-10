@@ -155,8 +155,8 @@
                           <div class="admin-menu-features">
                             <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/candidate') ?>">
 <!--                              <i class="fa fa-user-tie"></i>-->
-                              <img src="<?= get_template_directory_uri() ?>/img/icons/user-graduate-solid.svg" />
-                              <span class="text-white">Candidat</span>
+                              <img src="<?= get_template_directory_uri() ?>/img/icons/user-solid.svg" />
+                              <span class="text-white">Particulier</span>
                             </a>
 
                             <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/company') ?>">

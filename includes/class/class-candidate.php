@@ -6,22 +6,13 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-final class Candidate implements \iCandidate {
+final class Candidate extends UserParticular implements \iCandidate {
   // Added Trait Class
   use \Auth;
 
-  private $ID;
-
   public $title;
   public $reference;
-  public $greeting;
-  public $firstName;
-  public $lastName;
-  public $address;
-  public $country; // City + Postal code, eg: Antananarivo (101)
   public $district; // Region
-  public $phones = [];
-  public $birthdayDate;
   public $status; // Je cherche...
   public $allowed; // A, B, C & A`
   public $jobSought;
@@ -34,6 +25,11 @@ final class Candidate implements \iCandidate {
   public $trainingNotif;
   public $newsletter;
 
+  /**
+   * Candidate constructor.
+   *
+   * @param int $postId - ID post 'candidate' type
+   */
   public function __construct( $postId = null ) {
     if ( is_null( $postId ) ) {
       return false;
@@ -47,19 +43,44 @@ final class Candidate implements \iCandidate {
     if ( is_null( $output ) ) {
       return false;
     }
-    $this->ID       = $output->ID;
+    $this->setId( $output->ID );
     $this->title    = $this->reference = $output->post_title;
     $this->postType = $output->post_type;
 
     if ( $this->acfElements() ) {
-      $this->email      = get_field( 'itjob_cv_email', $this->ID );
+      $this->email      = get_field( 'itjob_cv_email', $this->getId() );
       $User             = get_user_by( 'email', $this->email );
       $this->userAuthor = $User->data;
+
+      // Initialiser l'utilisateur particulier
+      parent::__construct( $User->ID );
+
       // Remove login information (security)
       unset( $this->userAuthor->user_login, $this->userAuthor->user_pass );
 
       // get Terms
       $this->fieldTax();
+    }
+  }
+
+  public static function get_candidate_by( $value, $handler = 'user_id' ) {
+    if ( $handler === 'user_id' ) {
+      $usr        = get_user_by( 'id', (int) $value );
+      $args       = [
+        'post_type'      => 'candidate',
+        'post_status'    => [ 'publish', 'pending' ],
+        'posts_per_page' => - 1,
+        'meta_key'       => 'itjob_cv_email',
+        'meta_value'     => $usr->user_email,
+        'meta_compare'   => '='
+      ];
+      $candidates = get_posts( $args );
+      if ( empty( $candidates ) ) return null;
+      $candidate = reset( $candidates );
+
+      return new Candidate( $candidate->ID );
+    } else {
+      return false;
     }
   }
 
@@ -74,23 +95,8 @@ final class Candidate implements \iCandidate {
     if ( ! function_exists( 'the_field' ) ) {
       return false;
     }
-    $this->greeting  = get_field( 'itjob_cv_greeting', $this->ID );
-    $this->firstName = get_field( 'itjob_cv_firstname', $this->ID );
-    $this->lastName  = get_field( 'itjob_cv_lastname', $this->ID );
 
-    $birthdayDate       = get_field( 'itjob_cv_birthdayDate', $this->ID );
-    $this->birthdayDate = date( 'd/m/Y', strtotime( $birthdayDate ) );
-    $this->address      = get_field( 'itjob_cv_address', $this->ID );
-
-    // repeater field
-    $phones = get_field( 'itjob_cv_phone', $this->ID );
-    if ( $phones ) {
-      foreach ( $phones as $phone ):
-        array_push( $this->phones, $phone['number'] );
-      endforeach;
-    }
-
-    $this->status      = get_field( 'itjob_cv_status', $this->ID );
+    $this->status      = get_field( 'itjob_cv_status', $this->getId() );
     $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [
       'training_dateBegin',
       'training_dateEnd',
@@ -109,7 +115,7 @@ final class Candidate implements \iCandidate {
     ] );
 
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
-    $this->newsletter     = get_field( 'itjob_cv_newsletter', $this->ID );
+    $this->newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
 
     return true;
   }
@@ -119,7 +125,7 @@ final class Candidate implements \iCandidate {
    * @return bool
    */
   public function isTrainingNotif() {
-    $notif = get_field( 'itjob_cv_notifFormation', $this->ID );
+    $notif = get_field( 'itjob_cv_notifFormation', $this->getId() );
     if ( $notif ) {
       if ( $notif['notification'] ) {
         $this->trainingNotif = (object) [ 'branch_activity' => $notif['branch_activity'] ];
@@ -136,7 +142,7 @@ final class Candidate implements \iCandidate {
    * @return bool
    */
   public function isJobNotif() {
-    $notif = get_field( 'itjbob_cv_notifEmploi', $this->ID );
+    $notif = get_field( 'itjbob_cv_notifEmploi', $this->getId() );
     if ( $notif ) {
       if ( $notif['notification'] ) {
         $branchActivity = [ 'branch_activity' => $notif['branch_activity'] ]; // Object Term
@@ -156,10 +162,10 @@ final class Candidate implements \iCandidate {
    * Récuperer les terms
    */
   private function fieldTax() {
-    $this->languages      = wp_get_post_terms( $this->ID, 'language', [ "fields" => "all" ] );
-    $this->masterSoftware = wp_get_post_terms( $this->ID, 'master_software', [ "fields" => "all" ] );
-    $this->district       = wp_get_post_terms( $this->ID, 'region', [ "fields" => "all" ] );
-    $this->jobSought      = wp_get_post_terms( $this->ID, 'job_sought', [ "fields" => "all" ] );
+    $this->languages      = wp_get_post_terms( $this->getId(), 'language', [ "fields" => "all" ] );
+    $this->masterSoftware = wp_get_post_terms( $this->getId(), 'master_software', [ "fields" => "all" ] );
+    $this->district       = wp_get_post_terms( $this->getId(), 'region', [ "fields" => "all" ] );
+    $this->jobSought      = wp_get_post_terms( $this->getId(), 'job_sought', [ "fields" => "all" ] );
   }
 
   /**
@@ -173,7 +179,7 @@ final class Candidate implements \iCandidate {
       return [];
     }
     $resolve = [];
-    $rows    = get_field( $repeaterField, $this->ID );
+    $rows    = get_field( $repeaterField, $this->getId() );
     if ( $rows ) {
       foreach ( $rows as $row ) {
         array_push( $resolve, (object) $row );
@@ -194,7 +200,7 @@ final class Candidate implements \iCandidate {
       return [];
     }
 
-    $groupe = get_field( $group, $this->ID );
+    $groupe = get_field( $group, $this->getId() );
     if ( $groupe ) {
       $resolve = new \stdClass();
       foreach ( $fields as $field ) {
@@ -205,14 +211,6 @@ final class Candidate implements \iCandidate {
     } else {
       return [];
     }
-  }
-
-  /**
-   * Get candidate ID
-   * @return int
-   */
-  public function getId() {
-    return $this->ID;
   }
 
   public static function getAllCandidate( $paged = - 1 ) {

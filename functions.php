@@ -24,6 +24,7 @@ $candidate = null;
 
 // middlewares
 require 'includes/itjob-configs.php';
+require 'includes/itjob-functions.php';
 require 'includes/class/middlewares/Auth.php';
 require 'includes/class/middlewares/Register.php';
 
@@ -49,6 +50,7 @@ foreach ( $interfaces as $interface ) {
 
 // post type object
 require_once 'includes/class/class-offers.php';
+require_once 'includes/class/class-particular.php';
 require_once 'includes/class/class-company.php';
 require_once 'includes/class/class-candidate.php';
 
