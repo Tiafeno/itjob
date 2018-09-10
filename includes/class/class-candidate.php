@@ -44,6 +44,8 @@ final class Candidate extends UserParticular implements \iCandidate {
       return false;
     }
     $this->setId( $output->ID );
+    // Initialiser l'utilisateur particulier
+    parent::__construct( (int)$postId );
     $this->title    = $this->reference = $output->post_title;
     $this->postType = $output->post_type;
 
@@ -51,10 +53,6 @@ final class Candidate extends UserParticular implements \iCandidate {
       $this->email      = get_field( 'itjob_cv_email', $this->getId() );
       $User             = get_user_by( 'email', $this->email );
       $this->userAuthor = $User->data;
-
-      // Initialiser l'utilisateur particulier
-      parent::__construct( $User->ID );
-
       // Remove login information (security)
       unset( $this->userAuthor->user_login, $this->userAuthor->user_pass );
 
