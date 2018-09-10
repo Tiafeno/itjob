@@ -107,7 +107,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'n
           var offerForm = new FormData();
           offerForm.append('action', 'ajx_insert_offers');
           offerForm.append('post', $scope.offers.postpromote);
-          offerForm.append('reference', $scope.offers.reference);
+          // offerForm.append('reference', $scope.offers.reference);
           offerForm.append('ctt', $scope.offers.contrattype);
           offerForm.append('salary_proposed', $scope.offers.proposedsallary);
           offerForm.append('region', parseInt($scope.offers.region));

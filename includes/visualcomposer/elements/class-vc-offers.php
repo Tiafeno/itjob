@@ -18,6 +18,7 @@ if ( ! class_exists( 'vcOffers' ) ):
   class vcOffers extends \WPBakeryShortCode {
     public function __construct() {
       add_action( 'init', [ $this, 'vc_offers_mapping' ] );
+      add_action( 'acf/update_value/name=itjob_offer_abranch', [ &$this, 'update_offer_reference' ], 10, 3 );
 
       add_shortcode( 'vc_offers', [ $this, 'vc_offers_render' ] );
       add_shortcode( 'vc_featured_offers', [ $this, 'vc_featured_offers_render' ] );
@@ -26,10 +27,6 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       add_action( 'wp_ajax_ajx_insert_offers', [ &$this, 'ajx_insert_offers' ] );
       add_action( 'wp_ajax_nopriv_ajx_insert_offers', [ &$this, 'ajx_insert_offers' ] );
-
-      add_action( 'wp_enqueue_scripts', function () {
-
-      } );
 
     }
 
@@ -164,7 +161,7 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       $form = (object) [
         'post'            => Http\Request::getValue( 'post' ),
-        'reference'       => Http\Request::getValue( 'reference' ),
+//        'reference'       => Http\Request::getValue( 'reference' ),
         'ctt'             => Http\Request::getValue( 'ctt' ),
         'salary_proposed' => Http\Request::getValue( 'salary_proposed', 0 ),
         'region'          => Http\Request::getValue( 'region' ),
@@ -196,7 +193,10 @@ if ( ! class_exists( 'vcOffers' ) ):
 
     private function update_acf_field( $post_id, $form ) {
       update_field( 'itjob_offer_post', $form->post, $post_id );
-      update_field( 'itjob_offer_reference', $form->reference, $post_id );
+
+      // FEATURE: La référence est automatiquement gérer par le systeme
+      //update_field( 'itjob_offer_reference', $form->reference, $post_id );
+
       update_field( 'itjob_offer_datelimit', $form->datelimit, $post_id );
       update_field( 'itjob_offer_contrattype', $form->ctt, $post_id );
       update_field( 'itjob_offer_profil', $form->profil, $post_id );
@@ -207,6 +207,18 @@ if ( ! class_exists( 'vcOffers' ) ):
       update_field( 'itjob_offer_featured', 0, $post_id );
 
       update_field( 'itjob_offer_company', $form->company_id, $post_id );
+    }
+
+    // This is "itjob_offer_abranch" field
+    // Cette fonction permet de mettre à jour la reference par rapport à son secteur d'activité
+    public function update_offer_reference( $value, $post_id, $field ) {
+      $taxonomy = "branch_activity";
+      $term_abranch_id = (int)$value;
+      if (term_exists($term_abranch_id, $taxonomy)) {
+        $branch_activity_obj = get_term($term_abranch_id, $taxonomy);
+        update_field('itjob_offer_reference', strtoupper($branch_activity_obj->slug) . $post_id);
+      }
+      return $value;
     }
 
     /**
