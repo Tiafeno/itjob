@@ -1,7 +1,4 @@
 <?php
-global $wp_query;
-$total = $wp_query->max_num_pages;
-
 get_header();
 wp_enqueue_style( 'offers' );
 ?>
@@ -23,16 +20,9 @@ wp_enqueue_style( 'offers' );
               while ( have_posts() ) : the_post();
                 get_template_part( 'partials/content', 'offers' );
               endwhile;
-              echo '<div class="navigation">';
-              echo paginate_links( array(
-                'base'     => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
-                'format'   => '?paged=%#%',
-                'current'  => max( 1, get_query_var( 'paged' ) ),
-                'total'    => $total,
-                'mid_size' => 4,
-                'type'     => 'list'
-              ) );
-              echo '</div>';
+
+              // Affiche la pagination
+              itjob_pagination();
 
               ?>
             </div>
