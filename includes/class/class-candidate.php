@@ -14,7 +14,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   public $reference;
   public $district; // Region
   public $status; // Je cherche...
-  public $allowed; // A, B, C & A`
+  public $driveLicences; // A, B, C & A`
   public $jobSought;
   public $languages = [];
   public $masterSoftware = [];
@@ -24,6 +24,8 @@ final class Candidate extends UserParticular implements \iCandidate {
   public $jobNotif; // False|Array
   public $trainingNotif;
   public $newsletter;
+  public $branch_activity;
+  public $tags;
 
   /**
    * Candidate constructor.
@@ -45,7 +47,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     }
     $this->setId( $output->ID );
     // Initialiser l'utilisateur particulier
-    parent::__construct( (int)$postId );
+    parent::__construct();
+
     $this->title    = $this->reference = $output->post_title;
     $this->postType = $output->post_type;
 
@@ -114,7 +117,7 @@ final class Candidate extends UserParticular implements \iCandidate {
 
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
     $this->newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
-
+    $this->driveLicences   = get_field('itjob_cv_driveLicence', $this->getId());
     return true;
   }
 
@@ -164,6 +167,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->masterSoftware = wp_get_post_terms( $this->getId(), 'master_software', [ "fields" => "all" ] );
     $this->district       = wp_get_post_terms( $this->getId(), 'region', [ "fields" => "all" ] );
     $this->jobSought      = wp_get_post_terms( $this->getId(), 'job_sought', [ "fields" => "all" ] );
+    $this->tags           = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
+    $this->branch_activity  = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "names" ] );
   }
 
   /**

@@ -284,7 +284,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (Tag)
-    register_taxonomy( 'itjob_tag', [ 'offers' ], [
+    register_taxonomy( 'itjob_tag', [ 'offers', 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Étiquettes',

@@ -309,7 +309,8 @@ if ( ! class_exists( 'itJob' ) ) {
 
         /** Register scripts */
         $this->register_enqueue_scripts();
-        wp_register_style( 'offers', get_template_directory_uri() . '/assets/css/offers/offers.css', [ 'adminca' ], $itJob->version );
+        wp_register_style( 'offers', get_template_directory_uri() . '/assets/css/offers.css', [ 'adminca' ], $itJob->version );
+        wp_register_style( 'candidate', get_template_directory_uri() . '/assets/css/candidate.css', [ 'adminca' ], $itJob->version );
 
         wp_enqueue_style( 'adminca' );
         wp_enqueue_style( 'themify-icons' );

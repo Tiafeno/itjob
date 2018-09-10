@@ -106,10 +106,11 @@ if ( ! class_exists( 'scLogin' ) ) :
       try {
         // Get pos type object
         $post_type_object = get_post_type_object( $ptype );
+        $title = $post_type_object->name === 'company' ? strtolower( $post_type_object->labels->singular_name ) : '';
 
         /** @var STRING $title */
         return $Engine->render( '@SC/login.html.twig', [
-          'title' => strtolower( $post_type_object->labels->singular_name ),
+          'title' => $title,
           'uri'   => (object) [
             'theme'  => get_template_directory_uri(),
             'singup' => $singup_url

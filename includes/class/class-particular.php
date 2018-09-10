@@ -20,12 +20,14 @@ class UserParticular {
   public $address;
   public $country; // City + Postal code, eg: Antananarivo (101)
   public $region;
+  public $dateAdd;
 
   /**
    * @return bool
    */
   public function hasCV() {
-    return $this->Candidate;
+    $activated = get_field('itjob_cv_activated', $this->getId());
+    return (bool)$activated;
   }
 
   public function getId() {
@@ -36,12 +38,12 @@ class UserParticular {
     $this->ID = $id;
   }
 
-  public function __construct( $candidate_id ) {
+  public function __construct( $candidate_id = null ) {
     if ( ! function_exists( 'the_field' ) ) {
       return false;
     }
 
-    if ($this->getId() === 0) {
+    if ( ! is_null( $candidate_id ) ) {
       $this->setId( $candidate_id );
       // Object candidate
       $this->Candidate = new Candidate( $candidate_id );
@@ -54,7 +56,7 @@ class UserParticular {
     $birthdayDate       = get_field( 'itjob_cv_birthdayDate', $this->getId() );
     $this->birthdayDate = date( 'd/m/Y', strtotime( $birthdayDate ) );
     $this->address      = get_field( 'itjob_cv_address', $this->getId() );
-
+    $this->dateAdd = get_the_date( 'j F, Y', $this->getId() );
     // repeater field
     $phones = get_field( 'itjob_cv_phone', $this->getId() );
     if ( $phones ) {
