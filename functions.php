@@ -18,6 +18,8 @@ define( '__SITENAME__', 'itJob' );
 define( '__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj' );
 define( 'TWIG_TEMPLATE_PATH', get_template_directory() . '/templates' );
 $theme     = wp_get_theme( 'itjob' );
+
+// Utiliser ces variables apres la fonction: the_post()
 $offers    = null;
 $company   = null;
 $candidate = null;
@@ -65,7 +67,7 @@ $shortcode = (object) [
 $elementsVC = (object) [
   'vcSearch'   => require 'includes/visualcomposer/elements/class-vc-search.php',
   'vcOffers'   => require 'includes/visualcomposer/elements/class-vc-offers.php',
-  'vcRegister' => require 'includes/visualcomposer/elements/class-vc-register.php'
+  'vcRegister' => require 'includes/visualcomposer/elements/class-vc-register-company.php'
 ];
 
 require 'includes/class/class-http-request.php';

@@ -7,7 +7,7 @@ namespace includes\vc;
  * @method vc_offer_recently - Récuperer les offres recements ajouter
  */
 if ( ! class_exists( 'WPBakeryShortCode' ) ) {
-  die( 'WPBakery plugins missing!' );
+  new \WP_Error( 'WPBakery', 'WPBakery plugins missing!' );
 }
 
 use Http;

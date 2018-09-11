@@ -40,7 +40,7 @@ class UserParticular {
 
   public function __construct( $candidate_id = null ) {
     if ( ! function_exists( 'the_field' ) ) {
-      return false;
+      return new \WP_Error('ACF', 'Plugin ACF non installer ou non activer');
     }
 
     if ( ! is_null( $candidate_id ) ) {
