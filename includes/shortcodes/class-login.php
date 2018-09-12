@@ -85,8 +85,8 @@ if ( ! class_exists( 'scLogin' ) ) :
       if ( ! post_type_exists( $ptype ) ) {
         return 'Bad link';
       }
-
-      $singup_page_id = ( $ptype === 'company' ) ? REGISTER_COMPANY_PAGE_ID : REGISTER_CANDIDATE_PAGE_ID;
+      // Only company & particular singup in itjob
+      $singup_page_id = ( $ptype === 'company' ) ? REGISTER_COMPANY_PAGE_ID : REGISTER_PARTICULAR_PAGE_ID;
       $singup_url     = $singup_page_id ? get_permalink( (int) $singup_page_id ) : '#no-link';
 
       // Enqueue scripts & style dependence

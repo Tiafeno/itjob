@@ -67,7 +67,8 @@ $shortcode = (object) [
 $elementsVC = (object) [
   'vcSearch'   => require 'includes/visualcomposer/elements/class-vc-search.php',
   'vcOffers'   => require 'includes/visualcomposer/elements/class-vc-offers.php',
-  'vcRegister' => require 'includes/visualcomposer/elements/class-vc-register-company.php'
+  'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
+  'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php5'
 ];
 
 require 'includes/class/class-http-request.php';

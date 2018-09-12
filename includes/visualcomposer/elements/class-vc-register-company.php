@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 if ( ! class_exists( 'WPBakeryShortCode' ) ) {
-  die( 'WPBakery plugins missing!' );
+  new \WP_Error( 'WPBakery','WPBakery plugins missing!' );
 }
 
 use Http;
@@ -301,7 +301,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js',
           [
             'angular',
-            'angular-route',
+            'angular-ui-route',
             'angular-sanitize',
             'angular-messages',
             'angular-animate',

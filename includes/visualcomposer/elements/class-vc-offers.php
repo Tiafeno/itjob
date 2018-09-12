@@ -320,16 +320,17 @@ if ( ! class_exists( 'vcOffers' ) ):
         )
         , EXTR_OVERWRITE );
       try {
-        define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
-        wp_enqueue_style( 'b-datepicker-3', VENDOR_URL . '/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css', '', '1.7.1' );
+        if ( ! defined('VENDOR_URL'))
+          define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
+        wp_enqueue_style( 'b-datepicker-3');
         wp_enqueue_style( 'themify-icons' );
         wp_enqueue_style( 'froala' );
         wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
-        wp_enqueue_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', [ 'jquery' ], '1.7.1' );
+        wp_enqueue_script( 'b-datepicker');
         wp_enqueue_script( 'offers', get_template_directory_uri() . '/assets/js/app/offers/form.js',
           [
             'angular',
-            'angular-route',
+            'angular-ui-route',
             'angular-sanitize',
             'angular-messages',
             'angular-animate',

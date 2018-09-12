@@ -378,10 +378,14 @@ if ( ! class_exists( 'itJob' ) ) {
     public function register_enqueue_scripts() {
       global $itJob;
 
+      if ( ! defined('VENDOR_URL'))
+        define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
       $suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
       // angular components
-      wp_register_script( 'angular-route',
+      wp_register_script( 'angular-ui-route',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular-ui-router' . $suffix . '.js', [], '1.0.20' );
+      wp_register_script( 'angular-route',
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-route' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular-sanitize',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular-sanitize' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular-messages',
@@ -393,20 +397,18 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_script( 'angular',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [], '1.7.2' );
 
-      wp_register_script( 'angular-froala',
-        get_template_directory_uri() . '/assets/vendors/froala-editor/src/angular-froala.js', [], '2.8.4' );
-      wp_register_script( 'froala',
-        get_template_directory_uri() . '/assets/vendors/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
+      wp_register_script( 'angular-froala',VENDOR_URL. '/froala-editor/src/angular-froala.js', [], '2.8.4' );
+      wp_register_script( 'froala',VENDOR_URL . '/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
 
       // plugins depend
       wp_register_style( 'font-awesome',
-        get_template_directory_uri() . '/assets/vendors/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
+        VENDOR_URL . '/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
       wp_register_style( 'line-awesome',
-        get_template_directory_uri() . '/assets/vendors/line-awesome/css/line-awesome.min.css', '', '1.1.0' );
+        VENDOR_URL . '/line-awesome/css/line-awesome.min.css', '', '1.1.0' );
       wp_register_style( 'themify-icons',
-        get_template_directory_uri() . '/assets/vendors/themify-icons/css/themify-icons.css', '', '1.1.0' );
+        VENDOR_URL . '/themify-icons/css/themify-icons.css', '', '1.1.0' );
       wp_register_style( 'select-2',
-        get_template_directory_uri() . "/assets/vendors/select2/dist/css/select2.min.css", '', $itJob->version );
+        VENDOR_URL . "/select2/dist/css/select2.min.css", '', $itJob->version );
 
       // papaparse
       wp_register_script( 'papaparse',
@@ -414,13 +416,13 @@ if ( ! class_exists( 'itJob' ) ) {
 
       // Register components adminca stylesheet
       wp_register_style( 'bootstrap',
-        get_template_directory_uri() . '/assets/vendors/bootstrap/dist/css/bootstrap.min.css', '', '4.0.0' );
+        VENDOR_URL . '/bootstrap/dist/css/bootstrap.min.css', '', '4.0.0' );
       wp_register_style( 'adminca-animate',
-        get_template_directory_uri() . '/assets/vendors/animate.css/animate.min.css', '', '3.5.1' );
+        VENDOR_URL . '/animate.css/animate.min.css', '', '3.5.1' );
       wp_register_style( 'toastr',
-        get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.css', '', '3.5.1' );
+        VENDOR_URL . '/toastr/toastr.min.css', '', '3.5.1' );
       wp_register_style( 'bootstrap-select',
-        get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/css/bootstrap-select.min.css', '', '1.12.4' );
+        VENDOR_URL . '/bootstrap-select/dist/css/bootstrap-select.min.css', '', '1.12.4' );
 
       // Load the main stylesheet
       wp_register_style( 'style', get_stylesheet_uri(), [
@@ -436,31 +438,33 @@ if ( ! class_exists( 'itJob' ) ) {
           'bootstrap-select',
           'style'
         ], $itJob->version );
-
+      wp_register_style( 'b-datepicker-3',
+        VENDOR_URL . '/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css', '', '1.7.1' );
       wp_register_style( 'admin-adminca',
         get_template_directory_uri() . '/assets/css/admin-custom.css', [ 'adminca' ], $itJob->version );
 
       wp_register_style( 'froala-editor',
-        get_template_directory_uri() . '/assets/vendors/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
+        VENDOR_URL . '/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
       wp_register_style( 'froala',
-        get_template_directory_uri() . '/assets/vendors/froala-editor/css/froala_style.min.css', [
+        VENDOR_URL . '/froala-editor/css/froala_style.min.css', [
           'froala-editor',
           'font-awesome'
         ], '2.8.4' );
 
       // Register components adminca scripts
       wp_register_script( 'popper',
-        get_template_directory_uri() . '/assets/vendors/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );
+        VENDOR_URL . '/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );
       wp_register_script( 'bootstrap',
-        get_template_directory_uri() . '/assets/vendors/bootstrap/dist/js/bootstrap.min.js', [ 'popper' ], '4.0.0-beta', true );
+        VENDOR_URL . '/bootstrap/dist/js/bootstrap.min.js', [ 'popper' ], '4.0.0-beta', true );
       wp_register_script( 'jq-slimscroll',
-        get_template_directory_uri() . '/assets/vendors/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
+        VENDOR_URL . '/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
       wp_register_script( 'idle-timer',
-        get_template_directory_uri() . '/assets/vendors/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
+        VENDOR_URL . '/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
       wp_register_script( 'toastr',
-        get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
+        VENDOR_URL . '/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
+      wp_register_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', [ 'jquery' ], '1.7.1' );
       wp_register_script( 'bootstrap-select',
-        get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/js/bootstrap-select.min.js', [
+        VENDOR_URL . '/bootstrap-select/dist/js/bootstrap-select.min.js', [
           'jquery',
           'bootstrap'
         ], '1.12.4', true );
