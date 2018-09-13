@@ -93,7 +93,7 @@ if ( ! class_exists( 'vcSearch' ) ):
         'regions'  => $regions
       ];
 
-      if ( $type === 'default' ) {
+      if ( $type === 'default' || empty($type) ) {
         try {
           $langage         = get_terms( 'language', [
             'hide_empty' => false,
