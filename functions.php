@@ -17,6 +17,8 @@
 define( '__SITENAME__', 'itJob' );
 define( '__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj' );
 define( 'TWIG_TEMPLATE_PATH', get_template_directory() . '/templates' );
+if ( ! defined('VENDOR_URL'))
+  define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
 $theme     = wp_get_theme( 'itjob' );
 
 // Utiliser ces variables apres la fonction: the_post()
@@ -34,6 +36,7 @@ require 'includes/class/middlewares/Register.php';
 require 'includes/class/widgets/widget-publicity.php';
 require 'includes/class/widgets/widget-shortcode.php';
 require 'includes/class/widgets/widget-accordion.php';
+require 'includes/class/widgets/widget-header-search.php';
 
 $itJob = (object) [
   'version'  => $theme->get( 'Version' ),

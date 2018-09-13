@@ -301,6 +301,22 @@ if ( ! class_exists( 'itJob' ) ) {
           'name'          => 'Archive CV Haut',
           'id'            => 'archive-cv-top',
           'description'   => 'Afficher des widgets en haut de la page archive',
+          'before_widget' => '<div id="%1$s" class="widget mb-4 %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        register_sidebar( array(
+          'name'          => 'Archive CV Sidebar',
+          'id'            => 'archive-cv-sidebar',
+          'description'   => 'Afficher des widgets en haut de la page archive',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        register_sidebar( array(
+          'name'          => 'CV Header',
+          'id'            => 'cv-header',
+          'description'   => 'Afficher des widgets en mode header',
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
@@ -309,6 +325,7 @@ if ( ! class_exists( 'itJob' ) ) {
         register_widget( 'Widget_Publicity' );
         register_widget( 'Widget_Shortcode' );
         register_widget( 'Widget_Accordion' );
+        register_widget( 'Widget_Header_Search' );
 
       } );
 
@@ -364,8 +381,6 @@ if ( ! class_exists( 'itJob' ) ) {
     public function register_enqueue_scripts() {
       global $itJob;
 
-      if ( ! defined('VENDOR_URL'))
-        define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
       $suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
       // angular components
       wp_register_script( 'angular-ui-route',

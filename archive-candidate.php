@@ -2,9 +2,20 @@
 get_header();
 wp_enqueue_style( 'offers' );
 ?>
-  <div class="uk-section uk-section-transparent">
+  <div class="uk-section uk-section-transparent uk-padding-remove-top">
+    <?php
+    if ( is_active_sidebar( 'cv-header' ) ) {
+      dynamic_sidebar( 'cv-header' );
+    }
+    ?>
     <div class="uk-container uk-container-medium">
-
+      <div class="widget-top">
+        <?php
+        if ( is_active_sidebar( 'archive-cv-top' ) ) {
+          dynamic_sidebar( 'archive-cv-top' );
+        }
+        ?>
+      </div>
       <div class="row">
         <div class="col-md-8">
           <div class="container-list-posts">
@@ -24,8 +35,8 @@ wp_enqueue_style( 'offers' );
         </div>
         <div class="col-md-4">
           <?php
-          if ( is_active_sidebar( 'archive-offer-sidebar' ) ) {
-            dynamic_sidebar( 'archive-offer-sidebar' );
+          if ( is_active_sidebar( 'archive-cv-sidebar' ) ) {
+            dynamic_sidebar( 'archive-cv-sidebar' );
           }
           ?>
         </div>

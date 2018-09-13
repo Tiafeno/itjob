@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: Tiafeno
- * Date: 13/08/2018
- * Time: 11:05
- */
 if ( ! class_exists( 'WPBakeryShortCode' ) ) {
   die( 'WPBakery plugins missing!' );
 }
@@ -28,7 +22,7 @@ if ( ! class_exists( 'vcSearch' ) ):
       // Map the block with vc_map()
       vc_map(
         array(
-          'name'                    => 'Récherche d\'emploi',
+          'name'                    => 'La récherche',
           'base'                    => 'vc_itjob_search',
           'content_element'         => true,
           'show_settings_on_create' => true,
@@ -51,6 +45,15 @@ if ( ! class_exists( 'vcSearch' ) ):
               'description' => "Modifier le mode d'affichage",
               'admin_label' => true
             ),
+            array(
+              "type"        => "attach_image",
+              "class"       => "vc-ij-image",
+              "heading"     => "Une image de fond",
+              "param_name"  => "bg_image",
+              "value"       => '',
+              "description" => '',
+              'admin_label' => true
+            )
           )
         )
       );
@@ -62,8 +65,9 @@ if ( ! class_exists( 'vcSearch' ) ):
       extract(
         shortcode_atts(
           array(
-            'title' => null,
-            'type'  => 'default'
+            'title'    => null,
+            'bg_image' => '',
+            'type'     => 'default'
           ),
           $attrs
         )
@@ -80,9 +84,11 @@ if ( ! class_exists( 'vcSearch' ) ):
       // Twig template variables
       /** @var string $type */
       /** @var string $title */
+      /** @var int $bg_image */
 
       $data = [
         'title'    => $title,
+        'bg_image' => $bg_image,
         'abranchs' => $abranchs,
         'regions'  => $regions
       ];
@@ -101,8 +107,8 @@ if ( ! class_exists( 'vcSearch' ) ):
             'languages' => $langage,
             'softwares' => $master_software
           ];
-          $data            = array_merge( $data, $sub_data );
 
+          $data = array_merge( $data, $sub_data );
           return $Engine->render( '@VC/search/search.html.twig', $data );
         } catch ( Twig_Error_Loader $e ) {
         } catch ( Twig_Error_Runtime $e ) {
@@ -110,7 +116,9 @@ if ( ! class_exists( 'vcSearch' ) ):
           echo $e->getRawMessage();
         }
       } else {
-        return $this->{"vc_search_" . $type . "_tpls"}( $data );
+        $func = "vc_search_" . $type . "_tpls";
+        //return $this->$func( $data );
+        return call_user_func_array(array($this, $func), array($data));
       }
     }
 
@@ -142,7 +150,21 @@ if ( ! class_exists( 'vcSearch' ) ):
     private function vc_search_candidate_tpls( $args ) {
       global $Engine;
       try {
-        return $Engine->render( '@VC/search/search-cv.html.twig', $args );
+        $langage         = get_terms( 'language', [
+          'hide_empty' => false,
+          'fields'     => 'all'
+        ] );
+        $master_software = get_terms( 'master_software', [
+          'hide_empty' => false,
+          'fields'     => 'all'
+        ] );
+        $sub_data        = [
+          'languages' => $langage,
+          'softwares' => $master_software
+        ];
+
+        $data = array_merge( $args, $sub_data );
+        return $Engine->render( '@VC/search/search-cv.html.twig', $data );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {
       } catch ( Twig_Error_Syntax $e ) {

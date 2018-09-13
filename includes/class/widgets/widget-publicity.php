@@ -14,9 +14,9 @@ class Widget_Publicity extends WP_Widget {
 
   // Creating widget front-end
   public function widget( $args, $instance ) {
-
+    $base = isset( $instance['base'] ) ? $instance['base'] : '316x335';
     echo $args['before_widget'];
-    echo 'WIDGET ITJOB > PUBLICITY : ' . $instance['base'];
+    echo 'WIDGET ITJOB > PUBLICITY : ' . $base;
     echo $args['after_widget'];
   }
 
