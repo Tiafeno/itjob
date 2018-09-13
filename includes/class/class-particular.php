@@ -26,8 +26,9 @@ class UserParticular {
    * @return bool
    */
   public function hasCV() {
-    $activated = get_field('itjob_cv_activated', $this->getId());
-    return (bool)$activated;
+    $activated = get_field( 'itjob_cv_activated', $this->getId() );
+
+    return (bool) $activated;
   }
 
   public function getId() {
@@ -40,7 +41,7 @@ class UserParticular {
 
   public function __construct( $candidate_id = null ) {
     if ( ! function_exists( 'the_field' ) ) {
-      return new \WP_Error('ACF', 'Plugin ACF non installer ou non activer');
+      return new \WP_Error( 'ACF', 'Plugin ACF non installer ou non activer' );
     }
 
     if ( ! is_null( $candidate_id ) ) {
@@ -56,7 +57,7 @@ class UserParticular {
     $birthdayDate       = get_field( 'itjob_cv_birthdayDate', $this->getId() );
     $this->birthdayDate = date( 'd/m/Y', strtotime( $birthdayDate ) );
     $this->address      = get_field( 'itjob_cv_address', $this->getId() );
-    $this->dateAdd = get_the_date( 'j F, Y', $this->getId() );
+    $this->dateAdd      = get_the_date( 'j F, Y', $this->getId() );
     // repeater field
     $phones = get_field( 'itjob_cv_phone', $this->getId() );
     if ( $phones ) {

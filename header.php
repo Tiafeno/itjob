@@ -95,6 +95,12 @@
     .btn.dropdown-arrow:after {
       margin-left: 0 !important;
     }
+    .alert-pink {
+      font-size: 11.5px;
+      margin-top: 3px;
+      background-color: #bd1e54;
+      border-color: #bd1e54;
+    }
   </style>
 </head>
 <body <?php body_class(); ?> >
@@ -161,7 +167,7 @@
 
                             <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/company') ?>">
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-tie-solid.svg" />
-                              <span class="text-white">Recruteur</span>
+                              <span class="text-white">ENTREPRISE</span>
                             </a>
 
                           </div>

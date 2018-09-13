@@ -71,6 +71,7 @@ $elementsVC = (object) [
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php5'
 ];
 
+require 'includes/class/class-wp-city.php';
 require 'includes/class/class-http-request.php';
 require 'includes/class/class-menu-walker.php';
 require 'includes/filters/function-filters.php';

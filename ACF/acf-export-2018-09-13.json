@@ -175,8 +175,8 @@
                     "class": "",
                     "id": ""
                 },
-                "display_format": "d\/m\/Y",
-                "return_format": "d\/m\/Y",
+                "display_format": "m\/d\/Y",
+                "return_format": "d-m-Y",
                 "first_day": 1
             },
             {
@@ -1402,6 +1402,28 @@
             },
             {
                 "key": "field_5b95813888a8a",
+                "label": "Page d'ajout d'un utilisateur (Particulier)",
+                "name": "register_particular_page_id",
+                "type": "post_object",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "post_type": [
+                    "page"
+                ],
+                "taxonomy": [],
+                "allow_null": 0,
+                "multiple": 0,
+                "return_format": "id",
+                "ui": 1
+            },
+            {
+                "key": "field_5b997076cbf7d",
                 "label": "Page d'ajout d'un utilisateur (Candidat)",
                 "name": "register_candidate_page_id",
                 "type": "post_object",

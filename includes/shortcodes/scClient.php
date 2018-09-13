@@ -34,43 +34,36 @@ if ( ! class_exists( 'scClient' ) ) :
       );
 
       wp_enqueue_style( 'themify-icons' );
-      wp_enqueue_style( 'sweetalert', get_template_directory_uri() . '/assets/vendors/bootstrap-sweetalert/dist/sweetalert.css' );
 
-      wp_enqueue_script( 'datatable', get_template_directory_uri() . '/assets/vendors/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
+      wp_enqueue_style( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.css' );
+      wp_enqueue_script( 'sweetalert',VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.min.js', [ 'espace-client' ], $itJob->version, true );
+
+      wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
       wp_enqueue_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
         'angular',
         'angular-aria',
         'angular-messages',
-        'angular-sanitize'
+        'angular-sanitize',
+        'datatable'
       ], $itJob->version, true );
-      wp_enqueue_script( 'sweetalert',
-        get_template_directory_uri() . '/assets/vendors/bootstrap-sweetalert/dist/sweetalert.min.js', [ 'espace-client' ], $itJob->version, true );
-      wp_localize_script( 'espace-client', 'itOptions', [
-        'offers'   => $this->get_company_offers(),
-        'ajax_url' => admin_url( 'admin-ajax.php' )
-      ] );
 
       $user         = wp_get_current_user();
       $client       = get_userdata( $user->ID );
       $client_roles = $client->roles;
-      $allCompany   = get_posts(
-        [
-          'numberposts'  => 1,
-          'post_type'    => 'company',
-          'post_status'  => [ 'publish', 'pending' ],
-          'meta_key'     => 'itjob_company_email',
-          'meta_value'   => $user->user_email,
-          'meta_compare' => '='
-        ] );
-      $company      = reset( $allCompany );
 
       try {
         if ( in_array( 'company', $client_roles, true ) ) {
           // Template recruteur ici ...
           $offers = $this->get_company_offers();
 
+          // Script localize for company customer area
+          wp_localize_script( 'espace-client', 'itOptions', [
+            'offers'   => $this->get_company_offers(),
+            'ajax_url' => admin_url( 'admin-ajax.php' )
+          ] );
+
           return $Engine->render( '@SC/client-company.html.twig', [
-            'client' => new Company( $company->ID ),
+            'client' => Company::get_company_by('user_id', $user->ID),
             'offers' => $offers,
             'url'    => [
               'add_offer' => get_permalink( (int) ADD_OFFER_PAGE )

@@ -1,4 +1,4 @@
-angular.module('formParticular', ['ui.router'])
+angular.module('formParticular', ['ui.router', 'ngMessages'])
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     //$interpolateProvider.startSymbol('[[').endSymbol(']]');
     var states = [
@@ -9,6 +9,9 @@ angular.module('formParticular', ['ui.router'])
         resolve: {
           region: function (services) {
             return services.getRegion();
+          },
+          allCity: function (services) {
+            return services.getCity();
           }
         }
       }
@@ -23,6 +26,12 @@ angular.module('formParticular', ['ui.router'])
     return {
       getRegion: function () {
         return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=region', {cache: true})
+          .then(function (resp) {
+            return resp.data;
+          });
+      },
+      getCity: function () {
+        return $http.get(itOptions.ajax_url + '?action=get_city', {cache: true})
           .then(function (resp) {
             return resp.data;
           });
@@ -85,17 +94,51 @@ angular.module('formParticular', ['ui.router'])
   })
   .controller('particularCtrl', ["$scope", function ($scope) {
     $scope.error = false;
-    $scope.particularForm = {};
   }])
   .component('formComponent', {
-    bindings: {region: '<'},
+    bindings: {region: '<', allCity: '<'},
     templateUrl: itOptions.partials_url + '/particular/form.html',
-    controller: function ($scope) {
+    controller: function ($scope, services) {
+      $scope.error = false;
+      $scope.particularForm = {};
       $scope.formSubmit = function (isValid) {
+        if ($scope.pcForm.$invalid) {
+          angular.forEach($scope.pcForm.$error, function (field) {
+            angular.forEach(field, function (errorField) {
+              errorField.$setTouched();
+            });
+          });
+          $scope.pcForm.email.$validate();
+          $scope.error = true;
+        }
+
+        if ( ! isValid) return;
         // Submit form here ...
+        var particularData = new FormData();
+        particularData.append('action', 'insert_user_particular');
+        var particularFormObject = Object.keys($scope.particularForm);
+        particularFormObject.forEach(function (property) {
+          particularData.set(property, Reflect.get($scope.particularForm, property));
+        });
+        $scope.error = false;
+        services
+          .sendPostForm(particularData)
+          .then(function (resp) {
+            var status = resp.data;
+            var _type = status.success ? 'info' : 'error';
+            swal({
+              title: 'Notification',
+              text: status.msg,
+              type: _type,
+            }, function () {
+              if (status.success)
+                window.location.href = status.redirect_url;
+              if ( ! status.success) $scope.error = true;
+            });
+          })
       };
       //  JQLite
-      var jqSelects = jQuery("select.form-control");
+      var jqSelects = jQuery("select.form-control.find");
       jQuery.each(jqSelects, function (index, element) {
         var selectElement = jQuery(element);
         var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
@@ -106,11 +149,16 @@ angular.module('formParticular', ['ui.router'])
         })
       });
 
+      jQuery(".form-control.country").select2({
+        placeholder: "Selectioner une ville",
+        allowClear: true
+      });
+
       jQuery('#birthday .input-group.date').datepicker({
         format: "dd-mm-yyyy",
         startView: 2,
-        todayBtn: "linked",
-        keyboardNavigation: false,
+        todayBtn: false,
+        keyboardNavigation: true,
         forceParse: false,
         autoclose: true
       });
