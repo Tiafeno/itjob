@@ -80,7 +80,7 @@
         <label class="form-control-label">Votre adresse email</label>
         <input class="form-control" type="text" name="email" ng-mail="particularForm.email" ng-model="particularForm.email" autocomplete="off"
                placeholder="Votre adresse email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required>
-        <div ng-messages="pcForm.address.$error" ng-show="pcForm.address.$invalid && pcForm.address.$touched"
+        <div ng-messages="pcForm.email.$error" ng-show="pcForm.email.$invalid && pcForm.email.$touched"
              class="alert alert-pink" role="alert">
           <div ng-message="required">Veuillez saisir une adresse email.</div>
           <div ng-message="pattern">Vérifiez l'adresse email, son format n'est pas valide.</div>
