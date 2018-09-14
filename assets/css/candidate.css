@@ -1,0 +1,50 @@
+.container-candidate .container-candidate-title {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.container-candidate .card .card-body .card-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.container-candidate .card {
+  color: #ffffff;
+}
+
+.container-candidate .card .card-footer {
+  background-color: rgb(14, 118, 188);
+}
+
+.container-candidate .card .card-footer a.view i {
+  font-size: 23px;
+}
+
+.container-candidate .card .card-information {
+  border-top: .1px solid #fff;
+}
+
+.container-candidate .card-information .card-info {
+  font-size: 11.7px;
+  font-weight: lighter;
+  color: #f3f7f7 !important;
+}
+
+.container-candidate .card a,
+.container-candidate .card p,
+.container-candidate .card h4,
+.container-candidate .card h2,
+.container-candidate .card h3,
+.container-candidate .card h1 {
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.container-candidate .card .card-body {
+  background-color: #3C3C3C;
+}
+
+.container-candidate .card .card-body .text-description {
+  font-weight: lighter;
+  font-family: 'Montserrat', sans-serif;
+}

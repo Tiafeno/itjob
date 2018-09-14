@@ -211,6 +211,7 @@ if ( ! class_exists( 'vcOffers' ) ):
 
     // This is "itjob_offer_abranch" field
     // Cette fonction permet de mettre à jour la reference par rapport à son secteur d'activité
+    // Callback: acf/update_value/name=itjob_offer_abranch
     public function update_offer_reference( $value, $post_id, $field ) {
       $taxonomy        = "branch_activity";
       $term_abranch_id = (int) $value;
