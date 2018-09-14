@@ -116,10 +116,10 @@
     <div class="uk-container-medium uk-container">
       <header class="header">
         <div uk-grid>
-          <div class="uk-width-1-3@s uk-width-2-3 uk-flex">
+          <div class="uk-width-1-3@s uk-width-2-3">
             <div class="uk-flex">
               <div class="logo uk-margin-medium-right uk-flex" style="width: 30%">
-                <a href="<?= home_url( '/' ) ?>" class=" p-relative uk-flex">
+                <a href="<?= home_url( '/' ) ?>" class="pt-4 pb-4">
                   <img src="<?= get_template_directory_uri() ?>/img/logo.png" class="uk-margin-auto-vertical"/>
                 </a>
               </div>
