@@ -50,7 +50,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
       <div uk-grid>
-        <div class="uk-width-3-4@s ibox bg-transparent">
+        <div class="uk-width-3-4@s bg-transparent">
           <!--          Content here ... -->
           <?php
           while ( have_posts() ) : the_post();

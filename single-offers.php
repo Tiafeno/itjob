@@ -31,6 +31,7 @@ wp_enqueue_style( 'themify-icons' );
           <!--          Content here ... -->
           <?php
           while ( have_posts() ) : the_post();
+            if ( ! $offers instanceof  \includes\post\Offers) exit;
             ?>
             <div class="offer-section">
               <div class="offer-top d-inline-block pb-4">
@@ -95,23 +96,36 @@ wp_enqueue_style( 'themify-icons' );
                   endif;
                   ?>
 
-                  <div class="m-5">
-                    <p class="uk-text-bold">Merci d'envoyer vos dossiers de candidatures ( CV + LM ) à l'adresse :
-                      recrutement@itjobmada.com</p>
-                  </div>
+<!--                  <div class="m-5">-->
+<!--                    <p class="uk-text-bold">-->
+<!--                      Merci d'envoyer vos dossiers de candidatures ( CV + LM ) à l'adresse :-->
+<!--                      recrutement@itjobmada.com-->
+<!--                    </p>-->
+<!--                  </div>-->
 
                 </div>
               </div>
 
-              <div class="offer-footer mt-lg-3">
-                <div class="row pt-3">
-                  <div class="col-md-8"></div>
-                  <div class="col-md-4">
-                    <a href="<?= get_post_type_archive_link( 'offers' ) ?>">
-                      <button class="btn btn-outline-primary btn-fix">
-                        <span class="btn-icon"><i class="ti-angle-left"></i>Retour</span>
-                      </button>
-                    </a>
+              <div class="offer-footer mt-3">
+                <div class="row pt-5">
+                  <div class="col-md-6">
+
+                  </div>
+                  <div class="col-md-6">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <a href="<?= get_post_type_archive_link( 'offers' ) ?>" class="float-right">
+                          <button class="btn btn-outline-primary btn-fix">
+                            <span class="btn-icon"><i class="ti-angle-left"></i>Retour</span>
+                          </button>
+                        </a>
+                      </div>
+                      <div class="col-md-6">
+                        <?= do_action('je_postule', ['redir' => get_the_permalink()]); ?>
+                      </div>
+                    </div>
+
+
                   </div>
                 </div>
               </div>

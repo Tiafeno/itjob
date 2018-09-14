@@ -20,6 +20,8 @@ if ( ! class_exists( 'itJob' ) ) {
         $this->taxonomy();
       } );
 
+      add_action( 'je_postule', [ &$this, 'je_postule_Fn' ] );
+
       // TODO: Envoyer un mail information utilisateur et adminstration (pour s'informer d'un nouveau utilisateur)
       add_action( 'acf/save_post', function ( $post_id ) {
         // Code here
@@ -398,8 +400,8 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_script( 'angular',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [], '1.7.2' );
 
-      wp_register_script( 'angular-froala',VENDOR_URL. '/froala-editor/src/angular-froala.js', [], '2.8.4' );
-      wp_register_script( 'froala',VENDOR_URL . '/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
+      wp_register_script( 'angular-froala', VENDOR_URL . '/froala-editor/src/angular-froala.js', [], '2.8.4' );
+      wp_register_script( 'froala', VENDOR_URL . '/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
 
       // plugins depend
       wp_register_style( 'font-awesome', VENDOR_URL . '/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
@@ -437,9 +439,9 @@ if ( ! class_exists( 'itJob' ) ) {
 
       wp_register_style( 'froala-editor', VENDOR_URL . '/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
       wp_register_style( 'froala', VENDOR_URL . '/froala-editor/css/froala_style.min.css', [
-          'froala-editor',
-          'font-awesome'
-        ], '2.8.4' );
+        'froala-editor',
+        'font-awesome'
+      ], '2.8.4' );
 
       // Register components adminca scripts
       wp_register_script( 'popper',
@@ -465,6 +467,16 @@ if ( ! class_exists( 'itJob' ) ) {
         'toastr',
         'bootstrap-select'
       ], $itJob->version, true );
+    }
+
+    public function je_postule_Fn( $params = [] ) {
+      $User = null;
+      $button = "<a href=\"javascript: alert('En construction, Revenez plus tard! :-)')\">
+                  <button class=\"btn btn-blue btn-fix\">
+                    <span class=\"btn-icon\">Je postule </span>
+                  </button>
+                </a>";
+      echo $button;
     }
 
   }
