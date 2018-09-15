@@ -4,14 +4,15 @@
     font-size: 12px;
   }
 </style>
+<div class="{{ container_class }}">
+  <h4 class="m-0">{{ title }}</h4>
+  <div class="mt-4"></div>
+  <div class="ibox" ng-app="formCompanyApp" ng-controller="formCompanyCtrl">
 
-<h4 class="m-0">{{ title }}</h4>
-<div class="mt-4"></div>
-<div class="ibox" ng-app="formCompanyApp" ng-controller="formCompanyCtrl">
-
-  <ui-view>
-    <div style="min-height: 30em; width: 100%;" class="uk-flex">
-      <img ng-src="[[loadingPath]]" class="uk-flex uk-logo uk-margin-auto-vertical" style="margin: auto"/>
-    </div>
-  </ui-view>
+    <ui-view>
+      <div style="min-height: 30em; width: 100%;" class="uk-flex">
+        <img ng-src="[[loadingPath]]" class="uk-flex uk-logo uk-margin-auto-vertical" style="margin: auto"/>
+      </div>
+    </ui-view>
+  </div>
 </div>

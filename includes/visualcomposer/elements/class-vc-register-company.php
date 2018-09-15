@@ -14,11 +14,13 @@ use includes\post\Company;
 
 if ( ! class_exists( 'vcRegisterCompany' ) ) :
   class vcRegisterCompany extends \WPBakeryShortCode {
+    public static $container_class = '';
     public function __construct() {
       add_action( 'init', [ $this, 'register_mapping' ] );
       add_action( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
 
-      add_shortcode( 'vc_register_company', [ &$this, 'register_render_html' ] );
+      if ( ! shortcode_exists('vc_register_company'))
+        add_shortcode( 'vc_register_company', [ &$this, 'register_render_html' ] );
 
       add_action( 'wp_ajax_ajx_insert_company', [ &$this, 'ajx_insert_company' ] );
       add_action( 'wp_ajax_nopriv_ajx_insert_company', [ &$this, 'ajx_insert_company' ] );
@@ -31,6 +33,11 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       add_action( 'wp_ajax_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
       add_action( 'wp_ajax_nopriv_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
+    }
+
+    public static function getInstance() {
+      self::$container_class = 'uk-margin-large-top';
+      return new vcRegisterCompany();
     }
 
     /**
@@ -294,7 +301,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       try {
         /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/register/company.html.twig', [
-          'title' => $title
+          'title' => $title,
+          'container_class' => self::$container_class
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {

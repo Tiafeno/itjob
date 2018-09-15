@@ -303,9 +303,11 @@ if ( ! class_exists( 'vcOffers' ) ):
     public function vc_added_offer_render( $attrs ) {
       global $Engine, $itJob;
       if ( ! is_user_logged_in() ) {
-        return $Engine->render( '@ERROR/403.html.twig', [
+        // TODO: Proposer l'utilisateur à s'inscrire en tands que sociéte pour ajouter une offre
+        return vcRegisterCompany::getInstance()->register_render_html(['title' => 'FORMULAIRE ENTREPRISE']);
+        /*return $Engine->render( '@ERROR/403.html.twig', [
           'template_url' => get_template_directory_uri()
-        ] );
+        ] );*/
       }
 
       // TODO: Verifier si l'utilicateur est une entreprise
