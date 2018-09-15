@@ -16,8 +16,7 @@ if ( ! class_exists( 'itJob' ) ) {
     public function __construct() {
 
       add_action( 'init', function () {
-        $this->postTypes();
-        $this->taxonomy();
+        $this->initRegister();
       } );
 
       add_action( 'je_postule', [ &$this, 'je_postule_Fn' ] );

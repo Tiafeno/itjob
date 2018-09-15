@@ -90,7 +90,8 @@ if ( ! class_exists( 'vcSearch' ) ):
         'title'    => $title,
         'bg_image' => $bg_image,
         'abranchs' => $abranchs,
-        'regions'  => $regions
+        'regions'  => $regions,
+        'home_url' => home_url('/')
       ];
 
       if ( $type === 'default' || empty($type) ) {
