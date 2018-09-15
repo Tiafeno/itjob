@@ -7,7 +7,7 @@
  */
 
 trait Auth {
-  public $authUser;
+  private $authUser;
 
   /**
    * Vérifie si l'utilisateur peut modifier l'offre
@@ -26,12 +26,5 @@ trait Auth {
     return $this->authUser->ID === $post->post_author;
   }
 
-  public static function addCompanyUser() {
-
-  }
-
-  public static function addCandidateUser() {
-
-  }
 
 }

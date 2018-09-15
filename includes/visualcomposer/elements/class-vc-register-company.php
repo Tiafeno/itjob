@@ -18,7 +18,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       add_action( 'init', [ $this, 'register_mapping' ] );
       add_action( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
 
-      add_shortcode( 'vc_register', [ &$this, 'register_render_html' ] );
+      add_shortcode( 'vc_register_company', [ &$this, 'register_render_html' ] );
 
       add_action( 'wp_ajax_ajx_insert_company', [ &$this, 'ajx_insert_company' ] );
       add_action( 'wp_ajax_nopriv_ajx_insert_company', [ &$this, 'ajx_insert_company' ] );
@@ -83,8 +83,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       }
       \vc_map(
         array(
-          'name'        => 'Formulaire d\'enregistrement',
-          'base'        => 'vc_register',
+          'name'        => 'Formulaire d\'enregistrement (Profesionnel)',
+          'base'        => 'vc_register_company',
           'description' => 'Entreprise/CV Formulaire',
           'category'    => 'itJob',
           'params'      => array(
@@ -99,20 +99,20 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
               'admin_label' => true,
               'weight'      => 0
             ),
-            array(
-              'type'        => 'dropdown',
-              'class'       => 'vc-ij-position',
-              'heading'     => 'Type de formulaire',
-              'param_name'  => 'form',
-              'value'       => array(
-                'Entreprise'     => 'company',
-                'Candidate (CV)' => 'candidate'
-              ),
-              'std'         => 'company',
-              'description' => "Un formulaire que vous souhaiter utiliser",
-              'admin_label' => true,
-              'weight'      => 0
-            ),
+//            array(
+//              'type'        => 'dropdown',
+//              'class'       => 'vc-ij-position',
+//              'heading'     => 'Type de formulaire',
+//              'param_name'  => 'form',
+//              'value'       => array(
+//                'Entreprise'     => 'company',
+//                'Candidate (CV)' => 'candidate'
+//              ),
+//              'std'         => 'company',
+//              'description' => "Un formulaire que vous souhaiter utiliser",
+//              'admin_label' => true,
+//              'weight'      => 0
+//            ),
           )
         )
       );
@@ -269,55 +269,37 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         shortcode_atts(
           array(
             'title' => null,
-            'form'  => null // Post type value
+//            'form'  => null
           ),
           $attrs
         )
         , EXTR_OVERWRITE );
-      /** @var string $form - candidate/company */
-      if ( $form === 'company' || is_null( $form ) ) {
 
-        // load script & style
-        wp_enqueue_style( 'input-form', get_template_directory_uri() . '/assets/css/inputForm.css' );
-        wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js',
-          [
-            'angular',
-            'angular-ui-route',
-            'angular-sanitize',
-            'angular-messages',
-            'angular-animate',
-            'angular-aria',
-          ], $itJob->version, true );
-        wp_localize_script( 'form-company', 'itOptions', [
-          'ajax_url'     => admin_url( 'admin-ajax.php' ),
-          'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
-          'template_url' => get_template_directory_uri()
+      // load script & style
+      wp_enqueue_style( 'input-form', get_template_directory_uri() . '/assets/css/inputForm.css' );
+      wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js',
+        [
+          'angular',
+          'angular-ui-route',
+          'angular-sanitize',
+          'angular-messages',
+          'angular-animate',
+          'angular-aria',
+        ], $itJob->version, true );
+      wp_localize_script( 'form-company', 'itOptions', [
+        'ajax_url'     => admin_url( 'admin-ajax.php' ),
+        'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
+        'template_url' => get_template_directory_uri()
+      ] );
+      try {
+        /** @var STRING $title - Titre de l'element VC */
+        return $Engine->render( '@VC/register/company.html.twig', [
+          'title' => $title
         ] );
-        try {
-          /** @var STRING $title - Titre de l'element VC */
-          return $Engine->render( '@VC/register/company.html.twig', [
-            'title' => $title
-          ] );
-        } catch ( \Twig_Error_Loader $e ) {
-        } catch ( \Twig_Error_Runtime $e ) {
-        } catch ( \Twig_Error_Syntax $e ) {
-          return $e->getRawMessage();
-        }
-      } else {
-        // load script & style
-        wp_enqueue_script( 'form-candidate', get_template_directory_uri() . '/assets/js/app/register/form-candidate.js',
-          [ 'angular' ], $itJob->version, true );
-
-        try {
-          /** @var STRING $title - Titre de l'element VC */
-          return $Engine->render( '@VC/register/candidate.html.twig', [
-            'title' => $title
-          ] );
-        } catch ( \Twig_Error_Loader $e ) {
-        } catch ( \Twig_Error_Runtime $e ) {
-        } catch ( \Twig_Error_Syntax $e ) {
-          return $e->getRawMessage();
-        }
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
+        return $e->getRawMessage();
       }
     }
   }
