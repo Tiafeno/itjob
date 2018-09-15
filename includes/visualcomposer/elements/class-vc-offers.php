@@ -7,7 +7,7 @@ namespace includes\vc;
  * @method vc_offer_recently - Récuperer les offres recements ajouter
  */
 if ( ! class_exists( 'WPBakeryShortCode' ) ) {
-  die( 'WPBakery plugins missing!' );
+  new \WP_Error( 'WPBakery', 'WPBakery plugins missing!' );
 }
 
 use Http;
@@ -18,6 +18,7 @@ if ( ! class_exists( 'vcOffers' ) ):
   class vcOffers extends \WPBakeryShortCode {
     public function __construct() {
       add_action( 'init', [ $this, 'vc_offers_mapping' ] );
+      add_action( 'acf/update_value/name=itjob_offer_abranch', [ &$this, 'update_offer_reference' ], 10, 3 );
 
       add_shortcode( 'vc_offers', [ $this, 'vc_offers_render' ] );
       add_shortcode( 'vc_featured_offers', [ $this, 'vc_featured_offers_render' ] );
@@ -26,10 +27,6 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       add_action( 'wp_ajax_ajx_insert_offers', [ &$this, 'ajx_insert_offers' ] );
       add_action( 'wp_ajax_nopriv_ajx_insert_offers', [ &$this, 'ajx_insert_offers' ] );
-
-      add_action( 'wp_enqueue_scripts', function () {
-
-      } );
 
     }
 
@@ -164,7 +161,7 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       $form = (object) [
         'post'            => Http\Request::getValue( 'post' ),
-        'reference'       => Http\Request::getValue( 'reference' ),
+//        'reference'       => Http\Request::getValue( 'reference' ),
         'ctt'             => Http\Request::getValue( 'ctt' ),
         'salary_proposed' => Http\Request::getValue( 'salary_proposed', 0 ),
         'region'          => Http\Request::getValue( 'region' ),
@@ -196,7 +193,10 @@ if ( ! class_exists( 'vcOffers' ) ):
 
     private function update_acf_field( $post_id, $form ) {
       update_field( 'itjob_offer_post', $form->post, $post_id );
-      update_field( 'itjob_offer_reference', $form->reference, $post_id );
+
+      // FEATURE: La référence est automatiquement gérer par le systeme
+      //update_field( 'itjob_offer_reference', $form->reference, $post_id );
+
       update_field( 'itjob_offer_datelimit', $form->datelimit, $post_id );
       update_field( 'itjob_offer_contrattype', $form->ctt, $post_id );
       update_field( 'itjob_offer_profil', $form->profil, $post_id );
@@ -209,6 +209,20 @@ if ( ! class_exists( 'vcOffers' ) ):
       update_field( 'itjob_offer_company', $form->company_id, $post_id );
     }
 
+    // This is "itjob_offer_abranch" field
+    // Cette fonction permet de mettre à jour la reference par rapport à son secteur d'activité
+    // Callback: acf/update_value/name=itjob_offer_abranch
+    public function update_offer_reference( $value, $post_id, $field ) {
+      $taxonomy        = "branch_activity";
+      $term_abranch_id = (int) $value;
+      if ( term_exists( $term_abranch_id, $taxonomy ) ) {
+        $branch_activity_obj = get_term( $term_abranch_id, $taxonomy );
+        update_field( 'itjob_offer_reference', strtoupper( $branch_activity_obj->slug ) . $post_id );
+      }
+
+      return $value;
+    }
+
     /**
      * Afficher les offres recement ajouter
      *
@@ -217,7 +231,7 @@ if ( ! class_exists( 'vcOffers' ) ):
      * @return mixed
      */
     public function vc_offers_render( $attrs ) {
-      global $Engine;
+      global $Engine, $itJob;
 
       // load script or style
       wp_enqueue_style( 'offers' );
@@ -240,7 +254,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         /** @var STRING $order */
         return $Engine->render( '@VC/offers/offers.html.twig', [
           'title'  => $title,
-          'offers' => self::vc_offer_recently( $orderby, $order )
+          'offers' => $itJob->services->getRecentlyPost('offers', 4)
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
@@ -257,6 +271,7 @@ if ( ! class_exists( 'vcOffers' ) ):
      * @return mixed
      */
     public function vc_featured_offers_render( $attrs ) {
+      global $itJob;
       // Params extraction
       extract(
         shortcode_atts(
@@ -272,7 +287,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       /** @var string $title */
       $args = [
         'title'  => $title,
-        'offers' => self::get_featured_offers()
+        'offers' => $itJob->services->getFeaturedPost('offers', 'itjob_offer_featured')
       ];
 
       return ( trim( $position ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
@@ -307,16 +322,17 @@ if ( ! class_exists( 'vcOffers' ) ):
         )
         , EXTR_OVERWRITE );
       try {
-        define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
-        wp_enqueue_style( 'b-datepicker-3', VENDOR_URL . '/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css', '', '1.7.1' );
+        if ( ! defined('VENDOR_URL'))
+          define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
+        wp_enqueue_style( 'b-datepicker-3');
         wp_enqueue_style( 'themify-icons' );
         wp_enqueue_style( 'froala' );
         wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
-        wp_enqueue_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', [ 'jquery' ], '1.7.1' );
+        wp_enqueue_script( 'b-datepicker');
         wp_enqueue_script( 'offers', get_template_directory_uri() . '/assets/js/app/offers/form.js',
           [
             'angular',
-            'angular-route',
+            'angular-ui-route',
             'angular-sanitize',
             'angular-messages',
             'angular-animate',
@@ -379,63 +395,6 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
     }
 
-    /**
-     * Récuperer les offres à la une (Premium offre)
-     * @return array
-     */
-    public static function get_featured_offers() {
-      $featuredOffers = [];
-      $args           = [
-        'post_type'      => 'offers',
-        'post_status'    => [ 'publish', 'pending' ],
-        'posts_per_page' => 4,
-        'orderby'        => 'DATE',
-        'meta_query'     => [
-          [
-            'key'     => 'itjob_offer_featured',
-            'compare' => '=',
-            'value'   => 1,
-            'type'    => 'NUMERIC'
-          ]
-        ]
-      ];
-      self::get_offers( $args, $featuredOffers );
-      return $featuredOffers;
-    }
-
-    /**
-     * Récuperer les offres recemejnt ajouter
-     * @return array
-     */
-    public static function vc_offer_recently() {
-      $recentlyOffers = [];
-      $args           = [
-        'post_type'      => 'offers',
-        'post_status'    => [ 'publish', 'pending' ],
-        'posts_per_page' => 3,
-        'orderby'        => 'DATE',
-        'meta_query'     => [
-          [
-            'key'     => 'itjob_offer_featured',
-            'compare' => '=',
-            'value'   => 0,
-            'type'    => 'NUMERIC'
-          ]
-        ]
-      ];
-      self::get_offers( $args, $recentlyOffers );
-
-      return $recentlyOffers;
-    }
-
-    private static function get_offers( $args = [], &$pOffers ) {
-      $offers = get_posts( $args );
-      foreach ( $offers as $offer ) {
-        setup_postdata( $offer );
-        array_push( $pOffers, new Offers( $offer->ID ) );
-      }
-      wp_reset_postdata();
-    }
   }
 endif;
 

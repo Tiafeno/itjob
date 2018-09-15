@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 if ( ! class_exists( 'WPBakeryShortCode' ) ) {
-  die( 'WPBakery plugins missing!' );
+  new \WP_Error( 'WPBakery', 'WPBakery plugins missing!' );
 }
 
 use Http;
@@ -17,25 +17,6 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
     public function __construct() {
       add_action( 'init', [ $this, 'register_mapping' ] );
       add_action( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
-
-      // Ajouter le mot de passe de l'utilisateur
-      add_action( 'user_register', function ( $user_id ) {
-        $user       = get_userdata( $user_id );
-        $user_roles = $user->roles;
-        if ( ! in_array( 'company', $user_roles, true ) ) {
-          return false;
-        }
-        $pwd = $_POST['pwd'];
-        if ( isset( $pwd ) ) {
-          $id = wp_update_user( [ 'ID' => $user_id, 'user_pass' => trim( $pwd ) ] );
-          if ( is_wp_error( $user_id ) ) {
-            return true;
-          } else {
-            // Mot de passe utilisateur à etes modifier avec success
-            return false;
-          }
-        }
-      }, 10, 1 );
 
       add_shortcode( 'vc_register', [ &$this, 'register_render_html' ] );
 
@@ -206,7 +187,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       $userEmail = Http\Request::getValue( 'email', false );
       $userExist = get_user_by( 'email', $userEmail );
-      if ( true == $userExist ) {
+      if ( $userExist ) {
         wp_send_json( [ 'success' => false, 'msg' => 'L\'adresse e-mail ou l\'utilisateur existe déja' ] );
       }
 
@@ -301,7 +282,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js',
           [
             'angular',
-            'angular-route',
+            'angular-ui-route',
             'angular-sanitize',
             'angular-messages',
             'angular-animate',

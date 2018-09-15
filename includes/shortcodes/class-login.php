@@ -16,6 +16,14 @@ if ( ! class_exists( 'scLogin' ) ) :
 
       add_action( 'wp_ajax_ajx_signon', [ &$this, 'login' ] );
       add_action( 'wp_ajax_nopriv_ajx_signon', [ &$this, 'login' ] );
+
+      add_action( 'init', function () {
+        $page_login_id = LOGIN_PAGE ? (int) LOGIN_PAGE : 0;
+        if ( $page_login_id !== 0 ) {
+          add_rewrite_tag( '%ptype%', '([^&]+)' );
+          add_rewrite_rule( '^connexion/([^/]*)/?', 'index.php?page_id=' . $page_login_id . '&ptype=$matches[1]', 'top' );
+        }
+      }, 10, 0 );
     }
 
     public function login() {
@@ -49,8 +57,20 @@ if ( ! class_exists( 'scLogin' ) ) :
     }
 
     public function sc_render_html( $attrs, $content = '' ) {
-      global $Engine, $itJob;
+      global $Engine, $itJob, $wp_query;
 
+      extract(
+        shortcode_atts(
+          array(
+            'role'         => '',
+            'redirect_url' => home_url( '/' )
+          ),
+          $attrs
+        )
+      );
+      $query_type = ! in_array( 'ptype', array_keys( $wp_query->query_vars ) ) ? null : $wp_query->query_vars['ptype'];
+      /** @var string $role - Post type slug */
+      $ptype = ! is_null( $query_type ) ? $query_type : $role;
       if ( is_user_logged_in() ) {
         $logoutUrl          = wp_logout_url( home_url( '/' ) );
         $user               = wp_get_current_user();
@@ -61,18 +81,15 @@ if ( ! class_exists( 'scLogin' ) ) :
 
         return $output;
       }
-      extract(
-        shortcode_atts(
-          array(
-            'title'        => '',
-            'redirect_url' => home_url( '/' )
-          ),
-          $attrs
-        )
-      );
 
-      // get customer area url
+      if ( ! post_type_exists( $ptype ) ) {
+        return 'Bad link';
+      }
+      // Only company & particular singup in itjob
+      $singup_page_id = ( $ptype === 'company' ) ? REGISTER_COMPANY_PAGE_ID : REGISTER_PARTICULAR_PAGE_ID;
+      $singup_url     = $singup_page_id ? get_permalink( (int) $singup_page_id ) : '#no-link';
 
+      // Enqueue scripts & style dependence
       wp_enqueue_script( 'login', get_template_directory_uri() . '/assets/js/app/login/form-login.js', [
         'angular',
         'angular-sanitize',
@@ -80,7 +97,6 @@ if ( ! class_exists( 'scLogin' ) ) :
         'angular-animate',
         'angular-aria',
       ], $itJob->version, true );
-
       /** @var STRING $redirect_url */
       wp_localize_script( 'login', 'itOptions', [
         'ajax_url'          => admin_url( 'admin-ajax.php' ),
@@ -88,9 +104,17 @@ if ( ! class_exists( 'scLogin' ) ) :
       ] );
 
       try {
+        // Get pos type object
+        $post_type_object = get_post_type_object( $ptype );
+        $title = $post_type_object->name === 'company' ? strtolower( $post_type_object->labels->singular_name ) : '';
+
         /** @var STRING $title */
         return $Engine->render( '@SC/login.html.twig', [
-          'title' => $title
+          'title' => $title,
+          'uri'   => (object) [
+            'theme'  => get_template_directory_uri(),
+            'singup' => $singup_url
+          ]
         ] );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {

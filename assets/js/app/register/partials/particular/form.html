@@ -1,0 +1,114 @@
+<form class="ibox-body p-5" name="pcForm" ng-submit="formSubmit(pcForm.$valid)" novalidate>
+  <h4 class="font-light text-center">Créer votre compte itJob</h4>
+  <p class="text-center mb-5">Accéder à nos services.</p>
+
+  <div class="alert alert-warning alert-dismissable fade show  has-icon" ng-show="error">
+    <i class="la la-info-circle alert-icon"></i>
+    <div class="d-flex align-items-center justify-content-between">
+      <div><strong>ERREUR</strong><br>
+        Une erreur s’est produite. Veuillez remplir correctement les champs en rouge</div>
+    </div>
+  </div>
+
+  <div class="form-group mb-4">
+    <div class="row mb-1">
+      <div class="col-md-6 sol-sm-6 mt-2 form-group">
+        <label class="form-control-label">Votre prénom</label>
+        <input class="form-control" type="text" name="firstname" ng-model="particularForm.firstname" autocomplete="off" placeholder="Prénom" required>
+        <div ng-messages="pcForm.firstname.$error" ng-show="pcForm.firstname.$invalid && pcForm.firstname.$touched"
+             class="alert alert-pink" role="alert">
+          <div ng-message="required">Veuillez saisir votre prénom.</div>
+        </div>
+      </div>
+      <div class="col-md-6 sol-sm-6 mt-2 form-group">
+        <label class="form-control-label">Votre nom</label>
+        <input class="form-control" type="text" name="lastname" ng-model="particularForm.lastname" autocomplete="off" placeholder="Nom" required>
+        <div ng-messages="pcForm.lastname.$error" ng-show="pcForm.lastname.$invalid && pcForm.lastname.$touched"
+             class="alert alert-pink" role="alert">
+          <div ng-message="required">Veuillez saisir votre nom.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-1">
+      <div class="col-md-6 form-group">
+        <div class="form-group" id="birthday">
+          <label class="font-normal">Date de naissance</label>
+          <div class="input-group date">
+            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+            <input class="form-control" name="birthdayDate" ng-model="particularForm.birthdayDate" type="text" value="" autocomplete="off" placeholder="Date de naissance">
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row mb-1">
+      <div class="col-md-8 form-group">
+        <label class="form-control-label">Adresse</label>
+        <input class="form-control" type="text" name="address" ng-model="particularForm.address" autocomplete="off"
+               placeholder="" required>
+        <div ng-messages="pcForm.address.$error" ng-show="pcForm.address.$invalid && pcForm.address.$touched"
+             class="alert alert-pink" role="alert">
+          <div ng-message="required">Veuillez saisir une adresse.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6 form-group">
+        <label class="form-control-label">Région</label>
+        <select class="form-control find" name="region" ng-model="particularForm.region" title="Région">
+          <option></option>
+          <option ng-repeat="rg in $ctrl.region" value="{{rg.term_id}}">{{rg.name}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row mb-1">
+      <div class="col-md-6 form-group">
+        <label class="form-control-label">Code postal ou nom d'une ville</label>
+        <select class="form-control input-mode country" name="country" ng-model="particularForm.country" title="Tapez le nom d'un ville" required>
+          <option></option>
+          <option value="{{city.term_id}}" ng-repeat="city in $ctrl.allCity">({{city.postal_code}}) {{city.name}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row mb-1">
+      <div class="col-md-6 form-group">
+        <label class="form-control-label">Votre adresse email</label>
+        <input class="form-control" type="text" name="email" ng-mail="particularForm.email" ng-model="particularForm.email" autocomplete="off"
+               placeholder="Votre adresse email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required>
+        <div ng-messages="pcForm.email.$error" ng-show="pcForm.email.$invalid && pcForm.email.$touched"
+             class="alert alert-pink" role="alert">
+          <div ng-message="required">Veuillez saisir une adresse email.</div>
+          <div ng-message="pattern">Vérifiez l'adresse email, son format n'est pas valide.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-1 form-group">
+      <div class="col-md-6 sol-sm-6 mt-1">
+        <label class="form-control-label">Mot de passe</label>
+        <input class="form-control" type="password" name="pwd" ng-model="particularForm.pwd" autocomplete="off"
+               ng-pattern="/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d$@$!%*#?&]{8,20}$/" required>
+        <span class="help-block uk-text-small">Utilisez au moins 8 caractères avec des lettres, des chiffres et des symboles</span>
+      </div>
+      <div class="col-md-6 sol-sm-6 mt-1">
+        <label class="form-control-label">Confirmez le mot de passe.</label>
+        <input class="form-control" compare-to="particularForm.pwd" type="password" name="pwdc" ng-model="particularForm.pwdc" autocomplete="off" required>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mb-4 mt-5">
+    <div class="d-flex justify-content-center">
+      <button class="btn btn-success btn-rounded btn-block col-md-4" type="submit" ng-disabled="buttonDisable">S'INSCRIRE</button>
+    </div>
+  </div>
+
+</form>
+<div class="ibox-footer">
+  <p class="text-center"><a href="{{ uri.singup }}" class="text-blue ml-2">Se connecter à un compte existant</a></p>
+</div>

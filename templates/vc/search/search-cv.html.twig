@@ -1,0 +1,75 @@
+<style type="text/css">
+  form[name="search-header-candidate"] {
+    background-color: rgba(255, 255, 255, 1);
+    padding: 2rem 2rem 1rem;
+  }
+  @media (min-width: 768px) {
+    .search-element-default .col-md-3:not(.no-pd) {
+      padding-left: 0px;
+    }
+  }
+</style>
+<div class="header-bg mb-4">
+  <div class="uk-flex">
+    <div class="col-md-8 uk-margin-auto-vertical uk-margin-auto">
+      <form name="search-header-candidate" action="" method="get" class="ml-4 mr-4">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <select class="form-control" name="ab" title="Secteur d'activité">
+                <option></option>
+                {% for abranch in abranchs %}
+                  <option value="{{ abranch.term_id }}">{{ abranch.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <select class="form-control" name="lg" title="Les langues maitrisées">
+                <option></option>
+                {% for language in languages %}
+                  <option value="{{ language.term_id }}">{{ language.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group">
+              <select class="form-control" name="rg" title="Région">
+                <option></option>
+                {% for region in regions %}
+                  <option value="{{ region.term_id }}">{{ region.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <input class="form-control" name="s" type="text" placeholder="Mot clé">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <select class="form-control" name="ms" title="Logiciel Maîtrisés">
+                <option></option>
+                {% for software in softwares %}
+                  <option value="{{ software.term_id }}">{{ software.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <input type="hidden" name="post_type" value="candidate">
+            <button class="btn btn-blue btn-block">Trouver</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

@@ -17,13 +17,18 @@
 define( '__SITENAME__', 'itJob' );
 define( '__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj' );
 define( 'TWIG_TEMPLATE_PATH', get_template_directory() . '/templates' );
+if ( ! defined('VENDOR_URL'))
+  define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
 $theme     = wp_get_theme( 'itjob' );
+
+// Utiliser ces variables apres la fonction: the_post()
 $offers    = null;
 $company   = null;
 $candidate = null;
 
 // middlewares
 require 'includes/itjob-configs.php';
+require 'includes/itjob-functions.php';
 require 'includes/class/middlewares/Auth.php';
 require 'includes/class/middlewares/Register.php';
 
@@ -31,6 +36,7 @@ require 'includes/class/middlewares/Register.php';
 require 'includes/class/widgets/widget-publicity.php';
 require 'includes/class/widgets/widget-shortcode.php';
 require 'includes/class/widgets/widget-accordion.php';
+require 'includes/class/widgets/widget-header-search.php';
 
 $itJob = (object) [
   'version'  => $theme->get( 'Version' ),
@@ -49,6 +55,7 @@ foreach ( $interfaces as $interface ) {
 
 // post type object
 require_once 'includes/class/class-offers.php';
+require_once 'includes/class/class-particular.php';
 require_once 'includes/class/class-company.php';
 require_once 'includes/class/class-candidate.php';
 
@@ -63,9 +70,12 @@ $shortcode = (object) [
 $elementsVC = (object) [
   'vcSearch'   => require 'includes/visualcomposer/elements/class-vc-search.php',
   'vcOffers'   => require 'includes/visualcomposer/elements/class-vc-offers.php',
-  'vcRegister' => require 'includes/visualcomposer/elements/class-vc-register.php'
+  'vcCandidate'   => require 'includes/visualcomposer/elements/class-vc-candidate.php',
+  'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
+  'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php5'
 ];
 
+require 'includes/class/class-wp-city.php';
 require 'includes/class/class-http-request.php';
 require 'includes/class/class-menu-walker.php';
 require 'includes/filters/function-filters.php';

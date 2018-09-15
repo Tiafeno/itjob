@@ -20,7 +20,7 @@ if ( ! class_exists( 'itJob' ) ) {
         $this->taxonomy();
       } );
 
-      add_action( 'acf/save_post', [ &$this, 'post_publish_candidate' ], 20 );
+      add_action( 'je_postule', [ &$this, 'je_postule_Fn' ] );
 
       // TODO: Envoyer un mail information utilisateur et adminstration (pour s'informer d'un nouveau utilisateur)
       add_action( 'acf/save_post', function ( $post_id ) {
@@ -40,6 +40,26 @@ if ( ! class_exists( 'itJob' ) ) {
 
       }, 10, 3 );
 
+      // Ajouter le mot de passe de l'utilisateur
+      add_action( 'user_register', function ( $user_id ) {
+        $user       = get_userdata( $user_id );
+        $user_roles = $user->roles;
+        if ( in_array( 'company', $user_roles, true ) ||
+             in_array( 'candidate', $user_roles, true ) ) {
+          $pwd = $_POST['pwd'];
+          if ( isset( $pwd ) ) {
+            $id = wp_update_user( [ 'ID' => $user_id, 'user_pass' => trim( $pwd ) ] );
+            if ( is_wp_error( $id ) ) {
+              return true;
+            } else {
+              // Mot de passe utilisateur à etes modifier avec success
+              return false;
+            }
+          }
+        }
+      }, 10, 1 );
+
+
       add_action( 'wp_loaded', function () {
       }, 20 );
 
@@ -58,16 +78,17 @@ if ( ! class_exists( 'itJob' ) ) {
       // @link: https://codex.wordpress.org/Plugin_API/Action_Reference/pre_get_posts
       add_action( 'pre_get_posts', function ( &$query ) {
         if ( ! is_admin() && $query->is_main_query() ) {
+
           // Afficher les posts pour status 'en attente' et 'publier'
           $query->set( 'post_status', [ 'publish', 'pending' ] );
+          $post_type = $query->get( 'post_type' );
           //$query->set( 'posts_per_page', 1 );
 
           if ( $query->is_search ) {
 
-            $post_type = $query->get( 'post_type' );
-            $region    = Http\Request::getValue( 'rg', '' );
-            $abranch   = Http\Request::getValue( 'ab', '' );
-            $s         = get_query_var( 's' );
+            $region  = Http\Request::getValue( 'rg', '' );
+            $abranch = Http\Request::getValue( 'ab', '' );
+            $s       = get_query_var( 's' );
 
             if ( ! empty( $region ) ) {
               $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
@@ -97,7 +118,7 @@ if ( ! class_exists( 'itJob' ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
                   // Feature: Recherché aussi dans le profil recherché et mission
-                  $meta_query[] = [
+                  $meta_query = [
                     'relation' => 'OR',
                     [
                       'key'     => 'itjob_offer_mission',
@@ -122,12 +143,12 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
-                  //$query->set( 'meta_query', $meta_query );
+                  $query->set( 'meta_query', $meta_query );
                   $query->meta_query = new \WP_Meta_Query( $meta_query );
                 endif;
 
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
-                  //$query->set( 'tax_query', $tax_query );
+                  $query->set( 'tax_query', $tax_query );
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
                   //$query->query_vars['tax_query'] = $query->tax_query->queries;
                 }
@@ -140,9 +161,9 @@ if ( ! class_exists( 'itJob' ) ) {
                 if ( ! empty( $language ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
-                    'taxonomy' => 'language',
-                    'field'    => 'term_id',
-                    'terms'    => (int) $language,
+                    'taxonomy'         => 'language',
+                    'field'            => 'term_id',
+                    'terms'            => (int) $language,
                     'include_children' => false
                   ];
                 }
@@ -150,12 +171,29 @@ if ( ! class_exists( 'itJob' ) ) {
                 if ( ! empty( $software ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
-                    'taxonomy' => 'master_software',
-                    'field'    => 'term_id',
-                    'terms'    => (int) $software,
+                    'taxonomy'         => 'master_software',
+                    'field'            => 'term_id',
+                    'terms'            => (int) $software,
                     'include_children' => false
                   ];
                 }
+
+                // Meta query
+                if ( ! isset( $meta_query ) ) {
+                  $meta_query = $query->get( 'meta_query' );
+                }
+
+                $meta_query[] = [
+                  'key'     => 'itjob_cv_activated',
+                  'value'   => 1,
+                  'compare' => '=',
+                  'type'    => 'NUMERIC'
+                ];
+
+                if ( isset( $meta_query ) && ! empty( $meta_query ) ):
+                  $query->set( 'meta_query', $meta_query );
+                  $query->meta_query = new \WP_Meta_Query( $meta_query );
+                endif;
 
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
                   $query->set( 'tax_query', $tax_query );
@@ -164,10 +202,32 @@ if ( ! class_exists( 'itJob' ) ) {
                 BREAK;
             } // .end switch
 
-            // TODO: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
+            // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
             $query->query['s']      = '';
             $query->query_vars['s'] = '';
           } // .end if - search conditional
+          else {
+            // Filtrer les candidates
+            // Afficher seulement les candidates activer
+            if ( $post_type === 'candidate' ):
+              // Meta query
+              if ( ! isset( $meta_query ) ) {
+                $meta_query = $query->get( 'meta_query' );
+              }
+
+              $meta_query[] = [
+                'key'     => 'itjob_cv_activated',
+                'value'   => 1,
+                'compare' => '=',
+                'type'    => 'NUMERIC'
+              ];
+
+              if ( isset( $meta_query ) && ! empty( $meta_query ) ):
+                $query->set( 'meta_query', $meta_query );
+                $query->meta_query = new \WP_Meta_Query( $meta_query );
+              endif;
+            endif;
+          }
         }
       } );
 
@@ -211,7 +271,7 @@ if ( ! class_exists( 'itJob' ) ) {
         }
       }, 100 );
 
-
+      // Désactiver l'access à la back-office pour les utilisateurs non admin
       add_action( 'after_setup_theme', function () {
         /** Seuls les administrateurs peuvent voir le menu bar de WordPress */
         if ( ! current_user_can( 'administrator' ) && ! is_admin() ) {
@@ -219,6 +279,7 @@ if ( ! class_exists( 'itJob' ) ) {
         }
       } );
 
+      // Ajouter des positions widgetable et enregistrer des widgets
       add_action( 'widgets_init', function () {
         // Register sidebar
         // Offers
@@ -242,6 +303,22 @@ if ( ! class_exists( 'itJob' ) ) {
           'name'          => 'Archive CV Haut',
           'id'            => 'archive-cv-top',
           'description'   => 'Afficher des widgets en haut de la page archive',
+          'before_widget' => '<div id="%1$s" class="widget mb-4 %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        register_sidebar( array(
+          'name'          => 'Archive CV Sidebar',
+          'id'            => 'archive-cv-sidebar',
+          'description'   => 'Afficher des widgets en haut de la page archive',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        register_sidebar( array(
+          'name'          => 'CV Header',
+          'id'            => 'cv-header',
+          'description'   => 'Afficher des widgets en mode header',
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
@@ -250,9 +327,14 @@ if ( ! class_exists( 'itJob' ) ) {
         register_widget( 'Widget_Publicity' );
         register_widget( 'Widget_Shortcode' );
         register_widget( 'Widget_Accordion' );
+        register_widget( 'Widget_Header_Search' );
 
       } );
-      add_action( 'admin_enqueue_scripts', [$this, 'register_enqueue_scripts']);
+
+      // Enregistrer les scripts dans la back-office
+      add_action( 'admin_enqueue_scripts', [ $this, 'register_enqueue_scripts' ] );
+
+      // Ajouter les scripts ou styles necessaire pour le template
       add_action( 'wp_enqueue_scripts', function () {
         global $itJob;
 
@@ -267,9 +349,10 @@ if ( ! class_exists( 'itJob' ) ) {
         wp_enqueue_script( 'bluebird', get_template_directory_uri() . '/assets/js/bluebird.min.js', [], $itJob->version, true );
         wp_enqueue_script( 'uikit', get_template_directory_uri() . '/assets/js/uikit.min.js', [ 'jquery' ], $itJob->version, true );
 
-        /** Register scripts */
+        // Register scripts
         $this->register_enqueue_scripts();
-        wp_register_style( 'offers', get_template_directory_uri() . '/assets/css/offers/offers.css', [ 'adminca' ], $itJob->version );
+        wp_register_style( 'offers', get_template_directory_uri() . '/assets/css/offers.css', [ 'adminca' ], $itJob->version );
+        wp_register_style( 'candidate', get_template_directory_uri() . '/assets/css/candidate.css', [ 'adminca' ], $itJob->version );
 
         wp_enqueue_style( 'adminca' );
         wp_enqueue_style( 'themify-icons' );
@@ -294,43 +377,6 @@ if ( ! class_exists( 'itJob' ) ) {
       } );
     }
 
-    public function post_publish_candidate( $post_id ) {
-
-      $post_type = get_post_type( $post_id );
-      if ( $post_type != 'candidate' ) {
-        return false;
-      }
-
-      $post      = get_post( $post_id );
-      $userEmail = get_field( 'itjob_cv_email', $post_id );
-      // (WP_User|false) WP_User object on success, false on failure.
-      $userExist = get_user_by( 'email', $userEmail );
-      if ( true == $userExist ) {
-        return false;
-      }
-
-      $userFirstName = get_field( 'itjob_vc_firstname', $post_id );
-      $userLastName  = get_field( 'itjob_vc_lastname', $post_id );
-      $args          = [
-        "user_pass"    => substr( str_shuffle( $this->chars ), 0, 8 ),
-        "user_login"   => 'user' . $post_id,
-        "user_email"   => $userEmail,
-        "display_name" => $post->post_title,
-        "first_name"   => $userFirstName,
-        "last_name"    => $userLastName,
-        "role"         => $post_type
-      ];
-      $user_id       = wp_insert_user( $args );
-      if ( ! is_wp_error( $user_id ) ) {
-        $user = new \WP_User( $user_id );
-        get_password_reset_key( $user );
-
-        return true;
-      } else {
-        return false;
-      }
-    }
-
     /**
      * Enregistrer des styles et scripts
      */
@@ -339,8 +385,10 @@ if ( ! class_exists( 'itJob' ) ) {
 
       $suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
       // angular components
-      wp_register_script( 'angular-route',
+      wp_register_script( 'angular-ui-route',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular-ui-router' . $suffix . '.js', [], '1.0.20' );
+      wp_register_script( 'angular-route',
+        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-route' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular-sanitize',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular-sanitize' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular-messages',
@@ -352,34 +400,24 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_script( 'angular',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [], '1.7.2' );
 
-      wp_register_script( 'angular-froala',
-        get_template_directory_uri() . '/assets/vendors/froala-editor/src/angular-froala.js', [], '2.8.4' );
-      wp_register_script( 'froala',
-        get_template_directory_uri() . '/assets/vendors/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
+      wp_register_script( 'angular-froala', VENDOR_URL . '/froala-editor/src/angular-froala.js', [], '2.8.4' );
+      wp_register_script( 'froala', VENDOR_URL . '/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
 
       // plugins depend
-      wp_register_style( 'font-awesome',
-        get_template_directory_uri() . '/assets/vendors/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
-      wp_register_style( 'line-awesome',
-        get_template_directory_uri() . '/assets/vendors/line-awesome/css/line-awesome.min.css', '', '1.1.0' );
-      wp_register_style( 'themify-icons',
-        get_template_directory_uri() . '/assets/vendors/themify-icons/css/themify-icons.css', '', '1.1.0' );
-      wp_register_style( 'select-2',
-        get_template_directory_uri() . "/assets/vendors/select2/dist/css/select2.min.css", '', $itJob->version );
+      wp_register_style( 'font-awesome', VENDOR_URL . '/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
+      wp_register_style( 'line-awesome', VENDOR_URL . '/line-awesome/css/line-awesome.min.css', '', '1.1.0' );
+      wp_register_style( 'themify-icons', VENDOR_URL . '/themify-icons/css/themify-icons.css', '', '1.1.0' );
+      wp_register_style( 'select-2', VENDOR_URL . "/select2/dist/css/select2.min.css", '', $itJob->version );
 
       // papaparse
       wp_register_script( 'papaparse',
         get_template_directory_uri() . '/assets/js/libs/papaparse/papaparse.min.js', [], '4.6.0' );
 
       // Register components adminca stylesheet
-      wp_register_style( 'bootstrap',
-        get_template_directory_uri() . '/assets/vendors/bootstrap/dist/css/bootstrap.min.css', '', '4.0.0' );
-      wp_register_style( 'adminca-animate',
-        get_template_directory_uri() . '/assets/vendors/animate.css/animate.min.css', '', '3.5.1' );
-      wp_register_style( 'toastr',
-        get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.css', '', '3.5.1' );
-      wp_register_style( 'bootstrap-select',
-        get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/css/bootstrap-select.min.css', '', '1.12.4' );
+      wp_register_style( 'bootstrap', VENDOR_URL . '/bootstrap/dist/css/bootstrap.min.css', '', '4.0.0' );
+      wp_register_style( 'adminca-animate', VENDOR_URL . '/animate.css/animate.min.css', '', '3.5.1' );
+      wp_register_style( 'toastr', VENDOR_URL . '/toastr/toastr.min.css', '', '3.5.1' );
+      wp_register_style( 'bootstrap-select', VENDOR_URL . '/bootstrap-select/dist/css/bootstrap-select.min.css', '', '1.12.4' );
 
       // Load the main stylesheet
       wp_register_style( 'style', get_stylesheet_uri(), [
@@ -395,31 +433,30 @@ if ( ! class_exists( 'itJob' ) ) {
           'bootstrap-select',
           'style'
         ], $itJob->version );
+      wp_register_style( 'b-datepicker-3', VENDOR_URL . '/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css', '', '1.7.1' );
+      wp_register_style( 'admin-adminca',
+        get_template_directory_uri() . '/assets/css/admin-custom.css', [ 'adminca' ], $itJob->version );
 
-      wp_register_style('admin-adminca',
-        get_template_directory_uri().'/assets/css/admin-custom.css', ['adminca'], $itJob->version);
-
-      wp_register_style( 'froala-editor',
-        get_template_directory_uri() . '/assets/vendors/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
-      wp_register_style( 'froala',
-        get_template_directory_uri() . '/assets/vendors/froala-editor/css/froala_style.min.css', [
-          'froala-editor',
-          'font-awesome'
-        ], '2.8.4' );
+      wp_register_style( 'froala-editor', VENDOR_URL . '/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
+      wp_register_style( 'froala', VENDOR_URL . '/froala-editor/css/froala_style.min.css', [
+        'froala-editor',
+        'font-awesome'
+      ], '2.8.4' );
 
       // Register components adminca scripts
       wp_register_script( 'popper',
-        get_template_directory_uri() . '/assets/vendors/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );
+        VENDOR_URL . '/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );
       wp_register_script( 'bootstrap',
-        get_template_directory_uri() . '/assets/vendors/bootstrap/dist/js/bootstrap.min.js', [ 'popper' ], '4.0.0-beta', true );
+        VENDOR_URL . '/bootstrap/dist/js/bootstrap.min.js', [ 'popper' ], '4.0.0-beta', true );
       wp_register_script( 'jq-slimscroll',
-        get_template_directory_uri() . '/assets/vendors/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
+        VENDOR_URL . '/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
       wp_register_script( 'idle-timer',
-        get_template_directory_uri() . '/assets/vendors/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
+        VENDOR_URL . '/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
       wp_register_script( 'toastr',
-        get_template_directory_uri() . '/assets/vendors/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
+        VENDOR_URL . '/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
+      wp_register_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', [ 'jquery' ], '1.7.1' );
       wp_register_script( 'bootstrap-select',
-        get_template_directory_uri() . '/assets/vendors/bootstrap-select/dist/js/bootstrap-select.min.js', [
+        VENDOR_URL . '/bootstrap-select/dist/js/bootstrap-select.min.js', [
           'jquery',
           'bootstrap'
         ], '1.12.4', true );
@@ -430,6 +467,16 @@ if ( ! class_exists( 'itJob' ) ) {
         'toastr',
         'bootstrap-select'
       ], $itJob->version, true );
+    }
+
+    public function je_postule_Fn( $params = [] ) {
+      $User = null;
+      $button = "<a href=\"javascript: alert('En construction, Revenez plus tard! :-)')\">
+                  <button class=\"btn btn-blue btn-fix\">
+                    <span class=\"btn-icon\">Je postule </span>
+                  </button>
+                </a>";
+      echo $button;
     }
 
   }

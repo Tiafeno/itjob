@@ -284,7 +284,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (Tag)
-    register_taxonomy( 'itjob_tag', [ 'offers' ], [
+    register_taxonomy( 'itjob_tag', [ 'offers', 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Étiquettes',
@@ -304,6 +304,29 @@ trait Register {
       'public'            => true,
       'show_in_rest'      => true,
       'rewrite'           => array( 'slug' => 'tag' ),
+    ] );
+
+    // Now register the taxonomy (City)
+    register_taxonomy( 'city', [ 'offers', 'candidate' ], [
+      'hierarchical'      => true,
+      'labels'            => array(
+        'name'              => 'Code postal & Ville',
+        'singular_name'     => 'Code postal & Ville',
+        'search_items'      => 'Trouver une code postal ou des villes',
+        'all_items'         => 'Trouver des villes ou code postal',
+        'parent_item'       => 'Parent',
+        'parent_item_colon' => 'Parent:',
+        'edit_item'         => 'Modifier',
+        'update_item'       => 'Mettre à jour ',
+        'add_new_item'      => 'Ajouter une nouvelle',
+        'menu_name'         => 'Code postal & Ville',
+      ),
+      'show_ui'           => true,
+      'show_admin_column' => false,
+      'query_var'         => true,
+      'public'            => true,
+      'show_in_rest'      => true,
+      'rewrite'           => array( 'slug' => 'postal_code__city' ),
     ] );
 
   }

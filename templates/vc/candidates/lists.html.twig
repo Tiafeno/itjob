@@ -1,0 +1,84 @@
+<div class="container-list-posts">
+  <h5 class="vc-element-title">{{ title }}</h5>
+  <div class="row mb-5">
+
+    {% if candidates is empty %}
+      <div class="col-md-12 mt-4">
+        <b>Nous sommes actuellement en train d’alimenter la plateforme avec de nouvelles fiches.</b><br>
+        En attendant, faites une recherche ou revenez dans quelques temps ;-) Merci de votre compréhension.</p>
+      </div>
+    {% endif %}
+
+    {% for candidate in candidates %}
+      <div class="col-md-12">
+        <div class="card ibox mb-4">
+          <div class="card-body">
+            <h4 class="card-title mb-4">
+              <a href="{{ candidate.ID|get_permalink }}" class="text-primary">{{ candidate.title }}</a>
+            </h4>
+            <div class="card-description">
+
+              <div class="row">
+                <div class="col-8 uk-padding-remove-right">
+                  <table class="table">
+                    <tbody>
+                    <tr>
+                      <td>L'emploi recherché:</td>
+                      <td>
+                        {{ candidate.jobSought|explode_terms }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Secteur d'activité:</td>
+                      <td>{{ candidate.branch_activity[0] }}</td>
+                    </tr>
+                    <tr>
+                      <td>Permis:</td>
+                      <td>{{ candidate.driveLicences|explode_array }}</td>
+                    </tr>
+                    <tr>
+                      <td>Langues:</td>
+                      <td>{{ candidate.languages|explode_terms }}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="col-4 uk-flex">
+                  <div class="uk-flex uk-margin-auto-left">
+                    <a href="{{ candidate.ID|get_permalink }}" class=" uk-margin-auto-vertical">
+                      <button class="btn btn-blue btn-fix">
+                        <span class="btn-icon">Voir <i class="la la-plus"></i></span>
+                      </button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <table class="table">
+                    <tbody>
+                    <tr>
+                      <td class="no-bold uk-text-bold"></td>
+                      <td class="text-center uk-text-bold"></td>
+                      <td class="text-right">CV ajouté le {{ candidate.dateAdd }}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="text-primary">
+                <b>TAG: </b> <span class="card-tag">{{ candidate.tags|join(', ') }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+  </div>
+</div>

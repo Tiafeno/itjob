@@ -1,24 +1,46 @@
 <?php
 get_header();
+wp_enqueue_style( 'offers' );
 ?>
   <div class="uk-section uk-section-transparent">
-    <div class="uk-container uk-container-small">
-      <h4 class="m-0">LES CANDIDATES</h4>
-      <?php
-      while ( have_posts() ) : the_post();
-        get_template_part( 'partials/content', 'candidate' );
-      endwhile;
-      echo '<div class="navigation">';
-      echo paginate_links( array(
-        'base'     => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
-        'format'   => '?paged=%#%',
-        'current'  => max( 1, get_query_var( 'paged' ) ),
-        'total'    => $total,
-        'mid_size' => 4,
-        'type'     => 'list'
-      ) );
-      echo '</div>';
-      ?>
+    <?php
+    if ( is_active_sidebar( 'cv-header' ) ) {
+      dynamic_sidebar( 'cv-header' );
+    }
+    ?>
+    <div class="uk-container uk-container-medium">
+      <div class="widget-top">
+        <?php
+        if ( is_active_sidebar( 'archive-cv-top' ) ) {
+          dynamic_sidebar( 'archive-cv-top' );
+        }
+        ?>
+      </div>
+      <div class="row">
+        <div class="col-md-8">
+          <div class="container-list-posts">
+            <h5 class="vc-element-title">LES CANDIDATES</h5>
+            <div class="row mb-5 ">
+              <?php
+              while ( have_posts() ) : the_post();
+                get_template_part( 'partials/content', 'candidate' );
+              endwhile;
+
+              // Affiche la pagination
+              itjob_pagination();
+
+              ?>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <?php
+          if ( is_active_sidebar( 'archive-cv-sidebar' ) ) {
+            dynamic_sidebar( 'archive-cv-sidebar' );
+          }
+          ?>
+        </div>
+      </div>
     </div>
   </div>
   </div>

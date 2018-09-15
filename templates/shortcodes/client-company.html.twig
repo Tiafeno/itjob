@@ -1,3 +1,6 @@
+<style type="text/css">
+
+</style>
 <script type="text/javascript">
   (function ($) {
     $(document).ready(function () {
@@ -20,8 +23,8 @@
 
   })(jQuery);
 </script>
-<div class="page-header">
-  <div class="ibox flex-1">
+<div class="page-header" ng-app="clientApp">
+  <div class="ibox flex-1" ng-controller="clientCompanyCtrl">
     <div class="ibox-body">
       <div class="flexbox">
         <div class="flexbox-b">
@@ -118,8 +121,12 @@
                       <span class="badge badge-info badge-pill">{{ offer.reference }}</span>
                     </td>
                     <td>
-                      <a class="text-light mr-3 font-16" href="javascript:;"><i class="ti-pencil"></i></a>
-                      <a class="text-light font-16" href="javascript:;"><i class="ti-trash"></i></a>
+                      <span class="text-light mr-3 font-16" style="cursor: pointer">
+                        <i class="ti-pencil"></i>
+                      </span>
+                      <span class="text-light font-16" style="cursor: pointer" ng-click="trashOffer({{ offer.ID }})">
+                        <i class="ti-trash"></i>
+                      </span>
                     </td>
                   </tr>
                 {% endfor %}

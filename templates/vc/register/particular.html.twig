@@ -1,0 +1,41 @@
+<style type="text/css">
+  input.form-control {
+    font-family: Poppins !important;
+    font-size: 12px;
+  }
+
+  .particular-content {
+    max-width: 650px;
+    height: auto;
+    min-height: 500px;
+    margin: 0px auto 50px;
+  }
+  .ng-dirty.ng-invalid, .ng-touched.ng-invalid  {
+    border-color: #f75a5f;
+  }
+
+  .auth-head-icon {
+    position: relative;
+    height: 124px;
+    width: 124px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    background-color: transparent;
+    color: #5c6bc0;
+    box-shadow: none;
+    border-radius: 50%;
+    transform: none;
+    z-index: 2;
+  }
+</style>
+
+<div class="ibox particular-content uk-margin-large-top" ng-app="formParticular" ng-controller="particularCtrl">
+  <ui-view>
+    <div class="mt-5 pt-5">
+      <h4 class="font-light text-center">Créer votre compte itJob</h4>
+      <p class="text-center mb-5">Chargement du formulaire...</p>
+    </div>
+  </ui-view>
+</div>
