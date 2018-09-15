@@ -231,7 +231,7 @@ if ( ! class_exists( 'vcOffers' ) ):
      * @return mixed
      */
     public function vc_offers_render( $attrs ) {
-      global $Engine;
+      global $Engine, $itJob;
 
       // load script or style
       wp_enqueue_style( 'offers' );
@@ -254,7 +254,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         /** @var STRING $order */
         return $Engine->render( '@VC/offers/offers.html.twig', [
           'title'  => $title,
-          'offers' => self::vc_offer_recently( $orderby, $order )
+          'offers' => $itJob->services->getRecentlyPost('offers', 4)
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
@@ -271,6 +271,7 @@ if ( ! class_exists( 'vcOffers' ) ):
      * @return mixed
      */
     public function vc_featured_offers_render( $attrs ) {
+      global $itJob;
       // Params extraction
       extract(
         shortcode_atts(
@@ -286,7 +287,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       /** @var string $title */
       $args = [
         'title'  => $title,
-        'offers' => self::get_featured_offers()
+        'offers' => $itJob->services->getFeaturedPost('offers', 'itjob_offer_featured')
       ];
 
       return ( trim( $position ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
@@ -394,64 +395,6 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
     }
 
-    /**
-     * Récuperer les offres à la une (Premium offre)
-     * @return array
-     */
-    public static function get_featured_offers() {
-      $featuredOffers = [];
-      $args           = [
-        'post_type'      => 'offers',
-        'post_status'    => [ 'publish', 'pending' ],
-        'posts_per_page' => 4,
-        'orderby'        => 'DATE',
-        'meta_query'     => [
-          [
-            'key'     => 'itjob_offer_featured',
-            'compare' => '=',
-            'value'   => 1,
-            'type'    => 'NUMERIC'
-          ]
-        ]
-      ];
-      self::get_offers( $args, $featuredOffers );
-
-      return $featuredOffers;
-    }
-
-    /**
-     * Récuperer les offres recemejnt ajouter
-     * @return array
-     */
-    public static function vc_offer_recently() {
-      $recentlyOffers = [];
-      $args           = [
-        'post_type'      => 'offers',
-        'post_status'    => [ 'publish', 'pending' ],
-        'posts_per_page' => 3,
-        'orderby'        => 'DATE',
-        'meta_query'     => [
-          [
-            'key'     => 'itjob_offer_featured',
-            'compare' => '=',
-            'value'   => 0,
-            'type'    => 'NUMERIC'
-          ]
-        ]
-      ];
-      self::get_offers( $args, $recentlyOffers );
-
-      return $recentlyOffers;
-    }
-
-    private static function get_offers( $args = [], &$pOffers ) {
-      $offers = get_posts( $args );
-      foreach ( $offers as $offer ) {
-        setup_postdata( $offer );
-        array_push( $pOffers, new Offers( $offer->ID ) );
-      }
-      wp_reset_postdata();
-    }
   }
 endif;
 

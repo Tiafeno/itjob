@@ -14,6 +14,7 @@ if ( ! class_exists('vcCandidate')):
     public function __construct() {
       add_action( 'init', [ $this, 'vc_candidate_mapping' ] );
       add_shortcode( 'vc_featured_candidate', [ $this, 'vc_featured_candidate_render' ] );
+      add_shortcode( 'vc_candidate_recently_added', [ $this, 'vc_candidate_recently_added_render' ] );
     }
 
     public function vc_candidate_mapping() {
@@ -23,7 +24,7 @@ if ( ! class_exists('vcCandidate')):
       }
       // Map the block with vc_map()
 
-      // Les offres à la une
+      // Les candidates à la une
       \vc_map(
         array(
           'name'        => 'CV à la une',
@@ -59,10 +60,29 @@ if ( ! class_exists('vcCandidate')):
           )
         )
       );
+
+      \vc_map([
+        'name' => 'Liste des CV',
+        'base' => 'vc_candidate_recently_added',
+        'category' => 'itJob',
+        'params' => [
+          array(
+            'type'        => 'textfield',
+            'holder'      => 'h3',
+            'class'       => 'vc-ij-title',
+            'heading'     => 'Titre',
+            'param_name'  => 'title',
+            'value'       => '',
+            'description' => "Ajouter un titre",
+            'admin_label' => false,
+            'weight'      => 0
+          ),
+        ]
+      ]);
     }
 
     public function vc_featured_candidate_render( $attrs ) {
-      global $Engine;
+      global $Engine, $itJob;
       // Params extraction
       extract(
         shortcode_atts(
@@ -78,12 +98,42 @@ if ( ! class_exists('vcCandidate')):
       /** @var string $title */
       $args = [
         'title'  => $title,
-        //'candidates' => self::get_featured_cv()
+        'candidates' => $itJob->services->getFeaturedPost('candidate', 'itjob_cv_featured')
       ];
-      wp_enqueue_style('candidate', get_template_directory_uri().'/assets/css/candidate.css', ['adminca']);
-
+      wp_enqueue_style('candidate');
       try {
         return $Engine->render( '@VC/candidates/sidebar-top.html.twig', $args );
+      } catch ( Twig_Error_Loader $e ) {
+      } catch ( Twig_Error_Runtime $e ) {
+      } catch ( Twig_Error_Syntax $e ) {
+        return $e->getRawMessage();
+      }
+    }
+
+    public function vc_candidate_recently_added_render( $attrs ) {
+      global $Engine, $itJob;
+      // Params extraction
+      extract(
+        shortcode_atts(
+          array(
+            'title'    => ''
+          ),
+          $attrs
+        )
+        , EXTR_OVERWRITE );
+
+      /** @var string $title */
+      $args = [
+        'title'  => $title,
+        'candidates' => $itJob->services->getRecentlyPost('candidate', 4, [
+          'key'     => 'itjob_cv_activated',
+          'compare' => '=',
+          'value'   => 1,
+          'type'    => 'NUMERIC'
+        ])
+      ];
+      try {
+        return $Engine->render( '@VC/candidates/lists.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {
       } catch ( Twig_Error_Syntax $e ) {

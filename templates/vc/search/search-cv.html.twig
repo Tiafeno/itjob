@@ -1,11 +1,4 @@
 <style type="text/css">
-  .header-bg {
-    background: transparent url({{ bg_image|wp_get_attachment_url }}) no-repeat;
-    background-size: cover;
-    background-position: center top;
-    min-height: 450px;
-    display: grid;
-  }
   form[name="search-header-candidate"] {
     background-color: rgba(255, 255, 255, 1);
     padding: 2rem 2rem 1rem;
@@ -19,7 +12,6 @@
 <div class="header-bg mb-4">
   <div class="uk-flex">
     <div class="col-md-8 uk-margin-auto-vertical uk-margin-auto">
-      <h2 class="text-white text-uppercase text-center uk-text-bold">Trouver des candidats</h2>
       <form name="search-header-candidate" action="" method="get" class="ml-4 mr-4">
         <div class="row">
           <div class="col-md-4">

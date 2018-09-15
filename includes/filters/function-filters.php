@@ -11,6 +11,18 @@ function itjob_filter_engine( $Engine ) {
     return wp_get_attachment_url( (int)$attach_id );
   }));
 
+  $Engine->addFilter(new Twig_SimpleFilter('explode_terms', function ($terms) {
+    $exp = [];
+    foreach ( $terms as $term ) : array_push( $exp, $term->name ); endforeach;
+    return ! empty( $exp ) ? implode( ', ', $exp ) : 'Aucun';
+  }));
+
+  $Engine->addFilter(new Twig_SimpleFilter('explode_array', function ($tabs) {
+    $exp = [];
+    foreach ( $tabs as $tab ) : array_push( $exp, $tab['label'] ); endforeach;
+    return ! empty( $exp ) ? implode( ', ', $exp ) : 'Aucun';
+  }));
+
   return true;
 }
 ?>
