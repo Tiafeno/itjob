@@ -162,12 +162,12 @@
                             <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/candidate') ?>">
 <!--                              <i class="fa fa-user-tie"></i>-->
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-solid.svg" />
-                              <span class="text-white">Particulier</span>
+                              <span class="text-white">PARTICULIER</span>
                             </a>
 
                             <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/company') ?>">
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-tie-solid.svg" />
-                              <span class="text-white">ENTREPRISE</span>
+                              <span class="text-white">PROFESIONNEL</span>
                             </a>
 
                           </div>
