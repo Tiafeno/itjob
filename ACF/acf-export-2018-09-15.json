@@ -23,6 +23,25 @@
                 "ui_off_text": ""
             },
             {
+                "key": "field_5b9c1e4fcd70b",
+                "label": "A la une",
+                "name": "itjob_cv_featured",
+                "type": "true_false",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "Ajouter pour une candidate à la une",
+                "default_value": 0,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
+            },
+            {
                 "key": "field_5b7d21e5b18e6",
                 "label": "Salutation",
                 "name": "itjob_cv_greeting",

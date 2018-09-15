@@ -1,15 +1,12 @@
 <?php
-namespace includes\vc;
 
-use Http;
-use includes\post\Candidate;
-use includes\post\UserParticular;
+namespace includes\vc;
 
 if ( ! class_exists( 'WPBakeryShortCode' ) ) {
   new \WP_Error( 'WPBakery', 'WPBakery plugins missing!' );
 }
 
-if ( ! class_exists('vcCandidate')):
+if ( ! class_exists( 'vcCandidate' ) ):
   class vcCandidate extends \WPBakeryShortCode {
     public function __construct() {
       add_action( 'init', [ $this, 'vc_candidate_mapping' ] );
@@ -61,11 +58,11 @@ if ( ! class_exists('vcCandidate')):
         )
       );
 
-      \vc_map([
-        'name' => 'Liste des CV',
-        'base' => 'vc_candidate_recently_added',
+      \vc_map( [
+        'name'     => 'Liste des CV',
+        'base'     => 'vc_candidate_recently_added',
         'category' => 'itJob',
-        'params' => [
+        'params'   => [
           array(
             'type'        => 'textfield',
             'holder'      => 'h3',
@@ -78,7 +75,7 @@ if ( ! class_exists('vcCandidate')):
             'weight'      => 0
           ),
         ]
-      ]);
+      ] );
     }
 
     public function vc_featured_candidate_render( $attrs ) {
@@ -97,10 +94,10 @@ if ( ! class_exists('vcCandidate')):
       /** @var string $position */
       /** @var string $title */
       $args = [
-        'title'  => $title,
-        'candidates' => $itJob->services->getFeaturedPost('candidate', 'itjob_cv_featured')
+        'title'      => $title,
+        'candidates' => $itJob->services->getFeaturedPost( 'candidate', 'itjob_cv_featured' )
       ];
-      wp_enqueue_style('candidate');
+      wp_enqueue_style( 'candidate' );
       try {
         return $Engine->render( '@VC/candidates/sidebar-top.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
@@ -116,7 +113,7 @@ if ( ! class_exists('vcCandidate')):
       extract(
         shortcode_atts(
           array(
-            'title'    => ''
+            'title' => ''
           ),
           $attrs
         )
@@ -124,13 +121,13 @@ if ( ! class_exists('vcCandidate')):
 
       /** @var string $title */
       $args = [
-        'title'  => $title,
-        'candidates' => $itJob->services->getRecentlyPost('candidate', 4, [
+        'title'      => $title,
+        'candidates' => $itJob->services->getRecentlyPost( 'candidate', 4, [
           'key'     => 'itjob_cv_activated',
           'compare' => '=',
           'value'   => 1,
           'type'    => 'NUMERIC'
-        ])
+        ] )
       ];
       try {
         return $Engine->render( '@VC/candidates/lists.html.twig', $args );
