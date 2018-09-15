@@ -85,7 +85,7 @@ trait Register {
     $this->createCompanyRole();
   }
 
-  public function postTypes() {
+  protected function registerPostTypes() {
     register_post_type( 'offers', [
       'label'           => "Les offres",
       'labels'          => [
@@ -165,8 +165,7 @@ trait Register {
     ] );
 
   }
-
-  public function taxonomy() {
+  protected function registerTaxonomy() {
 
     // Now register the taxonomy (Secteur d'activité)
     register_taxonomy( 'branch_activity', [ 'company', 'candidate' ], [
@@ -329,5 +328,10 @@ trait Register {
       'rewrite'           => array( 'slug' => 'postal_code__city' ),
     ] );
 
+  }
+
+  public function initRegister() {
+    $this->registerPostTypes();
+    $this->registerTaxonomy();
   }
 }
