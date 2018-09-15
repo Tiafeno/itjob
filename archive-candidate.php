@@ -2,7 +2,7 @@
 get_header();
 wp_enqueue_style( 'offers' );
 ?>
-  <div class="uk-section uk-section-transparent uk-padding-remove-top">
+  <div class="uk-section uk-section-transparent">
     <?php
     if ( is_active_sidebar( 'cv-header' ) ) {
       dynamic_sidebar( 'cv-header' );
