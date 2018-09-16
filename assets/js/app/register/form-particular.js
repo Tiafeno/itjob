@@ -112,7 +112,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
           $scope.error = true;
         }
 
-        if ( ! isValid) return;
+        if (!isValid) return;
         // Submit form here ...
         var particularData = new FormData();
         particularData.append('action', 'insert_user_particular');
@@ -133,7 +133,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
             }, function () {
               if (status.success)
                 window.location.href = status.redirect_url;
-              if ( ! status.success) $scope.error = true;
+              if (!status.success) $scope.error = true;
             });
           })
       };
@@ -151,7 +151,45 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
 
       jQuery(".form-control.country").select2({
         placeholder: "Selectioner une ville",
-        allowClear: true
+        allowClear: true,
+        matcher: function (params, data) {
+          var inTerm = [];
+          // If there are no search terms, return all of the data
+          if (jQuery.trim(params.term) === '') {
+            return data;
+          }
+
+          // Do not display the item if there is no 'text' property
+          if (typeof data.text === 'undefined') {
+            return null;
+          }
+
+          // `params.term` should be the term that is used for searching
+          // `data.text` is the text that is displayed for the data object
+
+          var dataContains = data.text.toLowerCase();
+          var paramTerms = jQuery.trim(params.term).split(' ');
+          jQuery.each(paramTerms, (index, value) => {
+            if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
+              inTerm.push(true);
+            } else {
+              inTerm.push(false);
+            }
+          });
+          var isEveryTrue = _.every(inTerm, (boolean) => {
+            return boolean === true;
+          });
+          if (isEveryTrue) {
+            var modifiedData = jQuery.extend({}, data, true);
+            // modifiedData.text += ' (matched)';
+            return modifiedData;
+          } else {
+            return null;
+          }
+
+          // Return `null` if the term should not be displayed
+          return null;
+        }
       });
 
       jQuery('#birthday .input-group.date').datepicker({
