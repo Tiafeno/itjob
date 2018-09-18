@@ -27,6 +27,19 @@ if ( ! class_exists( 'itJob' ) ) {
 
       }, 20 );
 
+      /** Effacer les elements acf avant d'effacer l'article */
+      add_action( 'before_delete_post', function ( $postId ) {
+        $isPosts = ['candidate', 'offers', 'company'];
+        $pst = get_post( $postId );
+        $class_name = ucfirst( $pst->post_type );
+        if (class_exists($class_name) && in_array($pst->post_type, $isPosts)) {
+          $class = new \ReflectionClass( "includes\\post\\$class_name" );
+          $class->remove();
+        }
+
+
+      } );
+
       /**
        * When there’s no previous status (this means these hooks are always run whenever "save_post" runs).
        * @Hook: new_post (https://codex.wordpress.org/Post_Status_Transitions)
@@ -60,6 +73,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
 
       add_action( 'wp_loaded', function () {
+
       }, 20 );
 
       // Add acf google map api
@@ -364,16 +378,6 @@ if ( ! class_exists( 'itJob' ) ) {
           'uikit'
         ], $itJob->version, true );
       } );
-
-      /** Effacer les elements acf avant d'effacer l'article */
-      add_action( 'before_delete_post', function ( $postId ) {
-        $pst = get_post( $postId );
-        if ( $pst->post_type === 'offers' ) {
-          $offer = new Post\Offers( $postId );
-          $offer->removeOffer();
-          unset( $offer );
-        }
-      } );
     }
 
     /**
@@ -414,6 +418,15 @@ if ( ! class_exists( 'itJob' ) ) {
 
       // Register components adminca stylesheet
       wp_register_style( 'bootstrap', VENDOR_URL . '/bootstrap/dist/css/bootstrap.min.css', '', '4.0.0' );
+
+      wp_register_style( 'bootstrap-tagsinput', VENDOR_URL . '/bootstrap-tagsinput/src/bootstrap-tagsinput.css', '', '4.0.0' );
+      wp_register_script('bootstrap-tagsinput', VENDOR_URL . '/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js', [], '0.8', true);
+
+      wp_register_style( 'ng-tags-bootstrap', get_template_directory_uri() . '/assets/css/ng-tags-input.min.css', '', '3.2.0' );
+      wp_register_script('ng-tags', get_template_directory_uri() . '/assets/js/ng-tags-input.min.js', ['angular'], '3.2.0', true);
+
+      wp_register_script('typeahead', get_template_directory_uri() . '/assets/js/typeahead.bundle.js', ['jquery'], '0.11.1', true);
+
       wp_register_style( 'adminca-animate', VENDOR_URL . '/animate.css/animate.min.css', '', '3.5.1' );
       wp_register_style( 'toastr', VENDOR_URL . '/toastr/toastr.min.css', '', '3.5.1' );
       wp_register_style( 'bootstrap-select', VENDOR_URL . '/bootstrap-select/dist/css/bootstrap-select.min.css', '', '1.12.4' );
@@ -433,8 +446,13 @@ if ( ! class_exists( 'itJob' ) ) {
           'style'
         ], $itJob->version );
       wp_register_style( 'b-datepicker-3', VENDOR_URL . '/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css', '', '1.7.1' );
-      wp_register_style( 'admin-adminca',
-        get_template_directory_uri() . '/assets/css/admin-custom.css', [ 'adminca' ], $itJob->version );
+      wp_register_style( 'admin-adminca', get_template_directory_uri() . '/assets/css/admin-custom.css', [ 'adminca' ], $itJob->version );
+
+      wp_register_script('daterangepicker-lang', VENDOR_URL . '/bootstrap-daterangepicker/locales/bootstrap-datepicker.fr.min.js', ['jquery']);
+      wp_register_script('daterangepicker', VENDOR_URL . '/bootstrap-daterangepicker/daterangepicker.js', ['daterangepicker-lang']);
+
+      wp_register_style( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.css' );
+      wp_register_script( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.min.js', [], $itJob->version, true );
 
       wp_register_style( 'froala-editor', VENDOR_URL . '/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
       wp_register_style( 'froala', VENDOR_URL . '/froala-editor/css/froala_style.min.css', [
@@ -468,9 +486,13 @@ if ( ! class_exists( 'itJob' ) ) {
       ], $itJob->version, true );
     }
 
-    public function je_postule_Fn( $params = [] ) {
+    public function je_postule_Fn() {
+      // Vérifier si la page de création de CV exist
+      $addedCVPage = jobServices::page_exists('Ajouter un CV');
+      if ( ! $addedCVPage) return;
       $User = null;
-      $button = "<a href=\"javascript: alert('En construction, Revenez plus tard! :-)')\">
+      $addedCVUrl = sprintf('%s?redir=%s', get_the_permalink($addedCVPage), base64_encode(get_the_permalink()));
+      $button = "<a href=\"$addedCVUrl\">
                   <button class=\"btn btn-blue btn-fix\">
                     <span class=\"btn-icon\">Je postule </span>
                   </button>

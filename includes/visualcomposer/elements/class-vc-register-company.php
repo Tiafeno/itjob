@@ -90,7 +90,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       }
       \vc_map(
         array(
-          'name'        => 'Formulaire d\'enregistrement (Profesionnel)',
+          'name'        => 'Professional Form (SingUp)',
           'base'        => 'vc_register_company',
           'description' => 'Entreprise/CV Formulaire',
           'category'    => 'itJob',

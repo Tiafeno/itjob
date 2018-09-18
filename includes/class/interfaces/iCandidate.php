@@ -7,5 +7,6 @@
  */
 
 interface iCandidate {
-
+  public function update();
+  public function remove();
 }

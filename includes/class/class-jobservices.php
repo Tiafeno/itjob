@@ -71,6 +71,23 @@ if ( ! class_exists( 'jobServices' ) ) :
       return $featuredContainer;
     }
 
+    public static function page_exists( $title ) {
+      global $wpdb;
+
+      $post_title = wp_unslash( sanitize_post_field( 'post_title', $title, 0, 'db' ) );
+      $query = "SELECT ID FROM $wpdb->posts WHERE 1=1";
+      $args = array();
+
+      if ( !empty ( $title ) ) {
+        $query .= ' AND post_title = %s';
+        $args[] = $post_title;
+      }
+      if ( !empty ( $args ) )
+        return (int) $wpdb->get_var( $wpdb->prepare($query, $args) );
+
+      return 0;
+    }
+
     protected function getPostContents( &$container, $class_name ) {
       $posts = get_posts( $this->args );
       foreach ( $posts as $post ) {

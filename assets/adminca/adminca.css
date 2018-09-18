@@ -4896,9 +4896,6 @@ table > tbody > tr > td > span.footable-toggle {
 .dd3-handle:hover {
   background: #ddd; }
 
-.twitter-typeahead {
-  display: block !important; }
-
 .tt-menu {
   background-color: #fff;
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);

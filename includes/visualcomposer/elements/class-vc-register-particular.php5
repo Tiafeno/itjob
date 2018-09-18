@@ -70,18 +70,19 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         , EXTR_OVERWRITE );
 
       if ( is_user_logged_in() ) {
-        return 'Access refuser';
+        return '<div class="d-flex align-items-center">'.
+               '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Access refuser</div></div>';
       }
       wp_enqueue_style( 'b-datepicker-3' );
+      wp_enqueue_style( 'sweetalert' );
       wp_enqueue_script( 'form-particular', get_template_directory_uri() . '/assets/js/app/register/form-particular.js', [
         'angular',
         'angular-ui-route',
         'angular-sanitize',
         'angular-messages',
-        'b-datepicker'
+        'b-datepicker',
+        'sweetalert'
       ], $itJob->version, true );
-      wp_enqueue_style( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.css' );
-      wp_enqueue_script( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.min.js', [ 'form-particular' ], $itJob->version, true );
       wp_localize_script( 'form-particular', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',

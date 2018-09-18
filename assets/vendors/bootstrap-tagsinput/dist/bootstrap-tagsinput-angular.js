@@ -26,11 +26,11 @@ angular.module('bootstrap-tagsinput', [])
     template: '<select multiple></select>',
     replace: false,
     link: function(scope, element, attrs) {
-      $(function() {
+      jQuery(function() {
         if (!angular.isArray(scope.model))
           scope.model = [];
 
-        var select = $('select', element);
+        var select = jQuery('select', element);
         var typeaheadSourceArray = attrs.typeaheadSource ? attrs.typeaheadSource.split('.') : null;
         var typeaheadSource = typeaheadSourceArray ?
             (typeaheadSourceArray.length > 1 ?

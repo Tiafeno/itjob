@@ -1,0 +1,54 @@
+<div class="ibox-body">
+  <div class="form-group">
+    <h4>Formations / Diplômes</h4>
+    <div class="row mb-1">
+      <div class="col-md-11 col-sm-11">
+        <div class="training-section">
+          <div class="training-content mt-4" ng-repeat="training in formData.trainings track by training.id">
+            <div class="training-remove p-absolute" ng-show="training.id !== 0" ng-click="removeTraining(training.id)"><i class="ti-trash"></i> </div>
+            <div class="">
+              <label class="col-form-label pt-0">Année <span style="color: red">*</span></label>
+              <div class="input-daterange input-group form-group" id="datepicker">
+                <input class="input-sm form-control" type="text" autocomplete="off" ng-model="training.start" name="start" value="08/08/2018">
+                <span class="input-group-addon pl-2 pr-2">à</span>
+                <input class="input-sm form-control" type="text" autocomplete="off" ng-model="training.end" name="end" value="20/08/2018">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Pays <span style="color: red">*</span></label>
+              <input class="form-control" name="country" ng-model="training.country" type="text"
+                     placeholder="ex: Madagascar, France ..."
+                     required>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Ville <span style="color: red">*</span></label>
+              <input class="form-control" name="city" ng-model="training.city" type="text"
+                     placeholder="ex: Antananarivo"
+                     required>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Diplôme <span style="color: red">*</span></label>
+              <input class="form-control" name="diploma" ng-model="training.diploma" type="text"
+                     placeholder="ex: BACC, Master I, Master II ..."
+                     required>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Université/Ecole <span style="color: red">*</span></label>
+              <input class="form-control" name="establishment" ng-model="training.establishment" type="text"
+                     placeholder="ex: Université d'Antananarivo"
+                     required>
+            </div>
+          </div>
+          <button class="btn btn-dark btn-sm" ng-click="addNewTraining()">Ajouter <i class="ti-plus"></i> </button>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
+</div>

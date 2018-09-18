@@ -141,11 +141,11 @@ final class Offers implements \iOffer {
   }
 
 
-  public function updateOffer() {
+  public function update() {
 
   }
 
-  public function removeOffer() {
+  public function remove() {
     delete_field( 'itjob_offer_company', $this->ID );
     delete_field( 'itjob_offer_datelimit', $this->ID );
     delete_field( 'itjob_offer_reference', $this->ID );

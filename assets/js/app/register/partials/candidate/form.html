@@ -1,0 +1,29 @@
+<div class="mt-5 pt-5">
+  <div id="form-container">
+
+    <div class="page-header text-center">
+
+      <!-- the links to our nested states using relative paths -->
+      <!-- add the active class if the state matches our ui-sref -->
+      <div id="status-buttons" class="text-center">
+        <a ui-sref-active="active" ui-sref=".informations"><span>1</span> </a>
+        <a ui-sref-active="active" ui-sref=".career"><span>2</span></a>
+        <a ui-sref-active="active" ui-sref=".interests"><span>3</span> </a>
+      </div>
+    </div>
+
+    <!-- use ng-submit to catch the form submission and use our Angular function -->
+    <form id="signup-form" name="cvForm" novalidate>
+
+      <!-- our nested state views will be injected here -->
+      <div id="form-views" class="mt-4" ui-view></div>
+    </form>
+
+  </div>
+
+  <!-- show our formData as it is being typed -->
+  <pre class="mt-4">
+    {{ formData }}
+  </pre>
+
+</div>
