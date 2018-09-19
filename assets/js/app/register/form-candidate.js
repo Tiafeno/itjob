@@ -1,3 +1,5 @@
+const API_COUNTRY_URL = 'https://restcountries.eu';
+
 angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
   .config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
@@ -14,8 +16,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
           jobSougths: function (Services) {
             return Services.getTaxonomy('job_sought');
           },
-          access: ['$q', function ($q) {
-          }]
+          access: ['$q', function ($q) {}]
         },
         controller: 'formController'
       })
@@ -36,30 +37,100 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
             } else {
               //return $q.reject({redirect: 'form.informations'});
             }
-          }]
+          }],
+          driveLicences: function ($q) {
+            const licence = [{
+                _id: 0,
+                label: "A`",
+                slug: "a_"
+              },
+              {
+                _id: 1,
+                label: "A",
+                slug: "a"
+              },
+              {
+                _id: 2,
+                label: "B",
+                slug: "b"
+              },
+              {
+                _id: 3,
+                label: "C",
+                slug: "c"
+              },
+              {
+                _id: 4,
+                label: "D",
+                slug: "d"
+              },
+            ];
+            return $q.resolve(licence);
+          }
         },
-        controller: function ($rootScope, $state) {
+        controller: function ($rootScope, $scope, $http, $state, driveLicences) {
           let self = this;
           let training_id = 0;
-          $rootScope.formData.trainings = [{id: training_id, start: '08/08/2018', end: '08/13/2018'}];
-          $rootScope.addNewTraining = () => {
+          let experience_id = 0;
+
+          $rootScope.formData.trainings = [{
+            id: training_id,
+            start: '08/08/2018',
+            end: '08/13/2018'
+          }];
+
+          $rootScope.formData.experiences = [{
+            id: experience_id,
+            start: '08/08/2018',
+            end: '08/13/2018'
+          }];
+
+          // Ajouter une formation
+          $scope.addNewTraining = function () {
             training_id += 1;
-            $rootScope.formData.trainings.push({
-              id: training_id,
-              start: '',
-              end: ''
-            });
+            $rootScope.formData.trainings.push({id: training_id, start: '', end: ''});
             self.initDatePicker();
           };
 
-          $rootScope.removeTraining = id => {
+          // Effacer une nouvelle formation
+          $scope.removeTraining = id => {
             // Ne pas effacer le premier champ de formation
-            if (id ===0) return;
-            $rootScope.formData.trainings = _.reject($rootScope.formData.trainings, (training) =>  training.id === id);
+            if (id === 0) return;
+            $rootScope.formData.trainings = _.reject($rootScope.formData.trainings, (training) => training.id === id);
           };
+
+          // Effacer une experience
+          $scope.removeExperience = id => {
+            if (id === 0) return;
+            $rootScope.formData.experiences = _.reject($rootScope.formData.experiences, experience => {
+              return experience.id === id;
+            });
+          };
+
+          // Ajouter une nouvelle experience
+          $scope.addNewExperience = function () {
+            experience_id += 1;
+            $rootScope.formData.experiences.push({id: experience_id, start: '', end: ''});
+            self.initDatePicker();
+          };
+
+          // Rechercher les langues
+          $rootScope.queryLanguages = function ($query) {
+            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=language', {
+                cache: true
+              })
+              .then(function (response) {
+                const languages = response.data;
+                return languages.filter(function (language) {
+                  return language.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+                });
+              });
+          };
+
 
           this.$onInit = function () {
             self.initDatePicker();
+            $rootScope.driveLicences = _.clone(driveLicences);
           };
 
           self.initDatePicker = function () {
@@ -72,7 +143,39 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
                 language: "fr",
                 clearBtn: true,
               });
+
+              // Trouver un pays dnas la liste API
+              var country = new Bloodhound({
+                datumTokenizer: function (datum) {
+                  return Bloodhound.tokenizers.whitespace(datum.value);
+                },
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                remote: {
+                  url: API_COUNTRY_URL + '/rest/v2/name/%QUERY',
+                  prepare: function (query, settings) {
+                    settings.url = settings.url.replace('%QUERY', query);
+                    return settings;
+                  },
+                  filter: function (allCountry) {
+                    return _.map(allCountry, (country) => {
+                      return { value: country.name };
+                    });
+                  }
+                }
+              });
+
+              // Initialize the Bloodhound suggestion engine
+              country.initialize();
+              jQuery('#country').typeahead(null, {
+                hint: false,
+                highlight: true,
+                minLength: 2,
+                displayKey: 'value',
+                source: country.ttAdapter()
+              });
             }, 600);
+
+
 
           }
         }
@@ -84,10 +187,25 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
         resolve: {
           access: ['$q', function ($q) {
             if (!0) {
-              return $q.reject("Not Authorized");
+              return $q.resolve("Not Authorized");
             }
           }]
         },
+        controller: ['$rootScope', '$scope', 'initScripts', 'Services', function ($rootScope, $scope, initScripts, Services) {
+          var self = this;
+          this.$onInit = () => {
+            window.setTimeout(() => {
+              jQuery('.tagsinput').tagsinput({
+                tagClass: 'label label-success'
+              });
+              initScripts.__init__();
+            }, 600);
+          };
+
+          $scope.queryJobs = function ($query) {
+            return Services.getJobs($query);
+          };
+        }]
       })
 
       // Default route (/form/informations)
@@ -147,7 +265,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
                     const imgCrop = drawImage(img, mesure, mesure, 0, 0, 1);
                     resolve({
                       src: imgCrop
-                    })
+                    });
                   };
                 };
                 fileReader.readAsDataURL(file);
@@ -162,7 +280,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
           };
           //$rootScope.formData.jobSougths = Services.getTaxonomy('job_sought');
           $rootScope.queryJobs = function ($query) {
-            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=job_sought', {cache: true})
+            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=job_sought', {
+                cache: true
+              })
               .then(function (response) {
                 const jobs = response.data;
                 return jobs.filter(function (job) {
@@ -200,8 +320,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
                     text: e,
                     type: 'error',
                   });
-                })
-            })
+                });
+            });
           };
         }
       });
@@ -264,7 +384,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
                 return null;
               }
             }
-          })
+          });
         });
       }
     }
@@ -272,20 +392,41 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
   .service('Services', ['$http', '$q', function ($http, $q) {
     return {
       getTaxonomy: function (Taxonomy) {
-        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + Taxonomy, {cache: true})
+        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + Taxonomy, {
+            cache: true
+          })
           .then(resp => {
             return resp.data;
           });
       },
+      getJobs : function ($query) {
+        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=job_sought', {
+            cache: true
+          })
+          .then(function (response) {
+            const jobs = response.data;
+            return jobs.filter(function (_j) {
+              return _j.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+            });
+          });
+      },
       getStatus: function () {
-        const status = [
-          {_id: 0, label: 'Je cherche un emploi'},
-          {_id: 1, label: 'Je souhaite entretenir mon réseau'},
-          {_id: 2, label: 'Je cherche un stage'}
+        const status = [{
+            _id: 0,
+            label: 'Je cherche un emploi'
+          },
+          {
+            _id: 1,
+            label: 'Je souhaite entretenir mon réseau'
+          },
+          {
+            _id: 2,
+            label: 'Je cherche un stage'
+          }
         ];
         return status;
       }
-    }
+    };
   }])
   .directive('preUpload', [function () {
     return {
@@ -297,7 +438,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
             document.querySelector('input').click();
           })
       }
-    }
+    };
   }])
   .directive('inputOnChange', [function () {
     return {
@@ -310,7 +451,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
           element.off();
         });
       }
-    }
+    };
   }])
   .controller('formController', function ($scope, $rootScope, $state, initScripts, Services, abranchs, languages, jobSougths) {
     const self = this;

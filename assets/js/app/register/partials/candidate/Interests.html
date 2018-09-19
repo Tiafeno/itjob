@@ -1,0 +1,77 @@
+<div class="ibox-body">
+
+  <div class="form-group">
+    <h4 class="ibox-title">Centre d'intérêt</h4>
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label ">Divers</label>
+    <div class="col-md-8 pl-0">
+      <input class="tagsinput form-control" type="text" ng-model="formData.various" placeholder="ex: Carting, AI ..."
+        value="">
+      <p class="mention-text col-md-10 mt-1 pl-0">
+        Ajouter des divers valider par “ENTRER” ou le virgule “,”
+        et <b>éviter les fautes d'orthographe</b>
+      </p>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-form-label ">Projet</label>
+    <div class="col-sm-8 pl-0">
+      <input class="form-control" type="text" ng-model="formData.projet" placeholder="" value="">
+    </div>
+  </div>
+
+  <div class="form-group mt-5 pl-0 pb-0 ibox-footer">
+    <div class="col-sm-8 pl-0">
+      <div class="form-group">
+        <label class="checkbox">
+          <input type="checkbox" name="notifemploi" ng-model="formData.notiEmploi.with">
+          <span class="input-span"></span>Souhaitez-vous recevoir une notiﬁcation quand une offre d’emploi est postée
+          sur Itjobmada</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group" ng-show="formData.notiEmploi">
+    <p>Recevoir une notiﬁcation pour quel emploi ?</p>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="form-group">
+          <select class="form-control" name="abranch" ng-model="formData.notiEmploi.abranch" title="Secteur d’activité" required>
+            <option></option>
+            <option ng-value="abranch.term_id" ng-repeat="abranch in abranchs">{{abranch.name}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-8">
+          <tags-input ng-model="formData.notiEmploi.job" display-property="name" placeholder="Ajouter des mots clés" replace-spaces-with-dashes="false">
+            <auto-complete source="queryJobs($query)"
+                            min-length="0"
+                            load-on-focus="false"
+                            load-on-empty="false"
+                            max-results-to-show="10"
+                            template="job-template">
+            </auto-complete>
+          </tags-input>
+          <script type="text/ng-template" id="job-template">
+            <div class="right-panel">
+              <span style="font-size: 12px">{{data.name}}</span>
+            </div>
+          </script>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group mt-5 pl-0 pb-0 ibox-footer">
+      <div class="col-sm-8 pl-0">
+        <div class="form-group">
+          <label class="checkbox">
+            <input type="checkbox" name="newsletter" ng-model="formData.newsletter">
+            <span class="input-span"></span>Est ce que vous voulez recevoir notre newsletter?</label>
+        </div>
+      </div>
+    </div>
+
+</div>

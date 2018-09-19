@@ -67,6 +67,7 @@ if ( ! class_exists('vcRegisterCandidate')) :
 
       wp_enqueue_style( 'b-datepicker-3' );
       wp_enqueue_style( 'sweetalert' );
+      wp_enqueue_style( 'bootstrap-tagsinput' );
       wp_enqueue_style( 'ng-tags-bootstrap' );
       wp_enqueue_script( 'form-candidate', get_template_directory_uri() . '/assets/js/app/register/form-candidate.js', [
         'angular',
@@ -77,6 +78,7 @@ if ( ! class_exists('vcRegisterCandidate')) :
         'b-datepicker',
         'daterangepicker',
         'sweetalert',
+        'bootstrap-tagsinput',
         'ng-tags',
         'typeahead'
       ], $itJob->version, true );
