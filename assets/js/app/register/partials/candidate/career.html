@@ -1,0 +1,155 @@
+<div class="ibox-body">
+
+  <div class="form-group">
+    <h4>Formations / Diplômes</h4>
+    <div class="row mb-1">
+      <div class="col-md-11 col-sm-11">
+        <div class="training-section">
+          <div class="training-content mt-4" ng-repeat="training in formData.trainings track by training.id">
+            <div class="training-remove p-absolute" ng-show="training.id !== 0" ng-click="removeTraining(training.id)"><i class="ti-trash"></i> </div>
+            <div class="">
+              <label class="col-form-label pt-0">Année <span style="color: red">*</span></label>
+              <div class="input-daterange input-group form-group" id="datepicker">
+                <input class="input-sm form-control" type="text" autocomplete="off" ng-model="training.start" name="start" value="08/08/2018">
+                <span class="input-group-addon pl-2 pr-2">à</span>
+                <input class="input-sm form-control" type="text" autocomplete="off" ng-model="training.end" name="end" value="20/08/2018">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Pays <span style="color: red">*</span></label>
+              <input type="text" class="form-control country-apirest" placeholder="ex: Madagascar, France ..." name="country" placeholder="Tapez le nom du pays" ng-model="training.country" required>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Ville <span style="color: red">*</span></label>
+              <input class="form-control" name="city" ng-model="training.city" type="text"
+                     placeholder="ex: Antananarivo"
+                     required>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Diplôme <span style="color: red">*</span></label>
+              <input class="form-control" name="diploma" ng-model="training.diploma" type="text"
+                     placeholder="ex: BACC, Master I, Master II ..."
+                     required>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Université/Ecole <span style="color: red">*</span></label>
+              <input class="form-control" name="establishment" ng-model="training.establishment" type="text"
+                     placeholder="ex: Université d'Antananarivo"
+                     required>
+            </div>
+          </div>
+          <span class="btn btn-dark btn-sm" ng-click="addNewTraining()">Ajouter <i class="ti-plus"></i> </span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="form-group mt-5 row">
+    <label class="col-form-label col-sm-4">Permis de conduire :</label>
+    <div class="col-sm-6">
+      <div class="drivelicence" ng-repeat="driveLicence in driveLicences">
+        <label class="checkbox checkbox-grey checkbox-ebony">
+          <input type="checkbox" ng-change="addDriveLicence(driveLicence.slug, driveLicence.label)"
+           ng-model="formData.driveLicence[driveLicence.slug]">
+          <span class="input-span"></span>
+          {{driveLicence.label}}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group mt-5" id="language">
+    <label class="font-normal">Les langues <span style="color: red">*</span></label>
+      <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
+    <tags-input ng-model="formData.languages" display-property="name" placeholder="Les langues" replace-spaces-with-dashes="false" required>
+      <auto-complete source="queryLanguages($query)"
+                      min-length="0"
+                      load-on-focus="false"
+                      load-on-empty="false"
+                      max-results-to-show="10"
+                      template="language-template">
+      </auto-complete>
+    </tags-input>
+    <script type="text/ng-template" id="language-template">
+      <div class="right-panel">
+        <span style="font-size: 12px">{{data.name}}</span>
+      </div>
+    </script>
+      <p class="mention-text col-md-8 mt-1">
+        Ajouter des langues s'il ne ﬁgure pas dans la liste et valider par “ENTRER” ou le virgule “,”
+        et <b>éviter les fautes d'orthographe</b>
+      </p>
+  </div>
+
+  <div class="form-group mt-5">
+      <h4>Expériences professionnelles</h4>
+      <div class="row mb-1">
+        <div class="col-md-11 col-sm-11">
+          <div class="training-section">
+            <div class="training-content mt-4" ng-repeat="experience in formData.experiences track by experience.id">
+              <div class="training-remove p-absolute" ng-show="experience.id !== 0" ng-click="removeExperience(experience.id)"><i class="ti-trash"></i> </div>
+              <div class="">
+                <label class="col-form-label pt-0">Année <span style="color: red">*</span></label>
+                <div class="input-daterange input-group form-group" id="datepicker">
+                  <input class="input-sm form-control" type="text" autocomplete="off" ng-model="experience.start" name="start" value="08/08/2018">
+                  <span class="input-group-addon pl-2 pr-2">à</span>
+                  <input class="input-sm form-control" type="text" autocomplete="off" ng-model="experience.end" name="end" value="20/08/2018">
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label class="col-form-label ">Ville <span style="color: red">*</span></label>
+                <input class="form-control" name="city" ng-model="experience.city" type="text"
+                       placeholder="ex: Lausanne"
+                       required>
+              </div>
+
+              <div class="form-group">
+                <label class="col-form-label col-md-12 pl-0">Pays <span style="color: red">*</span></label>
+                <input type="text" class="form-control country-apirest" name="country" placeholder="Tapez le nom du pays" ng-model="experience.country" id="country" required>
+              </div>
+  
+              <div class="form-group">
+                <label class="col-form-label ">Nom de l'entreprise ou société <span style="color: red">*</span></label>
+                <input class="form-control" name="company" ng-model="experience.company" type="text"
+                       placeholder="ex: Google, Miscrosoft ..."
+                       required>
+              </div>
+
+              <div class="form-group">
+                <label class="col-form-label ">Poste occupé <span style="color: red">*</span></label>
+                <input class="form-control" name="positionHeld" ng-model="experience.positionHeld" type="text"
+                       placeholder="ex: Developpeur NodeJs"
+                       required>
+              </div>
+  
+              <div class="form-group">
+                <label class="col-form-label ">Missions et tâche réalisée</label>
+                <textarea class="form-control" name="mission" ng-model="experience.mission" type="text"></textarea>
+              </div>
+            </div>
+            <span class="btn btn-dark btn-sm" ng-click="addNewExperience()">Ajouter <i class="ti-plus"></i> </span>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+</div>
+
+<div class="ibox-footer">
+    <div class="row">
+      <div class="col-md-6">
+        <p class="text-muted">Tous les champs marqués d'un <span style="color: red">*</span> sont obligatoires</p>
+      </div>
+      <div class="col-md-6" ng-show="!cvForm.$invalid">
+        <a class="btn btn-outline-blue btn-icon btn-fix float-right" ui-sref-active="active" ui-sref="form.interests">
+          Suivant <i class="ti-angle-right ml-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,165 @@
+<style type="text/css">
+  input.form-control {
+    font-family: Poppins !important;
+    font-size: 12px;
+  }
+
+  .candidate-content {
+    max-width: 650px;
+    height: auto;
+    min-height: 500px;
+    margin: 0px auto 50px;
+  }
+
+  .ng-dirty.ng-invalid, .ng-touched.ng-invalid {
+    border-color: #f75a5f;
+  }
+
+  .auth-head-icon {
+    position: relative;
+    height: 124px;
+    width: 124px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    background-color: transparent;
+    color: #5c6bc0;
+    box-shadow: none;
+    border-radius: 50%;
+    transform: none;
+    z-index: 2;
+  }
+
+  /* numbered buttons */
+  #status-buttons {
+    display: flex;
+  }
+  #status-buttons a.active {
+    background-color: #077EBE;
+  }
+
+  #status-buttons a:first-child::after,
+  #status-buttons a:nth-child(2)::after{
+    content: " ";
+    height: 3px;
+    position: absolute;
+    width: 27.6%;
+    background-color: #b6b8ba;
+    margin-left: 6.8%;
+    z-index: 2;
+    top: 60px;
+  }
+
+
+  #status-buttons a {
+    margin-right: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    border-radius: 50%;
+    background-color: #a7a9ac;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  #status-buttons a:hover {
+    text-decoration: none;
+  }
+
+  /* we will style the span as the circled number */
+  #status-buttons span {
+    margin: auto;
+    border-radius: 50%;
+    color: #ffffff;
+    font-weight: bolder;
+    display: inline-block;
+    font-size: 21px;
+  }
+
+  /* active buttons turn light green-blue*/
+  #status-buttons a.active span {
+  }
+
+  tags-input .host {
+    margin-top: 0px !important;
+  }
+
+  tags-input .tags {
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;
+  }
+  tags-input .tags .tag-item {
+    background: #18c5a9 !important;
+    color: aliceblue !important;
+    border: none !important;
+  }
+  tags-input .tags .tag-item {
+     font: 11px "Poppins",Helvetica,Arial,sans-serif !important;
+    line-height: normal;
+    font-weight: bold !important;
+    font-size: 12px !important;
+    line-height: 27px !important;
+
+  }
+  tags-input .tags .tag-item .remove-button {
+    color: #ffffff !important;
+  }
+  tags-input .tags .input {
+    /* height: inherit !important; */
+    font: 13px "Poppins",Helvetica,Arial,sans-serif !important;
+    padding: 0 0 0 14px !important;
+  }
+  .add-new-picture {
+    width: 95px;
+    border: 4px solid #bcbec0;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    height: 95px;
+    position: relative;
+    margin-left: 20px;
+  }
+
+  .add-new-picture img {
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+  }
+
+  .training-content {
+    padding-left: 25px;
+    border-left: 2px dashed rgba(167, 169, 172, 0.31)
+  }
+  .training-content .training-remove {
+    background-color: #f75a5f;
+    color: aliceblue;
+    display: flex;
+    left: 5px;
+    padding: 5px;
+    cursor: pointer;
+  }
+
+  .drivelicence.ng-scope {
+    display: inline;
+    margin-right: 20px;
+  }
+
+  .twitter-typeahead {
+    width: 100%;
+  }
+  #status-buttons a {
+    cursor: default !important;
+  }
+
+</style>
+<div class="ibox candidate-content uk-margin-large-top" ng-app="formCandidateApp">
+  <ui-view>
+    <div class="mt-5 pt-5">
+      <h4 class="font-light text-center">Créer votre CV</h4>
+      <p class="text-center mb-5">Chargement du formulaire...</p>
+    </div>
+  </ui-view>
+</div>

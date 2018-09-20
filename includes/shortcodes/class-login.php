@@ -75,9 +75,11 @@ if ( ! class_exists( 'scLogin' ) ) :
         $logoutUrl          = wp_logout_url( home_url( '/' ) );
         $user               = wp_get_current_user();
         $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
-        $output             = 'Vous êtes déjà connecté avec ce compte: <b>' . $user->display_name . '</b><br>';
-        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4" href="' . $espace_client_link . '">Espace client</a>';
-        $output             .= '<a class="btn btn-outline-primary btn-fix btn-thick mt-4 ml-2" href="' . $logoutUrl . '">Déconnecter</a>';
+        $output             = '<div class="uk-margin-large-top">';
+        $output             .= 'Vous êtes déjà connecté avec ce compte: <b>' . $user->display_name . '</b><br>';
+        $output             .= '<a class="btn btn-outline-blue btn-fix btn-thick mt-4" href="' . $espace_client_link . '">Espace client</a>';
+        $output             .= '<a class="btn btn-danger btn-fix btn-thick mt-4 ml-2" href="' . $logoutUrl . '">Déconnecter</a>';
+        $output             .= '</div>';
 
         return $output;
       }
@@ -106,7 +108,7 @@ if ( ! class_exists( 'scLogin' ) ) :
       try {
         // Get pos type object
         $post_type_object = get_post_type_object( $ptype );
-        $title = $post_type_object->name === 'company' ? strtolower( $post_type_object->labels->singular_name ) : '';
+        $title            = $post_type_object->name === 'company' ? strtolower( $post_type_object->labels->singular_name ) : '';
 
         /** @var STRING $title */
         return $Engine->render( '@SC/login.html.twig', [

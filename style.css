@@ -14,6 +14,10 @@ body {
   font-size: .9rem;
 }
 
+.main-section {
+  min-height: 400px;
+}
+
 .uk-container {
   box-sizing: border-box !important;
 }

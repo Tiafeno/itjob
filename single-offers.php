@@ -121,7 +121,7 @@ wp_enqueue_style( 'themify-icons' );
                         </a>
                       </div>
                       <div class="col-md-6">
-                        <?= do_action('je_postule', ['redir' => get_the_permalink(), 'pId' => get_the_ID()]); ?>
+                        <?= do_action('je_postule'); ?>
                       </div>
                     </div>
 

@@ -11,7 +11,7 @@ interface iCompany {
 
   public function is_company();
 
-  public function updateCompany();
+  public function update();
 
-  public function removeCompany();
+  public function remove();
 }

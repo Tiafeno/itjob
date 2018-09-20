@@ -28,26 +28,26 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <!--	<meta name="viewport" content="width=device-width, initial-scale=1">-->
   <meta name="viewport" content="width=500">
-  <link rel="apple-touch-icon" sizes="57x57" href="<?= get_template_directory_uri() ?>/favicon/apple-icon-57x57.png">
-  <link rel="apple-touch-icon" sizes="60x60" href="<?= get_template_directory_uri() ?>/favicon/apple-icon-60x60.png">
-  <link rel="apple-touch-icon" sizes="72x72" href="<?= get_template_directory_uri() ?>/favicon/apple-icon-72x72.png">
-  <link rel="apple-touch-icon" sizes="76x76" href="<?= get_template_directory_uri() ?>/favicon/apple-icon-76x76.png">
-  <link rel="apple-touch-icon" sizes="114x114"
-        href="<?= get_template_directory_uri() ?>/favicon/apple-icon-114x114.png">
-  <link rel="apple-touch-icon" sizes="120x120"
-        href="<?= get_template_directory_uri() ?>/favicon/apple-icon-120x120.png">
-  <link rel="apple-touch-icon" sizes="144x144"
-        href="<?= get_template_directory_uri() ?>/favicon/apple-icon-144x144.png">
-  <link rel="apple-touch-icon" sizes="152x152"
-        href="<?= get_template_directory_uri() ?>/favicon/apple-icon-152x152.png">
-  <link rel="apple-touch-icon" sizes="180x180"
-        href="<?= get_template_directory_uri() ?>/favicon/apple-icon-180x180.png">
-  <link rel="icon" type="image/png" sizes="192x192"
-        href="<?= get_template_directory_uri() ?>/favicon/android-icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="<?= get_template_directory_uri() ?>/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="<?= get_template_directory_uri() ?>/favicon/favicon-96x96.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="<?= get_template_directory_uri() ?>/favicon/favicon-16x16.png">
-  <link rel="manifest" href="<?= get_template_directory_uri() ?>/favicon/manifest.json">
+<!--  <link rel="apple-touch-icon" sizes="57x57" href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-57x57.png">-->
+<!--  <link rel="apple-touch-icon" sizes="60x60" href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-60x60.png">-->
+<!--  <link rel="apple-touch-icon" sizes="72x72" href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-72x72.png">-->
+<!--  <link rel="apple-touch-icon" sizes="76x76" href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-76x76.png">-->
+<!--  <link rel="apple-touch-icon" sizes="114x114"-->
+<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-114x114.png">-->
+<!--  <link rel="apple-touch-icon" sizes="120x120"-->
+<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-120x120.png">-->
+<!--  <link rel="apple-touch-icon" sizes="144x144"-->
+<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-144x144.png">-->
+<!--  <link rel="apple-touch-icon" sizes="152x152"-->
+<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-152x152.png">-->
+<!--  <link rel="apple-touch-icon" sizes="180x180"-->
+<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-180x180.png">-->
+<!--  <link rel="icon" type="image/png" sizes="192x192"-->
+<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/android-icon-192x192.png">-->
+<!--  <link rel="icon" type="image/png" sizes="32x32" href="--><?//= get_template_directory_uri() ?><!--/favicon/favicon-32x32.png">-->
+<!--  <link rel="icon" type="image/png" sizes="96x96" href="--><?//= get_template_directory_uri() ?><!--/favicon/favicon-96x96.png">-->
+<!--  <link rel="icon" type="image/png" sizes="16x16" href="--><?//= get_template_directory_uri() ?><!--/favicon/favicon-16x16.png">-->
+<!--  <link rel="manifest" href="--><?//= get_template_directory_uri() ?><!--/favicon/manifest.json">-->
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="<?= get_template_directory_uri() ?>/favicon/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
@@ -94,6 +94,31 @@
     }
     .btn.dropdown-arrow:after {
       margin-left: 0 !important;
+    }
+    header.header .dropdown-user i.ti-user {
+      //color: #12a5d1
+    }
+
+    header.header .dropdown-user .dropdown-menu .dropdown-item,
+    .dropdown-menu > li > a {
+      background-color: #12a5d1;
+      color: #ffffff;
+      font-size: 12px;
+    }
+
+    header.header .dropdown-user .dropdown-item:hover,
+    header.header .dropdown-user .dropdown-menu > li > a:hover {
+      background-color: #f7f8f8;
+      color: #16181b;
+    }
+
+    header.header .dropdown-user .dropdown-item:hover i {
+      color: #16181b;
+    }
+
+    header.header .dropdown-user .dropdown-item > i {
+      color: #ffffff;
+      font-size: 11px;
     }
     .alert-pink {
       font-size: 11.5px;
@@ -162,12 +187,12 @@
                             <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/candidate') ?>">
 <!--                              <i class="fa fa-user-tie"></i>-->
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-solid.svg" />
-                              <span class="text-white">PARTICULIER</span>
+                              <span class="text-white">PARTICULIERS</span>
                             </a>
 
                             <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/company') ?>">
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-tie-solid.svg" />
-                              <span class="text-white">PROFESIONNEL</span>
+                              <span class="text-white">PROFESIONNELS</span>
                             </a>
 
                           </div>
@@ -190,46 +215,51 @@
                       </a>
                       <div class="dropdown-menu dropdown-arrow dropdown-menu-right admin-dropdown-menu">
                         <div class="dropdown-arrow"></div>
-                        <div class="dropdown-header">
-                          <div class="mr-4">
-                            <img src="<?= get_template_directory_uri() . '/img/user.png' ?>" alt="image">
-                          </div>
-                          <div>
-                            <h5 class="font-strong text-white"><?= ucfirst($crUser->display_name) ?></h5>
-                            <div>
+                        <a class="dropdown-item" href="<?= $espace_client_link ?>"><i class="ti-layout"></i> Mon compte</a>
+                        <a class="dropdown-item" href="<?= wp_logout_url( home_url( '/' ) ) ?>"><i class="ti-shift-left"></i> Déconnecter</a>
+
+                          <!--<div class="mr-4">
+                            <img src="<?/*= get_template_directory_uri() . '/img/user.png' */?>" alt="image">
+                          </div>-->
+
+
+                            <!--<div>
                               <span class="admin-badge ">
                                 <i class="ti-lock mr-2"></i>
-                                <?= $wp_roles->roles[reset($crUser->roles)]['name'] ?>
+                                <?/*= $wp_roles->roles[reset($crUser->roles)]['name'] */?>
                               </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="admin-menu-features">
-                          <a class="admin-features-item text-uppercase" href="<?= $espace_client_link ?>">
+                            </div>-->
+
+
+                        <!--<div class="admin-menu-features">
+                          <a class="admin-features-item text-uppercase" href="<?/*= $espace_client_link */?>">
                             <i class="ti-user"></i>
                             <span>Mon compte</span>
                           </a>
 
-                          <?php if (in_array('company', array_values($crUser->roles))) : ?>
-                            <a class="admin-features-item pr-2 pl-2" href="<?= get_permalink( (int) ADD_OFFER_PAGE ) ?>">
+                          <?php /*if (in_array('company', array_values($crUser->roles))) : */?>
+                            <a class="admin-features-item pr-2 pl-2" href="<?/*= get_permalink( (int) ADD_OFFER_PAGE ) */?>">
                               <i class="ti-pencil-alt"></i>
                               <span class="text-uppercase">Ajouter un offre</span>
                             </a>
-                          <?php endif; ?>
+                          <?php /*endif; */?>
 
                           <a class="admin-features-item" href="javascript:;">
                             <i class="ti-settings"></i>
                             <span>SETTINGS</span>
                           </a>
-                        </div>
-                        <div class="admin-menu-content">
+                        </div>  -->
+                        <!--.end admin-menu-features-->
+
+                        <!--<div class="admin-menu-content">
                           <div class="d-flex justify-content-between mt-2">
                             <a class="text-muted uk-invisible" href="javascript:;">Earnings history</a>
-                            <a class="d-flex align-items-center" href="<?= wp_logout_url( home_url( '/' ) ) ?>">Déconnecter
+                            <a class="d-flex align-items-center" href="<?/*= wp_logout_url( home_url( '/' ) ) */?>">Déconnecter
                               <i class="ti-shift-right ml-2 font-20"></i>
                             </a>
                           </div>
-                        </div>
+                        </div>-->
+
                       </div>
                     </li>
                     <?php

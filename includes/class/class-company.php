@@ -140,11 +140,11 @@ final class Company implements \iCompany {
   }
 
 
-  public function updateCompany() {
+  public function update() {
     // TODO: Implement updateCompany() method.
   }
 
-  public function removeCompany() {
+  public function remove() {
     // TODO: Implement removeCompany() method.
   }
 }

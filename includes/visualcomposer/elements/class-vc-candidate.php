@@ -10,8 +10,14 @@ if ( ! class_exists( 'vcCandidate' ) ):
   class vcCandidate extends \WPBakeryShortCode {
     public function __construct() {
       add_action( 'init', [ $this, 'vc_candidate_mapping' ] );
-      add_shortcode( 'vc_featured_candidate', [ $this, 'vc_featured_candidate_render' ] );
-      add_shortcode( 'vc_candidate_recently_added', [ $this, 'vc_candidate_recently_added_render' ] );
+
+      if ( ! shortcode_exists( 'vc_featured_candidate' ) ) {
+        add_shortcode( 'vc_featured_candidate', [ $this, 'vc_featured_candidate_render' ] );
+      }
+
+      if ( ! shortcode_exists( 'vc_candidate_recently_added' ) ) {
+        add_shortcode( 'vc_candidate_recently_added', [ $this, 'vc_candidate_recently_added_render' ] );
+      }
     }
 
     public function vc_candidate_mapping() {

@@ -234,5 +234,8 @@ final class Candidate extends UserParticular implements \iCandidate {
 
     return $allCandidate;
   }
+
+  public function remove() {}
+  public function update() {}
 }
 

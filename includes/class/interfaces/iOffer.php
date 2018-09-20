@@ -7,9 +7,9 @@
  */
 
 interface iOffer {
-  public function updateOffer();
+  public function update();
 
-  public function removeOffer();
+  public function remove();
 
   public function isFeatured();
 

@@ -72,7 +72,8 @@ $elementsVC = (object) [
   'vcOffers'   => require 'includes/visualcomposer/elements/class-vc-offers.php',
   'vcCandidate'   => require 'includes/visualcomposer/elements/class-vc-candidate.php',
   'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
-  'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php5'
+  'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php5',
+  'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
 ];
 
 require 'includes/class/class-wp-city.php';
