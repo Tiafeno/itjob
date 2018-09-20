@@ -108,11 +108,11 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
 
 
           this.$onInit = function () {
-            self.initDatePicker();
+            $rootScope.initDatePicker();
             $rootScope.driveLicences = _.clone(driveLicences);
           };
 
-          self.initDatePicker = function () {
+          $rootScope.initDatePicker = function () {
             window.setTimeout(() => {
               jQuery('.input-daterange').datepicker({
                 format: "dd/mm/yyyy",
@@ -489,7 +489,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
         start: '',
         end: ''
       });
-      self.initDatePicker();
+      $rootScope.initDatePicker();
     };
 
     // Ajouter une nouvelle experience
@@ -500,7 +500,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
         start: '',
         end: ''
       });
-      self.initDatePicker();
+      $rootScope.initDatePicker();
     };
 
     $scope.abranchs = _.clone(abranchs);
