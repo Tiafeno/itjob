@@ -77,17 +77,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
         controller: function ($rootScope, $scope, $http, driveLicences) {
           let self = this;
 
-          // Ajouter une formation
-          $scope.addNewTraining = function () {
-            training_id += 1;
-            $rootScope.formData.trainings.push({
-              id: training_id,
-              start: '',
-              end: ''
-            });
-            self.initDatePicker();
-          };
-
           // Effacer une nouvelle formation
           $scope.removeTraining = id => {
             // Ne pas effacer le premier champ de formation
@@ -103,17 +92,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
             });
           };
 
-          // Ajouter une nouvelle experience
-          $scope.addNewExperience = function () {
-            experience_id += 1;
-            $rootScope.formData.experiences.push({
-              id: experience_id,
-              start: '',
-              end: ''
-            });
-            self.initDatePicker();
-          };
-
+          
           // Rechercher les langues
           $rootScope.queryLanguages = function ($query) {
             return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=language', {
@@ -501,6 +480,28 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
       start: '08/08/2018',
       end: '08/13/2018'
     }];
+
+    // Ajouter une formation
+    $rootScope.addNewTraining = function () {
+      training_id += 1;
+      $rootScope.formData.trainings.push({
+        id: training_id,
+        start: '',
+        end: ''
+      });
+      self.initDatePicker();
+    };
+
+    // Ajouter une nouvelle experience
+    $rootScope.addNewExperience = function () {
+      experience_id += 1;
+      $rootScope.formData.experiences.push({
+        id: experience_id,
+        start: '',
+        end: ''
+      });
+      self.initDatePicker();
+    };
 
     $scope.abranchs = _.clone(abranchs);
     $scope.languages = _.clone(languages);
