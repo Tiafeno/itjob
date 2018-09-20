@@ -39,9 +39,9 @@
     <div class="row mb-1">
       <div class="col-md-12 form-group">
         <div class="form-group" id="jobsought">
-          <label class="font-normal">Emploi recherché</label>
+          <label class="font-normal">Emploi recherché <span style="color: red">*</span></label>
             <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-          <tags-input ng-model="formData.jobSougths" display-property="name" placeholder="Emploi recherché" replace-spaces-with-dashes="false">
+          <tags-input ng-model="formData.jobSougths" display-property="name" placeholder="Emploi recherché" replace-spaces-with-dashes="false" required>
             <auto-complete source="queryJobs($query)"
                            min-length="0"
                            load-on-focus="false"
@@ -63,16 +63,18 @@
       </div>
     </div>
   </div>
+
   <div class="ibox-footer">
     <div class="row">
       <div class="col-md-6">
         <p class="text-muted">Tous les champs marqués d'un <span style="color: red">*</span> sont obligatoires</p>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" ng-show="!cvForm.$invalid">
         <a class="btn btn-outline-blue btn-icon btn-fix float-right" ui-sref-active="active" ui-sref="form.career">
           Suivant <i class="ti-angle-right ml-2"></i>
         </a>
       </div>
     </div>
   </div>
+  
 </div>

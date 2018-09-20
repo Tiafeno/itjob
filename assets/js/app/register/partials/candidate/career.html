@@ -18,9 +18,7 @@
 
             <div class="form-group">
               <label class="col-form-label ">Pays <span style="color: red">*</span></label>
-              <input class="form-control" name="country" ng-model="training.country" type="text"
-                     placeholder="ex: Madagascar, France ..."
-                     required>
+              <input type="text" class="form-control country-apirest" placeholder="ex: Madagascar, France ..." name="country" placeholder="Tapez le nom du pays" ng-model="training.country" required>
             </div>
 
             <div class="form-group">
@@ -52,7 +50,7 @@
   </div>
 
   <div class="form-group mt-5 row">
-    <label class="col-form-label col-sm-4">Permis de conduire <span style="color: red">*</span>:</label>
+    <label class="col-form-label col-sm-4">Permis de conduire :</label>
     <div class="col-sm-6">
       <div class="drivelicence" ng-repeat="driveLicence in driveLicences">
         <label class="checkbox checkbox-grey checkbox-ebony">
@@ -66,9 +64,9 @@
   </div>
 
   <div class="form-group mt-5" id="language">
-    <label class="font-normal">Les langues</label>
+    <label class="font-normal">Les langues <span style="color: red">*</span></label>
       <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-    <tags-input ng-model="formData.languages" display-property="name" placeholder="Les langues" replace-spaces-with-dashes="false">
+    <tags-input ng-model="formData.languages" display-property="name" placeholder="Les langues" replace-spaces-with-dashes="false" required>
       <auto-complete source="queryLanguages($query)"
                       min-length="0"
                       load-on-focus="false"
@@ -113,7 +111,7 @@
 
               <div class="form-group">
                 <label class="col-form-label col-md-12 pl-0">Pays <span style="color: red">*</span></label>
-                <input type="text" class="form-control" name="country" placeholder="Tapez le nom du pays" ng-model="experience.country" id="country" required >
+                <input type="text" class="form-control country-apirest" name="country" placeholder="Tapez le nom du pays" ng-model="experience.country" id="country" required>
               </div>
   
               <div class="form-group">
@@ -148,7 +146,7 @@
       <div class="col-md-6">
         <p class="text-muted">Tous les champs marqués d'un <span style="color: red">*</span> sont obligatoires</p>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" ng-show="!cvForm.$invalid">
         <a class="btn btn-outline-blue btn-icon btn-fix float-right" ui-sref-active="active" ui-sref="form.interests">
           Suivant <i class="ti-angle-right ml-2"></i>
         </a>

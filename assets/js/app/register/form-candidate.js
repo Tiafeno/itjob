@@ -27,15 +27,21 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
         url: '/career',
         templateUrl: itOptions.partials_url + '/candidate/career.html',
         resolve: {
-          access: ['$q', '$rootScope', '$state', function ($q, $rootScope, $state) {
+          access: ['$q', '$rootScope', function ($q, $rootScope) {
+
             if (typeof $rootScope.formData === 'undefined') {
-              //return $q.reject({redirect: 'form.informations'});
+              return $q.reject({
+                redirect: 'form.informations'
+              });
             }
-            const formDataKeys = Object.keys($rootScope.formData);
-            if (formDataKeys.length >= 3) {
-              return $q.resolve(true);
-            } else {
-              //return $q.reject({redirect: 'form.informations'});
+            if (typeof $rootScope.formData.status === 'undefined' ||
+              typeof $rootScope.formData.jobSougths === 'undefined' ||
+              _.isEmpty($rootScope.formData.jobSougths) ||
+              typeof $rootScope.formData.abranch === 'undefined') {
+
+              return $q.reject({
+                redirect: 'form.informations'
+              });
             }
           }],
           driveLicences: function ($q) {
@@ -68,27 +74,17 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
             return $q.resolve(licence);
           }
         },
-        controller: function ($rootScope, $scope, $http, $state, driveLicences) {
+        controller: function ($rootScope, $scope, $http, driveLicences) {
           let self = this;
-          let training_id = 0;
-          let experience_id = 0;
-
-          $rootScope.formData.trainings = [{
-            id: training_id,
-            start: '08/08/2018',
-            end: '08/13/2018'
-          }];
-
-          $rootScope.formData.experiences = [{
-            id: experience_id,
-            start: '08/08/2018',
-            end: '08/13/2018'
-          }];
 
           // Ajouter une formation
           $scope.addNewTraining = function () {
             training_id += 1;
-            $rootScope.formData.trainings.push({id: training_id, start: '', end: ''});
+            $rootScope.formData.trainings.push({
+              id: training_id,
+              start: '',
+              end: ''
+            });
             self.initDatePicker();
           };
 
@@ -110,7 +106,11 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
           // Ajouter une nouvelle experience
           $scope.addNewExperience = function () {
             experience_id += 1;
-            $rootScope.formData.experiences.push({id: experience_id, start: '', end: ''});
+            $rootScope.formData.experiences.push({
+              id: experience_id,
+              start: '',
+              end: ''
+            });
             self.initDatePicker();
           };
 
@@ -158,7 +158,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
                   },
                   filter: function (allCountry) {
                     return _.map(allCountry, (country) => {
-                      return { value: country.name };
+                      return {
+                        value: country.name
+                      };
                     });
                   }
                 }
@@ -166,7 +168,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
 
               // Initialize the Bloodhound suggestion engine
               country.initialize();
-              jQuery('#country').typeahead(null, {
+              jQuery('.country-apirest').typeahead(null, {
                 hint: false,
                 highlight: true,
                 minLength: 2,
@@ -185,9 +187,36 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
         url: '/interests',
         templateUrl: itOptions.partials_url + '/candidate/interests.html',
         resolve: {
-          access: ['$q', function ($q) {
-            if (!0) {
-              return $q.resolve("Not Authorized");
+          access: ['$q', '$rootScope', function ($q, $rootScope) {
+            if (typeof $rootScope.formData === 'undefined') {
+              return $q.reject({
+                redirect: 'form.informations'
+              });
+            }
+
+            // Verifier les valeurs des champs (Formations, experiences & langue)
+            let training = !$rootScope.formData.hasOwnProperty('trainings');
+            if (training) return $q.reject({redirect: 'form.career'});
+            for (let item of $rootScope.formData.trainings) {
+              training = !item.hasOwnProperty('city') ||
+              !item.hasOwnProperty('country') ||
+              !item.hasOwnProperty('diploma') ||
+              !item.hasOwnProperty('establishment');
+              if (training) return $q.reject({redirect: 'form.career'});
+            }
+
+            let languages = !$rootScope.formData.hasOwnProperty('languages');
+            if (languages) return $q.reject({redirect: 'form.career'});
+
+            let experiences = !$rootScope.formData.hasOwnProperty('experiences');
+            if (experiences) return $q.reject({redirect: 'form.career'});
+            for (let item of $rootScope.formData.experiences) {
+              experiences = !item.hasOwnProperty('city') || 
+              !item.hasOwnProperty('country') ||
+              !item.hasOwnProperty('company') || 
+              !item.hasOwnProperty('positionHeld');
+              if (experiences) return $q.reject({redirect: 'form.career'});
+
             }
           }]
         },
@@ -399,7 +428,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
             return resp.data;
           });
       },
-      getJobs : function ($query) {
+      getJobs: function ($query) {
         return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=job_sought', {
             cache: true
           })
@@ -454,25 +483,58 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
     };
   }])
   .controller('formController', function ($scope, $rootScope, $state, initScripts, Services, abranchs, languages, jobSougths) {
+    let training_id = 0;
+    let experience_id = 0;
     const self = this;
+
+    // we will store all of our form data in this object
+    $rootScope.formData = {};
+
+    $rootScope.formData.trainings = [{
+      id: training_id,
+      start: '08/08/2018',
+      end: '08/13/2018'
+    }];
+
+    $rootScope.formData.experiences = [{
+      id: experience_id,
+      start: '08/08/2018',
+      end: '08/13/2018'
+    }];
 
     $scope.abranchs = _.clone(abranchs);
     $scope.languages = _.clone(languages);
     $rootScope.jobSougths = _.clone(jobSougths);
     $scope.status = Services.getStatus();
 
-    // we will store all of our form data in this object
-    $rootScope.formData = {};
-
     // function to process the form
-    $scope.processForm = function () {
+    $scope.processForm = function (isValid) {
+      console.log($rootScope.formData);
+      
+      if (!isValid) return;
       alert('awesome!');
     };
+
+    $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams, options) {
+      console.log($rootScope.cvForm.$invalid);
+      event.preventDefault();
+    });
   })
-  .run(function ($state) {
+  .run(function ($state, $rootScope) {
     $state.defaultErrorHandler(function (error) {
       // This is a naive example of how to silence the default error handler.
-      if (error.detail !== undefined)
+      if (error.detail !== undefined) {
         $state.go(error.detail.redirect);
+      }
+
     });
+
+    $rootScope.$on('$stateChangeStart', function (evt, toState, toParams, fromState, fromParams) {
+      //alert("$stateChangeStart " + fromState.name + JSON.stringify(fromParams) + " -> " + toState.name + JSON.stringify(toParams));
+    });
+    /* if ( ! $rootScope.cvForm.$invalid) {
+      return $q.resolve(true);
+    } else {
+      return $q.reject({redirect: 'form.informations'});
+    } */
   });

@@ -103,6 +103,7 @@
     .dropdown-menu > li > a {
       background-color: #12a5d1;
       color: #ffffff;
+      font-size: 12px;
     }
 
     header.header .dropdown-user .dropdown-item:hover,
@@ -117,6 +118,7 @@
 
     header.header .dropdown-user .dropdown-item > i {
       color: #ffffff;
+      font-size: 11px;
     }
     .alert-pink {
       font-size: 11.5px;
@@ -185,12 +187,12 @@
                             <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/candidate') ?>">
 <!--                              <i class="fa fa-user-tie"></i>-->
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-solid.svg" />
-                              <span class="text-white">PARTICULIER</span>
+                              <span class="text-white">PARTICULIERS</span>
                             </a>
 
                             <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/company') ?>">
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-tie-solid.svg" />
-                              <span class="text-white">PROFESIONNEL</span>
+                              <span class="text-white">PROFESIONNELS</span>
                             </a>
 
                           </div>

@@ -13,7 +13,7 @@
     </div>
 
     <!-- use ng-submit to catch the form submission and use our Angular function -->
-    <form id="signup-form" name="cvForm" novalidate>
+    <form id="signup-form" name="cvForm" ng-submit="processForm(cvForm.$valid)" novalidate>
 
       <!-- our nested state views will be injected here -->
       <div id="form-views" class="mt-4" ui-view></div>
@@ -22,8 +22,8 @@
   </div>
 
   <!-- show our formData as it is being typed -->
-  <pre class="mt-4">
+  <!-- <pre class="mt-4">
     {{ formData }}
-  </pre>
+  </pre> -->
 
 </div>
