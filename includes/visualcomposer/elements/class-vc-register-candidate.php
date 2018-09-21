@@ -83,7 +83,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
       $User = wp_get_current_user();
       $Candidate = Candidate::get_candidate_by($User->ID);
-      if ( ! $Candidate->is_candidate()) return $message_access_refused;
+      if ( ! $Candidate || ! $Candidate->is_candidate()) return $message_access_refused;
       if ( ! $Candidate->hasCV())
         return '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Vous possédez déja un CV en ligne</div>';
 
