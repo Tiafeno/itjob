@@ -117,20 +117,14 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
     // Ajouter un CV
     public function update_user_cv() {
-      if ( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
+      if ( $_SERVER['REQUEST_METHOD'] != 'POST' || ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
         return false;
-      }
-      if ( ! \wp_doing_ajax() ) {
-        return;
-      }
-      if ( ! \is_user_logged_in() ) {
-        return;
       }
 
       $User      = wp_get_current_user();
       $Candidate = Candidate::get_candidate_by( $User->ID );
 
-      if ( ! $Candidate->is_candidate()) return;
+      if ( ! $Candidate->is_candidate()) return false;
 
       // Mette à jours le CV
       $status          = Http\Request::getValue( 'status', null );
