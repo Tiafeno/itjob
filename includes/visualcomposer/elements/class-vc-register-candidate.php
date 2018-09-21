@@ -77,6 +77,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
                '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Access refuser</div></div>';
       }
 
+      // TODO: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
+
       wp_enqueue_style( 'b-datepicker-3' );
       wp_enqueue_style( 'sweetalert' );
       wp_enqueue_style( 'bootstrap-tagsinput' );
@@ -113,6 +115,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       }
     }
 
+    // Ajouter un CV
     public function update_user_cv() {
       if ( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
         return false;
@@ -278,6 +281,10 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         ];
       }
       update_field( 'itjob_cv_experiences', $experiences, $Candidate->getId() );
+
+      // Activé le CV
+      update_field('itjob_cv_activated', 1, $Candidate->getId());
+      
       $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
       wp_send_json( [ 'success' => true, 'redirect' => $espace_client_link ] );
 
