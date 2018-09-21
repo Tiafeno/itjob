@@ -12,6 +12,7 @@ if ( ! class_exists( 'WPBakeryShortCode' ) ) {
 
 use Http;
 use includes\post\Candidate;
+use includes\post\Company;
 
 if ( ! class_exists( 'vcRegisterCandidate' ) ) :
   class vcRegisterCandidate extends \WPBakeryShortCode {
@@ -60,6 +61,9 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
     public function register_render_html( $attrs ) {
       global $Engine, $itJob;
 
+      $message_access_refused = '<div class="d-flex align-items-center">';
+      $message_access_refused .= '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Access refuser</div></div>';
+
       // Params extraction
       extract(
         shortcode_atts(
@@ -73,11 +77,15 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       // Ne pas autoriser un client non connecté
       if ( ! is_user_logged_in() ) {
-        return '<div class="d-flex align-items-center">' .
-               '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Access refuser</div></div>';
+        return $message_access_refused;
       }
 
-      // TODO: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
+      // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
+      $User = wp_get_current_user();
+      $Candidate = Candidate::get_candidate_by($User->ID);
+      if ( ! $Candidate->is_candidate()) return $message_access_refused;
+      if ( ! $Candidate->hasCV())
+        return '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Vous possédez déja un CV en ligne</div>';
 
       wp_enqueue_style( 'b-datepicker-3' );
       wp_enqueue_style( 'sweetalert' );
