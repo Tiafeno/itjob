@@ -76,7 +76,8 @@ if ( ! class_exists( 'itJob' ) ) {
 
       }, 20 );
 
-      add_action('after_switch_theme', function ($old_name, $old_theme) {
+      // @doc https://wordpress.stackexchange.com/questions/7518/is-there-a-hook-for-when-you-switch-themes
+      add_action('after_switch_theme', function ($new_theme) {
         global $wpdb;
         //$meta_sql = "ALTER TABLE $wpdb->postmeta ADD COLUMN IF NOT EXISTS `meta_activate` INT NOT NULL DEFAULT 1 AFTER `meta_value`";
         $term_sql = "ALTER TABLE {$wpdb->prefix}terms ADD COLUMN IF NOT EXISTS `term_activate` INT NOT NULL DEFAULT 1 AFTER `slug`";
