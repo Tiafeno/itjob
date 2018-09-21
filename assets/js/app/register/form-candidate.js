@@ -46,11 +46,12 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             }
           }],
           driveLicences: function ($q) {
-            const licence = [{
-              _id: 0,
-              label: "A`",
-              slug: "a_"
-            },
+            const licences = [
+              {
+                _id: 0,
+                label: "A`",
+                slug: "a_"
+              },
               {
                 _id: 1,
                 label: "A",
@@ -72,7 +73,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 slug: "d"
               },
             ];
-            return $q.resolve(licence);
+            return $q.resolve(licences);
           }
         },
         controller: function ($rootScope, $scope, $http, driveLicences) {
