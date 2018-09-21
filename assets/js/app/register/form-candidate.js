@@ -16,7 +16,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           jobSougths: function (Services) {
             return Services.getTaxonomy('job_sought');
           },
-          access: ['$q', function ($q) {}]
+          access: ['$q', function ($q) {
+          }]
         },
         controller: 'formController'
       })
@@ -46,10 +47,10 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           }],
           driveLicences: function ($q) {
             const licence = [{
-                _id: 0,
-                label: "A`",
-                slug: "a_"
-              },
+              _id: 0,
+              label: "A`",
+              slug: "a_"
+            },
               {
                 _id: 1,
                 label: "A",
@@ -92,12 +93,12 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             });
           };
 
-          
+
           // Rechercher les langues
           $rootScope.queryLanguages = function ($query) {
             return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=language', {
-                cache: true
-              })
+              cache: true
+            })
               .then(function (response) {
                 const languages = response.data;
                 return languages.filter(function (language) {
@@ -157,7 +158,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             }, 600);
 
 
-
           }
         }
       })
@@ -178,9 +178,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             if (training) return $q.reject({redirect: 'form.career'});
             for (let item of $rootScope.formData.trainings) {
               training = !item.hasOwnProperty('city') ||
-              !item.hasOwnProperty('country') ||
-              !item.hasOwnProperty('diploma') ||
-              !item.hasOwnProperty('establishment');
+                !item.hasOwnProperty('country') ||
+                !item.hasOwnProperty('diploma') ||
+                !item.hasOwnProperty('establishment');
               if (training) return $q.reject({redirect: 'form.career'});
             }
 
@@ -190,16 +190,15 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             let experiences = !$rootScope.formData.hasOwnProperty('experiences');
             if (experiences) return $q.reject({redirect: 'form.career'});
             for (let item of $rootScope.formData.experiences) {
-              experiences = !item.hasOwnProperty('city') || 
-              !item.hasOwnProperty('country') ||
-              !item.hasOwnProperty('company') || 
-              !item.hasOwnProperty('positionHeld');
+              experiences = !item.hasOwnProperty('city') ||
+                !item.hasOwnProperty('country') ||
+                !item.hasOwnProperty('company') ||
+                !item.hasOwnProperty('positionHeld');
               if (experiences) return $q.reject({redirect: 'form.career'});
             }
           }]
         },
         controller: ['$rootScope', '$scope', 'initScripts', 'Services', function ($rootScope, $scope, initScripts, Services) {
-          var self = this;
           this.$onInit = () => {
             window.setTimeout(() => {
               jQuery('.tagsinput').tagsinput({
@@ -288,8 +287,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           //$rootScope.formData.jobSougths = Services.getTaxonomy('job_sought');
           $rootScope.queryJobs = function ($query) {
             return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=job_sought', {
-                cache: true
-              })
+              cache: true
+            })
               .then(function (response) {
                 const jobs = response.data;
                 return jobs.filter(function (job) {
@@ -363,20 +362,20 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       }
     }
   })
-  .service('Services', ['$http', '$q', function ($http, $q) {
+  .service('Services', ['$http', function ($http) {
     return {
       getTaxonomy: function (Taxonomy) {
         return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + Taxonomy, {
-            cache: true
-          })
+          cache: true
+        })
           .then(resp => {
             return resp.data;
           });
       },
       getJobs: function ($query) {
         return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=job_sought', {
-            cache: true
-          })
+          cache: true
+        })
           .then(function (response) {
             const jobs = response.data;
             return jobs.filter(function (_j) {
@@ -386,9 +385,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       },
       getStatus: function () {
         const status = [{
-            _id: 0,
-            label: 'Je cherche un emploi'
-          },
+          _id: 0,
+          label: 'Je cherche un emploi'
+        },
           {
             _id: 1,
             label: 'Je souhaite entretenir mon réseau'
@@ -438,7 +437,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
   .controller('formController', function ($scope, $rootScope, $state, initScripts, Services, abranchs, languages, jobSougths, Upload) {
     let training_id = 0;
     let experience_id = 0;
-    const self = this;
 
     // we will store all of our form data in this object
     $scope.abranchs = _.clone(abranchs);
@@ -481,7 +479,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       $rootScope.initDatePicker();
     };
 
-    $scope.uploadFiles = function(file, errFiles) {
+    $scope.uploadFiles = function (file, errFiles) {
       $rootScope.f = file;
       $scope.errFile = errFiles && errFiles[0];
       if (_.isNull(file)) return;
@@ -498,7 +496,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             type: 'error',
           });
         });
-    }
+    };
 
     // function to process the form
     $scope.processForm = function (isValid) {
@@ -512,7 +510,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
         var value = Reflect.get($rootScope.formData, property);
         dataForm.set(property, JSON.stringify(value));
       });
-      
+
       if ($rootScope.f) {
         $rootScope.f.upload = Upload.upload({
           url: itOptions.ajax_url,
@@ -537,26 +535,51 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     $scope.__sendForm = (dataForm) => {
       Services
         .sendForm(dataForm)
-        .then( resp => {
-          console.log(resp);
+        .then(resp => {
+          const Data = resp.data;
+          if (Data.success) {
+            swal({
+              title: 'Reussi',
+              text: "CV bien ajouté",
+              type: "info",
+            }, function () {
+              $rootScope.loading = false;
+              window.location.href = Data.redirect;
+            });
+          } else {
+            swal({
+              title: 'Erreur',
+              text: Data.msg,
+              type: "error",
+            });
+            $rootScope.loading = false;
+          }
+        })
+        .catch(e => {
+          swal({
+            title: 'Erreur',
+            text: e,
+            type: "error",
+          });
+          $rootScope.loading = false;
         });
     };
 
   }).run(function ($state, $rootScope) {
-    $state.defaultErrorHandler(function (error) {
-      // This is a naive example of how to silence the default error handler.
-      if (error.detail !== undefined) {
-        $state.go(error.detail.redirect);
-      }
+  $state.defaultErrorHandler(function (error) {
+    // This is a naive example of how to silence the default error handler.
+    if (error.detail !== undefined) {
+      $state.go(error.detail.redirect);
+    }
 
-    });
-
-    $rootScope.$on('$stateChangeStart', function (evt, toState, toParams, fromState, fromParams) {
-      //alert("$stateChangeStart " + fromState.name + JSON.stringify(fromParams) + " -> " + toState.name + JSON.stringify(toParams));
-    });
-    /* if ( ! $rootScope.cvForm.$invalid) {
-      return $q.resolve(true);
-    } else {
-      return $q.reject({redirect: 'form.informations'});
-    } */
   });
+
+  $rootScope.$on('$stateChangeStart', function (evt, toState, toParams, fromState, fromParams) {
+    //alert("$stateChangeStart " + fromState.name + JSON.stringify(fromParams) + " -> " + toState.name + JSON.stringify(toParams));
+  });
+  /* if ( ! $rootScope.cvForm.$invalid) {
+    return $q.resolve(true);
+  } else {
+    return $q.reject({redirect: 'form.informations'});
+  } */
+});

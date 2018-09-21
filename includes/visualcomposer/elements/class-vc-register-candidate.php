@@ -10,8 +10,8 @@ if ( ! class_exists( 'WPBakeryShortCode' ) ) {
   new \WP_Error( 'WPBakery', 'WPBakery plugins missing!' );
 }
 
-use includes\post\Candidate;
 use Http;
+use includes\post\Candidate;
 
 if ( ! class_exists( 'vcRegisterCandidate' ) ) :
   class vcRegisterCandidate extends \WPBakeryShortCode {
@@ -134,22 +134,22 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $various         = Http\Request::getValue( 'various', '' );
       $newsletter      = Http\Request::getValue( 'newsletter', 0 );
 
-      $jobSougths = Http\Request::getValue('jobSougths');
-      $jobSougths = \json_decode($jobSougths);
+      $jobSougths = Http\Request::getValue( 'jobSougths' );
+      $jobSougths = \json_decode( $jobSougths );
 
-      $driveLicences = Http\Request::getValue('driveLicence');
+      $driveLicences = Http\Request::getValue( 'driveLicence' );
       $driveLicences = \json_decode( $driveLicences );
 
-      $notiEmploi = Http\Request::getValue('notiEmploi', false);
+      $notiEmploi = Http\Request::getValue( 'notiEmploi', false );
       $notiEmploi = \json_decode( $notiEmploi );
 
-      $trainings = Http\Request::getValue('trainings');
-      $trainings = \json_decode( stripslashes( $trainings ) );
+      $trainings = Http\Request::getValue( 'trainings' );
+      $trainings = \json_decode( $trainings );
 
-      $experiences = Http\Request::getValue('experiences');
-      $experiences = \json_decode( stripslashes( $experiences ) );
+      $experiences = Http\Request::getValue( 'experiences' );
+      $experiences = \json_decode( $experiences );
 
-      $languages = \json_decode( Http\Request::getValue('languages') );
+      $languages = \json_decode( Http\Request::getValue( 'languages' ) );
 
       $form = [
         'status'        => $status ? 1 : 0,
@@ -227,8 +227,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
                 $jobTerm = wp_insert_term(
                   $job->name,   // the term
                   'job_sought', // the taxonomy
-                  array(
-                    //'parent' => (int) $form->notifEmploi->abranch,
+                  array(//'parent' => (int) $form->notifEmploi->abranch,
                   )
                 );
 
@@ -279,8 +278,10 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         ];
       }
       update_field( 'itjob_cv_experiences', $experiences, $Candidate->getId() );
+      $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
+      wp_send_json( [ 'success' => true, 'redirect' => $espace_client_link ] );
 
-      wp_send_json( [ 'success' => true ] );
+      // TODO: Ajouter une notification pour les formations ajouté
 
     } // .end update_user_cv
 
