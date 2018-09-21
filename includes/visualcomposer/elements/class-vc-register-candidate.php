@@ -130,6 +130,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $User      = wp_get_current_user();
       $Candidate = Candidate::get_candidate_by( $User->ID );
 
+      if ( ! $Candidate->is_candidate()) return;
+
       // Mette à jours le CV
       $status          = Http\Request::getValue( 'status', null );
       $project         = Http\Request::getValue( 'projet', '' );
@@ -284,7 +286,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       // Activé le CV
       update_field('itjob_cv_activated', 1, $Candidate->getId());
-      
+
       $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
       wp_send_json( [ 'success' => true, 'redirect' => $espace_client_link ] );
 
