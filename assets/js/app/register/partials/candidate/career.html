@@ -101,17 +101,17 @@
                   <input class="input-sm form-control" type="text" autocomplete="off" ng-model="experience.end" name="end" value="20/08/2018">
                 </div>
               </div>
+
+              <div class="form-group">
+                <label class="col-form-label col-md-12 pl-0">Pays <span style="color: red">*</span></label>
+                <input type="text" class="form-control country-apirest" name="country" placeholder="Tapez le nom du pays" ng-model="experience.country" id="country" required>
+              </div>
   
               <div class="form-group">
                 <label class="col-form-label ">Ville <span style="color: red">*</span></label>
                 <input class="form-control" name="city" ng-model="experience.city" type="text"
                        placeholder="ex: Lausanne"
                        required>
-              </div>
-
-              <div class="form-group">
-                <label class="col-form-label col-md-12 pl-0">Pays <span style="color: red">*</span></label>
-                <input type="text" class="form-control country-apirest" name="country" placeholder="Tapez le nom du pays" ng-model="experience.country" id="country" required>
               </div>
   
               <div class="form-group">

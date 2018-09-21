@@ -76,6 +76,14 @@ if ( ! class_exists( 'itJob' ) ) {
 
       }, 20 );
 
+      add_action('after_switch_theme', function ($old_name, $old_theme) {
+        global $wpdb;
+        //$meta_sql = "ALTER TABLE $wpdb->postmeta ADD COLUMN IF NOT EXISTS `meta_activate` INT NOT NULL DEFAULT 1 AFTER `meta_value`";
+        $term_sql = "ALTER TABLE {$wpdb->prefix}terms ADD COLUMN IF NOT EXISTS `term_activate` INT NOT NULL DEFAULT 1 AFTER `slug`";
+        //$wpdb->query($meta_sql);
+        $wpdb->query($term_sql);
+      });
+
       // Add acf google map api
       add_filter( 'acf/init', function () {
         acf_update_setting( 'google_api_key', base64_decode( __google_api__ ) );
@@ -402,6 +410,7 @@ if ( ! class_exists( 'itJob' ) ) {
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular-aria' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [], '1.7.2' );
+      wp_register_script('ngFileUpload', get_template_directory_uri() . '/assets/js/libs/ngfileupload/ng-file-upload.min.js',[], '12.2.13', true);
 
       wp_register_script( 'angular-froala', VENDOR_URL . '/froala-editor/src/angular-froala.js', [], '2.8.4' );
       wp_register_script( 'froala', VENDOR_URL . '/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
@@ -461,19 +470,13 @@ if ( ! class_exists( 'itJob' ) ) {
       ], '2.8.4' );
 
       // Register components adminca scripts
-      wp_register_script( 'popper',
-        VENDOR_URL . '/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );
-      wp_register_script( 'bootstrap',
-        VENDOR_URL . '/bootstrap/dist/js/bootstrap.min.js', [ 'popper' ], '4.0.0-beta', true );
-      wp_register_script( 'jq-slimscroll',
-        VENDOR_URL . '/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
-      wp_register_script( 'idle-timer',
-        VENDOR_URL . '/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
-      wp_register_script( 'toastr',
-        VENDOR_URL . '/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
+      wp_register_script( 'popper', VENDOR_URL . '/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );
+      wp_register_script( 'bootstrap', VENDOR_URL . '/bootstrap/dist/js/bootstrap.min.js', [ 'popper' ], '4.0.0-beta', true );
+      wp_register_script( 'jq-slimscroll', VENDOR_URL . '/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
+      wp_register_script( 'idle-timer', VENDOR_URL . '/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
+      wp_register_script( 'toastr', VENDOR_URL . '/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
       wp_register_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', [ 'jquery' ], '1.7.1' );
-      wp_register_script( 'bootstrap-select',
-        VENDOR_URL . '/bootstrap-select/dist/js/bootstrap-select.min.js', [
+      wp_register_script( 'bootstrap-select', VENDOR_URL . '/bootstrap-select/dist/js/bootstrap-select.min.js', [
           'jquery',
           'bootstrap'
         ], '1.12.4', true );

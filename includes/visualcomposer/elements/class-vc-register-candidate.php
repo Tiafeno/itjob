@@ -10,13 +10,23 @@ if ( ! class_exists( 'WPBakeryShortCode' ) ) {
   new \WP_Error( 'WPBakery', 'WPBakery plugins missing!' );
 }
 
-if ( ! class_exists('vcRegisterCandidate')) :
+use includes\post\Candidate;
+use Http;
+
+if ( ! class_exists( 'vcRegisterCandidate' ) ) :
   class vcRegisterCandidate extends \WPBakeryShortCode {
     public function __construct() {
-      add_action('init', [&$this, 'register_candidate_mapping']);
-      if ( ! shortcode_exists('vc_register_candidate') ) {
-        add_shortcode('vc_register_candidate', [&$this, 'register_render_html']);
+      add_action( 'init', [ &$this, 'register_candidate_mapping' ] );
+      if ( ! shortcode_exists( 'vc_register_candidate' ) ) {
+        add_shortcode( 'vc_register_candidate', [ &$this, 'register_render_html' ] );
       }
+
+      add_action( 'wp_ajax_ajx_upload_media', [ &$this, 'upload_media' ] );
+      add_action( 'wp_ajax_nopriv_ajx_upload_media', [ &$this, 'upload_media' ] );
+
+      add_action( 'wp_ajax_update_user_cv', [ &$this, 'update_user_cv' ] );
+      add_action( 'wp_ajax_nopriv_update_user_cv', [ &$this, 'update_user_cv' ] );
+
     }
 
     public function register_candidate_mapping() {
@@ -49,6 +59,7 @@ if ( ! class_exists('vcRegisterCandidate')) :
 
     public function register_render_html( $attrs ) {
       global $Engine, $itJob;
+
       // Params extraction
       extract(
         shortcode_atts(
@@ -56,12 +67,13 @@ if ( ! class_exists('vcRegisterCandidate')) :
             'title' => null,
           ),
           $attrs
-        )
-        , EXTR_OVERWRITE );
+        ),
+        EXTR_OVERWRITE
+      );
 
       // Ne pas autoriser un client non connecté
       if ( ! is_user_logged_in() ) {
-        return '<div class="d-flex align-items-center">'.
+        return '<div class="d-flex align-items-center">' .
                '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Access refuser</div></div>';
       }
 
@@ -75,6 +87,7 @@ if ( ! class_exists('vcRegisterCandidate')) :
         'angular-sanitize',
         'angular-messages',
         'angular-animate',
+        'ngFileUpload',
         'b-datepicker',
         'daterangepicker',
         'sweetalert',
@@ -97,6 +110,215 @@ if ( ! class_exists('vcRegisterCandidate')) :
       } catch ( \Twig_Error_Runtime $e ) {
       } catch ( \Twig_Error_Syntax $e ) {
         echo $e->getRawMessage();
+      }
+    }
+
+    public function update_user_cv() {
+      if ( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
+        return false;
+      }
+      if ( ! \wp_doing_ajax() ) {
+        return;
+      }
+      if ( ! \is_user_logged_in() ) {
+        return;
+      }
+
+      $User      = wp_get_current_user();
+      $Candidate = Candidate::get_candidate_by( $User->ID );
+
+      // Mette à jours le CV
+      $status          = Http\Request::getValue( 'status', null );
+      $project         = Http\Request::getValue( 'projet', '' );
+      $activity_branch = Http\Request::getValue( 'abranch', null );
+      $various         = Http\Request::getValue( 'various', '' );
+      $newsletter      = Http\Request::getValue( 'newsletter', 0 );
+
+      $jobSougths = Http\Request::getValue('jobSougths');
+      $jobSougths = \json_decode($jobSougths);
+
+      $driveLicences = Http\Request::getValue('driveLicence');
+      $driveLicences = \json_decode( $driveLicences );
+
+      $notiEmploi = Http\Request::getValue('notiEmploi', false);
+      $notiEmploi = \json_decode( $notiEmploi );
+
+      $trainings = Http\Request::getValue('trainings');
+      $trainings = \json_decode( stripslashes( $trainings ) );
+
+      $experiences = Http\Request::getValue('experiences');
+      $experiences = \json_decode( stripslashes( $experiences ) );
+
+      $languages = \json_decode( Http\Request::getValue('languages') );
+
+      $form = [
+        'status'        => $status ? 1 : 0,
+        'projet'        => $project,
+        'abranch'       => $activity_branch,
+        'various'       => $various,
+        'newsletter'    => $newsletter ? ( $newsletter === 'false' ? 0 : 1 ) : 0,
+        'jobSougths'    => $jobSougths,
+        'driveLicences' => $driveLicences,
+        'notifEmploi'   => $notiEmploi,
+        'trainings'     => $trainings,
+        'experiences'   => $experiences,
+        'languages'     => $languages
+      ];
+
+      foreach ( $form as $key => $value ) :
+        if ( is_null( $value ) ) {
+          \wp_send_json( [
+            'success' => false,
+            'msg'     => "Le formulaire n'est pas valide. Veillez verifier les formulaires",
+            'input'   => $key,
+            'value'   => $value
+          ] );
+          break;
+        }
+      endforeach;
+
+      $form = (object) $form;
+
+      wp_set_post_terms( $Candidate->getId(), [ (int) $form->abranch ], 'branch_activity' );
+
+      $job_ids = array_map( function ( $jobs ) {
+        return $jobs->term_id;
+      }, $form->jobSougths );
+      wp_set_post_terms( $Candidate->getId(), $job_ids, 'job_sought' );
+
+      // Ajouter les languages
+      $languageTermIDs = array_map( function ( $item ) {
+        return $item->term_id;
+      }, $form->languages );
+      wp_set_post_terms( $Candidate->getId(), $languageTermIDs, 'language' );
+
+      // Update ACF field
+      update_field( 'itjob_cv_status', (int) $form->status, $Candidate->getId() );
+
+      $centerInterest = [
+        'various' => $form->various,
+        'projet'  => $form->projet
+      ];
+      update_field( 'itjob_cv_centerInterest', $centerInterest, $Candidate->getId() );
+
+      update_field( 'itjob_cv_newsletter', $form->newsletter, $Candidate->getId() );
+
+      // Update drive licence field
+      $LicenceSchema = [ 'a_' => 0, 'a' => 1, 'b' => 2, 'c' => 3, 'd' => 4 ];
+      $licences      = array_map( function ( $key ) use ( $form, $LicenceSchema ) {
+        if ( (int) $form->driveLicences->{$key} ) {
+          return $LicenceSchema[ $key ];
+        }
+      }, array_keys( (array) $form->driveLicences ) );
+      update_field( 'itjob_cv_driveLicence', implode( ',', $licences ) );
+
+      // update notification 
+      if ( $form->notifEmploi ) {
+        if ( $form->notifEmploi->with ) {
+          $notificationJob = [
+            'notification'    => 1,
+            'branch_activity' => isset( $form->notifEmploi->abranch ) ? $form->notifEmploi->abranch : ''
+          ];
+
+          if ( isset( $form->notifEmploi->job ) ) {
+            $term_ids = [];
+            foreach ( $form->notifEmploi->job as $job ) {
+              if ( ! isset( $job->term_id ) || isset( $form->notifEmploi->abranch ) ) {
+                $jobTerm = wp_insert_term(
+                  $job->name,   // the term
+                  'job_sought', // the taxonomy
+                  array(
+                    //'parent' => (int) $form->notifEmploi->abranch,
+                  )
+                );
+
+                // Désactiver le term qu'on viens d'ajouter
+                if ( ! is_wp_error( $jobTerm ) ) {
+                  global $wpdb;
+                  $sql = "UPDATE {$wpdb->prefix}terms SET `term_activate` = 0 WHERE {$wpdb->prefix}terms.`term_id` = {$jobTerm->term_id}";
+                  $wpdb->query( $sql );
+                  array_push( $term_ids, $jobTerm->term_id );
+                }
+              } else {
+                array_push( $term_ids, (int) $job->term_id );
+              }
+            }
+            $notificationJob = array_merge( $notificationJob, [ 'job_sought' => implode( ',', $term_ids ) ] );
+
+            // Mettre à jour la notification pour les offres en ligne
+            update_field( 'itjob_cv_notifEmploi', $notificationJob, $Candidate->getId() );
+          }
+        }
+      } // .end notification emploi
+
+      // Ajouter les formations dans le CV
+      $trainings = [];
+      foreach ( $form->trainings as $training ) {
+        $trainings[] = [
+          'training_dateBegin'     => $training->start,
+          'training_dateEnd'       => $training->end,
+          'training_country'       => $training->country,
+          'training_city'          => $training->city,
+          'training_diploma'       => $training->diploma,
+          'training_establishment' => $training->establishment
+        ];
+      }
+      update_field( 'itjob_cv_trainings', $trainings, $Candidate->getId() );
+
+      // Ajouter les experiences dans le CV
+      $experiences = [];
+      foreach ( $form->experiences as $experience ) {
+        $experiences[] = [
+          'exp_dateBegin'    => $experience->start,
+          'exp_dateEnd'      => $experience->end,
+          'exp_country'      => $experience->country,
+          'exp_city'         => $experience->city,
+          'exp_company'      => $experience->company,
+          'exp_positionHeld' => $experience->positionHeld,
+          'exp_mission'      => $experience->mission
+        ];
+      }
+      update_field( 'itjob_cv_experiences', $experiences, $Candidate->getId() );
+
+      wp_send_json( [ 'success' => true ] );
+
+    } // .end update_user_cv
+
+    // Ajouter une image à la une ou une image de profil
+    public function upload_media() {
+      if ( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
+        return false;
+      }
+      if ( ! \wp_doing_ajax() ) {
+        return;
+      }
+      if ( ! \is_user_logged_in() ) {
+        return;
+      }
+
+      require_once( ABSPATH . 'wp-admin/includes/image.php' );
+      require_once( ABSPATH . 'wp-admin/includes/file.php' );
+      require_once( ABSPATH . 'wp-admin/includes/media.php' );
+      if ( empty( $_FILES ) ) {
+        return;
+      }
+      $file = $_FILES["file"];
+
+      $User      = wp_get_current_user();
+      $Candidate = Candidate::get_candidate_by( $User->ID );
+
+      // Let WordPress handle the upload.
+      // Remember, 'my_image_upload' is the name of our file input in our form above.
+      // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
+      $attachment_id = media_handle_upload( 'file', $Candidate->getId() );
+
+      if ( is_wp_error( $attachment_id ) ) {
+        // There was an error uploading the image.
+        wp_send_json( [ 'success' => false, 'msg' => $attachment_id->get_error_message() ] );
+      } else {
+        // The image was uploaded successfully!
+        update_post_meta( $Candidate->getId(), '_thumbnail_id', $attachment_id );
+        wp_send_json( [ 'attachment_id' => $attachment_id, 'success' => true ] );
       }
     }
   }

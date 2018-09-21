@@ -1,6 +1,6 @@
 const API_COUNTRY_URL = 'https://restcountries.eu';
 
-angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
+angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ngFileUpload'])
   .config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
       .state('form', {
@@ -195,7 +195,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
               !item.hasOwnProperty('company') || 
               !item.hasOwnProperty('positionHeld');
               if (experiences) return $q.reject({redirect: 'form.career'});
-
             }
           }]
         },
@@ -259,7 +258,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
            * @param {File} file
            * @returns {Promise<any>}
            */
-          const imgPromise = (file) => {
+          $rootScope.imgPromise = (file) => {
             return new Promise((resolve, reject) => {
               const byteLimite = 2097152; // 2Mb
               if (file && file.size <= byteLimite) {
@@ -297,39 +296,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
                   return job.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
                 });
               });
-          };
-
-          $rootScope.previewFeaturedFile = (event) => {
-            const element = event.target;
-            if (element.files.length === 0) {
-              $rootScope.$apply(() => {
-                $rootScope.formData.featuredImage = {};
-              });
-              return;
-            }
-            angular.forEach(element.files, file => {
-              if (!fileFilter.test(file.type)) {
-                swal({
-                  title: 'Erreur',
-                  text: "Le fichier sélectionné est invalide",
-                  type: 'error',
-                });
-                return;
-              }
-              imgPromise(file)
-                .then(result => {
-                  $rootScope.$apply(() => {
-                    $rootScope.formData.featuredImage = angular.copy(result);
-                  });
-                })
-                .catch(e => {
-                  swal({
-                    title: 'Erreur',
-                    text: e,
-                    type: 'error',
-                  });
-                });
-            });
           };
         }
       });
@@ -433,7 +399,15 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
           }
         ];
         return status;
-      }
+      },
+      sendForm: function (formData) {
+        return $http({
+          url: itOptions.ajax_url,
+          method: "POST",
+          headers: {'Content-Type': undefined},
+          data: formData
+        });
+      },
     };
   }])
   .directive('preUpload', [function () {
@@ -461,12 +435,17 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
       }
     };
   }])
-  .controller('formController', function ($scope, $rootScope, $state, initScripts, Services, abranchs, languages, jobSougths) {
+  .controller('formController', function ($scope, $rootScope, $state, initScripts, Services, abranchs, languages, jobSougths, Upload) {
     let training_id = 0;
     let experience_id = 0;
     const self = this;
 
     // we will store all of our form data in this object
+    $scope.abranchs = _.clone(abranchs);
+    $scope.languages = _.clone(languages);
+    $scope.status = Services.getStatus();
+    $rootScope.loading = false;
+    $rootScope.jobSougths = _.clone(jobSougths);
     $rootScope.formData = {};
 
     $rootScope.formData.trainings = [{
@@ -474,13 +453,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
       start: '08/08/2018',
       end: '08/13/2018'
     }];
-
-    $rootScope.formData.experiences = [{
-      id: experience_id,
-      start: '08/08/2018',
-      end: '08/13/2018'
-    }];
-
     // Ajouter une formation
     $rootScope.addNewTraining = function () {
       training_id += 1;
@@ -491,6 +463,12 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
       });
       $rootScope.initDatePicker();
     };
+
+    $rootScope.formData.experiences = [{
+      id: experience_id,
+      start: '08/08/2018',
+      end: '08/13/2018'
+    }];
 
     // Ajouter une nouvelle experience
     $rootScope.addNewExperience = function () {
@@ -503,25 +481,68 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput'])
       $rootScope.initDatePicker();
     };
 
-    $scope.abranchs = _.clone(abranchs);
-    $scope.languages = _.clone(languages);
-    $rootScope.jobSougths = _.clone(jobSougths);
-    $scope.status = Services.getStatus();
+    $scope.uploadFiles = function(file, errFiles) {
+      $rootScope.f = file;
+      $scope.errFile = errFiles && errFiles[0];
+      if (_.isNull(file)) return;
+      $rootScope.imgPromise($rootScope.f)
+        .then(result => {
+          $rootScope.$apply(() => {
+            $rootScope.formData.featuredImage = angular.copy(result);
+          });
+        })
+        .catch(e => {
+          swal({
+            title: 'Erreur',
+            text: e,
+            type: 'error',
+          });
+        });
+    }
 
     // function to process the form
     $scope.processForm = function (isValid) {
-      console.log($rootScope.formData);
-      
       if (!isValid) return;
-      alert('awesome!');
+      $rootScope.loading = true;
+      // Crée une formulaire
+      var dataForm = new FormData();
+      dataForm.append('action', 'update_user_cv');
+      var formKeys = Object.keys($rootScope.formData);
+      angular.forEach(formKeys, (property) => {
+        var value = Reflect.get($rootScope.formData, property);
+        dataForm.set(property, JSON.stringify(value));
+      });
+      
+      if ($rootScope.f) {
+        $rootScope.f.upload = Upload.upload({
+          url: itOptions.ajax_url,
+          data: {file: $rootScope.f, action: 'ajx_upload_media'}
+        });
+
+        $rootScope.f.upload
+          .then(function (response) { // Success
+            $rootScope.f.result = response.data;
+            $scope.__sendForm(dataForm);
+          }, function (response) { // Error
+            if (response.status > 0)
+              $scope.errorMsg = response.status + ': ' + response.data;
+          }, function (evt) { // Progress
+            $rootScope.f.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+          });
+      } else {
+        $scope.__sendForm(dataForm);
+      }
     };
 
-    $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams, options) {
-      console.log($rootScope.cvForm.$invalid);
-      event.preventDefault();
-    });
-  })
-  .run(function ($state, $rootScope) {
+    $scope.__sendForm = (dataForm) => {
+      Services
+        .sendForm(dataForm)
+        .then( resp => {
+          console.log(resp);
+        });
+    };
+
+  }).run(function ($state, $rootScope) {
     $state.defaultErrorHandler(function (error) {
       // This is a naive example of how to silence the default error handler.
       if (error.detail !== undefined) {
