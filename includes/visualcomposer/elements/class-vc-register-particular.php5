@@ -63,7 +63,8 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       extract(
         shortcode_atts(
           array(
-            'title' => null
+            'title' => null,
+            'redir' => home_url('/')
           ),
           $attrs
         )
@@ -83,16 +84,19 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         'b-datepicker',
         'sweetalert'
       ], $itJob->version, true );
+
+      /** @var STRING $redir */
       wp_localize_script( 'form-particular', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
-        'template_url' => get_template_directory_uri()
+        'template_url' => get_template_directory_uri(),
+        'redir' => $redir
       ] );
 
       try {
         /** @var STRING $title */
         return $Engine->render( '@VC/register/particular.html.twig', [
-          'title' => $title
+          'title' => $title,
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
@@ -144,8 +148,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       $this->update_acf_field( $post_id, $form );
       wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
       wp_set_post_terms( $post_id, [ (int) $form->city ], 'city' );
-      wp_send_json( [ 'success' => true, 'msg' => 'Vous avez réussi votre inscription','redirect_url' => home_url( '/' )
-      ] );
+      wp_send_json( [ 'success' => true, 'msg' => 'Vous avez réussi votre inscription'] );
 
     }
 

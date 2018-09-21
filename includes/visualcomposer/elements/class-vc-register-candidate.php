@@ -22,8 +22,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         add_shortcode( 'vc_register_candidate', [ &$this, 'register_render_html' ] );
       }
 
-      add_action( 'wp_ajax_ajx_upload_media', [ &$this, 'upload_media' ] );
-      add_action( 'wp_ajax_nopriv_ajx_upload_media', [ &$this, 'upload_media' ] );
+      add_action( 'wp_ajax_ajx_upload_media', [ &$this, 'upload_media_avatar' ] );
+      add_action( 'wp_ajax_nopriv_ajx_upload_media', [ &$this, 'upload_media_avatar' ] );
 
       add_action( 'wp_ajax_update_user_cv', [ &$this, 'update_user_cv' ] );
       add_action( 'wp_ajax_nopriv_update_user_cv', [ &$this, 'update_user_cv' ] );
@@ -77,7 +77,9 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       // Ne pas autoriser un client non connecté
       if ( ! is_user_logged_in() ) {
-        return $message_access_refused;
+        // TODO: Afficher le formulaire d'inscription pour un utilisateur particulier
+        $redirect = Http\Request::getValue('redir', get_the_permalink());
+        return do_shortcode("[vc_register_particular title='Créer votre compte itJob' redir='$redirect']");
       }
 
       // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
@@ -297,25 +299,18 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
     } // .end update_user_cv
 
     // Ajouter une image à la une ou une image de profil
-    public function upload_media() {
-      if ( $_SERVER['REQUEST_METHOD'] != 'POST' ) {
+    public function upload_media_avatar() {
+      if ( $_SERVER['REQUEST_METHOD'] != 'POST' || ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
         return false;
-      }
-      if ( ! \wp_doing_ajax() ) {
-        return;
-      }
-      if ( ! \is_user_logged_in() ) {
-        return;
       }
 
       require_once( ABSPATH . 'wp-admin/includes/image.php' );
       require_once( ABSPATH . 'wp-admin/includes/file.php' );
       require_once( ABSPATH . 'wp-admin/includes/media.php' );
       if ( empty( $_FILES ) ) {
-        return;
+        return false;
       }
       $file = $_FILES["file"];
-
       $User      = wp_get_current_user();
       $Candidate = Candidate::get_candidate_by( $User->ID );
 

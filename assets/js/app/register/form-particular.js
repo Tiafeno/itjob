@@ -132,7 +132,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
               type: _type,
             }, function () {
               if (status.success)
-                window.location.href = status.redirect_url;
+                window.location.href = itOptions.redir;
               if (!status.success) $scope.error = true;
             });
           })

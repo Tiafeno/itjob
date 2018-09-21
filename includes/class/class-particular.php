@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-class UserParticular {
+abstract class UserParticular {
   private $ID = 0; // User id
   private $Candidate; // Object candidate
   private $firstName;
