@@ -217,49 +217,6 @@
                         <div class="dropdown-arrow"></div>
                         <a class="dropdown-item" href="<?= $espace_client_link ?>"><i class="ti-layout"></i> Mon compte</a>
                         <a class="dropdown-item" href="<?= wp_logout_url( home_url( '/' ) ) ?>"><i class="ti-shift-left"></i> Déconnecter</a>
-
-                          <!--<div class="mr-4">
-                            <img src="<?/*= get_template_directory_uri() . '/img/user.png' */?>" alt="image">
-                          </div>-->
-
-
-                            <!--<div>
-                              <span class="admin-badge ">
-                                <i class="ti-lock mr-2"></i>
-                                <?/*= $wp_roles->roles[reset($crUser->roles)]['name'] */?>
-                              </span>
-                            </div>-->
-
-
-                        <!--<div class="admin-menu-features">
-                          <a class="admin-features-item text-uppercase" href="<?/*= $espace_client_link */?>">
-                            <i class="ti-user"></i>
-                            <span>Mon compte</span>
-                          </a>
-
-                          <?php /*if (in_array('company', array_values($crUser->roles))) : */?>
-                            <a class="admin-features-item pr-2 pl-2" href="<?/*= get_permalink( (int) ADD_OFFER_PAGE ) */?>">
-                              <i class="ti-pencil-alt"></i>
-                              <span class="text-uppercase">Ajouter un offre</span>
-                            </a>
-                          <?php /*endif; */?>
-
-                          <a class="admin-features-item" href="javascript:;">
-                            <i class="ti-settings"></i>
-                            <span>SETTINGS</span>
-                          </a>
-                        </div>  -->
-                        <!--.end admin-menu-features-->
-
-                        <!--<div class="admin-menu-content">
-                          <div class="d-flex justify-content-between mt-2">
-                            <a class="text-muted uk-invisible" href="javascript:;">Earnings history</a>
-                            <a class="d-flex align-items-center" href="<?/*= wp_logout_url( home_url( '/' ) ) */?>">Déconnecter
-                              <i class="ti-shift-right ml-2 font-20"></i>
-                            </a>
-                          </div>
-                        </div>-->
-
                       </div>
                     </li>
                     <?php
@@ -275,3 +232,4 @@
       </header>
     </div>
   </div>
+

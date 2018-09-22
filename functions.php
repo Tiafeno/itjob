@@ -26,6 +26,9 @@ $offers    = null;
 $company   = null;
 $candidate = null;
 
+// Variable pour les alerts
+$it_alerts = [];
+
 // middlewares
 require 'includes/itjob-configs.php';
 require 'includes/itjob-functions.php';
@@ -71,6 +74,7 @@ $elementsVC = (object) [
   'vcSearch'   => require 'includes/visualcomposer/elements/class-vc-search.php',
   'vcOffers'   => require 'includes/visualcomposer/elements/class-vc-offers.php',
   'vcCandidate'   => require 'includes/visualcomposer/elements/class-vc-candidate.php',
+  'vcJePostule'   => require 'includes/visualcomposer/elements/class-vc-jepostule.php',
   'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php5',
   'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'

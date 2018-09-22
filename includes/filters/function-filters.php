@@ -23,6 +23,10 @@ function itjob_filter_engine( $Engine ) {
     return ! empty( $exp ) ? implode( ', ', $exp ) : 'Aucun';
   }));
 
+  $Engine->addFilter(new Twig_SimpleFilter('sinceHome', function ($url) {
+    return home_url($url);
+  }));
+
   return true;
 }
 ?>

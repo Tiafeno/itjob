@@ -171,12 +171,24 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       }
 
       $taxonomy = Http\Request::getValue( 'tax', false );
+      // TODO: Ajouter seulement les terms activé
+      $termValid = [];
       if ( $taxonomy ) {
         $terms = get_terms( $taxonomy, [
           'hide_empty' => false,
           'fields'     => 'all'
         ] );
-        wp_send_json( $terms );
+        if ($taxonomy === 'job_sought' || $taxonomy === 'master_software'):
+          foreach ($terms as $term) {
+            $valid = get_field('activated', "{$taxonomy}_{$term->term_id}");
+            if ($valid) {
+              array_push($termValid, $term);
+            }
+          }
+        else:
+          $termValid = &$terms;
+        endif;
+        wp_send_json( $termValid );
       } else {
         return false;
       }
@@ -299,6 +311,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'template_url' => get_template_directory_uri()
       ] );
       try {
+        do_action('get_notice');
         /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/register/company.html.twig', [
           'title' => $title,

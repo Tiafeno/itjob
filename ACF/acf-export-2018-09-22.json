@@ -758,6 +758,28 @@
                 "ui": 0,
                 "ui_on_text": "",
                 "ui_off_text": ""
+            },
+            {
+                "key": "field_5ba6477ee5218",
+                "label": "Les offers postulé",
+                "name": "itjob_cv_offer_apply",
+                "type": "post_object",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "post_type": [
+                    "offers"
+                ],
+                "taxonomy": [],
+                "allow_null": 0,
+                "multiple": 1,
+                "return_format": "id",
+                "ui": 1
             }
         ],
         "location": [
@@ -1266,6 +1288,24 @@
                 "load_terms": 0,
                 "return_format": "object",
                 "multiple": 0
+            },
+            {
+                "key": "field_5ba647e4a9e8c",
+                "label": "Les utilisateurs qui ont postulé",
+                "name": "itjob_users_apply",
+                "type": "user",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "role": "",
+                "allow_null": 0,
+                "multiple": 1,
+                "return_format": "id"
             }
         ],
         "location": [
@@ -1475,6 +1515,48 @@
         ],
         "menu_order": 0,
         "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": 1,
+        "description": ""
+    },
+    {
+        "key": "group_5ba6257b5bc2a",
+        "title": "Terms",
+        "fields": [
+            {
+                "key": "field_5ba62905d3eef",
+                "label": "Visible dans le site",
+                "name": "activated",
+                "type": "true_false",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "Rendre cette term visible",
+                "default_value": 0,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "taxonomy",
+                    "operator": "==",
+                    "value": "all"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "acf_after_title",
         "style": "default",
         "label_placement": "top",
         "instruction_placement": "label",

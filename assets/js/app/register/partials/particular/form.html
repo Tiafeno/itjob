@@ -84,6 +84,7 @@
              class="alert alert-pink" role="alert">
           <div ng-message="required">Veuillez saisir une adresse email.</div>
           <div ng-message="pattern">Vérifiez l'adresse email, son format n'est pas valide.</div>
+          <div ng-message="mail">Votre adresse e-mail est déjà enregistrée dans un autre compte.</div>
         </div>
       </div>
     </div>
@@ -110,5 +111,5 @@
 
 </form>
 <div class="ibox-footer">
-  <p class="text-center"><a href="{{ uri.singup }}" class="text-blue ml-2">Se connecter à un compte existant</a></p>
+  <p class="text-center"><a href="{{ uri.singin }}?redir={{uri.redir}}" class="text-blue ml-2">Se connecter à un compte existant</a></p>
 </div>

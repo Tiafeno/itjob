@@ -25,12 +25,10 @@
           <img src="{{formData.featuredImage.src}}">
         </div>
         <div pre-upload class="p-relative">
-          <div style="display: none">
-            <input class="featured" input-on-change="previewFeaturedFile" name="featured" type="file"/>
-          </div>
-          <div class="p-absolute ml-4" style="width: 125px; bottom: -50px;">
+          <div class="p-absolute ml-4" style="width: 125px; bottom: -62px;">
             <div class="uk-text-bold">Photo</div>
-            <div style="cursor: pointer">Choisir un fichier</div>
+            <button type="file" ngf-select="uploadFiles($file, $invalidFiles)"
+            accept="image/*" class="btn" ngf-max-size="2MB">Choisir un fichier</button>
           </div>
         </div>
       </div>

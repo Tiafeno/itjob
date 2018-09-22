@@ -133,7 +133,8 @@ if ( ! class_exists( 'vcCandidate' ) ):
           'compare' => '=',
           'value'   => 1,
           'type'    => 'NUMERIC'
-        ] )
+        ] ),
+        'archive_cv_url' => get_post_type_archive_link('candidate')
       ];
       try {
         return $Engine->render( '@VC/candidates/lists.html.twig', $args );

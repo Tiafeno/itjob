@@ -1,11 +1,6 @@
 <?php
 global $offers;
-/**
- * Created by IntelliJ IDEA.
- * User: Tiafeno
- * Date: 21/08/2018
- * Time: 17:46
- */
+if ( ! $offers->is_activated()) { return; }
 ?>
 <div class="col-md-12">
   <div class="card ibox mb-4">

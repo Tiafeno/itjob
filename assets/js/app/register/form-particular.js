@@ -100,6 +100,9 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
     templateUrl: itOptions.partials_url + '/particular/form.html',
     controller: function ($scope, services) {
       $scope.error = false;
+      $scope.uri = {};
+      $scope.uri.singin = itOptions.urlHelper.singin;
+      $scope.uri.redir = itOptions.urlHelper.redir;
       $scope.particularForm = {};
       $scope.formSubmit = function (isValid) {
         if ($scope.pcForm.$invalid) {
@@ -131,8 +134,10 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
               text: status.msg,
               type: _type,
             }, function () {
-              if (status.success)
-                window.location.href = status.redirect_url;
+              if (status.success) {
+                var redirection = itOptions.urlHelper.redir;
+                window.location.href = _.isNull(redirection) ? itOptions.urlHelper.singin : redirection;
+              }
               if (!status.success) $scope.error = true;
             });
           })
@@ -194,6 +199,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
 
       jQuery('#birthday .input-group.date').datepicker({
         format: "dd-mm-yyyy",
+        language: "fr",
         startView: 2,
         todayBtn: false,
         keyboardNavigation: true,

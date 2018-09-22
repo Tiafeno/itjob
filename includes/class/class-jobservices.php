@@ -38,9 +38,9 @@ if ( ! class_exists( 'jobServices' ) ) :
         'posts_per_page' => $numberposts,
         'orderby'        => 'DATE'
       ];
-      if ( ! empty($meta_query) ) {
+      if ( ! empty( $meta_query ) ) {
         $this->args['meta_query'] = [];
-        array_push($this->args['meta_query'], $meta_query);
+        array_push( $this->args['meta_query'], $meta_query );
       }
       $this->getPostContents( $recentlyContainer, $class_name );
 
@@ -63,35 +63,52 @@ if ( ! class_exists( 'jobServices' ) ) :
           ]
         ]
       ];
-      if ( ! empty($meta_query) ) {
-        array_push($this->args['meta_query'], $meta_query);
+      if ( ! empty( $meta_query ) ) {
+        array_push( $this->args['meta_query'], $meta_query );
       }
       $this->getPostContents( $featuredContainer, $class_name );
 
       return $featuredContainer;
     }
 
+    /**
+     * Vérifier dans la base de donnée si la page existe
+     *
+     * @param $title
+     *
+     * @return int
+     */
     public static function page_exists( $title ) {
       global $wpdb;
 
       $post_title = wp_unslash( sanitize_post_field( 'post_title', $title, 0, 'db' ) );
-      $query = "SELECT ID FROM $wpdb->posts WHERE 1=1";
-      $args = array();
+      $query      = "SELECT ID FROM $wpdb->posts WHERE post_type='%s'";
+      $args       = [];
+      $args[]     = 'page';
 
-      if ( !empty ( $title ) ) {
-        $query .= ' AND post_title = %s';
+      if ( ! empty ( $title ) ) {
+        $query  .= ' AND post_title = %s';
         $args[] = $post_title;
       }
-      if ( !empty ( $args ) )
-        return (int) $wpdb->get_var( $wpdb->prepare($query, $args) );
+      if ( ! empty ( $args ) ) {
+        return (int) $wpdb->get_var( $wpdb->prepare( $query, $args ) );
+      }
 
       return 0;
     }
 
     protected function getPostContents( &$container, $class_name ) {
+      $Types = ['offers', 'candidate', 'company'];
       $posts = get_posts( $this->args );
       foreach ( $posts as $post ) {
         try {
+          // Ne pas afficher les posts qui ne sont pas activé
+          if (in_array($class_name, $Types)) {
+            $activated = get_field( 'activated', $post->ID );
+            if ( ! $activated ) {
+              continue;
+            }
+          }
           $class_name = ucfirst( $class_name );
           $cls        = new \ReflectionClass( "includes\\post\\$class_name" );
           $instance   = $cls->newInstanceArgs( [ $post->ID ] );

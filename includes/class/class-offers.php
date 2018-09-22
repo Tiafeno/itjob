@@ -15,6 +15,8 @@ final class Offers implements \iOffer {
   /** @var int $ID - Identification de l'offre */
   public $ID;
 
+  private $activated;
+
   public $postPromote;
 
   public $branch_activity;
@@ -82,6 +84,10 @@ final class Offers implements \iOffer {
     return get_post_type( $this->ID ) === 'offers';
   }
 
+  public function is_activated() {
+    return $this->activated ? 1 : 0;
+  }
+
   /**
    * Récuperer les tags et la region pour l'annonce
    */
@@ -108,6 +114,7 @@ final class Offers implements \iOffer {
     $this->company = get_field( 'itjob_offer_company', $this->ID ); // Object article
 
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
+    $this->activated        = get_field( 'activated', $this->ID ); // Bool
     $this->postPromote      = get_field( 'itjob_offer_post', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
     $this->proposedSalary   = get_field( 'itjob_offer_proposedsallary', $this->ID );

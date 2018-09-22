@@ -1,7 +1,6 @@
 <?php
 global $candidate;
-// $candidate instanceof \includes\post\Candidate;
-// print_r($candidate);
+if ( ! $candidate->is_activated()) { return; }
 ?>
 <div class="col-md-12">
   <div class="card ibox mb-4">
@@ -36,7 +35,9 @@ global $candidate;
                 <td>
                   <?php
                   $driveLicences = [];
-                  foreach ( $candidate->driveLicences as $driveLicence ) : array_push( $driveLicences, $driveLicence['label'] ); endforeach;
+                  if ( ! empty($candidate->driveLicences) ) {
+                    foreach ( $candidate->driveLicences as $driveLicence ) : array_push( $driveLicences, $driveLicence['label'] ); endforeach;
+                  }
                   echo ! empty( $driveLicences ) ? implode( ', ', $driveLicences ) : 'Aucun';
                   ?>
                 </td>
@@ -46,7 +47,8 @@ global $candidate;
                 <td>
                   <?php
                   $languages = [];
-                  foreach ( $candidate->languages as $language ) : array_push( $languages, $language->name ); endforeach;
+                  if ( ! empty($candidate->languages))
+                    foreach ( $candidate->languages as $language ) : array_push( $languages, $language->name ); endforeach;
                   echo ! empty( $languages ) ? implode( ', ', $languages ) : 'Aucun';
                   ?>
                 </td>

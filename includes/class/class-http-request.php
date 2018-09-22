@@ -18,4 +18,12 @@ class Request {
 
     return ! is_string( $returnValue ) ? $returnValue : stripslashes( $returnValue );
   }
+
+  public static function getJSONValue( $name, $def = false) {
+    if ( ! isset( $name ) || empty( $name ) || ! is_string( $name ) ) {
+      return $def;
+    }
+    $returnValue = isset( $_POST[ $name ] ) ? trim( $_POST[ $name ] ) : ( isset( $_GET[ $name ] ) ? trim( $_GET[ $name ] ) : $def );
+    return stripslashes($returnValue);
+  }
 }

@@ -19,12 +19,22 @@ wp_enqueue_style( 'offers' );
       <div class="row">
         <div class="col-md-8">
           <div class="container-list-posts">
-            <h5 class="vc-element-title">LES CANDIDATES</h5>
+            <h5 class="vc-element-title">LISTE CV</h5>
             <div class="row mb-5 ">
               <?php
-              while ( have_posts() ) : the_post();
-                get_template_part( 'partials/content', 'candidate' );
-              endwhile;
+              if (have_posts()) {
+                while ( have_posts() ) : the_post();
+                  get_template_part( 'partials/content', 'candidate' );
+                endwhile;
+              } else {
+                ?>
+                  <div class="col-md-12">
+                    <div class="card mb-4">
+                      <p>Pour le moment, aucune CV disponible n'est proposée. </p>
+                    </div>
+                  </div>
+                <?php
+              }
 
               // Affiche la pagination
               itjob_pagination();

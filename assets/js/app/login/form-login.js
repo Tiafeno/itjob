@@ -35,7 +35,9 @@ angular.module('formLogin', ['ngMessages', 'ngAria'])
           .then(function (resp) {
             var data = resp.data;
             if (data.logged) {
-              $window.location.href = itOptions.customer_area_url;
+              var redir = itOptions.urlHelper.redir;
+              var pUrl = (_.isNull(redir) || _.isEmpty(redir)) ? itOptions.urlHelper.customer_area_url : redir;
+              $window.location.href = pUrl;
             } else {
               $scope.error = true;
               $scope.buttonDisable = false;

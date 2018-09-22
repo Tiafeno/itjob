@@ -52,6 +52,8 @@ if ( ! class_exists( 'scClient' ) ) :
       $client_roles = $client->roles;
 
       try {
+        do_action('get_notice');
+
         if ( in_array( 'company', $client_roles, true ) ) {
           // Template recruteur ici ...
           $offers = $this->get_company_offers();
