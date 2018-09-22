@@ -73,7 +73,7 @@
                     <tbody>
                     <tr>
                       <td class="no-bold uk-text-bold">Ref: {{ offer.reference }}</td>
-                      <td class="text-center uk-text-bold">Date limite: {{ offer.dateLimit }}</td>
+                      <td class="text-center uk-text-bold">Date limite: {{ offer.dateLimitFormat }}</td>
                       <td class="text-right">Publier le {{ offer.datePublication }}</td>
                     </tr>
                   </table>
@@ -84,10 +84,16 @@
           </div>
 
           <div class="card-footer">
+
             <div class="d-flex align-items-center justify-content-between">
               <div class="text-primary">
                 <b>TAG: </b> <span class="card-tag">{{ offer.tags|join(', ') }}</span>
               </div>
+
+              <div>
+                {{ offer.dateLimit|dateLimited|raw }}
+              </div>
+
             </div>
           </div>
         </div>

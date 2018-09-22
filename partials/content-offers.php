@@ -1,6 +1,10 @@
 <?php
 global $offers;
 if ( ! $offers->is_activated()) { return; }
+
+// Vérifier la date limite de l'offre
+$today = date("m/d/Y");
+$limited = $offers->dateLimit < $today;
 ?>
 <div class="col-md-12">
   <div class="card ibox mb-4">
@@ -73,7 +77,7 @@ if ( ! $offers->is_activated()) { return; }
               <tbody>
               <tr>
                 <td class="no-bold uk-text-bold">Ref: <?= $offers->reference ?></td>
-                <td class="text-center uk-text-bold">Date limite: <?= $offers->dateLimit ?></td>
+                <td class="text-center uk-text-bold">Date limite: <?= $offers->dateLimitFormat ?></td>
                 <td class="text-right">Publier le <?= $offers->datePublication ?></td>
               </tr>
             </table>
@@ -88,6 +92,13 @@ if ( ! $offers->is_activated()) { return; }
         <div class="text-primary">
           <b>TAG: </b> <span class="card-tag"><?= implode( ', ', $offers->tags ) ?></span>
         </div>
+
+        <div>
+          <?php if ($limited): ?>
+          <span class="badge badge-danger">Date limite atteinte</span>
+          <?php endif; ?>
+        </div>
+
       </div>
     </div>
   </div>

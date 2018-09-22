@@ -23,8 +23,14 @@ function itjob_filter_engine( $Engine ) {
     return ! empty( $exp ) ? implode( ', ', $exp ) : 'Aucun';
   }));
 
-  $Engine->addFilter(new Twig_SimpleFilter('sinceHome', function ($url) {
-    return home_url($url);
+  $Engine->addFilter(new Twig_SimpleFilter('dateLimited', function ($dateLimit) {
+    $badge = '';
+    $today = date("m/d/Y");
+    $limited = $dateLimit < $today;
+    if ($limited) {
+      $badge .= '<span class="badge badge-danger">Date limite atteinte</span>';
+    }
+    return $badge;
   }));
 
   return true;
