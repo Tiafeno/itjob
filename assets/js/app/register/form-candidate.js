@@ -385,7 +385,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           });
       },
       getStatus: function () {
-        const status = [{
+        const status = [
+        {
           _id: 0,
           label: 'Je cherche un emploi'
         },
@@ -545,7 +546,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
               type: "info",
             }, function () {
               $rootScope.loading = false;
-              window.location.href = Data.redirect;
+              window.location.href = itOptions.urlHelper.redir;
             });
           } else {
             swal({

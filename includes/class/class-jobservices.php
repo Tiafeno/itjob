@@ -71,6 +71,11 @@ if ( ! class_exists( 'jobServices' ) ) :
       return $featuredContainer;
     }
 
+    /**
+     * Vérifier dans la base de donnée si la page existe
+     * @param $title
+     * @return int
+     */
     public static function page_exists( $title ) {
       global $wpdb;
 

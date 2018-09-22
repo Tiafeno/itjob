@@ -29,6 +29,17 @@ function itjob_current_user_is_company() {
   return $Comp->is_company();
 }
 
+/**
+ * Vérifier si l'utilisateur est un particulier ou pas.
+ * @return bool|null
+ */
+function itjob_current_user_is_particular() {
+  if ( ! is_user_logged_in() ) {
+    return null;
+  }
+
+}
+
 // Ajouter une notification
 add_action('add_notice', 'itjob_add_notice', 10, 2);
 function itjob_add_notice($msg, $type = "info") {

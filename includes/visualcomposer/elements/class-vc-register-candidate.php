@@ -11,6 +11,7 @@ if ( ! class_exists( 'WPBakeryShortCode' ) ) {
 }
 
 use Http;
+use includes\object\jobServices;
 use includes\post\Candidate;
 use includes\post\Company;
 
@@ -116,10 +117,22 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         'ng-tags',
         'typeahead'
       ], $itJob->version, true );
+
+      // Verifier si l'ajout du CV consiste à postuler sur une offre
+      $redirection = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : home_url('/');;
+      $offerId = Http\Request::getValue('offerId', false);
+      $addedCVPage = jobServices::page_exists('Ajouter un CV');
+      if ($offerId && $addedCVPage) {
+        $redirection = sprintf('%s?offerId=%d', get_the_permalink($addedCVPage), (int)$offerId);
+      }
+
       wp_localize_script( 'form-candidate', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
-        'template_url' => get_template_directory_uri()
+        'template_url' => get_template_directory_uri(),
+        'urlHelper' => [
+          'redir' => $redirection
+        ]
       ] );
 
       try {
@@ -148,19 +161,21 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       // Mette à jours le CV
       $status          = Http\Request::getValue( 'status', null );
-      $project         = Http\Request::getValue( 'projet', '' );
+      $project         = Http\Request::getValue( 'projet', ' ' );
       $activity_branch = Http\Request::getValue( 'abranch', null );
-      $various         = Http\Request::getValue( 'various', '' );
+      $various         = Http\Request::getValue( 'various', null );
       $newsletter      = Http\Request::getValue( 'newsletter', 0 );
 
       $jobSougths = Http\Request::getValue( 'jobSougths' );
       $jobSougths = \json_decode( $jobSougths );
 
-      $driveLicences = Http\Request::getValue( 'driveLicence' );
-      $driveLicences = \json_decode( $driveLicences );
+      $driveLicences = Http\Request::getValue( 'driveLicence', false );
+      if ($driveLicences)
+        $driveLicences = \json_decode( $driveLicences );
 
       $notiEmploi = Http\Request::getValue( 'notiEmploi', false );
-      $notiEmploi = \json_decode( $notiEmploi );
+      if ($notiEmploi)
+        $notiEmploi = \json_decode( $notiEmploi );
 
       $trainings = Http\Request::getValue( 'trainings' );
       $trainings = \json_decode( $trainings );
@@ -299,8 +314,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       // Activé le CV
       update_field('itjob_cv_activated', 1, $Candidate->getId());
 
-      $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
-      wp_send_json( [ 'success' => true, 'redirect' => $espace_client_link ] );
+      wp_send_json( [ 'success' => true ] );
 
       // TODO: Ajouter une notification pour les formations ajouté
 
