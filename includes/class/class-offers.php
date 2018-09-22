@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-use includes\object as Object;
+use includes\object as Obj;
 
 final class Offers implements \iOffer {
   // Added Trait Class
@@ -71,7 +71,7 @@ final class Offers implements \iOffer {
     $output                = get_post( $postId );
     $this->ID              = $output->ID;
     $this->title           = $output->post_title; // Position Filled
-    $this->userAuthor      = Object\jobServices::getUserData( $output->post_author );
+    $this->userAuthor      = Obj\jobServices::getUserData( $output->post_author );
     $this->datePublication = get_the_date( 'j F, Y', $output );
     if ( $this->is_offer() ) {
       $this->acfElements()->getOfferTaxonomy();

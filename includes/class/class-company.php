@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-use includes\object as Object;
+use includes\object as Obj;
 
 final class Company implements \iCompany {
   // Added Trait Class
@@ -86,7 +86,7 @@ final class Company implements \iCompany {
       $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
 
       // FIX: Ajouter ou crée un utilisateur quand un entreprise est publier ou ajouter
-      $this->userAuthor = Object\jobServices::getUserData( $user->ID );
+      $this->userAuthor = Obj\jobServices::getUserData( $user->ID );
       $this->init();
     }
   }
