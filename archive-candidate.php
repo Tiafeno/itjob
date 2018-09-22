@@ -19,7 +19,7 @@ wp_enqueue_style( 'offers' );
       <div class="row">
         <div class="col-md-8">
           <div class="container-list-posts">
-            <h5 class="vc-element-title">LES CANDIDATES</h5>
+            <h5 class="vc-element-title">LISTE CV</h5>
             <div class="row mb-5 ">
               <?php
               if (have_posts()) {
