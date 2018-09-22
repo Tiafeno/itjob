@@ -28,6 +28,9 @@ wp_enqueue_style( 'themify-icons' );
     <div class="uk-container uk-container-medium">
       <div uk-grid>
         <div class="uk-width-2-3@s">
+          <!--     Vérifier s'il y a une postulation en cours     -->
+          <?php do_action('send_apply_offer') ?>
+          <?php do_action('get_notice'); ?>
           <!--          Content here ... -->
           <?php
           while ( have_posts() ) : the_post();

@@ -100,6 +100,9 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
     templateUrl: itOptions.partials_url + '/particular/form.html',
     controller: function ($scope, services) {
       $scope.error = false;
+      $scope.uri = {};
+      $scope.uri.singin = itOptions.urlHelper.singin;
+      $scope.uri.redir = itOptions.urlHelper.redir;
       $scope.particularForm = {};
       $scope.formSubmit = function (isValid) {
         if ($scope.pcForm.$invalid) {
@@ -132,7 +135,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
               type: _type,
             }, function () {
               if (status.success)
-                window.location.href = itOptions.redir;
+                window.location.href = itOptions.urlHelper.singin;
               if (!status.success) $scope.error = true;
             });
           })

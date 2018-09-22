@@ -80,9 +80,9 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action('after_switch_theme', function ($new_theme) {
         global $wpdb;
         //$meta_sql = "ALTER TABLE $wpdb->postmeta ADD COLUMN IF NOT EXISTS `meta_activate` INT NOT NULL DEFAULT 1 AFTER `meta_value`";
-        $term_sql = "ALTER TABLE {$wpdb->prefix}terms ADD COLUMN IF NOT EXISTS `term_activate` INT NOT NULL DEFAULT 1 AFTER `slug`";
+        //$term_sql = "ALTER TABLE {$wpdb->prefix}terms ADD COLUMN IF NOT EXISTS `term_activate` INT NOT NULL DEFAULT 1 AFTER `slug`";
         //$wpdb->query($meta_sql);
-        $wpdb->query($term_sql);
+        //$wpdb->query($term_sql);
       });
 
       // Add acf google map api
@@ -422,9 +422,10 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_style( 'themify-icons', VENDOR_URL . '/themify-icons/css/themify-icons.css', '', '1.1.0' );
       wp_register_style( 'select-2', VENDOR_URL . "/select2/dist/css/select2.min.css", '', $itJob->version );
 
+      wp_register_script('jquery-additional-methods', VENDOR_URL . '/jquery-validation/dist/additional-methods.min.js', ['jquery'], '1.17.0', true);
+      wp_register_script('jquery-validate', VENDOR_URL . '/jquery-validation/dist/jquery.validate.min.js', ['jquery'], '1.17.0', true);
       // papaparse
-      wp_register_script( 'papaparse',
-        get_template_directory_uri() . '/assets/js/libs/papaparse/papaparse.min.js', [], '4.6.0' );
+      wp_register_script( 'papaparse',get_template_directory_uri() . '/assets/js/libs/papaparse/papaparse.min.js', [], '4.6.0' );
 
       // Register components adminca stylesheet
       wp_register_style( 'bootstrap', VENDOR_URL . '/bootstrap/dist/css/bootstrap.min.css', '', '4.0.0' );
@@ -495,7 +496,7 @@ if ( ! class_exists( 'itJob' ) ) {
       $addedCVPage = jobServices::page_exists('Ajouter un CV');
       if ( ! $addedCVPage) return;
       $User = null;
-      $addedCVUrl = sprintf('%s?redir=%s', get_the_permalink($addedCVPage), base64_encode(get_the_permalink()));
+      $addedCVUrl = sprintf('%s?offerId=%d&redir=%s', get_the_permalink($addedCVPage), get_the_ID(), get_the_permalink());
       $button = "<a href=\"$addedCVUrl\">
                   <button class=\"btn btn-blue btn-fix\">
                     <span class=\"btn-icon\">Je postule </span>

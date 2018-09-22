@@ -90,10 +90,14 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
-        'redir' => $redir
+        'urlHelper' => [
+          'singin' => home_url('/connexion/candidate'),
+          'redir'  => $redir
+        ]
       ] );
 
       try {
+        do_action('get_notice');
         /** @var STRING $title */
         return $Engine->render( '@VC/register/particular.html.twig', [
           'title' => $title,
@@ -149,7 +153,6 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
       wp_set_post_terms( $post_id, [ (int) $form->city ], 'city' );
       wp_send_json( [ 'success' => true, 'msg' => 'Vous avez réussi votre inscription'] );
-
     }
 
     private function update_acf_field( $post_id, $form ) {

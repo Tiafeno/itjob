@@ -75,10 +75,12 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         EXTR_OVERWRITE
       );
 
+      $redirect = Http\Request::getValue('redir', null);
       // Ne pas autoriser un client non connecté
       if ( ! is_user_logged_in() ) {
         // TODO: Afficher le formulaire d'inscription pour un utilisateur particulier
-        $redirect = Http\Request::getValue('redir', get_the_permalink());
+        $redirect = is_null($redirect) ? get_the_permalink() : base64_decode($redirect);
+        do_action('add_notice', "Veuillez vous connecter ou s'inscrire en tant que candidat pour pouvoir postuler à un offre.", "warning");
         return do_shortcode("[vc_register_particular title='Créer votre compte itJob' redir='$redirect']");
       }
 
@@ -86,8 +88,14 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $User = wp_get_current_user();
       $Candidate = Candidate::get_candidate_by($User->ID);
       if ( ! $Candidate || ! $Candidate->is_candidate()) return $message_access_refused;
-      if ( ! $Candidate->hasCV())
-        return '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Vous possédez déja un CV en ligne</div>';
+      if ( $Candidate->hasCV()) {
+        // TODO: Afficher le formulaire pour postuler sur l'offre.
+        //do_action('add_notice', "Vous possédez déja un CV en ligne", "warning");
+        return do_shortcode("[vc_jepostule]");
+      } else {
+        if (! is_null($redirect))
+          do_action('add_notice', "Vous devez crée un CV avant de postuler", "warning");
+      }
 
       wp_enqueue_style( 'b-datepicker-3' );
       wp_enqueue_style( 'sweetalert' );
@@ -114,6 +122,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       ] );
 
       try {
+        do_action('get_notice');
         /** @var STRING $title */
         return $Engine->render( '@VC/register/candidate.html.twig', [
           'title' => $title
@@ -242,9 +251,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
                 // Désactiver le term qu'on viens d'ajouter
                 if ( ! is_wp_error( $jobTerm ) ) {
-                  global $wpdb;
-                  $sql = "UPDATE {$wpdb->prefix}terms SET `term_activate` = 0 WHERE {$wpdb->prefix}terms.`term_id` = {$jobTerm->term_id}";
-                  $wpdb->query( $sql );
+                  update_field('activated', 0, "job_sought_{$jobTerm->term_id}");
                   array_push( $term_ids, $jobTerm->term_id );
                 }
               } else {
@@ -315,7 +322,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $Candidate = Candidate::get_candidate_by( $User->ID );
 
       // Let WordPress handle the upload.
-      // Remember, 'my_image_upload' is the name of our file input in our form above.
+      // Remember, 'file' is the name of our file input in our form above.
       // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
       $attachment_id = media_handle_upload( 'file', $Candidate->getId() );
 

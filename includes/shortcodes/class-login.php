@@ -63,11 +63,12 @@ if ( ! class_exists( 'scLogin' ) ) :
         shortcode_atts(
           array(
             'role'         => '',
-            'redirect_url' => home_url( '/' )
+            'redir' => home_url( '/' )
           ),
           $attrs
         )
       );
+      $redirection = Http\Request::getValue('redir', null);
       $query_type = ! in_array( 'ptype', array_keys( $wp_query->query_vars ) ) ? null : $wp_query->query_vars['ptype'];
       /** @var string $role - Post type slug */
       $ptype = ! is_null( $query_type ) ? $query_type : $role;
@@ -99,10 +100,13 @@ if ( ! class_exists( 'scLogin' ) ) :
         'angular-animate',
         'angular-aria',
       ], $itJob->version, true );
-      /** @var STRING $redirect_url */
+      /** @var STRING $redir */
       wp_localize_script( 'login', 'itOptions', [
         'ajax_url'          => admin_url( 'admin-ajax.php' ),
-        'customer_area_url' => $redirect_url
+        'urlHelper' => [
+          'customer_area_url' => $redir,
+          'redir' => $redirection
+        ]
       ] );
 
       try {

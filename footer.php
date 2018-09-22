@@ -27,15 +27,17 @@
           if ( has_nav_menu( "menu-footer-middle" ) ) :
             $menu_middle_id = $locations["menu-footer-middle"];
             $menuMiddleObject = wp_get_nav_menu_object( $menu_middle_id );
-            ?>
-            <h4 class="footer-title d-inline-block text-uppercase"><?= $menuMiddleObject->name ?></h4>
-            <?php
-            wp_nav_menu( [
-              'menu_class'      => "list-group footer-menu",
-              'theme_location'  => 'menu-footer-middle',
-              'container'       => '',
-              'container_class' => ''
-            ] );
+            if ($menuMiddleObject) {
+              ?>
+              <h4 class="footer-title d-inline-block text-uppercase"><?= $menuMiddleObject->name ?></h4>
+              <?php
+              wp_nav_menu( [
+                'menu_class'      => "list-group footer-menu",
+                'theme_location'  => 'menu-footer-middle',
+                'container'       => '',
+                'container_class' => ''
+              ] );
+            }
           endif;
           ?>
         </div>

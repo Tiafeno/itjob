@@ -1,0 +1,81 @@
+<style type="text/css">
+  input.form-control {
+    font-family: Poppins !important;
+  }
+
+  .jepostule-content {
+    max-width: 400px;
+    margin: 0px auto 50px;
+  }
+
+  .file-input-plus {
+    color: #34495f;
+  }
+  label#motivation-error {
+    font-size: 12px;
+    position: absolute;
+    width: 310px;
+    left: 0;
+    bottom: -30px;
+    color: #f75a5f;
+  }
+
+</style>
+
+<script type="text/javascript">
+  (function($) {
+    $(document).ready(function() {
+      $.extend($.validator.messages, {
+        required: "Ce champ est requis.",
+        extension: "Veuillez entrer un fichier avec une extension valide"
+      });
+      $( "#postuleForm" ).validate({
+        rules: {
+          motivation: {
+            required: true,
+            extension: "pdf|doc|odt|csv|docx|rtf|dot"
+          }
+        }
+      });
+    });
+  })(jQuery);
+</script>
+
+<div class="ibox jepostule-content uk-margin-large-top">
+  <div class="text-center">
+
+  </div>
+  <form class="ibox-body" name="postuleForm" action="{{ redir }}" method="post" id="postuleForm" enctype="multipart/form-data">
+    <h4 class="font-light text-center">POSTULER POUR UNE OFFRE</h4>
+
+    <div class="card card-air text-center centered mb-4">
+      <div class="card-body">
+        <h4 class="card-title mb-1">{{ offer.title }}</h4>
+        <div class="text-pink"><i class="ti-clip mr-2"></i> {{ offer.reference }}</div>
+        <p class="mt-4 mb-4">{{ offer.profil|striptags('<b>')|raw[:100] }} {% if offer.profil|length > 100 %}...{% endif %}</p>
+      </div>
+    </div>
+
+    <div class="mb-5">
+      <div class="row">
+        <div class="col-md-2">
+          <div class="file-input-plus file-input"><i class="la la-plus-circle"></i>
+            <input type="file" name="motivation" id="motivation">
+          </div>
+        </div>
+        <div class="col-md-10">
+          <h6>Ajouter une lettre de motivation</h6>
+          <p>Type de fichier: pdf, doc, docx, odt, rtf & dot</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center mb-4">
+      <input type="hidden" name="action" value="send_apply">
+      <input type="hidden" name="post_id" value="{{ offer.ID }}">
+      <button class="btn btn-danger btn-rounded btn-block" type="submit">Envoyer ma candidature</button>
+    </div>
+  </form>
+
+</div>
