@@ -1,5 +1,6 @@
 <?php
 global $offers;
+if ( ! $offers->is_activated()) { return; }
 ?>
 <div class="col-md-12">
   <div class="card ibox mb-4">

@@ -1,7 +1,6 @@
 <?php
 global $candidate;
-// $candidate instanceof \includes\post\Candidate;
-// print_r($candidate);
+if ( ! $candidate->is_activated()) { return; }
 ?>
 <div class="col-md-12">
   <div class="card ibox mb-4">

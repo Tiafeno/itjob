@@ -311,12 +311,12 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       }
       update_field( 'itjob_cv_experiences', $experiences, $Candidate->getId() );
 
-      // Activé le CV
-      update_field('itjob_cv_activated', 1, $Candidate->getId());
+      // TODO: Ne pas activer le CV
+      //update_field('activated', 0, $Candidate->getId());
 
       wp_send_json( [ 'success' => true ] );
 
-      // TODO: Ajouter une notification pour les formations ajouté
+      // TODO: Ajouter une notification pour les formations ajouté (dev)
 
     } // .end update_user_cv
 

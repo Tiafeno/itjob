@@ -10,6 +10,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   // Added Trait Class
   use \Auth;
 
+  private $activated;
   public $title;
   public $reference;
   public $district; // Region
@@ -92,11 +93,15 @@ final class Candidate extends UserParticular implements \iCandidate {
     return $this->postType === 'candidate';
   }
 
+  public function is_activated() {
+    return $this->activated ? 1 : 0;
+  }
+
   public function acfElements() {
     if ( ! function_exists( 'the_field' ) ) {
       return false;
     }
-
+    $this->activated   = get_field('activated', $this->getId());
     $this->status      = get_field( 'itjob_cv_status', $this->getId() );
     $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [
       'training_dateBegin',
