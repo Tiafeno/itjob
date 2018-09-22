@@ -7,8 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Http;
+use includes\object\jobServices;
 
-// TODO: Crée une shortcode pour le formulaire de connexion
+// FEATURED: Crée une shortcode pour le formulaire de connexion
 if ( ! class_exists( 'scLogin' ) ) :
   class scLogin {
     public function __construct() {
@@ -27,7 +28,7 @@ if ( ! class_exists( 'scLogin' ) ) :
     }
 
     public function login() {
-      if ( ! \wp_doing_ajax() ) {
+      if ( ! \wp_doing_ajax() || \is_user_logged_in()) {
         return;
       }
 
@@ -62,13 +63,18 @@ if ( ! class_exists( 'scLogin' ) ) :
       extract(
         shortcode_atts(
           array(
-            'role'         => '',
+            'role'  => '',
             'redir' => home_url( '/' )
           ),
           $attrs
         )
       );
-      $redirection = Http\Request::getValue('redir', null);
+
+      /** @var STRING $redir */
+
+      $redirection = Http\Request::getValue( 'redir' );
+      $redirection = $redirection ? $redirection : $redir;
+
       $query_type = ! in_array( 'ptype', array_keys( $wp_query->query_vars ) ) ? null : $wp_query->query_vars['ptype'];
       /** @var string $role - Post type slug */
       $ptype = ! is_null( $query_type ) ? $query_type : $role;
@@ -76,11 +82,12 @@ if ( ! class_exists( 'scLogin' ) ) :
         $logoutUrl          = wp_logout_url( home_url( '/' ) );
         $user               = wp_get_current_user();
         $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
-        $output             = '<div class="uk-margin-large-top">';
-        $output             .= 'Vous êtes déjà connecté avec ce compte: <b>' . $user->display_name . '</b><br>';
-        $output             .= '<a class="btn btn-outline-blue btn-fix btn-thick mt-4" href="' . $espace_client_link . '">Espace client</a>';
-        $output             .= '<a class="btn btn-danger btn-fix btn-thick mt-4 ml-2" href="' . $logoutUrl . '">Déconnecter</a>';
-        $output             .= '</div>';
+
+        $output = '<div class="uk-margin-large-top">';
+        $output .= 'Vous êtes déjà connecté avec ce compte: <b>' . $user->display_name . '</b><br>';
+        $output .= '<a class="btn btn-outline-blue btn-fix btn-thick mt-4" href="' . $espace_client_link . '">Espace client</a>';
+        $output .= '<a class="btn btn-danger btn-fix btn-thick mt-4 ml-2" href="' . $logoutUrl . '">Déconnecter</a>';
+        $output .= '</div>';
 
         return $output;
       }
@@ -100,12 +107,14 @@ if ( ! class_exists( 'scLogin' ) ) :
         'angular-animate',
         'angular-aria',
       ], $itJob->version, true );
-      /** @var STRING $redir */
+
+      $custom_area_url = jobServices::page_exists( 'Espace client' );
+      $custom_area_url = $custom_area_url ? $custom_area_url : home_url( '/' );
       wp_localize_script( 'login', 'itOptions', [
-        'ajax_url'          => admin_url( 'admin-ajax.php' ),
+        'ajax_url'  => admin_url( 'admin-ajax.php' ),
         'urlHelper' => [
-          'customer_area_url' => $redir,
-          'redir' => $redirection
+          'customer_area_url' => get_the_permalink($custom_area_url),
+          'redir'             => $redirection
         ]
       ] );
 

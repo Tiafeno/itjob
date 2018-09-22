@@ -308,6 +308,9 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       // TODO: Verifier si l'utilicateur est une entreprise
       // Réfuser l'access s'il n'est pas une entreprise
+      if ( ! itjob_current_user_is_company()) {
+        return false;
+      }
 
 
       // Params extraction
@@ -337,11 +340,14 @@ if ( ! class_exists( 'vcOffers' ) ):
             'angular-aria',
             'froala',
           ], $itJob->version, true );
+
         wp_localize_script( 'offers', 'itOptions', [
           'ajax_url'     => admin_url( 'admin-ajax.php' ),
           'partials_url' => get_template_directory_uri() . '/assets/js/app/offers/partials',
           'template_url' => get_template_directory_uri()
         ] );
+
+        do_action('get_notice');
 
         /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/offers/form-offer.html.twig', [

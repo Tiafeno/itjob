@@ -16,6 +16,19 @@ function itjob_pagination() {
   echo '</div>';
 }
 
+/**
+ * Vérifier si un client est connecter et s'il est une entreprise ou pas.
+ * @return bool|null
+ */
+function itjob_current_user_is_company() {
+  if ( ! is_user_logged_in() ) {
+    return null;
+  }
+  $User = wp_get_current_user();
+  $Comp = \includes\post\Company::get_company_by($User->ID);
+  return $Comp->is_company();
+}
+
 // Ajouter une notification
 add_action('add_notice', 'itjob_add_notice', 10, 2);
 function itjob_add_notice($msg, $type = "info") {

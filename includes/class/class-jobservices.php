@@ -75,8 +75,9 @@ if ( ! class_exists( 'jobServices' ) ) :
       global $wpdb;
 
       $post_title = wp_unslash( sanitize_post_field( 'post_title', $title, 0, 'db' ) );
-      $query = "SELECT ID FROM $wpdb->posts WHERE 1=1";
-      $args = array();
+      $query = "SELECT ID FROM $wpdb->posts WHERE post_type='%s'";
+      $args = [];
+      $args[] = 'page';
 
       if ( !empty ( $title ) ) {
         $query .= ' AND post_title = %s';

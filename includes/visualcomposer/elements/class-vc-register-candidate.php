@@ -75,11 +75,12 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         EXTR_OVERWRITE
       );
 
-      $redirect = Http\Request::getValue('redir', null);
-      // Ne pas autoriser un client non connecté
+      $redirect = Http\Request::getValue('redir');
+
+      // Client non connecter
       if ( ! is_user_logged_in() ) {
         // TODO: Afficher le formulaire d'inscription pour un utilisateur particulier
-        $redirect = is_null($redirect) ? get_the_permalink() : base64_decode($redirect);
+        $redirect = $redirect ? $redirect : get_the_permalink();
         do_action('add_notice', "Veuillez vous connecter ou s'inscrire en tant que candidat pour pouvoir postuler à un offre.", "warning");
         return do_shortcode("[vc_register_particular title='Créer votre compte itJob' redir='$redirect']");
       }

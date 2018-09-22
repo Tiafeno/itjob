@@ -64,7 +64,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         shortcode_atts(
           array(
             'title' => null,
-            'redir' => home_url('/')
+            'redir' => null
           ),
           $attrs
         )
@@ -92,7 +92,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         'template_url' => get_template_directory_uri(),
         'urlHelper' => [
           'singin' => home_url('/connexion/candidate'),
-          'redir'  => $redir
+          'redir'  => is_null($redir) ? null : $redir
         ]
       ] );
 

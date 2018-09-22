@@ -134,8 +134,10 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
               text: status.msg,
               type: _type,
             }, function () {
-              if (status.success)
-                window.location.href = itOptions.urlHelper.singin;
+              if (status.success) {
+                var redirection = itOptions.urlHelper.redir;
+                window.location.href = _.isNull(redirection) ? itOptions.urlHelper.singin : redirection;
+              }
               if (!status.success) $scope.error = true;
             });
           })
