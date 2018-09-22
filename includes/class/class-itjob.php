@@ -100,10 +100,20 @@ if ( ! class_exists( 'itJob' ) ) {
       // @link: https://codex.wordpress.org/Plugin_API/Action_Reference/pre_get_posts
       add_action( 'pre_get_posts', function ( &$query ) {
         if ( ! is_admin() && $query->is_main_query() ) {
-
+          $Types = ['offers', 'candidate', 'company'];
           // Afficher les posts pour status 'en attente' et 'publier'
           $query->set( 'post_status', [ 'publish', 'pending' ] );
           $post_type = $query->get( 'post_type' );
+
+          if (in_array($post_type, $Types)) {
+            $meta_query = $query->get('meta_query');
+            $meta_query[] = [
+              'key' => 'activated',
+              'value' => 1,
+              'compare' => '=',
+              'type' => 'NUMERIC'
+            ];
+          }
           //$query->set( 'posts_per_page', 1 );
 
           if ( $query->is_search ) {

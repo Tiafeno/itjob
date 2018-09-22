@@ -129,7 +129,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       $form = (object) [
         'firstname'    => Http\Request::getValue( 'firstname' ),
         'lastname'     => Http\Request::getValue( 'lastname' ),
-        'birthdayDate' => Http\Request::getValue( 'birthday' ),
+        'birthdayDate' => Http\Request::getValue( 'birthdayDate' ),
         'address'      => Http\Request::getValue( 'address' ),
         'region'       => Http\Request::getValue( 'region' ), // region ID
         'city'         => Http\Request::getValue( 'country' ), // city ID
