@@ -82,6 +82,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         'angular-sanitize',
         'angular-messages',
         'b-datepicker',
+        'fr-datepicker',
         'sweetalert'
       ], $itJob->version, true );
 
@@ -131,7 +132,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         'birthdayDate' => Http\Request::getValue( 'birthday' ),
         'address'      => Http\Request::getValue( 'address' ),
         'region'       => Http\Request::getValue( 'region' ), // region ID
-        'city'         => Http\Request::getValue( 'city' ), // city ID
+        'city'         => Http\Request::getValue( 'country' ), // city ID
         'email'        => $userEmail
       ];
 

@@ -477,7 +477,9 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_script( 'jq-slimscroll', VENDOR_URL . '/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
       wp_register_script( 'idle-timer', VENDOR_URL . '/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
       wp_register_script( 'toastr', VENDOR_URL . '/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
-      wp_register_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', [ 'jquery' ], '1.7.1' );
+      wp_register_script( 'fr-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js', ['jquery' ], '1.7.1' );
+
+      wp_register_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', ['jquery' ], '1.7.1' );
       wp_register_script( 'bootstrap-select', VENDOR_URL . '/bootstrap-select/dist/js/bootstrap-select.min.js', [
           'jquery',
           'bootstrap'
@@ -495,7 +497,6 @@ if ( ! class_exists( 'itJob' ) ) {
       // Vérifier si la page de création de CV exist
       $addedCVPage = jobServices::page_exists('Ajouter un CV');
       if ( ! $addedCVPage) return;
-      $User = null;
       $addedCVUrl = sprintf('%s?offerId=%d&redir=%s', get_the_permalink($addedCVPage), get_the_ID(), get_the_permalink());
       $button = "<a href=\"$addedCVUrl\">
                   <button class=\"btn btn-blue btn-fix\">

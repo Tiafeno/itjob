@@ -199,6 +199,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
 
       jQuery('#birthday .input-group.date').datepicker({
         format: "dd-mm-yyyy",
+        language: "fr",
         startView: 2,
         todayBtn: false,
         keyboardNavigation: true,
