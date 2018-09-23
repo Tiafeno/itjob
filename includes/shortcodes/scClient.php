@@ -65,7 +65,7 @@ if ( ! class_exists( 'scClient' ) ) :
           ] );
 
           return $Engine->render( '@SC/client-company.html.twig', [
-            'client' => Company::get_company_by('user_id', $user->ID),
+            'client' => Company::get_company_by($user->ID),
             'offers' => $offers,
             'url'    => [
               'add_offer' => get_permalink( (int) ADD_OFFER_PAGE )
@@ -108,7 +108,7 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( $result > 0 ) {
         $wpdb->flush();
         $pt           = new Offers( $post_id );
-        $user_company = Company::get_company_by( 'user_id', $current_user->ID );
+        $user_company = Company::get_company_by( $current_user->ID );
         if ( (int) $pt->company->ID === $user_company->ID ) {
           $isTrash = wp_trash_post( $post_id );
           if ( $isTrash ):
@@ -136,7 +136,7 @@ if ( ! class_exists( 'scClient' ) ) :
     private function get_company_offers() {
       $resolve      = [];
       $User         = wp_get_current_user();
-      $user_company = Company::get_company_by( 'user_id', $User->ID );
+      $user_company = Company::get_company_by( $User->ID );
       $offers       = get_posts( [
         'posts_per_page' => - 1,
         'post_type'      => 'offers',

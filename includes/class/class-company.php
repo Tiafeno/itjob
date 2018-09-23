@@ -32,7 +32,7 @@ final class Company implements \iCompany {
    * @param string $handler - user_id, post_id (company post type) & email
    * @param int|string $value
    */
-  public static function get_company_by( $handler = 'user_id', $value ) {
+  public static function get_company_by( $value, $handler = 'user_id' ) {
     switch ( $handler ):
       case 'user_id':
         $User = get_user_by( 'ID', (int) $value );

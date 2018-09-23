@@ -3,16 +3,20 @@
     font-family: Poppins !important;
     font-size: .92rem;
   }
+  .ng-dirty.ng-invalid, .ng-touched.ng-invalid {
+    border-color: #f75a5f;
+  }
 </style>
+<div class="mt-5">
+  {#<h4 class="m-0">{{ title }}</h4>#}
+  <div class="mt-4"></div>
+  <div class="ibox" ng-app="addOfferApp">
 
-<h4 class="m-0">{{ title }}</h4>
-<div class="mt-4"></div>
-<div class="ibox" ng-app="addOfferApp">
-
-  <ui-view>
-    <div style="min-height: 30em; width: 100%;" class="uk-flex">
-      <img ng-src="{{ template_url }}/img/loading.gif" class="uk-flex uk-logo uk-margin-auto-vertical"
-           style="margin: auto"/>
-    </div>
-  </ui-view>
+    <ui-view>
+      <div style="min-height: 30em; width: 100%;" class="uk-flex">
+        <img ng-src="{{ template_url }}/img/loading.gif" class="uk-flex uk-logo uk-margin-auto-vertical"
+             style="margin: auto"/>
+      </div>
+    </ui-view>
+  </div>
 </div>

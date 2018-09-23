@@ -14,7 +14,7 @@ if ( ! class_exists( 'vcOffers' ) ):
   class vcOffers extends \WPBakeryShortCode {
     public function __construct() {
       add_action( 'init', [ $this, 'vc_offers_mapping' ] );
-      add_action( 'acf/update_value/name=itjob_offer_abranch', [ &$this, 'update_offer_reference' ], 10, 3 );
+      add_filter( 'acf/update_value/name=itjob_offer_abranch', [ &$this, 'update_offer_reference' ], 10, 3 );
 
       add_shortcode( 'vc_offers', [ $this, 'vc_offers_render' ] );
       add_shortcode( 'vc_featured_offers', [ $this, 'vc_featured_offers_render' ] );
@@ -23,6 +23,9 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       add_action( 'wp_ajax_ajx_insert_offers', [ &$this, 'ajx_insert_offers' ] );
       add_action( 'wp_ajax_nopriv_ajx_insert_offers', [ &$this, 'ajx_insert_offers' ] );
+
+      add_action( 'wp_ajax_ajx_update_offer_rateplan', [ &$this, 'update_offer_rateplan' ] );
+      add_action( 'wp_ajax_nopriv_ajx_update_offer_rateplan', [ &$this, 'update_offer_rateplan' ] );
 
     }
 
@@ -140,6 +143,9 @@ if ( ! class_exists( 'vcOffers' ) ):
       );
     }
 
+    /**
+     * Ajouter une offre
+     */
     public function ajx_insert_offers() {
       /**
        * @func wp_doing_ajax
@@ -150,7 +156,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
 
       $User    = wp_get_current_user();
-      $Company = Company::get_company_by( 'user_id', $User->ID );
+      $Company = Company::get_company_by(  $User->ID );
       if ( ! $Company->is_company() ) {
         wp_send_json( [ 'success' => false, 'msg' => 'Utilisateur n\'est pas une entreprise', 'user' => $Company ] );
       }
@@ -166,6 +172,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         'mission'         => Http\Request::getValue( 'mission' ),
         'profil'          => Http\Request::getValue( 'profil' ),
         'other'           => Http\Request::getValue( 'other' ),
+        'country'         => Http\Request::getValue('country'),
         'company_id'      => $Company->ID
       ];
       // Ajouter l'offre dans la base de donnée
@@ -184,9 +191,30 @@ if ( ! class_exists( 'vcOffers' ) ):
       $post_id = &$result;
       $this->update_acf_field( $post_id, $form );
       wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
-      wp_send_json( [ 'success' => true, 'msg' => new Offers( $post_id ), 'form' => $form ] );
+      wp_set_post_terms( $post_id, [ (int) $form->country ], 'city' );
+      wp_send_json( [ 'success' => true, 'offer' => new Offers( $post_id ) ] );
     }
 
+    /**
+     * Mettre à jours le plan tarifaire de l'offre
+     */
+    public function update_offer_rateplan() {
+      $offer_id = Http\Request::getValue('offerId');
+      if ($offer_id) {
+        $Offer = new Offers((int)$offer_id);
+        if ($Offer->is_offer()) {
+          update_field('itjob_offer_rateplan', 1, $Offer->ID);
+          wp_send_json(['success' => true]);
+        }
+      }
+      wp_send_json(['success' => false, 'msg' => "Il est possible que cette erreur es dû à l’ID de l'offre"]);
+    }
+
+    /**
+     * Ajouter ou mettre à jours les champs ACF de l'offre
+     * @param $post_id
+     * @param $form
+     */
     private function update_acf_field( $post_id, $form ) {
       update_field( 'itjob_offer_post', $form->post, $post_id );
 
@@ -213,7 +241,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       $term_abranch_id = (int) $value;
       if ( term_exists( $term_abranch_id, $taxonomy ) ) {
         $branch_activity_obj = get_term( $term_abranch_id, $taxonomy );
-        update_field( 'itjob_offer_reference', strtoupper( $branch_activity_obj->slug ) . $post_id );
+        update_field( 'itjob_offer_reference', strtoupper( $branch_activity_obj->slug ) . $post_id, $post_id );
       }
 
       return $value;
@@ -294,7 +322,6 @@ if ( ! class_exists( 'vcOffers' ) ):
      * Shortcode - Crée une formulaire d'ajout d'offre
      *
      * @param  array $attrs
-     *
      * @return bool|string
      */
     public function vc_added_offer_render( $attrs ) {
@@ -318,19 +345,21 @@ if ( ! class_exists( 'vcOffers' ) ):
       extract(
         shortcode_atts(
           array(
-            'title' => 'Ajouter une offre'
+            'title' => 'Ajouter une offre',
+            'redir' => null
           ),
           $attrs
         )
         , EXTR_OVERWRITE );
+
       try {
         if ( ! defined('VENDOR_URL'))
           define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
+        wp_enqueue_style( 'sweetalert' );
         wp_enqueue_style( 'b-datepicker-3');
         wp_enqueue_style( 'themify-icons' );
         wp_enqueue_style( 'froala' );
         wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
-        wp_enqueue_script( 'b-datepicker');
         wp_enqueue_script( 'offers', get_template_directory_uri() . '/assets/js/app/offers/form.js',
           [
             'angular',
@@ -339,13 +368,22 @@ if ( ! class_exists( 'vcOffers' ) ):
             'angular-messages',
             'angular-animate',
             'angular-aria',
+            'b-datepicker',
+            'fr-datepicker',
+            'sweetalert',
             'froala',
           ], $itJob->version, true );
 
+        $redirection = Http\Request::getValue('redir');
+        /** @var url $redir */
+        $redir = $redirection ? $redirection : (is_null($redir) ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : $redir);
         wp_localize_script( 'offers', 'itOptions', [
           'ajax_url'     => admin_url( 'admin-ajax.php' ),
           'partials_url' => get_template_directory_uri() . '/assets/js/app/offers/partials',
-          'template_url' => get_template_directory_uri()
+          'template_url' => get_template_directory_uri(),
+          'urlHelper' => [
+            'redir' => $redir
+          ]
         ] );
 
         do_action('get_notice');
