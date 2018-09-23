@@ -87,13 +87,16 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       ], $itJob->version, true );
 
       /** @var STRING $redir */
+      $redirection = Http\Request::getValue( 'redir' );
+      $redirection = $redirection ? $redirection : $redir;
+
       wp_localize_script( 'form-particular', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
         'urlHelper' => [
           'singin' => home_url('/connexion/candidate'),
-          'redir'  => is_null($redir) ? null : $redir
+          'redir'  => is_null($redirection) ? null : $redirection
         ]
       ] );
 

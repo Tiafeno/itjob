@@ -123,12 +123,14 @@ if ( ! class_exists( 'scLogin' ) ) :
         $post_type_object = get_post_type_object( $ptype );
         $title            = $post_type_object->name === 'company' ? strtolower( $post_type_object->labels->singular_name ) : '';
 
+        do_action('get_notice');
+
         /** @var STRING $title */
         return $Engine->render( '@SC/login.html.twig', [
           'title' => $title,
           'uri'   => (object) [
             'theme'  => get_template_directory_uri(),
-            'singup' => $singup_url
+            'singup' => $singup_url . '?redir='.$redirection
           ]
         ] );
       } catch ( Twig_Error_Loader $e ) {

@@ -504,11 +504,9 @@ if ( ! class_exists( 'itJob' ) ) {
     }
 
     public function je_postule_Fn() {
-      // Vérifier si la page de création de CV exist
-      $addedCVPage = jobServices::page_exists('Ajouter un CV');
-      if ( ! $addedCVPage) return;
-      $addedCVUrl = sprintf('%s?offerId=%d&redir=%s', get_the_permalink($addedCVPage), get_the_ID(), get_the_permalink());
-      $button = "<a href=\"$addedCVUrl\">
+      $offer_id = get_the_ID();
+      $href= home_url("/apply/{$offer_id}");
+      $button = "<a href=\"$href\">
                   <button class=\"btn btn-blue btn-fix\">
                     <span class=\"btn-icon\">Je postule </span>
                   </button>

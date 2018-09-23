@@ -70,19 +70,21 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         shortcode_atts(
           array(
             'title' => null,
+            'redir' => null
           ),
           $attrs
         ),
         EXTR_OVERWRITE
       );
 
-      $redirect = Http\Request::getValue('redir');
+      /** @var url $redir */
+      $httpRedir = Http\Request::getValue('redir');
+      $EC_Link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : home_url('/');
+      $httpRedir = $httpRedir ? $httpRedir : $EC_Link;
+      $redirect = is_null($redir) ? $httpRedir : $redir;
 
       // Client non connecter
       if ( ! is_user_logged_in() ) {
-        // TODO: Afficher le formulaire d'inscription pour un utilisateur particulier
-        $redirect = $redirect ? $redirect : get_the_permalink();
-        do_action('add_notice', "Veuillez vous connecter ou s'inscrire en tant que candidat pour pouvoir postuler à un offre.", "warning");
         return do_shortcode("[vc_register_particular title='Créer votre compte itJob' redir='$redirect']");
       }
 
@@ -90,14 +92,6 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $User = wp_get_current_user();
       $Candidate = Candidate::get_candidate_by($User->ID);
       if ( ! $Candidate || ! $Candidate->is_candidate()) return $message_access_refused;
-      if ( $Candidate->hasCV()) {
-        // TODO: Afficher le formulaire pour postuler sur l'offre.
-        //do_action('add_notice', "Vous possédez déja un CV en ligne", "warning");
-        return do_shortcode("[vc_jepostule]");
-      } else {
-        if (! is_null($redirect))
-          do_action('add_notice', "Vous devez crée un CV avant de postuler", "warning");
-      }
 
       wp_enqueue_style( 'b-datepicker-3' );
       wp_enqueue_style( 'sweetalert' );
@@ -119,19 +113,12 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       ], $itJob->version, true );
 
       // Verifier si l'ajout du CV consiste à postuler sur une offre
-      $redirection = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : home_url('/');;
-      $offerId = Http\Request::getValue('offerId', false);
-      $addedCVPage = jobServices::page_exists('Ajouter un CV');
-      if ($offerId && $addedCVPage) {
-        $redirection = sprintf('%s?offerId=%d', get_the_permalink($addedCVPage), (int)$offerId);
-      }
-
       wp_localize_script( 'form-candidate', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
         'urlHelper' => [
-          'redir' => $redirection
+          'redir' => $redirect
         ]
       ] );
 
