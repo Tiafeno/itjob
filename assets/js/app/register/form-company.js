@@ -2,33 +2,113 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
 
-    var states = [
+    const states = [
       {
-        name: 'form',
-        url: '/form',
-        component: 'formComponent',
+        name: 'company',
+        url: '/company',
+        templateUrl: itOptions.partials_url + '/company/company.html',
         resolve: {
           abranchs: function (companyService) {
             return companyService.getBranchActivity();
           }
-        }
+        },
+        controller: 'formController'
       },
       {
-        name: 'validate',
-        url: '/validate',
-        component: 'validateComponent',
-        resolve: {
-          message: function (companyData) {
-            return companyData.message;
-          }
-        }
+        name: 'company.form',
+        url: '/form',
+        templateUrl: itOptions.partials_url + '/company/form.html',
+        controller: ['$rootScope', '$scope', 'companyFactory', 'companyService', function ($rootScope, $scope, companyFactory, companyService) {
+          $scope.login_url = itOptions.urlHelper.login;
+          $scope.addPhone = function () {
+            $rootScope.company.cellphone.push({id: $rootScope.countPhone, value: ''});
+            $rootScope.countPhone += 1;
+          };
+          $scope.removePhone = function (id) {
+            $rootScope.company.cellphone = _.filter($rootScope.company.cellphone, function (cellphone) {
+              return cellphone.id != id;
+            });
+          };
+          $scope.submitForm = function (isValid) {
+            // FEATURED: Vérifier si l'adresse e-mail existe déja
+            if ($scope.formCompany.$invalid) {
+              angular.forEach($scope.formCompany.$error, function (field) {
+                angular.forEach(field, function (errorField) {
+                  errorField.$setTouched();
+                });
+              });
+              $scope.formCompany.email.$validate();
+            }
+
+            if (!isValid) return;
+            companyService
+              .mailCheck($scope.company.email)
+              .then(function (status) {
+                $rootScope.$apply(function () {
+                  $scope.formCompany.email.$setValidity('mail', !status);
+                  if (!status) {
+                    $rootScope.isSubmit = !$rootScope.isSubmit;
+                    var companyForm = new FormData();
+                    companyForm.append('action', 'ajx_insert_company');
+                    companyForm.append('greeting', $rootScope.company.greeting);
+                    companyForm.append('title', $rootScope.company.title);
+                    companyForm.append('address', $rootScope.company.address);
+                    companyForm.append('cellphone', JSON.stringify($rootScope.company.cellphone));
+                    companyForm.append('phone', $rootScope.company.phone);
+                    companyForm.append('nif', $rootScope.company.nif);
+                    companyForm.append('stat', $rootScope.company.stat);
+                    companyForm.append('name', $rootScope.company.name);
+                    companyForm.append('email', $rootScope.company.email);
+                    companyForm.append('abranchID', parseInt($rootScope.company.branch_activity));
+                    companyForm.append('newsletter', parseInt($rootScope.company.newsletter));
+                    companyForm.append('notification', parseInt($rootScope.company.notification));
+                    companyForm.append('pwd', $rootScope.company.pwdConf);
+
+                    companyFactory
+                      .sendPostForm(companyForm)
+                      .then(result => {
+                        var data = result.data;
+                        if (data.success) {
+                          swal({
+                            title: 'Reussi',
+                            text: "Votre compte à étés bien enregistrer. Vous recevrez un message pour confirmer votre inscription. ",
+                            type: "info",
+                          },  () => {
+                            window.location.href = itOptions.urlHelper.redir;
+                          });
+                        } else {
+                          $rootScope.isSubmit = !1;
+                        }
+                      }); //.end then
+                  } else {
+                    return false;
+                  }
+
+                });
+              });
+
+          };
+
+          /** Load jQuery elements **/
+          var jqSelects = jQuery("select.form-control");
+          jQuery.each(jqSelects, function (index, element) {
+            var selectElement = jQuery(element);
+            var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
+            jQuery(element).select2({
+              placeholder: placeholder,
+              allowClear: true,
+              width: '100%'
+            })
+          });
+          jQuery('[data-toggle="tooltip"]').tooltip();
+        }]
       }
     ];
     // Loop over the state definitions and register them
     states.forEach(function (state) {
       $stateProvider.state(state);
     });
-    $urlServiceProvider.rules.otherwise({state: 'form'});
+    $urlServiceProvider.rules.otherwise({state: 'company.form'});
 
   })
   .service('companyService', ['$http', '$q', 'companyFactory', function ($http, $q, companyFactory) {
@@ -53,14 +133,6 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
         });
       }
     }
-  }])
-  .service('companyData', [function () {
-    var self = this;
-    self.formCompanyValue = {};
-    self.message = {title: null, msg: null};
-    self.setMessage = function (_title, _msg) {
-      self.message = {title: _title, msg: _msg};
-    };
   }])
   .factory('companyFactory', ['$http', '$q', function ($http, $q) {
     return {
@@ -111,111 +183,19 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       }
     }
   }])
-  .controller('formCompanyCtrl', ['$scope', function ($scope) {
-    // Code controller here...
-    $scope.loadingPath = itOptions.template_url + '/img/loading.gif';
-  }])
-  .component('formComponent', {
-    bindings: {abranchs: '<'},
-    templateUrl: itOptions.partials_url + '/company/form.html',
-    controller: function (companyData, companyFactory, companyService, $log, $scope, $location) {
-      $scope.countPhone = 1;
-      $scope.isSubmit = !1;
-      $scope.company = {};
-      $scope.company.greeting = 'mr';
-      $scope.company.cellphone = [
-        {
-          id: 0,
-          value: ''
-        }
-      ];
-      $scope.addPhone = function () {
-        $scope.company.cellphone.push({id: $scope.countPhone, value: ''});
-        $scope.countPhone += 1;
-      };
-      $scope.removePhone = function (id) {
-        $scope.company.cellphone = _.filter($scope.company.cellphone, function (cellphone) {
-          return cellphone.id != id;
-        });
-      };
+  .controller('formController', ['$scope', '$rootScope', 'abranchs', function ($scope, $rootScope, abranchs) {
+    $rootScope.countPhone = 1;
+    $rootScope.isSubmit = !1;
+    $rootScope.abranchs = _.clone(abranchs);
+    $rootScope.company = {};
+    $rootScope.company.greeting = 'mr';
+    $rootScope.company.cellphone = [
+      {
+        id: 0,
+        value: ''
+      }
+    ];
 
-      $scope.submitForm = function (isValid) {
-        // TODO: Vérifier si l'adresse e-mail existe déja
-        if ($scope.formCompany.$invalid) {
-          angular.forEach($scope.formCompany.$error, function (field) {
-            angular.forEach(field, function (errorField) {
-              errorField.$setTouched();
-            });
-          });
-          $scope.formCompany.email.$validate();
-        }
-
-        if (!isValid) return;
-        companyService
-          .mailCheck($scope.company.email)
-          .then(function (status) {
-            $scope.$apply(function () {
-              $scope.formCompany.email.$setValidity('mail', !status);
-              if (!status) {
-                $scope.isSubmit = !$scope.isSubmit;
-                companyData.formCompanyValue = _.clone($scope.company);
-                var companyForm = new FormData();
-                companyForm.append('action', 'ajx_insert_company');
-                companyForm.append('greeting', $scope.company.greeting);
-                companyForm.append('title', $scope.company.title);
-                companyForm.append('address', $scope.company.address);
-                companyForm.append('cellphone', JSON.stringify($scope.company.cellphone));
-                companyForm.append('phone', $scope.company.phone);
-                companyForm.append('nif', $scope.company.nif);
-                companyForm.append('stat', $scope.company.stat);
-                companyForm.append('name', $scope.company.name);
-                companyForm.append('email', $scope.company.email);
-                companyForm.append('abranchID', parseInt($scope.company.branch_activity));
-                companyForm.append('newsletter', parseInt($scope.company.newsletter));
-                companyForm.append('notification', parseInt($scope.company.notification));
-                companyForm.append('pwd', $scope.company.pwdConf);
-
-                companyFactory
-                  .sendPostForm(companyForm)
-                  .then(function (result) {
-                    var data = result.data;
-                    if (data.success) {
-                      companyData.setMessage('Info',
-                        'Votre compte à étés bien enregistrer. <br>Pour confirmer votre inscription ' + companyData.formCompanyValue.email);
-                      $location.path('/validate');
-                    } else {
-                      $scope.isSubmit = !1;
-                    }
-                  }); //.end then
-              } else {
-                return false;
-              }
-
-            });
-
-          });
-
-      };
-
-      var jqSelects = jQuery("select.form-control");
-      jQuery.each(jqSelects, function (index, element) {
-        var selectElement = jQuery(element);
-        var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
-        jQuery(element).select2({
-          placeholder: placeholder,
-          allowClear: true,
-          width: '100%'
-        })
-      });
-      jQuery('[data-toggle="tooltip"]').tooltip();
-    }
-  })
-  .component('validateComponent', {
-    templateUrl: itOptions.partials_url + '/company/validate.html',
-    controller: function (companyData, $location) {
-      this.message = _.clone(companyData.message);
-      if (_.isNull(this.message.title) || _.isNull(this.message.value))
-        $location.path('/form');
-
-    }
-  });
+  }]).run([function () {
+    var loadingPath = itOptions.template_url + '/img/loading.gif';
+  }]);

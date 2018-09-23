@@ -1,9 +1,20 @@
 <form name="formCompany" ng-submit="submitForm(formCompany.$valid)" class="form-horizontal p-5" novalidate>
+  <div class="page-heading mb-5">
+    <h4 class="page-title">FORMULAIRE ENTREPRISE</h4>
+    <h6>Vous pouvez aussi <a href="" class="text-blue">regarder la vidéo explicative</a>.</h6>
+  </div>
+
+  <div class="col-md-12 pl-0" ng-show="!_.isNull(itOptions.urlHelper.redir)">
+    <div class="alert alert-warning alert-dismissable fade show has-icon"><i class="la la-warning alert-icon"></i>
+      Veuillez vous connecter en tant qu'entreprise pour déposer un offre. <a ng-href="[[login_url]]" class="uk-text-bold">Se connecter</a>
+    </div>
+  </div>
+
   <div class="ibox-body">
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Nom de l'entreprise <span style="color: red">*</span></label>
       <div class="col-sm-6">
-        <input class="form-control" name="title" ng-model="company.title" type="text" placeholder="Nom de l'entreprise"
+        <input class="form-control" name="title" ng-model="company.title" type="text" autocomplete="off" placeholder="Nom de l'entreprise"
                required>
         <div ng-messages="formCompany.title.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.title.$invalid && formCompany.title.$touched">
@@ -126,7 +137,7 @@
           <select class="form-control" name="branch_activity" ng-model="company.branch_activity"
                   title="Secteur d'activité">
             <option></option>
-            <option ng-repeat="abranch in $ctrl.abranchs" value="[[abranch.term_id]]">[[abranch.name]]</option>
+            <option ng-repeat="abranch in abranchs" value="[[abranch.term_id]]">[[abranch.name]]</option>
           </select>
         </div>
       </div>

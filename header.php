@@ -126,6 +126,13 @@
       background-color: #bd1e54;
       border-color: #bd1e54;
     }
+    .page-heading .page-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.5px;
+      font-weight: bold;
+    }
+
   </style>
 </head>
 <body <?php body_class(); ?> >

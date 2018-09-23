@@ -328,7 +328,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       global $Engine, $itJob;
       if ( ! is_user_logged_in() ) {
         // FEATURE: Proposer l'utilisateur à s'inscrire en tands que sociéte pour ajouter une offre
-        return vcRegisterCompany::getInstance()->register_render_html(['title' => 'FORMULAIRE ENTREPRISE']);
+        return vcRegisterCompany::getInstance()->register_render_html(['title' => 'FORMULAIRE ENTREPRISE', 'redir' => get_the_permalink()]);
         /*return $Engine->render( '@ERROR/403.html.twig', [
           'template_url' => get_template_directory_uri()
         ] );*/

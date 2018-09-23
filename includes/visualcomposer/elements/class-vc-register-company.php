@@ -288,6 +288,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         shortcode_atts(
           array(
             'title' => null,
+            'redir' => null,
 //            'form'  => null
           ),
           $attrs
@@ -295,6 +296,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         , EXTR_OVERWRITE );
 
       // load script & style
+      wp_enqueue_style( 'sweetalert' );
       wp_enqueue_style( 'input-form', get_template_directory_uri() . '/assets/css/inputForm.css' );
       wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js',
         [
@@ -304,18 +306,28 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
           'angular-messages',
           'angular-animate',
           'angular-aria',
+          'sweetalert',
         ], $itJob->version, true );
+
+      /** @var url $redir */
+      $redirHttp = Http\Request::getValue('redir');
+      $redirection = !is_null($redir) ? "?redir={$redir}" : ($redirHttp ? $redirHttp : '');
       wp_localize_script( 'form-company', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
-        'template_url' => get_template_directory_uri()
+        'template_url' => get_template_directory_uri(),
+        'urlHelper'    => [
+          'redir' => $redir,
+          'login' => home_url('/connexion/company') . $redirection
+        ]
       ] );
       try {
         do_action('get_notice');
         /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/register/company.html.twig', [
           'title' => $title,
-          'container_class' => self::$container_class
+          'container_class' => self::$container_class,
+          'template_url' => get_template_directory_uri()
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
