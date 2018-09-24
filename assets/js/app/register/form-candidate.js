@@ -427,7 +427,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     return {
       restrict: 'A',
       scope: true,
-      link: (scope, element, attrs) => {
+      link: (scope, element) => {
         let onChangeHandler = scope.$eval(attrs.inputOnChange);
         element.on("change", onChangeHandler);
         element.on('$destroy', function () {

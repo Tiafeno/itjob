@@ -1,5 +1,14 @@
 <style type="text/css">
-
+  .form-group .form-control {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+  }
+  .uk-modal-title {
+    font-family: 'Montserrat', sans-serif;
+  }
+  .col-form-label {
+    font-size: 13px;
+  }
 </style>
 <script type="text/javascript">
   (function ($) {
@@ -93,58 +102,15 @@
       <div class="tab-pane fade text-center" id="offers">
         <div class="page-content">
           <div class="ibox-body">
-            <div class="flexbox mb-4">
-              <div class="flexbox">
-                <div class="input-group-icon input-group-icon-left mr-3">
-                  <span class="input-icon input-icon-right font-16"><i class="ti-search"></i></span>
-                  <input class="form-control form-control-solid" id="key-search" type="text"
-                         placeholder="Rechercher ...">
-                </div>
-                <a class="btn btn-outline-blue" href="{{ Helper['add_offer_url'] }}">Ajouter une offre</a>
-              </div>
-            </div>
-            <div class="table-responsive row">
-              <table class="table table-bordered table-hover" id="products-table">
 
-                <thead class="thead-default thead-lg">
-                <tr>
-                  <th>ID</th>
-                  <th>Poste à promouvoir</th>
-                  <th>Type de contrat</th>
-                  <th>Secteur d'activité</th>
-                  <th>Région</th>
-                  <th>Réference</th>
-                  <th>Actions</th>
-                </tr>
-                </thead>
+            <offer-lists 
+              offers="offerLists" 
+              company="Company" 
+              abranchs="asyncTerms('branch_activity')" 
+              regions="asyncTerms('region')" 
+              all-city="asyncTerms('city')">
+            </offer-lists>
 
-                <tbody>
-                {% for offer in offers %}
-                  <tr>
-                    <td>{{ offer.ID }}</td>
-                    <td>
-                      <a href="{{ offer.ID|get_permalink }}" title="{{ offer.postPromote }}">{{ offer.postPromote }}</a>
-                    </td>
-                    <td>{{ offer.contractType[ 'label' ] }}</td>
-                    <td>{{ offer.branch_activity.name }}</td>
-                    <td>{{ offer.region.name }}</td>
-                    <td>
-                      <span class="badge badge-info badge-pill">{{ offer.reference }}</span>
-                    </td>
-                    <td>
-                      <span class="text-light mr-3 font-16" style="cursor: pointer">
-                        <i class="ti-pencil"></i>
-                      </span>
-                      {#<span class="text-light font-16" style="cursor: pointer" ng-click="trashOffer({{ offer.ID }})">#}
-                        {#<i class="ti-trash"></i>#}
-                      {#</span>#}
-                    </td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-
-              </table>
-            </div>
           </div>
         </div>
       </div>

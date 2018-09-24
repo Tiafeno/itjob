@@ -3,7 +3,6 @@
 namespace includes\shortcode;
 
 use Http;
-use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
 
@@ -21,6 +20,9 @@ if ( ! class_exists( 'scClient' ) ) :
 
       add_action( 'wp_ajax_client_company', [ &$this, 'client_company' ] );
       add_action( 'wp_ajax_nopriv_client_company', [ &$this, 'client_company' ] );
+
+      add_action( 'wp_ajax_update_offer', [ &$this, 'update_offer' ] );
+      add_action( 'wp_ajax_nopriv_update_offer', [ &$this, 'update_offer' ] );
     }
 
     public function sc_render_html( $attrs, $content = '' ) {
@@ -38,17 +40,22 @@ if ( ! class_exists( 'scClient' ) ) :
       );
 
       wp_enqueue_style( 'themify-icons' );
+      wp_enqueue_style( 'b-datepicker-3' );
+      wp_enqueue_style( 'sweetalert');
+      wp_enqueue_style( 'froala' );
+      wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
 
-      wp_enqueue_style( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.css' );
-      wp_enqueue_script( 'sweetalert',VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.min.js', [ 'espace-client' ], $itJob->version, true );
-
+      wp_enqueue_script( 'sweetalert' );
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
       wp_enqueue_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
         'angular',
         'angular-aria',
         'angular-messages',
         'angular-sanitize',
-        'datatable'
+        'datatable',
+        'b-datepicker',
+        'fr-datepicker',
+        'froala'
       ], $itJob->version, true );
 
       $user         = wp_get_current_user();
@@ -56,27 +63,24 @@ if ( ! class_exists( 'scClient' ) ) :
       $client_roles = $client->roles;
 
       try {
-        do_action('get_notice');
+        do_action( 'get_notice' );
 
         if ( in_array( 'company', $client_roles, true ) ) {
           // Template recruteur ici ...
-          $offers = $this->get_company_offers();
 
           // Script localize for company customer area
           wp_localize_script( 'espace-client', 'itOptions', [
-            'offers'   => $this->get_company_offers(),
             'Helper' => [
-              'ajax_url' => admin_url( 'admin-ajax.php' ),
+              'add_offer_url' => get_permalink( (int) ADD_OFFER_PAGE ),
+              'ajax_url'      => admin_url( 'admin-ajax.php' ),
               'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
             ]
           ] );
 
           return $Engine->render( '@SC/client-company.html.twig', [
-            'client' => Company::get_company_by($user->ID),
-            'offers' => $offers,
-            'Helper'    => [
-              'add_offer_url' => get_permalink( (int) ADD_OFFER_PAGE ),
-              'template_url' => get_template_directory_uri()
+            'client' => Company::get_company_by( $user->ID ),
+            'Helper' => [
+              'template_url'  => get_template_directory_uri()
             ]
           ] );
         }
@@ -91,8 +95,27 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
-    public function update_user() {
+    public function update_offer() {
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $post_id = Http\Request::getValue('post_id', null);
+      if (is_null($post_id)) wp_send_json(false);
+      $form = [
+        'post'             => Http\Request::getValue( 'postPromote' ),
+        'datelimit'        => Http\Request::getValue( 'dateLimit' ),
+        'contrattype'      => Http\Request::getValue( 'contractType' ),
+        'profil'           => Http\Request::getValue( 'profil' ),
+        'mission'          => Http\Request::getValue( 'mission' ),
+        'proposedsallary'  => Http\Request::getValue( 'proposedSalary' ),
+        'otherinformation' => Http\Request::getValue( 'otherInformation' ),
+        'abranch'          => Http\Request::getValue( 'branch_activity' ),
+      ];
 
+      foreach ($form as $key => $value) {
+        update_field("itjob_offer_{$key}", $value, (int)$post_id);
+      }
+      wp_send_json(['success' => true, 'form' => $form]);
     }
 
     /**
@@ -140,10 +163,13 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( [ 'success' => false, 'msg' => "L'offre n'existe pas." ] );
       }
     }
+
     public function client_company() {
-      if ( ! is_user_logged_in()) wp_send_json(false);
+      if ( ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
       $User = wp_get_current_user();
-      wp_send_json(Company::get_company_by($User->ID));
+      wp_send_json( [ 'Company' => Company::get_company_by( $User->ID ), 'Offers' => $this->get_company_offers() ] );
     }
 
     private function get_company_offers() {
