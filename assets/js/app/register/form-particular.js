@@ -104,6 +104,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       $scope.uri.singin = itOptions.urlHelper.singin;
       $scope.uri.redir = itOptions.urlHelper.redir;
       $scope.particularForm = {};
+      $scope.particularForm.greeting = 'mr';
       $scope.formSubmit = function (isValid) {
         if ($scope.pcForm.$invalid) {
           angular.forEach($scope.pcForm.$error, function (field) {
