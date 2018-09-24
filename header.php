@@ -133,6 +133,11 @@
       font-weight: bold;
     }
 
+    /* Espace client code */
+    .tabs-line .nav-link:hover, .tabs-line .nav-link.active {
+      color: #71808f;
+      border-bottom-color: #f39c12;
+    }
   </style>
 </head>
 <body <?php body_class(); ?> >

@@ -54,32 +54,43 @@
     </div>
     <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
       <li class="nav-item">
-        <a class="nav-link" href="#profil" data-toggle="tab">
-          <i class="ti-briefcase mr-2"></i>
-          Information générale
+        <a class="nav-link active" href="#profil" data-toggle="tab">
+          Profil
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="#offers" data-toggle="tab">
-          <i class="ti-support mr-2"></i>
+        <a class="nav-link" href="#offers" data-toggle="tab">
           Mes offres
         </a>
       </li>
     </ul>
 
-    <div class="tab-content">
-      <div class="tab-pane fade text-center" id="profil">
+    <div class="tab-content" ng-show="!loading">
+      <div class="d-block mt-5 mb-5">
+        <div class="row">
+          <div class="col-md-4 m-auto">
+            <div class="text-center">
+              <img src="{{ Helper['template_url'] }}/img/loading.gif" width="45" />
+              <p>Chargement de contenue ...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-content" ng-show="loading">
+      {# Profil utilisateur #}
+      <div class="tab-pane fade active show" id="profil">
         <div class="page-content">
           <div class="ibox-body">
-            <div class="h1 mt-5 mb-3">Information générale</div>
-            <p class="mb-5">Laborum dolore consectetur occaecat in ex sunt et dolore dolore aliqua aute qui cupidatat et
-              ullamco in pariatur dolor quis laboris ut.</p>
+            <general-information company="Company"></general-information>
           </div>
         </div>
 
       </div>
+      {# .end Profil utilisateur#}
 
-      <div class="tab-pane fade text-center active show" id="offers">
+      {# Les offres #}
+      <div class="tab-pane fade text-center" id="offers">
         <div class="page-content">
           <div class="ibox-body">
             <div class="flexbox mb-4">
@@ -89,7 +100,7 @@
                   <input class="form-control form-control-solid" id="key-search" type="text"
                          placeholder="Rechercher ...">
                 </div>
-                <a class="btn btn-primary" href="{{ url['add_offer'] }}">Ajouter une offre</a>
+                <a class="btn btn-primary" href="{{ Helper['add_offer_url'] }}">Ajouter une offre</a>
               </div>
             </div>
             <div class="table-responsive row">
@@ -124,9 +135,9 @@
                       <span class="text-light mr-3 font-16" style="cursor: pointer">
                         <i class="ti-pencil"></i>
                       </span>
-                      <span class="text-light font-16" style="cursor: pointer" ng-click="trashOffer({{ offer.ID }})">
-                        <i class="ti-trash"></i>
-                      </span>
+                      {#<span class="text-light font-16" style="cursor: pointer" ng-click="trashOffer({{ offer.ID }})">#}
+                        {#<i class="ti-trash"></i>#}
+                      {#</span>#}
                     </td>
                   </tr>
                 {% endfor %}
@@ -137,8 +148,7 @@
           </div>
         </div>
       </div>
-
-
+      {# .end offres#}
     </div>
   </div>
 </div>

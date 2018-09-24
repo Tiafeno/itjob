@@ -22,9 +22,11 @@ final class Company implements \iCompany {
   public $email;
   public $title;
   public $address;
+  public $region;
+  public $country;
   public $nif;
   public $stat;
-  public $phones = array();
+  public $phone;
   public $newsletter = false;
   public $notification = false;
 
@@ -87,6 +89,19 @@ final class Company implements \iCompany {
 
       // FIX: Ajouter ou crée un utilisateur quand un entreprise est publier ou ajouter
       $this->userAuthor = Obj\jobServices::getUserData( $user->ID );
+
+      // Récuperer la region
+      $regions = wp_get_post_terms($this->ID, 'region');
+      $this->region = reset($regions);
+
+      // Récuperer le nom et la code postal de la ville
+      $country = wp_get_post_terms($this->ID, 'city');
+      $this->country = reset($country);
+
+      // Récuperer le secteur d'activité
+      $abranch = wp_get_post_terms($this->ID, 'branch_activity');
+      $this->branch_activity = reset($abranch);
+
       $this->init();
     }
   }
@@ -107,9 +122,17 @@ final class Company implements \iCompany {
     $this->address      = get_field( 'itjob_company_address', $this->ID );
     $this->nif          = get_field( 'itjob_company_nif', $this->ID );
     $this->stat         = get_field( 'itjob_company_stat', $this->ID );
-    $this->phones       = get_field( 'itjob_company_phones', $this->ID );
     $this->newsletter   = get_field( 'itjob_company_newsletter', $this->ID );
     $this->notification = get_field( 'itjob_company_notification', $this->ID );
+    $this->phone        = get_field( 'itjob_company_phone', $this->ID );
+
+    $cellphones = get_field( 'itjob_company_cellphone', $this->ID );
+
+    $this->cellphones = [];
+    foreach ($cellphones as $cellphone) {
+      array_push($this->cellphones, $cellphone['number']);
+    }
+
 
     return true;
   }

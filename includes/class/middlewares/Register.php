@@ -237,7 +237,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (Région)
-    register_taxonomy( 'region', [ 'offers', 'candidate' ], [
+    register_taxonomy( 'region', [ 'offers', 'candidate', 'company' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Région',
@@ -306,7 +306,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (City)
-    register_taxonomy( 'city', [ 'offers', 'candidate' ], [
+    register_taxonomy( 'city', [ 'offers', 'candidate', 'company' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Code postal & Ville',

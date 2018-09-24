@@ -214,6 +214,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'greeting'           => Http\Request::getValue( 'greeting' ),
         'title'              => Http\Request::getValue( 'title' ),
         'address'            => Http\Request::getValue( 'address' ),
+        'country'            => Http\Request::getValue( 'country' ),
+        'region'             => Http\Request::getValue( 'region' ),
         'nif'                => Http\Request::getValue( 'nif' ),
         'stat'               => Http\Request::getValue( 'stat' ),
         'name'               => Http\Request::getValue( 'name' ),
@@ -239,7 +241,11 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       // update acf field
       $post_id = &$result;
       $this->update_acf_field( $post_id, $form );
+
+      // Ajouter les terms dans le post
       wp_set_post_terms( $post_id, [ (int) $form->branch_activity_id ], 'branch_activity' );
+      wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
+      wp_set_post_terms( $post_id, [ (int) $form->country ], 'city' );
       wp_send_json( [ 'success' => true, 'msg' => new Company( $post_id ), 'form' => $form ] );
     }
 
@@ -316,7 +322,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
-        'urlHelper'    => [
+        'Helper'    => [
           'redir' => $redir,
           'login' => home_url('/connexion/company') . $redirection
         ]

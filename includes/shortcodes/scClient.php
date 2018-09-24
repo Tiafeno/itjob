@@ -3,6 +3,7 @@
 namespace includes\shortcode;
 
 use Http;
+use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
 
@@ -15,8 +16,11 @@ if ( ! class_exists( 'scClient' ) ) :
     public function __construct() {
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
 
-      add_action( 'wp_ajax_trash_offer', [ &$this, 'itjob_trash_offer' ] );
-      add_action( 'wp_ajax_nopriv_trash_offer', [ &$this, 'itjob_trash_offer' ] );
+      add_action( 'wp_ajax_trash_offer', [ &$this, 'client_trash_offer' ] );
+      add_action( 'wp_ajax_nopriv_trash_offer', [ &$this, 'client_trash_offer' ] );
+
+      add_action( 'wp_ajax_client_company', [ &$this, 'client_company' ] );
+      add_action( 'wp_ajax_nopriv_client_company', [ &$this, 'client_company' ] );
     }
 
     public function sc_render_html( $attrs, $content = '' ) {
@@ -61,14 +65,18 @@ if ( ! class_exists( 'scClient' ) ) :
           // Script localize for company customer area
           wp_localize_script( 'espace-client', 'itOptions', [
             'offers'   => $this->get_company_offers(),
-            'ajax_url' => admin_url( 'admin-ajax.php' )
+            'Helper' => [
+              'ajax_url' => admin_url( 'admin-ajax.php' ),
+              'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
+            ]
           ] );
 
           return $Engine->render( '@SC/client-company.html.twig', [
             'client' => Company::get_company_by($user->ID),
             'offers' => $offers,
-            'url'    => [
-              'add_offer' => get_permalink( (int) ADD_OFFER_PAGE )
+            'Helper'    => [
+              'add_offer_url' => get_permalink( (int) ADD_OFFER_PAGE ),
+              'template_url' => get_template_directory_uri()
             ]
           ] );
         }
@@ -91,7 +99,7 @@ if ( ! class_exists( 'scClient' ) ) :
      * Function ajax
      * @route index.php?action=trash_offer&pId=<int>
      */
-    public function itjob_trash_offer() {
+    public function client_trash_offer() {
       global $wpdb;
       /**
        * @func wp_doing_ajax
@@ -131,6 +139,11 @@ if ( ! class_exists( 'scClient' ) ) :
       } else {
         wp_send_json( [ 'success' => false, 'msg' => "L'offre n'existe pas." ] );
       }
+    }
+    public function client_company() {
+      if ( ! is_user_logged_in()) wp_send_json(false);
+      $User = wp_get_current_user();
+      wp_send_json(Company::get_company_by($User->ID));
     }
 
     private function get_company_offers() {

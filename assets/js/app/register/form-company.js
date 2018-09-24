@@ -10,7 +10,19 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
         resolve: {
           abranchs: function (companyService) {
             return companyService.getBranchActivity();
-          }
+          },
+          regions: ['$http', function ($http) {
+            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=region', {cache: true})
+              .then(function (resp) {
+                return resp.data;
+              });
+          }],
+          allCity: ['$http', function ($http) {
+            return $http.get(itOptions.ajax_url + '?action=get_city', {cache: true})
+              .then(function (resp) {
+                return resp.data;
+              });
+          }]
         },
         controller: 'formController'
       },
@@ -19,7 +31,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
         url: '/form',
         templateUrl: itOptions.partials_url + '/company/form.html',
         controller: ['$rootScope', '$scope', 'companyFactory', 'companyService', function ($rootScope, $scope, companyFactory, companyService) {
-          $scope.login_url = itOptions.urlHelper.login;
+          $scope.login_url = itOptions.Helper.login;
           $scope.addPhone = function () {
             $rootScope.company.cellphone.push({id: $rootScope.countPhone, value: ''});
             $rootScope.countPhone += 1;
@@ -52,6 +64,8 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
                     companyForm.append('action', 'ajx_insert_company');
                     companyForm.append('greeting', $rootScope.company.greeting);
                     companyForm.append('title', $rootScope.company.title);
+                    companyForm.append('region', $rootScope.company.region);
+                    companyForm.append('country', $rootScope.company.country);
                     companyForm.append('address', $rootScope.company.address);
                     companyForm.append('cellphone', JSON.stringify($rootScope.company.cellphone));
                     companyForm.append('phone', $rootScope.company.phone);
@@ -73,8 +87,8 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
                             title: 'Reussi',
                             text: "Votre compte à étés bien enregistrer. Vous recevrez un message pour confirmer votre inscription. ",
                             type: "info",
-                          },  () => {
-                            window.location.href = itOptions.urlHelper.redir;
+                          }, () => {
+                            window.location.href = itOptions.Helper.redir;
                           });
                         } else {
                           $rootScope.isSubmit = !1;
@@ -100,6 +114,50 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
               width: '100%'
             })
           });
+
+          jQuery(".form-control.country").select2({
+            placeholder: "Selectioner une ville",
+            allowClear: true,
+            matcher: function (params, data) {
+              var inTerm = [];
+              // If there are no search terms, return all of the data
+              if (jQuery.trim(params.term) === '') {
+                return data;
+              }
+
+              // Do not display the item if there is no 'text' property
+              if (typeof data.text === 'undefined') {
+                return null;
+              }
+
+              // `params.term` should be the term that is used for searching
+              // `data.text` is the text that is displayed for the data object
+
+              var dataContains = data.text.toLowerCase();
+              var paramTerms = jQuery.trim(params.term).split(' ');
+              jQuery.each(paramTerms, (index, value) => {
+                if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
+                  inTerm.push(true);
+                } else {
+                  inTerm.push(false);
+                }
+              });
+              var isEveryTrue = _.every(inTerm, (boolean) => {
+                return boolean === true;
+              });
+              if (isEveryTrue) {
+                var modifiedData = jQuery.extend({}, data, true);
+                // modifiedData.text += ' (matched)';
+                return modifiedData;
+              } else {
+                return null;
+              }
+
+              // Return `null` if the term should not be displayed
+              return null;
+            }
+          });
+
           jQuery('[data-toggle="tooltip"]').tooltip();
         }]
       }
@@ -183,10 +241,12 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       }
     }
   }])
-  .controller('formController', ['$scope', '$rootScope', 'abranchs', function ($scope, $rootScope, abranchs) {
+  .controller('formController', ['$scope', '$rootScope', 'abranchs', 'regions', 'allCity', function ($scope, $rootScope, abranchs, regions, allCity) {
     $rootScope.countPhone = 1;
     $rootScope.isSubmit = !1;
     $rootScope.abranchs = _.clone(abranchs);
+    $rootScope.regions = _.clone(regions);
+    $rootScope.allCity = _.clone(allCity);
     $rootScope.company = {};
     $rootScope.company.greeting = 'mr';
     $rootScope.company.cellphone = [
