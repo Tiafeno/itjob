@@ -129,10 +129,10 @@ final class Company implements \iCompany {
     $cellphones = get_field( 'itjob_company_cellphone', $this->ID );
 
     $this->cellphones = [];
-    foreach ($cellphones as $cellphone) {
-      array_push($this->cellphones, $cellphone['number']);
-    }
-
+    if (is_array($cellphones))
+      foreach ($cellphones as $cellphone) {
+        array_push($this->cellphones, $cellphone['number']);
+      }
 
     return true;
   }
