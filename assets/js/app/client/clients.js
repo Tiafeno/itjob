@@ -93,7 +93,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
             });
 
             if (!_.isEmpty($scope.userEditor)) {
-              UIkit.modal('#modal-edit-overflow').show();
+              UIkit.modal('#modal-edit-user-overflow').show();
             }
           });
         };
@@ -114,7 +114,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
               if (dat.success) {
                 $scope.status = 'Votre information a bien été enregistrer avec succès';
                 $scope.$parent.Initialize();
-                UIkit.modal('#modal-edit-overflow').hide();
+                UIkit.modal('#modal-edit-user-overflow').hide();
               } else {
                 $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
               }
@@ -165,7 +165,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
               return val;
             });
             if (!_.isEmpty(offer) || !_.isNull($scope.offerEditor)) {
-              UIkit.modal('#modal-edit-overflow').show();
+              UIkit.modal('#modal-edit-offer-overflow').show();
             }
           });
         };
@@ -184,7 +184,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
           clientFactory
             .sendPostForm(offerForm)
             .then(resp => {
-
+              UIkit.modal('#modal-edit-offer-overflow').hide();
             });
         };
       }]
