@@ -55,8 +55,8 @@
         </div>
         <div class="d-inline-flex">
           <div class="px-4 text-center">
-            <div class="text-muted font-13">OFFRE{% if offers|length > 1 %}S{% endif %}</div>
-            <div class="h2 mt-2">{{ offers|length }}</div>
+            <div class="text-muted font-13">OFFRE(S)</div>
+            <div class="h2 mt-2">[[countOffer]]</div>
           </div>
         </div>
       </div>
@@ -74,7 +74,7 @@
       </li>
     </ul>
 
-    <div class="tab-content" ng-show="!loading">
+    <div class="tab-content" ng-show="loading">
       <div class="d-block mt-5 mb-5">
         <div class="row">
           <div class="col-md-4 m-auto">
@@ -86,15 +86,22 @@
         </div>
       </div>
     </div>
-    <div class="tab-content" ng-show="loading">
+    <div class="tab-content" ng-show="!loading">
       {# Profil utilisateur #}
       <div class="tab-pane fade active show" id="profil">
         <div class="page-content">
           <div class="ibox-body">
-            <general-information company="Company"></general-information>
+
+            <general-information
+              abranchs="asyncTerms('branch_activity')"
+              regions="asyncTerms('region')"
+              all-city="asyncTerms('city')"
+              company="Company">
+
+            </general-information>
+
           </div>
         </div>
-
       </div>
       {# .end Profil utilisateur#}
 
@@ -115,6 +122,7 @@
         </div>
       </div>
       {# .end offres#}
+
     </div>
   </div>
 </div>

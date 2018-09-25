@@ -58,11 +58,69 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/general-information.html',
       scope: {
-        Entreprise: '=company'
+        Entreprise: '=company',
+        regions: '&',
+        allCity: '&',
+        abranchs: '&'
       },
       link: function (scope, element, attrs) {
 
-      }
+      },
+      controller: ['$scope', '$q', 'clientFactory', function ($scope, $q, clientFactory) {
+        $scope.status = false;
+        $scope.userEditor = {};
+        $scope.openEditor = () => {
+          $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
+            $scope.Regions        = _.clone(data[0]);
+            $scope.branchActivity = _.clone(data[1]);
+            $scope.Citys          = _.clone(data[2]);
+            const incInput = ['address', 'greeting', 'name', 'stat', 'nif'];
+            const incTerm = ['branch_activity', 'region', 'country'];
+            incInput.forEach((InputValue) => {
+              if ($scope.Entreprise.hasOwnProperty(InputValue)) {
+                $scope.userEditor[InputValue] = _.clone($scope.Entreprise[InputValue]);
+              }
+            });
+
+            incTerm.forEach(TermValue => {
+              if ($scope.Entreprise.hasOwnProperty(TermValue)) {
+                if (typeof $scope.Entreprise[TermValue].term_id !== 'undefined') {
+                  $scope.userEditor[TermValue] = $scope.Entreprise[TermValue].term_id;
+                } else {
+                  $scope.userEditor[TermValue] = '';
+                }
+              }
+            });
+
+            if (!_.isEmpty($scope.userEditor)) {
+              UIkit.modal('#modal-edit-overflow').show();
+            }
+          });
+        };
+        $scope.updateUser = () => {
+          $scope.status = "Enregistrement en cours ...";
+          let userForm = new FormData();
+          let formObject = Object.keys($scope.userEditor);
+          userForm.append('action', 'update_profil');
+          userForm.append('company_id', parseInt($scope.Entreprise.ID));
+          formObject.forEach(function (property) {
+            let propertyValue = Reflect.get($scope.userEditor, property);
+            userForm.set(property, propertyValue);
+          });
+          clientFactory
+            .sendPostForm(userForm)
+            .then(resp => {
+              let dat = resp.data;
+              if (dat.success) {
+                $scope.status = 'Votre information a bien été enregistrer avec succès';
+                $scope.$parent.Initialize();
+                UIkit.modal('#modal-edit-overflow').hide();
+              } else {
+                $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
+              }
+            });
+        }
+      }]
     }
   }])
   .directive('offerLists', [function () {
@@ -78,7 +136,6 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
       },
       link: function (scope, element, attrs) {
         scope.Helper = itOptions.Helper;
-
         jQuery('.input-group.date').datepicker({
           format: "mm/dd/yyyy",
           language: "fr",
@@ -88,7 +145,6 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
           forceParse: false,
           autoclose: true
         });
-
       },
       controller: ['$scope', '$q', 'clientFactory', function ($scope, $q, clientFactory) {
         $scope.offerEditor = {};
@@ -98,11 +154,9 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
           });
 
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
-
             $scope.Regions        = _.clone(data[0]);
             $scope.branchActivity = _.clone(data[1]);
             $scope.Citys          = _.clone(data[2]);
-
             $scope.offerEditor = _.mapObject(offer, (val, key) => {
               if (typeof val.term_id !== 'undefined') return val.term_id;
               if (typeof val.label !== 'undefined') return val.value;
@@ -114,12 +168,10 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
               UIkit.modal('#modal-edit-overflow').show();
             }
           });
-
         };
         $scope.$watch('current', value => {
 
         });
-
         $scope.editOffer = (offerId) => {
           let offerForm = new FormData();
           let formObject = Object.keys($scope.offerEditor);
@@ -140,19 +192,27 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
   }])
   .controller('clientCompanyCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService',
     function ($scope, $http, $q, clientFactory, clientService) {
-      $scope.loading = false;
+      $scope.loading = true;
       $scope.Company = {};
       $scope.offerLists = [];
+      $scope.countOffer = 0;
 
       // Récuperer les données du client
-      clientService
-        .Company()
-        .then(resp => {
-          var data = resp.data;
-          $scope.Company = data.Company;
-          $scope.offerLists = data.Offers;
-          $scope.loading = true;
-        });
+      $scope.Initialize = () => {
+        console.log('Initialize');
+        $scope.loading = true;
+        clientService
+          .Company()
+          .then(resp => {
+            var data = resp.data;
+            $scope.Company = _.clone(data.Company);
+            $scope.offerLists = _.clone(data.Offers);
+            $scope.countOffer = $scope.offerLists.length;
+            $scope.loading = false;
+          });
+      };
+
+      $scope.Initialize();
 
       this.$onInit = function () {
 

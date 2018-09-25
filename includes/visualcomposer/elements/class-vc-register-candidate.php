@@ -202,15 +202,11 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       wp_set_post_terms( $Candidate->getId(), [ (int) $form->abranch ], 'branch_activity' );
 
-      $job_ids = array_map( function ( $jobs ) {
-        return $jobs->term_id;
-      }, $form->jobSougths );
+      $job_ids = array_map( function ( $jobs ) { return $jobs->term_id; }, $form->jobSougths );
       wp_set_post_terms( $Candidate->getId(), $job_ids, 'job_sought' );
 
       // Ajouter les languages
-      $languageTermIDs = array_map( function ( $item ) {
-        return $item->term_id;
-      }, $form->languages );
+      $languageTermIDs = array_map( function ( $item ) { return $item->term_id; }, $form->languages );
       wp_set_post_terms( $Candidate->getId(), $languageTermIDs, 'language' );
 
       // Update ACF field

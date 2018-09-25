@@ -23,6 +23,9 @@ if ( ! class_exists( 'scClient' ) ) :
 
       add_action( 'wp_ajax_update_offer', [ &$this, 'update_offer' ] );
       add_action( 'wp_ajax_nopriv_update_offer', [ &$this, 'update_offer' ] );
+
+      add_action( 'wp_ajax_update_profil', [ &$this, 'update_profil' ] );
+      add_action( 'wp_ajax_nopriv_update_profil', [ &$this, 'update_profil' ] );
     }
 
     public function sc_render_html( $attrs, $content = '' ) {
@@ -95,6 +98,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
+    /**
+     * Modifier une offre
+     */
     public function update_offer() {
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         wp_send_json( false );
@@ -102,6 +108,7 @@ if ( ! class_exists( 'scClient' ) ) :
       $post_id = Http\Request::getValue('post_id', null);
       if (is_null($post_id)) wp_send_json(false);
       $form = [
+        // TODO: Modifier le titre de l'offre et son champ ACF
         'post'             => Http\Request::getValue( 'postPromote' ),
         'datelimit'        => Http\Request::getValue( 'dateLimit' ),
         'contrattype'      => Http\Request::getValue( 'contractType' ),
@@ -116,6 +123,41 @@ if ( ! class_exists( 'scClient' ) ) :
         update_field("itjob_offer_{$key}", $value, (int)$post_id);
       }
       wp_send_json(['success' => true, 'form' => $form]);
+    }
+
+    /**
+     * Modifier le profil
+     */
+    public function update_profil() {
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $company_id = Http\Request::getValue('company_id', null);
+      if (is_null($company_id)) wp_send_json(false);
+      $form = [
+        'address'         => Http\Request::getValue( 'address' ),
+        'greeting'        => Http\Request::getValue( 'greeting' ),
+        'name'            => Http\Request::getValue( 'name' ),
+        'stat'            => Http\Request::getValue( 'stat' ),
+        'nif'             => Http\Request::getValue( 'nif' )
+      ];
+      $terms = [
+        'branch_activity' => Http\Request::getValue( 'branch_activity' ),
+        'region'          => Http\Request::getValue( 'region' ),
+        'city'            => Http\Request::getValue( 'country' ),
+      ];
+
+      foreach ($terms as $key => $value) {
+        $isError = wp_set_post_terms( $company_id, [(int)$value], $key );
+        if (is_wp_error($isError)) wp_send_json(['success' => false, 'msg' => $isError->get_error_message()]);
+      }
+
+      foreach ($form as $key => $value) {
+        update_field("itjob_company_{$key}", $value, $company_id);
+      }
+
+      wp_send_json(['success' => true]);
+
     }
 
     /**
@@ -164,6 +206,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
+    /**
+     * Récuperer les information nécessaire pour l'espace client
+     */
     public function client_company() {
       if ( ! is_user_logged_in() ) {
         wp_send_json( false );

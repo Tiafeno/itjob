@@ -14,6 +14,15 @@
  *   copies or substantial portions of the Software.
  */
 
+const CLIENT_ID = "kaleFli5PJb3o2kCstBKDMkU09m3ak2FcvcJHqcG";
+const CLIENT_SECRET = "MiSw1PAHwg9bRiVr99KsZyYGrJr57nua7JXR2vdD";
+
+const AUTHORIZATION_ENDPOINT = "http://localhost/managna/oauth/authorize";
+const TOKEN_ENDPOINT = "http://localhost/managna/oauth/token";
+const REDIRECT_URI = "http://localhost/managna/";
+
+
+
 define( '__SITENAME__', 'itJob' );
 define( '__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj' );
 define( 'TWIG_TEMPLATE_PATH', get_template_directory() . '/templates' );
