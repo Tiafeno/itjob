@@ -475,6 +475,9 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_style( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.css' );
       wp_register_script( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.min.js', [], $itJob->version, true );
 
+      wp_register_style( 'alertify', VENDOR_URL . '/alertifyjs/dist/css/alertify.css' );
+      wp_register_script( 'alertify', VENDOR_URL . '/alertifyjs/dist/js/alertify.js', [], '1.0.11', true );
+
       wp_register_style( 'froala-editor', VENDOR_URL . '/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
       wp_register_style( 'froala', VENDOR_URL . '/froala-editor/css/froala_style.min.css', [
         'froala-editor',

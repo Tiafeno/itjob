@@ -1,8 +1,15 @@
-angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'ngSanitize'])
+angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
   .value('froalaConfig', {
     toolbarInline: false,
     quickInsertTags: null,
     toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
+  })
+  .value('alertifyConfig', {
+    notifier: {
+      delay: 5,
+      position: 'top-right',
+      closeButton: true
+    }
   })
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
@@ -151,9 +158,14 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'n
                     });
                   });
                 }
-                if (!isValid) return;
+                if (!isValid) {
+                  alertify
+                    .error("Une erreur s’est produite. Veuillez remplir correctement les champs requis");
+
+                  return false;
+                }
                 $rootScope.isSubmit = !$rootScope.isSubmit;
-                var offerForm = new FormData();
+                const offerForm = new FormData();
                 offerForm.append('action', 'ajx_insert_offers');
                 offerForm.append('post', $rootScope.offers.postpromote);
                 offerForm.append('ctt', $rootScope.offers.contrattype);
@@ -169,7 +181,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'n
                 offerFactory
                   .sendPostForm(offerForm)
                   .then(function (response) {
-                    var data = response.data;
+                    let data = response.data;
                     if (data.success) {
                       $rootScope.offers.ID = data.offer.ID;
                       $rootScope.isSubmit = !1;
@@ -189,7 +201,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'n
     $urlServiceProvider.rules.otherwise({state: 'form.add-offer'});
 
   })
-  .service('offerService', ['$http', '$q', function ($http, $q) {
+  .service('offerService', ['$http', function ($http) {
     return {
       getBranchActivity: function () {
         return $http.get(itOptions.ajax_url + '?action=ajx_get_branch_activity', {cache: true})
@@ -239,7 +251,8 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'n
       });
 
     }])
-  .run(['$state', function ($state) {
+  .run(['$state', 'alertifyConfig', function ($state, alertifyConfig) {
+    alertify.defaults = alertifyConfig;
     $state.defaultErrorHandler(function (error) {
       // This is a naive example of how to silence the default error handler.
       if (error.detail !== undefined) {

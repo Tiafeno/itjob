@@ -357,6 +357,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         if ( ! defined('VENDOR_URL'))
           define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
         wp_enqueue_style( 'sweetalert' );
+        wp_enqueue_style( 'alertify' );
         wp_enqueue_style( 'b-datepicker-3');
         wp_enqueue_style( 'themify-icons' );
         wp_enqueue_style( 'froala' );
@@ -365,13 +366,12 @@ if ( ! class_exists( 'vcOffers' ) ):
           [
             'angular',
             'angular-ui-route',
-            'angular-sanitize',
             'angular-messages',
-            'angular-animate',
             'angular-aria',
             'b-datepicker',
             'fr-datepicker',
             'sweetalert',
+            'alertify',
             'froala',
           ], $itJob->version, true );
 
