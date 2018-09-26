@@ -144,8 +144,6 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       wp_send_json( $usr );
     }
 
-    // AJAX
-
     public function ajx_get_branch_activity() {
       /**
        * @func wp_doing_ajax

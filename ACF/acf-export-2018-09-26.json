@@ -1088,20 +1088,28 @@
                 "key": "field_5ba7f1ee25987",
                 "label": "Plan tarifaire",
                 "name": "itjob_offer_rateplan",
-                "type": "true_false",
+                "type": "select",
                 "instructions": "Une option soumise à un frais supplémentaire payable par MVOLA",
-                "required": 0,
+                "required": 1,
                 "conditional_logic": 0,
                 "wrapper": {
                     "width": "",
                     "class": "",
                     "id": ""
                 },
-                "message": "ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre et vous ne recevrez plus de notification venant de cette offre.",
-                "default_value": 0,
+                "choices": {
+                    "standard": "Standard",
+                    "sereine": "Sereine"
+                },
+                "default_value": [
+                    "standard"
+                ],
+                "allow_null": 0,
+                "multiple": 0,
                 "ui": 0,
-                "ui_on_text": "",
-                "ui_off_text": ""
+                "ajax": 0,
+                "return_format": "value",
+                "placeholder": ""
             },
             {
                 "key": "field_5b8904a232984",

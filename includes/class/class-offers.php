@@ -15,16 +15,22 @@ final class Offers implements \iOffer {
   /** @var int $ID - Identification de l'offre */
   public $ID;
 
+  /** @var bool $activated - 1: Activer, 0: Non disponible */
   private $activated;
 
+  /** @var string $postPromote - Titre ou le champ 'itjob_offer_post' ACF */
   public $postPromote;
 
+  /** @var array $branch_activity - Secteur d'activité ['term_id' => 150, 'name' => 'Exemple'] */
   public $branch_activity;
+
+  /** @var array $offer_status - Status de l'offre ['status' => 0 , 'name' => 'En attente'] */
+  public $offer_status;
 
   /** @var array|null $tags - Tag pour le réferencement et la recherche interne */
   public $tags = [];
 
-  /** @var string $title - Titre de l'offre équivalent avec la variable `Poste pourvu` */
+  /** @var string $title - Titre de l'offre équivalent avec la variable `$postPromote` */
   public $title;
 
   /** @var date $datePublication - Date de la publication de l'offre */

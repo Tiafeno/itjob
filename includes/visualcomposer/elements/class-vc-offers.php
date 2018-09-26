@@ -14,7 +14,8 @@ if ( ! class_exists( 'vcOffers' ) ):
   class vcOffers extends \WPBakeryShortCode {
     public function __construct() {
       add_action( 'init', [ $this, 'vc_offers_mapping' ] );
-      add_filter( 'acf/update_value/name=itjob_offer_abranch', [ &$this, 'update_offer_reference' ], 10, 3 );
+      add_filter( 'acf/update_value/name=itjob_offer_abranch', [ &$this, 'update_offer_reference' ], 10, 2 );
+      add_filter( 'acf/update_value/name=itjob_offer_post', [ &$this, 'update_offer_title' ], 10, 2 );
 
       add_shortcode( 'vc_offers', [ $this, 'vc_offers_render' ] );
       add_shortcode( 'vc_featured_offers', [ $this, 'vc_featured_offers_render' ] );
@@ -179,7 +180,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       $result = wp_insert_post( [
         'post_title'   => $form->post,
         'post_content' => '',
-        'post_status'  => 'publish',
+        'post_status'  => 'pending',
         'post_author'  => $User->ID,
         'post_type'    => 'offers'
       ] );
@@ -217,11 +218,8 @@ if ( ! class_exists( 'vcOffers' ) ):
      * @param $form
      */
     private function update_acf_field( $post_id, $form ) {
-      update_field( 'itjob_offer_post', $form->post, $post_id );
-
       // FEATURE: La référence est automatiquement gérer par le systeme
-      //update_field( 'itjob_offer_reference', $form->reference, $post_id );
-
+      update_field( 'itjob_offer_post', $form->post, $post_id );
       update_field( 'itjob_offer_datelimit', $form->datelimit, $post_id );
       update_field( 'itjob_offer_contrattype', $form->ctt, $post_id );
       update_field( 'itjob_offer_profil', $form->profil, $post_id );
@@ -237,7 +235,7 @@ if ( ! class_exists( 'vcOffers' ) ):
     // This is "itjob_offer_abranch" field
     // Cette fonction permet de mettre à jour la reference par rapport à son secteur d'activité
     // Callback: acf/update_value/name=itjob_offer_abranch
-    public function update_offer_reference( $value, $post_id, $field ) {
+    public function update_offer_reference( $value, $post_id ) {
       $taxonomy        = "branch_activity";
       $term_abranch_id = (int) $value;
       if ( term_exists( $term_abranch_id, $taxonomy ) ) {
@@ -246,6 +244,24 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
 
       return $value;
+    }
+
+    /**
+     * Mettre à jour le titre de l'annonce si on change la valeur du champ ACF 'itjob_offer_post'
+     * @param $title
+     * @param $post_id
+     *
+     * @return string
+     */
+    public function update_offer_title( $title, $post_id ) {
+      $isUpdate = wp_update_post([
+        'ID' => $post_id,
+        'post_title' => $title
+      ], true);
+      if (is_wp_error($isUpdate)) {
+        return $isUpdate->get_error_message();
+      }
+      return $title;
     }
 
     /**
