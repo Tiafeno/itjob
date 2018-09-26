@@ -31,7 +31,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
     this.offers = _.clone(itOptions.offers);
     this.Company = () => {
       return $http.get(itOptions.Helper.ajax_url + '?action=client_company', {
-        cache: true
+        cache: false
       });
     }
   }])
@@ -61,7 +61,8 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
         Entreprise: '=company',
         regions: '&',
         allCity: '&',
-        abranchs: '&'
+        abranchs: '&',
+        init: '&init'
       },
       link: function (scope, element, attrs) {
 
@@ -113,13 +114,18 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
               let dat = resp.data;
               if (dat.success) {
                 $scope.status = 'Votre information a bien été enregistrer avec succès';
-                $scope.$parent.Initialize();
-                UIkit.modal('#modal-edit-user-overflow').hide();
+                $scope.init();
               } else {
                 $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
               }
             });
-        }
+        };
+        // Event on modal dialog close or hide
+        UIkit.util.on('#modal-edit-user-overflow', 'hide', function (e) {
+          e.preventDefault();
+          e.target.blur();
+          $scope.status = false;
+        });
       }]
     }
   }])
@@ -132,7 +138,8 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
         Offers: '=offers',
         regions: '&',
         allCity: '&',
-        abranchs: '&'
+        abranchs: '&',
+        init: '&init'
       },
       link: function (scope, element, attrs) {
         scope.Helper = itOptions.Helper;
@@ -185,6 +192,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
             .sendPostForm(offerForm)
             .then(resp => {
               UIkit.modal('#modal-edit-offer-overflow').hide();
+              $scope.init();
             });
         };
       }]
