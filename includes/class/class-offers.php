@@ -11,17 +11,18 @@ use includes\object as Obj;
 final class Offers implements \iOffer {
   // Added Trait Class
   use \Auth;
+  use \OfferHelper;
 
   /** @var int $ID - Identification de l'offre */
   public $ID;
 
   /** @var bool $activated - 1: Activer, 0: Non disponible */
-  private $activated;
+  public $activated;
 
   /** @var string $postPromote - Titre ou le champ 'itjob_offer_post' ACF */
   public $postPromote;
 
-  /** @var array $branch_activity - Secteur d'activité ['term_id' => 150, 'name' => 'Exemple'] */
+  /** @var array $branch_activity - Secteur d'activité */
   public $branch_activity;
 
   /** @var array $offer_status - Status de l'offre ['status' => 0 , 'name' => 'En attente'] */
@@ -45,7 +46,7 @@ final class Offers implements \iOffer {
   /** @var int $proposedSalary - Salaire proposé (facultatif) */
   public $proposedSalary;
 
-  /** @var string $region - Region où se trouve l'offre */
+  /** @var string $region - Region */
   public $region;
 
   /** @var array $contractType -  Type de contrat */
@@ -77,11 +78,18 @@ final class Offers implements \iOffer {
     $output                = get_post( $postId );
     $this->ID              = $output->ID;
     $this->title           = $output->post_title; // Position Filled
-    $this->userAuthor      = Obj\jobServices::getUserData( $output->post_author );
+    $this->offer_status    = $output->post_status;
+    /**
+     * La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
+     * NB: Il est donc preferable que les administrateurs ne publient pas une offre pour une ou des
+     * entreprise.
+     */
+    $this->author      = Obj\jobServices::getUserData( $output->post_author );
     $this->datePublication = get_the_date( 'j F, Y', $output );
     if ( $this->is_offer() ) {
       $this->post_url = get_the_permalink($this->ID);
       $this->acfElements()->getOfferTaxonomy();
+      $this->isMyOffer($this->ID);
     }
 
     return $this;
@@ -103,7 +111,7 @@ final class Offers implements \iOffer {
     $regions      = wp_get_post_terms( $this->ID, 'region', [
       "fields" => "all"
     ] );
-    $this->region = reset( $regions );
+    $this->region = isset($regions[0]) ? $regions[0] : '';
     $this->tags   = wp_get_post_terms( $this->ID, 'itjob_tag', [ "fields" => "names" ] );
     if ( is_wp_error( $this->tags ) ) {
       $this->tags = null;
@@ -131,7 +139,7 @@ final class Offers implements \iOffer {
     $this->mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
     $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
-    $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID );
+    $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID ); // Objet Term
 
     return $this;
   }

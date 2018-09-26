@@ -53,6 +53,22 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
       }).label;
     }
   }])
+  .filter('Status', [function() {
+    const postStatus = [
+      {
+        slug: 'publish',
+        label: 'Vérifier'
+      },
+      {
+        slug: 'pending',
+        label: 'En attente'
+      }
+    ];
+    return (inputValue) => {
+      if (typeof inputValue === 'undefined') return inputValue;
+      return _.findWhere(postStatus, {slug: jQuery.trim(inputValue)}).label;
+    }
+  }])
   .directive('generalInformation', [function () {
     return {
       restrict: 'E',

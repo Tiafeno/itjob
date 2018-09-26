@@ -17,7 +17,7 @@ final class Company implements \iCompany {
   public $greeting; // Mr, Mrs
   // Le nom de l'utilisateur ou le responsable
   public $name;
-  public $userAuthor;
+  public $author;
   // Adresse email de l'utilisateur ou le responsable
   public $email;
   public $title;
@@ -88,7 +88,7 @@ final class Company implements \iCompany {
       $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
 
       // FIX: Ajouter ou crée un utilisateur quand un entreprise est publier ou ajouter
-      $this->userAuthor = Obj\jobServices::getUserData( $user->ID );
+      $this->author = Obj\jobServices::getUserData( $user->ID );
 
       // Récuperer la region
       $regions = wp_get_post_terms($this->ID, 'region');

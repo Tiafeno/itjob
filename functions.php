@@ -38,9 +38,12 @@ $candidate = null;
 // Variable pour les alerts
 $it_alerts = [];
 
-// middlewares
+
 require 'includes/itjob-configs.php';
 require 'includes/itjob-functions.php';
+
+// middlewares
+require 'includes/class/middlewares/OfferHelper.php';
 require 'includes/class/middlewares/Auth.php';
 require 'includes/class/middlewares/Register.php';
 
@@ -98,6 +101,24 @@ require 'jobs/itjob-cron.php';
 
 // Autoload composer libraries
 require 'composer/vendor/autoload.php';
+
+//if (isset($_GET['OAuth'])) {
+//  $client = new OAuth2\Client(CLIENT_ID, CLIENT_SECRET);
+//  if (!isset($_GET['code']))
+//  {
+//    $auth_url = $client->getAuthenticationUrl(AUTHORIZATION_ENDPOINT, REDIRECT_URI);
+//    header('Location: ' . $auth_url);
+//    die('Redirect');
+//  }
+//  else
+//  {
+//    $params = array('code' => $_GET['code'], 'redirect_uri' => REDIRECT_URI);
+//    $response = $client->getAccessToken(TOKEN_ENDPOINT, 'authorization_code', $params);
+//    echo "<pre>";
+//    print_r($response);
+//  }
+//}
+
 
 try {
   $loader = new Twig_Loader_Filesystem();

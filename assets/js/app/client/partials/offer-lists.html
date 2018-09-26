@@ -139,10 +139,12 @@
     <thead class="thead-default thead-lg">
     <tr>
       <th>ID</th>
+      <th>Activation</th>
       <th>Poste à promouvoir</th>
       <th>Type de contrat</th>
       <th>Secteur d'activité</th>
-      <th>Région</th>
+      <th>Status</th>
+      <th>Candidat postulé</th>
       <th>Réference</th>
       <th>Actions</th>
     </tr>
@@ -152,11 +154,21 @@
     <tr ng-repeat="offer in Offers">
       <td>[[offer.ID]]</td>
       <td>
+        <span class="badge badge-pill" ng-class="{'badge-blue' : offer.activated , 'badge-danger' : !offer.activated }">
+          [[offer.activated ? 'OUI' : 'NON']]
+        </span>
+      </td>
+      <td>
         <a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a>
       </td>
       <td>[[ offer.contractType[ 'label' ] ]]</td>
       <td>[[ offer.branch_activity.name ]]</td>
-      <td>[[ offer.region.name ]]</td>
+      <td>
+        <span class="badge badge-pill" ng-class="{'badge-blue' : offer.offer_status == 'publish', 'badge-warning' : offer.offer_status == 'pending'}">
+          [[ offer.offer_status|Status]]
+        </span>
+      </td>
+      <td>[[ offer.count_candidat_apply ]]</td>
       <td>
         <span class="badge badge-info badge-pill">[[ offer.reference ]]</span>
       </td>
