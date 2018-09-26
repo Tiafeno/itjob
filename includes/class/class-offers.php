@@ -74,6 +74,7 @@ final class Offers implements \iOffer {
     $this->userAuthor      = Obj\jobServices::getUserData( $output->post_author );
     $this->datePublication = get_the_date( 'j F, Y', $output );
     if ( $this->is_offer() ) {
+      $this->post_url = get_the_permalink($this->ID);
       $this->acfElements()->getOfferTaxonomy();
     }
 
