@@ -41,12 +41,13 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'n
             }]
           },
           controller: ['$rootScope', '$scope', 'offerFactory', function ($rootScope, $scope, offerFactory) {
-            $scope.ratePlan = false;
+            // Mode de diffusion par default
+            $scope.rateplan = 'standard';
             $scope.sendSubscription = () => {
               if ($scope.ratePlan) {
                 const sendData = new FormData();
                 sendData.append('action', 'ajx_update_offer_rateplan');
-                sendData.append('ratePlan', $scope.ratePlan);
+                sendData.append('rateplan', $scope.rateplan);
                 sendData.append('offerId', $rootScope.offers.ID);
                 offerFactory
                   .sendPostForm(sendData)
@@ -67,9 +68,9 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'n
               }
 
             };
-            $scope.$watch('ratePlan',  value => {
-              console.log(value);
-            }, true);
+            $scope.$watch('rateplan',  value => {
+
+            });
           }]
         },
         {
@@ -235,7 +236,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria', 'n
 
       $rootScope.$watch('offers', function (value) {
         // Watch variable here...
-      }, true);
+      });
 
     }])
   .run(['$state', function ($state) {

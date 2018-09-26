@@ -200,10 +200,11 @@ if ( ! class_exists( 'vcOffers' ) ):
      */
     public function update_offer_rateplan() {
       $offer_id = Http\Request::getValue('offerId');
-      if ($offer_id) {
+      $rateplan = Http\Request::getValue('rateplan', false);
+      if ($offer_id && $rateplan) {
         $Offer = new Offers((int)$offer_id);
         if ($Offer->is_offer()) {
-          update_field('itjob_offer_rateplan', 1, $Offer->ID);
+          update_field('itjob_offer_rateplan', $rateplan, $Offer->ID);
           wp_send_json(['success' => true]);
         }
       }

@@ -11,11 +11,13 @@
   {#<h4 class="m-0">{{ title }}</h4>#}
   <div class="mt-4"></div>
   <div class="ibox" ng-app="addOfferApp">
-
     <ui-view>
       <div style="min-height: 30em; width: 100%;" class="uk-flex">
-        <img ng-src="{{ template_url }}/img/loading.gif" class="uk-flex uk-logo uk-margin-auto-vertical"
-             style="margin: auto"/>
+        <div class="uk-margin-auto-vertical uk-margin-auto">
+          <img ng-src="{{ template_url }}/img/loading.gif" class="uk-flex uk-logo uk-margin-auto-vertical"
+               style="margin: auto" width="50"/>
+          <div class="text-center">Chargement en cours ...</div>
+        </div>
       </div>
     </ui-view>
   </div>
