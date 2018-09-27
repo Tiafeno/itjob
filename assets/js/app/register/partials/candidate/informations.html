@@ -40,17 +40,17 @@
           <label class="font-normal">Emploi recherché <span style="color: red">*</span></label>
             <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
           <tags-input ng-model="formData.jobSougths" display-property="name" placeholder="Emploi recherché" replace-spaces-with-dashes="false" required>
-            <auto-complete source="queryJobs($query)"
+            <auto-complete source="queryJobs($query, 'job_sought')"
                            min-length="0"
                            load-on-focus="false"
-                           load-on-empty="false"
+                           load-on-empty="true"
                            max-results-to-show="10"
-                           template="my-custom-template">
+                           template="job-template">
             </auto-complete>
           </tags-input>
-          <script type="text/ng-template" id="my-custom-template">
+          <script type="text/ng-template" id="job-template">
             <div class="right-panel">
-              <span style="font-size: 12px">{{data.name}}</span>
+              <span style="font-size: 12px; font-family: Poppins, sans-serif;">{{data.name}}</span>
             </div>
           </script>
             <p class="mention-text col-md-8 mt-1">

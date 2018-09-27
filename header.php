@@ -138,6 +138,9 @@
       color: #71808f;
       border-bottom-color: #f39c12;
     }
+    .card {
+      background-color: transparent;
+    }
   </style>
 </head>
 <body <?php body_class(); ?> >
