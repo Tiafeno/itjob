@@ -203,7 +203,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 if ( ! empty( $software ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
-                    'taxonomy'         => 'master_software',
+                    'taxonomy'         => 'software',
                     'field'            => 'term_id',
                     'terms'            => (int) $software,
                     'include_children' => false

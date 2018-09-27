@@ -108,7 +108,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
               });
           };
 
-          // Rechercher les outils et technologie dans 'master_software' taxonomie
+          // Rechercher les outils et technologie dans 'software' taxonomie
           $rootScope.querySoftware = function ($query) {
             return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=software', {
               cache: true
