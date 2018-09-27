@@ -15,9 +15,10 @@ use includes\post\Company;
 if ( ! class_exists( 'vcRegisterCompany' ) ) :
   class vcRegisterCompany extends \WPBakeryShortCode {
     public static $container_class = '';
+    public static $isInstance = false;
     public function __construct() {
       add_action( 'init', [ $this, 'register_mapping' ] );
-      add_action( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
+      add_filter( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
 
       if ( ! shortcode_exists('vc_register_company'))
         add_shortcode( 'vc_register_company', [ &$this, 'register_render_html' ] );
@@ -28,8 +29,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       add_action( 'wp_ajax_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
       add_action( 'wp_ajax_nopriv_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
 
-      add_action( 'wp_ajax_ajx_get_taxonomy', [ &$this, 'ajx_get_taxonomy' ] );
-      add_action( 'wp_ajax_nopriv_ajx_get_taxonomy', [ &$this, 'ajx_get_taxonomy' ] );
+      add_action( 'wp_ajax_ajx_get_taxonomy', [ &$this, 'get_taxonomy' ] );
+      add_action( 'wp_ajax_nopriv_ajx_get_taxonomy', [ &$this, 'get_taxonomy' ] );
 
       add_action( 'wp_ajax_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
       add_action( 'wp_ajax_nopriv_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
@@ -37,7 +38,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
     public static function getInstance() {
       self::$container_class = 'uk-margin-large-top';
-      return new vcRegisterCompany();
+      return new self();
     }
 
     /**
@@ -159,26 +160,26 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       wp_send_json( $terms );
     }
 
-    public function ajx_get_taxonomy() {
+    public function get_taxonomy($taxonomy = false) {
+      $validateTaxonomy = ['job_sought', 'software'];
       /**
        * @func wp_doing_ajax
        * (bool) True if it's a WordPress Ajax request, false otherwise.
        */
-      if ( ! \wp_doing_ajax() || empty( $_GET ) ) {
-        return false;
+      if ( \wp_doing_ajax() ||  ! empty( $_GET ) ) {
+        $taxonomy = Http\Request::getValue( 'tax', false );
       }
 
-      $taxonomy = Http\Request::getValue( 'tax', false );
-      // TODO: Ajouter seulement les terms activé
+      // FEATURED: Ajouter seulement les terms activé
       $termValid = [];
       if ( $taxonomy ) {
         $terms = get_terms( $taxonomy, [
           'hide_empty' => false,
           'fields'     => 'all'
         ] );
-        if ($taxonomy === 'job_sought' || $taxonomy === 'master_software'):
+        if (in_array($taxonomy, $validateTaxonomy)):
           foreach ($terms as $term) {
-            $valid = get_field('activated', "{$taxonomy}_{$term->term_id}");
+            $valid = get_term_meta( $term->term_id, 'activated', true);
             if ($valid) {
               array_push($termValid, $term);
             }
@@ -186,7 +187,13 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         else:
           $termValid = &$terms;
         endif;
-        wp_send_json( $termValid );
+
+        if ( \wp_doing_ajax() || !empty( $_GET ) ) {
+          wp_send_json( $termValid );
+        } else {
+          return $termValid;
+        }
+
       } else {
         return false;
       }

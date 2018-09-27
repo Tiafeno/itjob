@@ -108,6 +108,19 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
               });
           };
 
+          // Rechercher les outils et technologie dans 'master_software' taxonomie
+          $rootScope.querySoftware = function ($query) {
+            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=software', {
+              cache: true
+            })
+              .then(function (response) {
+                const softwares = response.data;
+                return softwares.filter(function (software) {
+                  return software.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+                });
+              });
+          };
+
 
           this.$onInit = function () {
             $rootScope.initDatePicker();

@@ -18,7 +18,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   public $driveLicences; // A, B, C & A`
   public $jobSought;
   public $languages = [];
-  public $masterSoftware = [];
+  public $softwares = [];
   public $trainings = [];
   public $experiences = [];
   public $centerInterest;
@@ -77,7 +77,9 @@ final class Candidate extends UserParticular implements \iCandidate {
         'meta_compare'   => '='
       ];
       $candidates = get_posts( $args );
-      if ( empty( $candidates ) ) return null;
+      if ( empty( $candidates ) ) {
+        return null;
+      }
       $candidate = reset( $candidates );
 
       return new Candidate( $candidate->ID );
@@ -101,7 +103,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     if ( ! function_exists( 'the_field' ) ) {
       return false;
     }
-    $this->activated   = get_field('activated', $this->getId());
+    $this->activated   = get_field( 'activated', $this->getId() );
     $this->status      = get_field( 'itjob_cv_status', $this->getId() );
     $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [
       'training_dateBegin',
@@ -122,7 +124,8 @@ final class Candidate extends UserParticular implements \iCandidate {
 
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
     $this->newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
-    $this->driveLicences   = get_field('itjob_cv_driveLicence', $this->getId());
+    $this->driveLicences  = get_field( 'itjob_cv_driveLicence', $this->getId() );
+
     return true;
   }
 
@@ -168,12 +171,26 @@ final class Candidate extends UserParticular implements \iCandidate {
    * Récuperer les terms
    */
   private function fieldTax() {
-    $this->languages      = wp_get_post_terms( $this->getId(), 'language', [ "fields" => "all" ] );
-    $this->masterSoftware = wp_get_post_terms( $this->getId(), 'master_software', [ "fields" => "all" ] );
-    $this->district       = wp_get_post_terms( $this->getId(), 'region', [ "fields" => "all" ] );
-    $this->jobSought      = wp_get_post_terms( $this->getId(), 'job_sought', [ "fields" => "all" ] );
-    $this->tags           = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
-    $this->branch_activity  = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "names" ] );
+    $this->languages       = wp_get_post_terms( $this->getId(), 'language', [ "fields" => "all" ] );
+    $softwares             = wp_get_post_terms( $this->getId(), 'software', [ "fields" => "all" ] );
+    $this->softwares       = $this->getActivateField( $softwares );
+    $this->district        = wp_get_post_terms( $this->getId(), 'region', [ "fields" => "all" ] );
+    $jobSoughts            = wp_get_post_terms( $this->getId(), 'job_sought', [ "fields" => "all" ] );
+    $this->jobSought       = $this->getActivateField( $jobSoughts );
+    $this->tags            = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
+    $this->branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "names" ] );
+  }
+
+  private function getActivateField( $terms ) {
+    $validTerms = [];
+    foreach ( $terms as $term ) {
+      $valid = get_term_meta( $term->term_id, 'activated', true );
+      if ( $valid ) {
+        array_push( $validTerms, $term );
+      }
+    }
+
+    return $validTerms;
   }
 
   /**
@@ -240,7 +257,10 @@ final class Candidate extends UserParticular implements \iCandidate {
     return $allCandidate;
   }
 
-  public function remove() {}
-  public function update() {}
+  public function remove() {
+  }
+
+  public function update() {
+  }
 }
 

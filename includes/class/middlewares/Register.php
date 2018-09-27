@@ -214,7 +214,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (Logiciel maitrisés)
-    register_taxonomy( 'master_software', [ 'candidate' ], [
+    register_taxonomy( 'software', [ 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Logiciels',
@@ -233,7 +233,7 @@ trait Register {
       'query_var'         => true,
       'public'            => true,
       'show_in_rest'      => true,
-      'rewrite'           => array( 'slug' => 'master_software' ),
+      'rewrite'           => array( 'slug' => 'software' ),
     ] );
 
     // Now register the taxonomy (Région)

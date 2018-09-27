@@ -90,9 +90,14 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <div class="col-md-6 mt-3">
                         <p class="mb-1 uk-text-bold">Permis de conduire:</p>
                         <?php
-                        foreach ($candidate->driveLicences as $driveLicence):
-                          echo sprintf('<span class="badge badge-default mr-2">%s</span>', $driveLicence['label']);
-                        endforeach;
+                        if (!empty($candidate->drivLicences)) {
+                          foreach ($candidate->driveLicences as $driveLicence):
+                            echo sprintf('<span class="badge badge-default mr-2">%s</span>', $driveLicence['label']);
+                          endforeach;
+                        } else {
+                          echo 'Aucun';
+                        }
+
                         ?>
                       </div>
 
@@ -157,17 +162,19 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                 </div>
 
 <!--                Outils et technologie-->
+                <?php if (!empty($candidate->softwares)) { ?>
                 <div class="mt-5">
                   <h4>Outils et technologie</h4>
                   <hr class="uk-devider">
                   <ol class="candidate-skill-list ml-0 pl-0">
                     <?php
-                    foreach ($candidate->masterSoftware as $software):
+                    foreach ($candidate->softwares as $software):
                       echo sprintf("<li><p>%s</p></li>", $software->name);
                     endforeach;
                     ?>
                   </ol>
                 </div>
+              <?php } ?>
 
 <!--                Langues-->
                 <div class="mt-5">
@@ -204,6 +211,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         ?>
                       </ol>
                     </div>
+                    <?php if (!empty(trim($candidate->centerInterest->projet))) { ?>
                     <div class="col-6 ">
                       <h4>Projet</h4>
                       <hr class="uk-devider">
@@ -211,6 +219,8 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         <?= $candidate->centerInterest->projet ?>
                       </p>
                     </div>
+                    <?php } ?>
+
                   </div>
                 </div>
 
