@@ -160,7 +160,7 @@ trait Register {
       'rewrite'         => [ 'slug' => 'candidate' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-welcome-widgets-menus',
-      'supports'        => [ 'title', 'thumbnail', 'custom-fields' ],
+      'supports'        => [ 'title', 'excerpt', 'thumbnail', 'custom-fields' ],
       'show_in_rest'    => true
     ] );
 

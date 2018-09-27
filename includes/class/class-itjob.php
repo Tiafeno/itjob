@@ -16,6 +16,32 @@ if ( ! class_exists( 'itJob' ) ) {
     public function __construct() {
 
       add_action( 'init', function () {
+
+        /**
+         * Activer le CV.
+         * Cette evenement ce declanche quand l'administrateur publie le CV
+         * @param int $ID
+         */
+        add_action( 'publish_candidate', function ($ID) {
+          // Marquer le candidate possède un CV
+
+          //update_post_meta($ID, 'itjob_cv_hasCV', 1);
+          //update_post_meta($ID, 'activated', 1);
+
+          update_field( 'itjob_cv_hasCV', 1, $ID );
+          update_field( 'activated', 1, $ID );
+        }, 10, 1 );
+
+        /**
+         * Activer l'offre.
+         * Cette evenement ce declanche quand l'administrateur publie une offre
+         * @param int $ID
+         */
+        add_action('publish_offers', function ($ID) {
+          // Activer l'offre
+          update_field('activated', 1, $ID);
+        }, 10, 1);
+
         $this->initRegister();
       } );
 
@@ -102,18 +128,9 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( ! is_admin() && $query->is_main_query() ) {
           $Types = ['offers', 'candidate', 'company'];
           // Afficher les posts pour status 'en attente' et 'publier'
-          $query->set( 'post_status', [ 'publish', 'pending' ] );
+          $query->set( 'post_status', [ 'publish' ] );
           $post_type = $query->get( 'post_type' );
 
-          if (in_array($post_type, $Types)) {
-            $meta_query = $query->get('meta_query');
-            $meta_query[] = [
-              'key' => 'activated',
-              'value' => 1,
-              'compare' => '=',
-              'type' => 'NUMERIC'
-            ];
-          }
           //$query->set( 'posts_per_page', 1 );
 
           if ( $query->is_search ) {

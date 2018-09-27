@@ -11,14 +11,13 @@ if ( ! class_exists( 'WPBakeryShortCode' ) ) {
 }
 
 use Http;
-use includes\object\jobServices;
 use includes\post\Candidate;
-use includes\post\Company;
 
 if ( ! class_exists( 'vcRegisterCandidate' ) ) :
   class vcRegisterCandidate extends \WPBakeryShortCode {
     public $User;
     public $Candidate;
+
     public function __construct() {
       add_action( 'init', [ &$this, 'register_candidate_mapping' ] );
       if ( ! shortcode_exists( 'vc_register_candidate' ) ) {
@@ -65,14 +64,17 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
        * Initialiser les propriétés
        */
       $this->User = wp_get_current_user();
-      if ( ! $this->Candidate instanceof Candidate)
-        $this->Candidate = Candidate::get_candidate_by($this->User->ID);
+      if ( ! $this->Candidate instanceof Candidate ) {
+        $this->Candidate = Candidate::get_candidate_by( $this->User->ID );
+      }
     }
 
     /**
      * Rendre le contenue du shortcode
      * @shortcode [vc_register_candidate title="Ajouter un CV"]
+     *
      * @param array $attrs
+     *
      * @return string
      */
     public function register_render_html( $attrs ) {
@@ -94,18 +96,23 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       );
 
       /** @var url $redir */
-      $httpRedir = Http\Request::getValue('redir');
-      $EC_Link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : home_url('/');
+      $httpRedir = Http\Request::getValue( 'redir' );
+      $EC_Link   = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : home_url( '/' );
       $httpRedir = $httpRedir ? $httpRedir : $EC_Link;
-      $redirect = is_null($redir) ? $httpRedir : $redir;
+      $redirect  = is_null( $redir ) ? $httpRedir : $redir;
 
       // Client non connecter
       if ( ! is_user_logged_in() ) {
-        return do_shortcode("[vc_register_particular title='Créer votre compte itJob' redir='$redirect']");
+        return do_shortcode( "[vc_register_particular title='Créer votre compte itJob' redir='$redirect']" );
       }
 
+      $hasCV = get_field('itjob_cv_hasCV', $this->Candidate->getId());
+      var_dump($hasCV);
+
       // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
-      if ( ! $this->Candidate || ! $this->Candidate->is_candidate()) return $message_access_refused;
+      if ( ! $this->Candidate || ! $this->Candidate->is_candidate() ) {
+        return $message_access_refused;
+      }
 
       wp_enqueue_style( 'b-datepicker-3' );
       wp_enqueue_style( 'sweetalert' );
@@ -131,13 +138,14 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
-        'urlHelper' => [
+        'urlHelper'    => [
           'redir' => $redirect
         ]
       ] );
 
       try {
-        do_action('get_notice');
+        do_action( 'get_notice' );
+
         /** @var STRING $title */
         return $Engine->render( '@VC/register/candidate.html.twig', [
           'title' => $title
@@ -155,7 +163,9 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         return false;
       }
 
-      if ( ! $this->Candidate->is_candidate()) return false;
+      if ( ! $this->Candidate->is_candidate() ) {
+        return false;
+      }
 
       // Mette à jours le CV
       $status          = Http\Request::getValue( 'status', null );
@@ -168,12 +178,14 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $jobSougths = \json_decode( $jobSougths );
 
       $driveLicences = Http\Request::getValue( 'driveLicence', false );
-      if ($driveLicences)
+      if ( $driveLicences ) {
         $driveLicences = \json_decode( $driveLicences );
+      }
 
       $notiEmploi = Http\Request::getValue( 'notiEmploi', false );
-      if ($notiEmploi)
+      if ( $notiEmploi ) {
         $notiEmploi = \json_decode( $notiEmploi );
+      }
 
       $trainings = Http\Request::getValue( 'trainings' );
       $trainings = \json_decode( $trainings );
@@ -183,7 +195,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       $languages = \json_decode( Http\Request::getValue( 'languages' ) );
       $softwares = \json_decode( Http\Request::getValue( 'softwares' ) );
-      $form = [
+      $form      = [
         'status'        => $status ? 1 : 0,
         'projet'        => $project,
         'abranch'       => $activity_branch,
@@ -202,7 +214,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         if ( is_null( $value ) ) {
           \wp_send_json( [
             'success' => false,
-            'msg'     => "Le formulaire n'est pas valide. Veillez verifier les formulaires",
+            'msg'     => "Le formulaire n'est pas valide. Veillez verifier les champs requis",
             'input'   => $key,
             'value'   => $value
           ] );
@@ -215,16 +227,16 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       wp_set_post_terms( $this->Candidate->getId(), [ (int) $form->abranch ], 'branch_activity' );
 
       // Ajouter les emplois rechercher par le candidat (Existant et qui n'existe pas encore dans la base de donnée)
-      $ids = $this->add_term_submit($form->jobSougths, 'job_sought');
+      $ids = $this->add_term_submit( $form->jobSougths, 'job_sought' );
       wp_set_post_terms( $this->Candidate->getId(), $ids, 'job_sought' );
       // Ajouter les logiciels
-      $ids = $this->add_term_submit($form->softwares, 'software');
+      $ids = $this->add_term_submit( $form->softwares, 'software' );
       wp_set_post_terms( $this->Candidate->getId(), $ids, 'software' );
       // Ajouter les languages
-      $ids = $this->add_term_submit($form->languages, 'language');
+      $ids = $this->add_term_submit( $form->languages, 'language' );
       wp_set_post_terms( $this->Candidate->getId(), $ids, 'language' );
 
-      unset($ids);
+      unset( $ids );
 
       // Update ACF field
       update_field( 'itjob_cv_status', (int) $form->status, $this->Candidate->getId() );
@@ -297,7 +309,11 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       update_field( 'itjob_cv_experiences', $experiences, $this->Candidate->getId() );
 
       // FEATURED: Ne pas activer le CV
-      update_field('activated', 0, $this->Candidate->getId());
+      // En attente de la validation de l'administrateur
+      update_field( 'activated', 0, $this->Candidate->getId() );
+
+      // Ajouter que l'utilisateur ou le candidate possède un CV
+      update_field( 'itjob_cv_hasCV', 1, $this->Candidate->getId() );
 
       wp_send_json( [ 'success' => true ] );
 
@@ -307,6 +323,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
     /**
      * Ajouter dans le taxonomie les valeurs dans le champs qui ne sont pas des terms
+     *
      * @param array $tabs
      * @param string $taxonomy
      *
@@ -325,10 +342,11 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           // Désactiver le term qu'on viens d'ajouter
           if ( ! is_wp_error( $term ) ) {
             update_term_meta( $term['term_id'], 'activated', 0 );
-            array_push($tabContainer, (int)$term['term_id']);
+            array_push( $tabContainer, (int) $term['term_id'] );
           }
         }
       }
+
       return $tabContainer;
     }
 
@@ -361,6 +379,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         wp_send_json( [ 'attachment_id' => $attachment_id, 'success' => true ] );
       }
     }
+
   }
 endif;
 

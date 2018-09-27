@@ -28,7 +28,7 @@ if ( ! class_exists( 'jobServices' ) ) :
       $recentlyContainer = [];
       $this->args        = [
         'post_type'      => $class_name,
-        'post_status'    => [ 'publish', 'pending' ],
+        'post_status'    => [ 'publish' ],
         'posts_per_page' => $numberposts,
         'orderby'        => 'DATE'
       ];
@@ -41,21 +41,13 @@ if ( ! class_exists( 'jobServices' ) ) :
       return $recentlyContainer;
     }
 
-    public function getFeaturedPost( $class_name, $meta_query_value, $meta_query = [] ) {
+    public function getFeaturedPost( $class_name, $meta_query = [] ) {
       $featuredContainer = [];
       $this->args        = [
         'post_type'      => $class_name,
-        'post_status'    => [ 'publish', 'pending' ],
+        'post_status'    => [ 'publish' ],
         'posts_per_page' => 4,
-        'orderby'        => 'DATE',
-        'meta_query'     => [
-          [
-            'key'     => $meta_query_value,
-            'compare' => '=',
-            'value'   => 1,
-            'type'    => 'NUMERIC'
-          ]
-        ]
+        'orderby'        => 'DATE'
       ];
       if ( ! empty( $meta_query ) ) {
         array_push( $this->args['meta_query'], $meta_query );

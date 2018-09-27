@@ -17,6 +17,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
   class vcRegisterParticular extends \WPBakeryShortCode {
     public function __construct() {
       add_action( 'init', [ &$this, 'register_particular_mapping' ] );
+
       add_shortcode( 'vc_register_particular', [ &$this, 'register_render_html' ] );
 
       // Crée une utilisateur pour le post candidate

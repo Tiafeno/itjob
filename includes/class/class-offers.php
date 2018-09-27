@@ -77,6 +77,7 @@ final class Offers implements \iOffer {
      */
     $output                = get_post( $postId );
     $this->ID              = $output->ID;
+    $this->post_type       = $output->post_type;
     $this->title           = $output->post_title; // Position Filled
     $this->offer_status    = $output->post_status;
     /**
@@ -101,6 +102,10 @@ final class Offers implements \iOffer {
 
   public function is_activated() {
     return $this->activated ? 1 : 0;
+  }
+
+  public function is_publish() {
+    return $this->post_type === 'pending' || $this->post_type === 'draft' ? 0 : 1;
   }
 
   /**
@@ -150,7 +155,7 @@ final class Offers implements \iOffer {
     $args      = [
       'post_type'      => 'offers',
       'posts_per_page' => $paged,
-      'post_status'    => [ 'publish', 'pending' ],
+      'post_status'    => [ 'publish' ],
       'orderby'        => 'date',
       'order'          => 'DESC'
     ];

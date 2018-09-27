@@ -230,6 +230,9 @@ if ( ! class_exists( 'vcOffers' ) ):
       update_field( 'itjob_offer_featured', 0, $post_id );
 
       update_field( 'itjob_offer_company', $form->company_id, $post_id );
+
+      // Ne pas activer l'offre, En attente de validation de l'administrateur
+      update_field('activated', 0, $post_id);
     }
 
     // This is "itjob_offer_abranch" field
@@ -329,7 +332,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       /** @var string $title */
       $args = [
         'title'  => $title,
-        'offers' => $itJob->services->getFeaturedPost('offers', 'itjob_offer_featured')
+        'offers' => $itJob->services->getFeaturedPost('offers')
       ];
 
       return ( trim( $position ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
