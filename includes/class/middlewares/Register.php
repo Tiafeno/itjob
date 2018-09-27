@@ -139,7 +139,7 @@ trait Register {
     ] );
 
     register_post_type( 'candidate', [
-      'label'           => "Candidat",
+      'label'           => "Candidate",
       'labels'          => [
         'name'               => "Les candidats",
         'singular_name'      => "Candidat",

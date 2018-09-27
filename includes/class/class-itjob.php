@@ -16,34 +16,37 @@ if ( ! class_exists( 'itJob' ) ) {
     public function __construct() {
 
       add_action( 'init', function () {
-
-        /**
-         * Activer le CV.
-         * Cette evenement ce declanche quand l'administrateur publie le CV
-         * @param int $ID
-         */
-        add_action( 'publish_candidate', function ($ID) {
-          // Marquer le candidate possède un CV
-
-          //update_post_meta($ID, 'itjob_cv_hasCV', 1);
-          //update_post_meta($ID, 'activated', 1);
-
-          update_field( 'itjob_cv_hasCV', 1, $ID );
-          update_field( 'activated', 1, $ID );
-        }, 10, 1 );
-
-        /**
-         * Activer l'offre.
-         * Cette evenement ce declanche quand l'administrateur publie une offre
-         * @param int $ID
-         */
-        add_action('publish_offers', function ($ID) {
-          // Activer l'offre
-          update_field('activated', 1, $ID);
-        }, 10, 1);
-
         $this->initRegister();
       } );
+
+      /**
+       * Activer l'offre.
+       * Cette evenement ce declanche quand l'administrateur publie une offre
+       * @param int $ID
+       */
+      add_action('publish_offers', function ($ID) {
+        // Activer l'offre
+        update_field('activated', 1, $ID);
+      }, 10, 1);
+
+      /**
+       * Activer le CV.
+       * Cette evenement ce declanche quand l'administrateur publie le CV
+       * @param int $ID
+       */
+      add_action( 'transition_post_status', function ($new_status, $old_status, $post) {
+        // Marquer le candidate possède un CV
+
+        if ('publish' === $new_status && 'candidate' === $post->post_type) {
+//            update_field( 'itjob_cv_hasCV', 1, $post->ID );
+//            update_field( 'activated', 1, $post->ID );
+
+          update_post_meta($post->ID, 'itjob_cv_hasCV', 1);
+          update_post_meta($post->ID, 'activated', 1);
+          //exit($post);
+        }
+
+      }, 10, 3 );
 
       add_action( 'je_postule', [ &$this, 'je_postule_Fn' ] );
 

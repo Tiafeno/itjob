@@ -107,7 +107,11 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       }
 
       $hasCV = get_field('itjob_cv_hasCV', $this->Candidate->getId());
-      var_dump($hasCV);
+      if ($hasCV && $this->Candidate->is_publish()) {
+        return $Engine->render( '@VC/candidates/pending-cv.html.twig', [
+          'offer_archive' => get_post_type_archive_link('offers')
+        ] );
+      }
 
       // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
       if ( ! $this->Candidate || ! $this->Candidate->is_candidate() ) {
@@ -335,6 +339,11 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         if ( isset( $tab->term_id ) ) {
           array_push( $tabContainer, $tab->term_id );
         } else {
+          $eT = term_exists($tab->name, $taxonomy);
+          if (0 !== $eT || !is_null($eT)) {
+            $eTI = is_array($eT) ? $eT->term_id : (is_int($eT) ? $eT : null);
+            array_push($tabContainer, $eTI);
+          }
           $term = wp_insert_term(
             $tab->name,   // the term
             $taxonomy // the taxonomy

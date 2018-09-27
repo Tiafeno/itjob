@@ -168,7 +168,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
     }
 
     /**
-     * Ajouter un utilisateur après l'enregistrement d'un candidat (post)
+     * Ajouter un utilisateur après l'enregistrement d'un candidat (post) s'il n'existe pas
      * @action acf/save_post
      *
      * @param $post_id
@@ -184,8 +184,8 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       $email = &$value;
       $post  = get_post( $post_id );
       // (WP_User|false) WP_User object on success, false on failure.
-      $userExist = get_user_by( 'email', $email );
-      if ( $userExist ) {
+      $isUser = get_user_by( 'email', $email );
+      if ( $isUser ) {
         return $value;
       }
 
