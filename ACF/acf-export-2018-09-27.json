@@ -23,6 +23,25 @@
                 "ui_off_text": ""
             },
             {
+                "key": "field_5bad025b3d963",
+                "label": "Je possède un Curriculum Vitae",
+                "name": "itjob_cv_hasCV",
+                "type": "true_false",
+                "instructions": "Ce champ est sélectionner automatiquement quand un utilisateur ajout son CV.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "Sélectionner si vous avez déjà envoyer votre CV.",
+                "default_value": 0,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
+            },
+            {
                 "key": "field_5b9c1e4fcd70b",
                 "label": "A la une",
                 "name": "itjob_cv_featured",
@@ -35,7 +54,7 @@
                     "class": "",
                     "id": ""
                 },
-                "message": "Ajouter pour une candidate à la une",
+                "message": "Mettre le CV à la une",
                 "default_value": 0,
                 "ui": 0,
                 "ui_on_text": "",
@@ -1041,6 +1060,25 @@
                 "ui": 0,
                 "ui_on_text": "",
                 "ui_off_text": ""
+            },
+            {
+                "key": "field_5babe022f79b7",
+                "label": "Alerte",
+                "name": "itjob_company_alerte",
+                "type": "text",
+                "instructions": "Je souhaite être informé quand un candidat dont le vœux comporte ces mots",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "Créer une alerte",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
             }
         ],
         "location": [
@@ -1086,7 +1124,7 @@
             },
             {
                 "key": "field_5ba7f1ee25987",
-                "label": "Plan tarifaire",
+                "label": "Mode de diffusion",
                 "name": "itjob_offer_rateplan",
                 "type": "select",
                 "instructions": "Une option soumise à un frais supplémentaire payable par MVOLA",

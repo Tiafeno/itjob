@@ -64,7 +64,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
        * Initialiser les propriétés
        */
       $this->User = wp_get_current_user();
-      if ( ! $this->Candidate instanceof Candidate ) {
+      if ( ! $this->Candidate instanceof Candidate && $this->User->ID !== 0) {
         $this->Candidate = Candidate::get_candidate_by( $this->User->ID );
       }
     }
