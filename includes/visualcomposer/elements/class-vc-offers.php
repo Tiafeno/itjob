@@ -298,7 +298,15 @@ if ( ! class_exists( 'vcOffers' ) ):
         /** @var STRING $order */
         return $Engine->render( '@VC/offers/offers.html.twig', [
           'title'  => $title,
-          'offers' => $itJob->services->getRecentlyPost('offers', 4),
+          'offers' => $itJob->services->getRecentlyPost('offers', 4, [
+            // Afficher seulement les offres activé
+            [
+              'key'     => 'activated',
+              'compare' => '=',
+              'value'   => 1,
+              'type'    => 'NUMERIC'
+            ]
+          ]),
           'archive_offer_url' => get_post_type_archive_link('offers')
         ] );
       } catch ( \Twig_Error_Loader $e ) {

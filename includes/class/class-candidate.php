@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
+use includes\object as Obj;
+
 final class Candidate extends UserParticular implements \iCandidate {
   // Added Trait Class
   use \Auth;
@@ -187,12 +189,16 @@ final class Candidate extends UserParticular implements \iCandidate {
 
   private function getActivateField( $terms ) {
     $validTerms = [];
-    foreach ( $terms as $term ) {
-      $valid = get_term_meta( $term->term_id, 'activated', true );
-      if ( $valid ) {
-        array_push( $validTerms, $term );
+    if ( ! is_wp_error($terms)):
+      foreach ( $terms as $term ) {
+        if (! is_wp_error($term)) {
+          $valid = get_term_meta( $term->term_id, 'activated', true );
+          if ( $valid ) {
+            array_push( $validTerms, $term );
+          }
+        }
       }
-    }
+    endif;
 
     return $validTerms;
   }

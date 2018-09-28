@@ -23,9 +23,9 @@ if ( ! class_exists( 'scClient' ) ) :
         if ( $this->User->ID !== 0) {
           $userRole   = $this->User->roles[0];
           if ( ! in_array( $userRole, $userTypes )) return;
-          $class_name    = ucfirst( $userRole );
-          $class_name    = "includes\\post\\$class_name";
-          $this->Company = call_user_func( [ $class_name, 'get_company_by' ], $this->User->ID );
+          $class_name_ucfirst    = ucfirst( $userRole );
+          $class_name    = "includes\\post\\$class_name_ucfirst";
+          $this->{$class_name_ucfirst} = call_user_func( [ $class_name, "get_{$userRole}_by" ], $this->User->ID );
         }
       } else {
         return;

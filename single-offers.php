@@ -111,6 +111,7 @@ wp_enqueue_style( 'themify-icons' );
                   </div>
                   <div class="col-md-6">
                     <div>
+                      <?= do_action('je_postule'); ?>
                       <div class="float-right ml-3">
                         <a href="<?= get_post_type_archive_link( 'offers' ) ?>" class="float-right">
                           <button class="btn btn-outline-primary btn-fix">
@@ -118,9 +119,7 @@ wp_enqueue_style( 'themify-icons' );
                           </button>
                         </a>
                       </div>
-                      <?= do_action('je_postule'); ?>
                     </div>
-
 
                   </div>
                 </div>
