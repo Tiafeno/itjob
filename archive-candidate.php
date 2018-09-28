@@ -1,4 +1,5 @@
 <?php
+global $wp_query;
 get_header();
 wp_enqueue_style( 'offers' );
 ?>

@@ -95,6 +95,11 @@ final class Candidate extends UserParticular implements \iCandidate {
     return $this->postType === 'candidate';
   }
 
+  public function is_activated() {
+    $activation = get_field('activated', $this->getId());
+    return $activation;
+  }
+
   public function is_publish() {
     $post_status = ['pending', 'draft', 'private', 'trash'];
     return !in_array($this->postType, $post_status) ? 1 : 0;

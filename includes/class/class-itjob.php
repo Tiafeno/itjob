@@ -39,11 +39,10 @@ if ( ! class_exists( 'itJob' ) ) {
 
         if ('publish' === $new_status && 'candidate' === $post->post_type) {
 //            update_field( 'itjob_cv_hasCV', 1, $post->ID );
-//            update_field( 'activated', 1, $post->ID );
+          update_field( 'activated', 1, $post->ID );
 
-          update_post_meta($post->ID, 'itjob_cv_hasCV', 1);
-          update_post_meta($post->ID, 'activated', 1);
-          //exit($post);
+          //update_post_meta($post->ID, 'itjob_cv_hasCV', 1);
+          //update_post_meta($post->ID, 'activated', 1);
         }
 
       }, 10, 3 );
@@ -236,7 +235,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 $meta_query[] = [
-                  'key'     => 'itjob_cv_activated',
+                  'key'     => 'activated',
                   'value'   => 1,
                   'compare' => '=',
                   'type'    => 'NUMERIC'
@@ -268,7 +267,7 @@ if ( ! class_exists( 'itJob' ) ) {
               }
 
               $meta_query[] = [
-                'key'     => 'itjob_cv_activated',
+                'key'     => 'activated',
                 'value'   => 1,
                 'compare' => '=',
                 'type'    => 'NUMERIC'
