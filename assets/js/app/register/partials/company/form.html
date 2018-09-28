@@ -1,14 +1,56 @@
 <form name="formCompany" ng-submit="submitForm(formCompany.$valid)" class="form-horizontal p-5" novalidate>
+
+  <div id="modal-media-youtube" class="uk-flex-top" uk-modal>
+    <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+      <button class="uk-modal-close-outside" type="button" uk-close></button>
+      <iframe src="https://www.youtube-nocookie.com/embed/nu8AL588a1o" width="560" height="315" frameborder="0" uk-video></iframe>
+    </div>
+  </div>
+
+  <div class="page-heading mb-5">
+    <h4 class="page-title">FORMULAIRE ENTREPRISE</h4>
+    <h6>Vous pouvez aussi <a href="#modal-media-youtube" uk-toggle class="text-blue">regarder la vidéo explicative</a>.</h6>
+  </div>
+
+  <div class="col-md-12 pl-0" ng-show="!_.isNull(itOptions.urlHelper.redir)">
+    <div class="alert alert-warning alert-dismissable fade show has-icon"><i class="la la-warning alert-icon"></i>
+      Veuillez vous connecter en tant qu'entreprise pour déposer un offre. <a ng-href="[[login_url]]" class="uk-text-bold">Se connecter</a>
+    </div>
+  </div>
+
   <div class="ibox-body">
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Nom de l'entreprise <span style="color: red">*</span></label>
       <div class="col-sm-6">
-        <input class="form-control" name="title" ng-model="company.title" type="text" placeholder="Nom de l'entreprise"
+        <input class="form-control" name="title" ng-model="company.title" type="text" autocomplete="off" placeholder="Nom de l'entreprise"
                required>
         <div ng-messages="formCompany.title.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.title.$invalid && formCompany.title.$touched">
           <div ng-message="required">Le nom de l'entreprise est obligatoire.</div>
         </div>
+      </div>
+    </div>
+
+    <div class="form-group mb-4 row ">
+      <label class="col-sm-4 col-form-label ">Region <span style="color: red">*</span></label>
+      <div class="col-sm-6">
+        <div class="form-group">
+          <select class="form-control" name="region" ng-model="company.region"
+                  title="Region" required>
+            <option></option>
+            <option ng-repeat="region in regions" value="[[region.term_id]]">[[region.name]]</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-1">
+      <label class=" col-sm-4 col-form-label">Code postal ou nom d'une ville <span style="color: red">*</span></label>
+      <div class="col-md-6 form-group">
+        <select class="form-control input-mode country" name="country" ng-model="company.country" required>
+          <option></option>
+          <option value="[[city.term_id]]" ng-repeat="city in allCity">([[city.postal_code]]) [[city.name]]</option>
+        </select>
       </div>
     </div>
 
@@ -126,7 +168,7 @@
           <select class="form-control" name="branch_activity" ng-model="company.branch_activity"
                   title="Secteur d'activité">
             <option></option>
-            <option ng-repeat="abranch in $ctrl.abranchs" value="[[abranch.term_id]]">[[abranch.name]]</option>
+            <option ng-repeat="abranch in abranchs" value="[[abranch.term_id]]">[[abranch.name]]</option>
           </select>
         </div>
       </div>

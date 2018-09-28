@@ -15,9 +15,10 @@ use includes\post\Company;
 if ( ! class_exists( 'vcRegisterCompany' ) ) :
   class vcRegisterCompany extends \WPBakeryShortCode {
     public static $container_class = '';
+    public static $isInstance = false;
     public function __construct() {
       add_action( 'init', [ $this, 'register_mapping' ] );
-      add_action( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
+      add_filter( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
 
       if ( ! shortcode_exists('vc_register_company'))
         add_shortcode( 'vc_register_company', [ &$this, 'register_render_html' ] );
@@ -28,8 +29,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       add_action( 'wp_ajax_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
       add_action( 'wp_ajax_nopriv_ajx_get_branch_activity', [ &$this, 'ajx_get_branch_activity' ] );
 
-      add_action( 'wp_ajax_ajx_get_taxonomy', [ &$this, 'ajx_get_taxonomy' ] );
-      add_action( 'wp_ajax_nopriv_ajx_get_taxonomy', [ &$this, 'ajx_get_taxonomy' ] );
+      add_action( 'wp_ajax_ajx_get_taxonomy', [ &$this, 'get_taxonomy' ] );
+      add_action( 'wp_ajax_nopriv_ajx_get_taxonomy', [ &$this, 'get_taxonomy' ] );
 
       add_action( 'wp_ajax_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
       add_action( 'wp_ajax_nopriv_ajx_user_exist', [ &$this, 'ajx_user_exist' ] );
@@ -37,7 +38,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
     public static function getInstance() {
       self::$container_class = 'uk-margin-large-top';
-      return new vcRegisterCompany();
+      return new self();
     }
 
     /**
@@ -144,8 +145,6 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       wp_send_json( $usr );
     }
 
-    // AJAX
-
     public function ajx_get_branch_activity() {
       /**
        * @func wp_doing_ajax
@@ -161,26 +160,26 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       wp_send_json( $terms );
     }
 
-    public function ajx_get_taxonomy() {
+    public function get_taxonomy($taxonomy = false) {
+      $validateTaxonomy = ['job_sought', 'software'];
       /**
        * @func wp_doing_ajax
        * (bool) True if it's a WordPress Ajax request, false otherwise.
        */
-      if ( ! \wp_doing_ajax() || empty( $_GET ) ) {
-        return false;
+      if ( \wp_doing_ajax() ||  ! empty( $_GET ) ) {
+        $taxonomy = Http\Request::getValue( 'tax', false );
       }
 
-      $taxonomy = Http\Request::getValue( 'tax', false );
-      // TODO: Ajouter seulement les terms activé
+      // FEATURED: Ajouter seulement les terms activé
       $termValid = [];
       if ( $taxonomy ) {
         $terms = get_terms( $taxonomy, [
           'hide_empty' => false,
           'fields'     => 'all'
         ] );
-        if ($taxonomy === 'job_sought' || $taxonomy === 'master_software'):
+        if (in_array($taxonomy, $validateTaxonomy)):
           foreach ($terms as $term) {
-            $valid = get_field('activated', "{$taxonomy}_{$term->term_id}");
+            $valid = get_term_meta( $term->term_id, 'activated', true);
             if ($valid) {
               array_push($termValid, $term);
             }
@@ -188,7 +187,13 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         else:
           $termValid = &$terms;
         endif;
-        wp_send_json( $termValid );
+
+        if ( \wp_doing_ajax() || !empty( $_GET ) ) {
+          wp_send_json( $termValid );
+        } else {
+          return $termValid;
+        }
+
       } else {
         return false;
       }
@@ -214,6 +219,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'greeting'           => Http\Request::getValue( 'greeting' ),
         'title'              => Http\Request::getValue( 'title' ),
         'address'            => Http\Request::getValue( 'address' ),
+        'country'            => Http\Request::getValue( 'country' ),
+        'region'             => Http\Request::getValue( 'region' ),
         'nif'                => Http\Request::getValue( 'nif' ),
         'stat'               => Http\Request::getValue( 'stat' ),
         'name'               => Http\Request::getValue( 'name' ),
@@ -239,7 +246,11 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       // update acf field
       $post_id = &$result;
       $this->update_acf_field( $post_id, $form );
+
+      // Ajouter les terms dans le post
       wp_set_post_terms( $post_id, [ (int) $form->branch_activity_id ], 'branch_activity' );
+      wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
+      wp_set_post_terms( $post_id, [ (int) $form->country ], 'city' );
       wp_send_json( [ 'success' => true, 'msg' => new Company( $post_id ), 'form' => $form ] );
     }
 
@@ -288,6 +299,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         shortcode_atts(
           array(
             'title' => null,
+            'redir' => null,
 //            'form'  => null
           ),
           $attrs
@@ -295,6 +307,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         , EXTR_OVERWRITE );
 
       // load script & style
+      wp_enqueue_style( 'sweetalert' );
       wp_enqueue_style( 'input-form', get_template_directory_uri() . '/assets/css/inputForm.css' );
       wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js',
         [
@@ -304,18 +317,28 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
           'angular-messages',
           'angular-animate',
           'angular-aria',
+          'sweetalert',
         ], $itJob->version, true );
+
+      /** @var url $redir */
+      $redirHttp = Http\Request::getValue('redir');
+      $redirection = !is_null($redir) ? "?redir={$redir}" : ($redirHttp ? "?redir={$redirHttp}" : '');
       wp_localize_script( 'form-company', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
-        'template_url' => get_template_directory_uri()
+        'template_url' => get_template_directory_uri(),
+        'Helper'    => [
+          'redir' => $redir,
+          'login' => home_url('/connexion/company') . $redirection
+        ]
       ] );
       try {
         do_action('get_notice');
         /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/register/company.html.twig', [
           'title' => $title,
-          'container_class' => self::$container_class
+          'container_class' => self::$container_class,
+          'template_url' => get_template_directory_uri()
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {

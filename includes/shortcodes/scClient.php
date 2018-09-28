@@ -3,6 +3,7 @@
 namespace includes\shortcode;
 
 use Http;
+use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
 
@@ -12,11 +13,33 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'scClient' ) ) :
   class scClient {
+    public $User;
+    public $Company = null;
+    public $Candidate = null;
+
     public function __construct() {
+      if ( class_exists( 'includes\post\Company' ) && class_exists( 'includes\post\Candidate' ) ) {
+        $userTypes  = [ 'company', 'candidate' ];
+        $this->User = wp_get_current_user();
+        if ( $this->User->ID !== 0) {
+          $userRole   = $this->User->roles[0];
+          if ( ! in_array( $userRole, $userTypes )) return;
+          $class_name_ucfirst    = ucfirst( $userRole );
+          $class_name    = "includes\\post\\$class_name_ucfirst";
+          $this->{$class_name_ucfirst} = call_user_func( [ $class_name, "get_{$userRole}_by" ], $this->User->ID );
+        }
+      } else {
+        return;
+      }
+
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
 
-      add_action( 'wp_ajax_trash_offer', [ &$this, 'itjob_trash_offer' ] );
-      add_action( 'wp_ajax_nopriv_trash_offer', [ &$this, 'itjob_trash_offer' ] );
+      add_action( 'wp_ajax_trash_offer', [ &$this, 'client_trash_offer' ] );
+      add_action( 'wp_ajax_client_area', [ &$this, 'client_area' ] );
+      add_action( 'wp_ajax_update_offer', [ &$this, 'update_offer' ] );
+      add_action( 'wp_ajax_update_profil', [ &$this, 'update_profil' ] );
+      add_action( 'wp_ajax_update_alert_filter', [ &$this, 'update_alert_filter' ] );
+      add_action( 'wp_ajax_get_postuled_candidate', [ &$this, 'get_postuled_candidate' ] );
     }
 
     public function sc_render_html( $attrs, $content = '' ) {
@@ -32,43 +55,49 @@ if ( ! class_exists( 'scClient' ) ) :
           $attrs
         )
       );
-
+      // styles
       wp_enqueue_style( 'themify-icons' );
-
-      wp_enqueue_style( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.css' );
-      wp_enqueue_script( 'sweetalert',VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.min.js', [ 'espace-client' ], $itJob->version, true );
-
+      wp_enqueue_style( 'b-datepicker-3' );
+      wp_enqueue_style( 'sweetalert' );
+      wp_enqueue_style( 'ng-tags-bootstrap' );
+      wp_enqueue_style( 'froala' );
+      wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
+      // scripts
+      wp_enqueue_script( 'sweetalert' );
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
       wp_enqueue_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
         'angular',
         'angular-aria',
         'angular-messages',
         'angular-sanitize',
-        'datatable'
+        'datatable',
+        'ng-tags',
+        'b-datepicker',
+        'fr-datepicker',
+        'froala'
       ], $itJob->version, true );
 
-      $user         = wp_get_current_user();
-      $client       = get_userdata( $user->ID );
+      $client       = get_userdata( $this->User->ID );
       $client_roles = $client->roles;
-
       try {
-        do_action('get_notice');
+        do_action( 'get_notice' );
 
         if ( in_array( 'company', $client_roles, true ) ) {
           // Template recruteur ici ...
-          $offers = $this->get_company_offers();
 
           // Script localize for company customer area
           wp_localize_script( 'espace-client', 'itOptions', [
-            'offers'   => $this->get_company_offers(),
-            'ajax_url' => admin_url( 'admin-ajax.php' )
+            'Helper' => [
+              'add_offer_url' => get_permalink( (int) ADD_OFFER_PAGE ),
+              'ajax_url'      => admin_url( 'admin-ajax.php' ),
+              'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
+            ]
           ] );
 
           return $Engine->render( '@SC/client-company.html.twig', [
-            'client' => Company::get_company_by('user_id', $user->ID),
-            'offers' => $offers,
-            'url'    => [
-              'add_offer' => get_permalink( (int) ADD_OFFER_PAGE )
+            'client' => $this->Company,
+            'Helper' => [
+              'template_url' => get_template_directory_uri()
             ]
           ] );
         }
@@ -83,15 +112,78 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
-    public function update_user() {
+    /**
+     * Modifier une offre
+     */
+    public function update_offer() {
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $post_id = Http\Request::getValue( 'post_id', null );
+      if ( is_null( $post_id ) ) {
+        wp_send_json( false );
+      }
+      $form = [
+        // TODO: Modifier le titre de l'offre et son champ ACF
+        'post'             => Http\Request::getValue( 'postPromote' ),
+        'datelimit'        => Http\Request::getValue( 'dateLimit' ),
+        'contrattype'      => Http\Request::getValue( 'contractType' ),
+        'profil'           => Http\Request::getValue( 'profil' ),
+        'mission'          => Http\Request::getValue( 'mission' ),
+        'proposedsallary'  => Http\Request::getValue( 'proposedSalary' ),
+        'otherinformation' => Http\Request::getValue( 'otherInformation' ),
+        'abranch'          => Http\Request::getValue( 'branch_activity' ),
+      ];
+
+      foreach ( $form as $key => $value ) {
+        update_field( "itjob_offer_{$key}", $value, (int) $post_id );
+      }
+      wp_send_json( [ 'success' => true, 'form' => $form ] );
+    }
+
+    /**
+     * Modifier le profil
+     */
+    public function update_profil() {
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $company_id = Http\Request::getValue( 'company_id', null );
+      if ( is_null( $company_id ) ) {
+        wp_send_json( false );
+      }
+      $form  = [
+        'address'  => Http\Request::getValue( 'address' ),
+        'greeting' => Http\Request::getValue( 'greeting' ),
+        'name'     => Http\Request::getValue( 'name' ),
+        'stat'     => Http\Request::getValue( 'stat' ),
+        'nif'      => Http\Request::getValue( 'nif' )
+      ];
+      $terms = [
+        'branch_activity' => Http\Request::getValue( 'branch_activity' ),
+        'region'          => Http\Request::getValue( 'region' ),
+        'city'            => Http\Request::getValue( 'country' ),
+      ];
+
+      foreach ( $terms as $key => $value ) {
+        $isError = wp_set_post_terms( $company_id, [ (int) $value ], $key );
+        if ( is_wp_error( $isError ) ) {
+          wp_send_json( [ 'success' => false, 'msg' => $isError->get_error_message() ] );
+        }
+      }
+
+      foreach ( $form as $key => $value ) {
+        update_field( "itjob_company_{$key}", $value, $company_id );
+      }
+      wp_send_json( [ 'success' => true ] );
 
     }
 
     /**
      * Function ajax
-     * @route index.php?action=trash_offer&pId=<int>
+     * @route admin-ajax.php?action=trash_offer&pId=<int>
      */
-    public function itjob_trash_offer() {
+    public function client_trash_offer() {
       global $wpdb;
       /**
        * @func wp_doing_ajax
@@ -107,9 +199,8 @@ if ( ! class_exists( 'scClient' ) ) :
       $result       = (int) $wpdb->get_var( $wpdb->prepare( $query, [] ) );
       if ( $result > 0 ) {
         $wpdb->flush();
-        $pt           = new Offers( $post_id );
-        $user_company = Company::get_company_by( 'user_id', $current_user->ID );
-        if ( (int) $pt->company->ID === $user_company->ID ) {
+        $pt = new Offers( $post_id );
+        if ( (int) $pt->company->ID === $this->Company->getId() ) {
           $isTrash = wp_trash_post( $post_id );
           if ( $isTrash ):
             wp_send_json( [
@@ -133,10 +224,72 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
-    private function get_company_offers() {
+    /**
+     * Function ajax
+     * @route admin-ajax.php?action=update_alert_filter&alerts=<json>
+     */
+    public function update_alert_filter() {
+      global $itJob;
+      if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
+        wp_send_json( false );
+      }
+      if ($itJob->services->isClient() === 'company'):
+        $alerts = Http\Request::getValue('alerts');
+        $alerts = \json_decode($alerts);
+        $alerts = array_map(function($std) { return $std->text; }, $alerts);
+        $data = update_field('itjob_company_alerts', implode(',', $alerts), $this->Company->getId());
+        if ($data)
+          wp_send_json(['success' => true]);
+
+      endif;
+    }
+
+    public function get_postuled_candidate() {
+      $offer_id = Http\Request::getValue('oId');
+      $offer_id = (int)$offer_id;
+      $postuledCandidates = [];
+      $Offer = new Offers($offer_id);
+      if ($Offer->is_offer() && $Offer->count_candidat_apply >= 1) {
+        $candidate_ids = $Offer->candidat_apply;
+        foreach ($candidate_ids as $key => $candidate_id) {
+          array_push($postuledCandidates, Candidate::get_candidate_by($candidate_id));
+        }
+        wp_send_json($postuledCandidates);
+      } else {
+        wp_send_json(false);
+      }
+
+      die;
+    }
+
+    /**
+     * Function ajax
+     * Récuperer les information nécessaire pour l'espace client
+     * @route admin-ajax.php?action=client_area
+     */
+    public function client_area() {
+      global $itJob;
+      if ( ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $User = wp_get_current_user();
+      if ( $itJob->services->isClient() === 'company' ) {
+        $alert = get_field( 'itjob_company_alerts', $this->Company->getId() );
+        wp_send_json( [
+          'Company' => Company::get_company_by( $User->ID ),
+          'Offers'  => $this->__get_company_offers(),
+          'Alerts'  => explode( ',', $alert )
+        ] );
+      } else {
+        // candidate
+
+      }
+    }
+
+    private function __get_company_offers() {
       $resolve      = [];
       $User         = wp_get_current_user();
-      $user_company = Company::get_company_by( 'user_id', $User->ID );
+      $user_company = Company::get_company_by( $User->ID );
       $offers       = get_posts( [
         'posts_per_page' => - 1,
         'post_type'      => 'offers',

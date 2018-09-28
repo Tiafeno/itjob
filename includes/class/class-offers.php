@@ -6,25 +6,35 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-use includes\object as Object;
+use includes\object as Obj;
 
 final class Offers implements \iOffer {
   // Added Trait Class
   use \Auth;
+  use \OfferHelper;
 
   /** @var int $ID - Identification de l'offre */
   public $ID;
 
-  private $activated;
+  /** @var url $offer_url - Contient le liens de l'offre */
+  public $offer_url;
 
+  /** @var bool $activated - 1: Activer, 0: Non disponible */
+  public $activated;
+
+  /** @var string $postPromote - Titre ou le champ 'itjob_offer_post' ACF */
   public $postPromote;
 
+  /** @var array $branch_activity - Secteur d'activité */
   public $branch_activity;
+
+  /** @var array $offer_status - Status de l'offre ['status' => 0 , 'name' => 'En attente'] */
+  public $offer_status;
 
   /** @var array|null $tags - Tag pour le réferencement et la recherche interne */
   public $tags = [];
 
-  /** @var string $title - Titre de l'offre équivalent avec la variable `Poste pourvu` */
+  /** @var string $title - Titre de l'offre équivalent avec la variable `$postPromote` */
   public $title;
 
   /** @var date $datePublication - Date de la publication de l'offre */
@@ -39,7 +49,7 @@ final class Offers implements \iOffer {
   /** @var int $proposedSalary - Salaire proposé (facultatif) */
   public $proposedSalary;
 
-  /** @var string $region - Region où se trouve l'offre */
+  /** @var string $region - Region */
   public $region;
 
   /** @var array $contractType -  Type de contrat */
@@ -58,6 +68,7 @@ final class Offers implements \iOffer {
   private $featured;
 
 
+
   public function __construct( $postId = null ) {
     if ( is_null( $postId ) ) {
       return false;
@@ -70,11 +81,21 @@ final class Offers implements \iOffer {
      */
     $output                = get_post( $postId );
     $this->ID              = $output->ID;
+    $this->post_type       = $output->post_type;
     $this->title           = $output->post_title; // Position Filled
-    $this->userAuthor      = Object\jobServices::getUserData( $output->post_author );
+    $this->offer_url       = get_the_permalink($output->ID);
+    $this->offer_status    = $output->post_status;
+    /**
+     * La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
+     * NB: Il est donc preferable que les administrateurs ne publient pas une offre pour une ou des
+     * entreprise.
+     */
+    $this->author      = Obj\jobServices::getUserData( $output->post_author );
     $this->datePublication = get_the_date( 'j F, Y', $output );
     if ( $this->is_offer() ) {
+      $this->post_url = get_the_permalink($this->ID);
       $this->acfElements()->getOfferTaxonomy();
+      $this->isMyOffer($this->ID);
     }
 
     return $this;
@@ -88,6 +109,10 @@ final class Offers implements \iOffer {
     return $this->activated ? 1 : 0;
   }
 
+  public function is_publish() {
+    return $this->post_type === 'pending' || $this->post_type === 'draft' ? 0 : 1;
+  }
+
   /**
    * Récuperer les tags et la region pour l'annonce
    */
@@ -96,7 +121,7 @@ final class Offers implements \iOffer {
     $regions      = wp_get_post_terms( $this->ID, 'region', [
       "fields" => "all"
     ] );
-    $this->region = reset( $regions );
+    $this->region = isset($regions[0]) ? $regions[0] : '';
     $this->tags   = wp_get_post_terms( $this->ID, 'itjob_tag', [ "fields" => "names" ] );
     if ( is_wp_error( $this->tags ) ) {
       $this->tags = null;
@@ -114,6 +139,7 @@ final class Offers implements \iOffer {
     $this->company = get_field( 'itjob_offer_company', $this->ID ); // Object article
 
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
+    $this->dateLimitFormat  = \DateTime::createFromFormat( 'm/d/Y', $this->dateLimit )->format( 'F j, Y' );
     $this->activated        = get_field( 'activated', $this->ID ); // Bool
     $this->postPromote      = get_field( 'itjob_offer_post', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
@@ -123,7 +149,7 @@ final class Offers implements \iOffer {
     $this->mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
     $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
-    $this->branch_activity = get_field( 'itjob_offer_abranch', $this->ID );
+    $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID ); // Objet Term
 
     return $this;
   }
@@ -134,7 +160,7 @@ final class Offers implements \iOffer {
     $args      = [
       'post_type'      => 'offers',
       'posts_per_page' => $paged,
-      'post_status'    => [ 'publish', 'pending' ],
+      'post_status'    => [ 'publish' ],
       'orderby'        => 'date',
       'order'          => 'DESC'
     ];

@@ -5,10 +5,10 @@
         "fields": [
             {
                 "key": "field_5b968a60e7bd4",
-                "label": "Activated",
-                "name": "itjob_cv_activated",
+                "label": "Activation",
+                "name": "activated",
                 "type": "true_false",
-                "instructions": "",
+                "instructions": "Activer le candidat pour être visible dans le site",
                 "required": 0,
                 "conditional_logic": 0,
                 "wrapper": {
@@ -16,7 +16,26 @@
                     "class": "",
                     "id": ""
                 },
-                "message": "Activé?",
+                "message": "Valider et publier le CV dans le site",
+                "default_value": 0,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
+            },
+            {
+                "key": "field_5bad025b3d963",
+                "label": "Je possède un Curriculum Vitae",
+                "name": "itjob_cv_hasCV",
+                "type": "true_false",
+                "instructions": "Ce champ est sélectionner automatiquement quand un utilisateur ajout son CV.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "Sélectionner si vous avez déjà envoyer votre CV.",
                 "default_value": 0,
                 "ui": 0,
                 "ui_on_text": "",
@@ -35,7 +54,7 @@
                     "class": "",
                     "id": ""
                 },
-                "message": "Ajouter pour une candidate à la une",
+                "message": "Mettre le CV à la une",
                 "default_value": 0,
                 "ui": 0,
                 "ui_on_text": "",
@@ -805,6 +824,25 @@
         "title": "Company",
         "fields": [
             {
+                "key": "field_5ba6ad9908b94",
+                "label": "Activation",
+                "name": "activated",
+                "type": "true_false",
+                "instructions": "Activer l'entreprise pour qu'il soit visible dans le site",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "Valider et publier l'entreprise.",
+                "default_value": 0,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
+            },
+            {
                 "key": "field_5b7897cc9cb4c",
                 "label": "Adresse de l'entreprise",
                 "name": "itjob_company_address",
@@ -1022,6 +1060,25 @@
                 "ui": 0,
                 "ui_on_text": "",
                 "ui_off_text": ""
+            },
+            {
+                "key": "field_5babe022f79b7",
+                "label": "Alerte",
+                "name": "itjob_company_alerts",
+                "type": "text",
+                "instructions": "Je souhaite être informé quand un candidat dont le vœux comporte ces mots",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "Créer une alerte",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
             }
         ],
         "location": [
@@ -1046,6 +1103,52 @@
         "key": "group_5b7886315b8b9",
         "title": "Offres",
         "fields": [
+            {
+                "key": "field_5ba69be71534d",
+                "label": "Activation",
+                "name": "activated",
+                "type": "true_false",
+                "instructions": "Activer cette offre pour être visible dans le site",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "Valider et publier cette offre dans le site",
+                "default_value": 0,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
+            },
+            {
+                "key": "field_5ba7f1ee25987",
+                "label": "Mode de diffusion",
+                "name": "itjob_offer_rateplan",
+                "type": "select",
+                "instructions": "Une option soumise à un frais supplémentaire payable par MVOLA",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "standard": "Standard",
+                    "sereine": "Sereine"
+                },
+                "default_value": [
+                    "standard"
+                ],
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 0,
+                "ajax": 0,
+                "return_format": "value",
+                "placeholder": ""
+            },
             {
                 "key": "field_5b8904a232984",
                 "label": "Poste à promouvoir",

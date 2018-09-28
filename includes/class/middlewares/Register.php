@@ -139,7 +139,7 @@ trait Register {
     ] );
 
     register_post_type( 'candidate', [
-      'label'           => "Candidat",
+      'label'           => "Candidate",
       'labels'          => [
         'name'               => "Les candidats",
         'singular_name'      => "Candidat",
@@ -160,7 +160,7 @@ trait Register {
       'rewrite'         => [ 'slug' => 'candidate' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-welcome-widgets-menus',
-      'supports'        => [ 'title', 'thumbnail', 'custom-fields' ],
+      'supports'        => [ 'title', 'excerpt', 'thumbnail', 'custom-fields' ],
       'show_in_rest'    => true
     ] );
 
@@ -214,7 +214,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (Logiciel maitrisés)
-    register_taxonomy( 'master_software', [ 'candidate' ], [
+    register_taxonomy( 'software', [ 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Logiciels',
@@ -233,11 +233,11 @@ trait Register {
       'query_var'         => true,
       'public'            => true,
       'show_in_rest'      => true,
-      'rewrite'           => array( 'slug' => 'master_software' ),
+      'rewrite'           => array( 'slug' => 'software' ),
     ] );
 
     // Now register the taxonomy (Région)
-    register_taxonomy( 'region', [ 'offers', 'candidate' ], [
+    register_taxonomy( 'region', [ 'offers', 'candidate', 'company' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Région',
@@ -306,7 +306,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (City)
-    register_taxonomy( 'city', [ 'offers', 'candidate' ], [
+    register_taxonomy( 'city', [ 'offers', 'candidate', 'company' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Code postal & Ville',

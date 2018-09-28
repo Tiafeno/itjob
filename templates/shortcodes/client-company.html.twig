@@ -1,5 +1,14 @@
 <style type="text/css">
-
+  .form-group .form-control {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+  }
+  .uk-modal-title {
+    font-family: 'Montserrat', sans-serif;
+  }
+  .col-form-label {
+    font-size: 13px;
+  }
 </style>
 <script type="text/javascript">
   (function ($) {
@@ -29,14 +38,14 @@
       <div class="flexbox">
         <div class="flexbox-b">
           <div>
-            <h4>{{ client.title }}</h4>
+            <h4>{{ client.title|capitalize }}</h4>
             <div class="text-muted font-13 mb-3">
               <span class="mr-3"><i class="ti-location-pin mr-2"></i>{{ client.address|capitalize }}</span>
               <span><i class="ti-calendar mr-2"></i>{{ client.addDate|capitalize }}</span>
             </div>
             <div>
               <span class="mr-3">
-                <span class="badge badge-primary badge-circle mr-2 font-14" style="height:30px;width:30px;">
+                <span class="badge badge-success badge-circle mr-2 font-14" style="height:30px;width:30px;">
                   <i class="ti-user"></i>
                 </span>
                 Entreprise
@@ -46,98 +55,91 @@
         </div>
         <div class="d-inline-flex">
           <div class="px-4 text-center">
-            <div class="text-muted font-13">OFFRE{% if offers|length > 1 %}S{% endif %}</div>
-            <div class="h2 mt-2">{{ offers|length }}</div>
+            <div class="text-muted font-13">OFFRE(S)</div>
+            <div class="h2 mt-2">[[countOffer]]</div>
           </div>
         </div>
       </div>
     </div>
     <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
       <li class="nav-item">
-        <a class="nav-link" href="#profil" data-toggle="tab">
-          <i class="ti-briefcase mr-2"></i>
-          Information générale
+        <a class="nav-link active" href="#profil" data-toggle="tab">
+          Profil
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="#offers" data-toggle="tab">
-          <i class="ti-support mr-2"></i>
+        <a class="nav-link" href="#offers" data-toggle="tab">
           Mes offres
         </a>
       </li>
     </ul>
 
-    <div class="tab-content">
-      <div class="tab-pane fade text-center" id="profil">
-        <div class="page-content">
-          <div class="ibox-body">
-            <div class="h1 mt-5 mb-3">Information générale</div>
-            <p class="mb-5">Laborum dolore consectetur occaecat in ex sunt et dolore dolore aliqua aute qui cupidatat et
-              ullamco in pariatur dolor quis laboris ut.</p>
+    <div class="tab-content" ng-show="loading">
+      <div class="d-block mt-5 mb-5">
+        <div class="row">
+          <div class="col-md-4 m-auto">
+            <div class="text-center">
+              <img src="{{ Helper['template_url'] }}/img/loading.gif" width="45" />
+              <p>Chargement de contenue ...</p>
+            </div>
           </div>
         </div>
-
       </div>
-
-      <div class="tab-pane fade text-center active show" id="offers">
+    </div>
+    <div class="tab-content" ng-show="!loading">
+      {# Profil utilisateur #}
+      <div class="tab-pane fade active show" id="profil">
         <div class="page-content">
           <div class="ibox-body">
-            <div class="flexbox mb-4">
-              <div class="flexbox">
-                <div class="input-group-icon input-group-icon-left mr-3">
-                  <span class="input-icon input-icon-right font-16"><i class="ti-search"></i></span>
-                  <input class="form-control form-control-solid" id="key-search" type="text"
-                         placeholder="Rechercher ...">
-                </div>
-                <a class="btn btn-primary" href="{{ url['add_offer'] }}">Ajouter une offre</a>
+            <div class="row">
+              <div class="col-sm-6">
+
+                {% if client.author.roles[0] == 'company' %}
+                  <general-information-company
+                    abranchs="asyncTerms('branch_activity')"
+                    regions="asyncTerms('region')"
+                    all-city="asyncTerms('city')"
+                    init="Initialize()"
+                    company="Company">
+                  </general-information-company>
+                {% endif %}
+
               </div>
+
+              <div class="col-sm-6">
+
+                <biography></biography>
+
+                <alerts on-save="onSaveAlert()" alerts="alerts" alert-loading="alertLoading"></alerts>
+
+              </div>
+
+
             </div>
-            <div class="table-responsive row">
-              <table class="table table-bordered table-hover" id="products-table">
 
-                <thead class="thead-default thead-lg">
-                <tr>
-                  <th>ID</th>
-                  <th>Poste à promouvoir</th>
-                  <th>Type de contrat</th>
-                  <th>Secteur d'activité</th>
-                  <th>Région</th>
-                  <th>Réference</th>
-                  <th>Actions</th>
-                </tr>
-                </thead>
 
-                <tbody>
-                {% for offer in offers %}
-                  <tr>
-                    <td>{{ offer.ID }}</td>
-                    <td>
-                      <a href="{{ offer.ID|get_permalink }}" title="{{ offer.postPromote }}">{{ offer.postPromote }}</a>
-                    </td>
-                    <td>{{ offer.contractType[ 'label' ] }}</td>
-                    <td>{{ offer.branch_activity.name }}</td>
-                    <td>{{ offer.region.name }}</td>
-                    <td>
-                      <span class="badge badge-info badge-pill">{{ offer.reference }}</span>
-                    </td>
-                    <td>
-                      <span class="text-light mr-3 font-16" style="cursor: pointer">
-                        <i class="ti-pencil"></i>
-                      </span>
-                      <span class="text-light font-16" style="cursor: pointer" ng-click="trashOffer({{ offer.ID }})">
-                        <i class="ti-trash"></i>
-                      </span>
-                    </td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-
-              </table>
-            </div>
           </div>
         </div>
       </div>
+      {# .end Profil utilisateur#}
 
+      {# Les offres #}
+      <div class="tab-pane fade text-center" id="offers">
+        <div class="page-content">
+          <div class="ibox-body">
+            <offer-lists 
+              offers="offerLists"
+              init="Initialize()"
+              company="Company" 
+              abranchs="asyncTerms('branch_activity')" 
+              regions="asyncTerms('region')" 
+              all-city="asyncTerms('city')">
+            </offer-lists>
+
+          </div>
+        </div>
+      </div>
+      {# .end offres#}
 
     </div>
   </div>

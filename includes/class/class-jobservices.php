@@ -8,8 +8,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'jobServices' ) ) :
   class jobServices {
     public $args;
-
+    private $Client = false;
     public function __construct() {
+      $user = wp_get_current_user();
+      if ($user->ID !== 0) {
+        $this->Client = isset($user->roles[0]) ? $user->roles[0] : false;
+      }
+    }
+
+    public function isClient() {
+      return $this->Client;
     }
 
 
@@ -18,23 +26,17 @@ if ( ! class_exists( 'jobServices' ) ) :
      *
      * @param int $userId - ID d'un utilisateur
      *
-     * @return stdClass
+     * @return \WP_User
      */
     public static function getUserData( $userId ) {
-      $user             = new \WP_User( $userId );
-      $userClass        = new \stdClass();
-      $userClass->roles = $user->roles;
-      unset( $user->data->user_login, $user->data->user_nicename );
-      $userClass->data = $user->data;
-
-      return $userClass;
+      return \get_userdata( $userId );
     }
 
     public function getRecentlyPost( $class_name, $numberposts = 3, $meta_query = [] ) {
       $recentlyContainer = [];
       $this->args        = [
         'post_type'      => $class_name,
-        'post_status'    => [ 'publish', 'pending' ],
+        'post_status'    => [ 'publish' ],
         'posts_per_page' => $numberposts,
         'orderby'        => 'DATE'
       ];
@@ -47,21 +49,13 @@ if ( ! class_exists( 'jobServices' ) ) :
       return $recentlyContainer;
     }
 
-    public function getFeaturedPost( $class_name, $meta_query_value, $meta_query = [] ) {
+    public function getFeaturedPost( $class_name, $meta_query = [] ) {
       $featuredContainer = [];
       $this->args        = [
         'post_type'      => $class_name,
-        'post_status'    => [ 'publish', 'pending' ],
+        'post_status'    => [ 'publish' ],
         'posts_per_page' => 4,
-        'orderby'        => 'DATE',
-        'meta_query'     => [
-          [
-            'key'     => $meta_query_value,
-            'compare' => '=',
-            'value'   => 1,
-            'type'    => 'NUMERIC'
-          ]
-        ]
+        'orderby'        => 'DATE'
       ];
       if ( ! empty( $meta_query ) ) {
         array_push( $this->args['meta_query'], $meta_query );

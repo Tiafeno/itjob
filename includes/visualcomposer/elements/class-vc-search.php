@@ -100,13 +100,13 @@ if ( ! class_exists( 'vcSearch' ) ):
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
-          $master_software = get_terms( 'master_software', [
+          $software = get_terms( 'software', [
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
           $sub_data        = [
             'languages' => $langage,
-            'softwares' => $master_software
+            'softwares' => $software
           ];
 
           $data = array_merge( $data, $sub_data );
@@ -155,13 +155,13 @@ if ( ! class_exists( 'vcSearch' ) ):
           'hide_empty' => false,
           'fields'     => 'all'
         ] );
-        $master_software = get_terms( 'master_software', [
+        $softwares = get_terms( 'software', [
           'hide_empty' => false,
           'fields'     => 'all'
         ] );
         $sub_data        = [
           'languages' => $langage,
-          'softwares' => $master_software
+          'softwares' => $softwares
         ];
 
         $data = array_merge( $args, $sub_data );

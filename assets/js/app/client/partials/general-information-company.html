@@ -1,0 +1,159 @@
+
+<!-- Modal -->
+<div id="modal-edit-user-overflow" uk-modal>
+  <div class="uk-modal-dialog">
+
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Modification</h2>
+    </div>
+
+    <div class="uk-modal-body" uk-overflow-auto>
+      <form name="editUserForm" novalidate>
+        <div class="form-group mb-2 row ">
+          <div  class="col-sm-4">
+            <label class="col-form-label ">Salutation <span style="color: red">*</span></label>
+            <div class="form-group">
+              <select class="form-control" name="greet" ng-model="userEditor.greeting"
+                      title="Salutation" required>
+                <option value="mr">Monsieur</option>
+                <option value="mrs">Madame</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-8">
+            <label class="col-form-label">Nom du responsable <span style="color: red">*</span></label>
+            <input class="form-control" name="name" ng-model="userEditor.name" type="text"
+                   placeholder="Nom du responsable"
+                   required>
+          </div>
+        </div>
+
+        <div class="form-group mb-2 row">
+          <div  class="col-sm-6">
+            <label class="col-form-label ">NIF <span style="color: red">*</span></label>
+            <div class="form-group">
+              <input class="form-control" name="nif" ng-model="userEditor.nif"
+                      title="NIF" required>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <label class="col-form-label">STAT <span style="color: red">*</span></label>
+            <input class="form-control" name="stat" ng-model="userEditor.stat" type="text"
+                   placeholder="Numero statistique"
+                   required>
+          </div>
+        </div>
+
+        <div class="form-group mb-2 row ">
+          <div class="col-sm-12">
+            <label class="col-form-label ">Region <span style="color: red">*</span></label>
+            <div class="form-group">
+              <select class="form-control" name="region" ng-model="userEditor.region"
+                      title="Region" required>
+                <option ng-repeat="rg in Regions" ng-value="rg.term_id">[[rg.name]]</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group row mb-2">
+          <div class="col-sm-12">
+            <label class="col-form-label">Code postal ou nom d'une ville </label>
+            <div class="form-group">
+              <select class="form-control input-mode country" name="country" ng-model="userEditor.country" required>
+                <option value="[[city.term_id]]" ng-value="userEditor.country" ng-repeat="city in Citys">([[city.postal_code]]) [[city.name]]</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group mb-2 row ">
+          <div class="col-sm-12">
+            <label class="col-form-label ">Adresse <span style="color: red">*</span></label>
+            <div class="form-group">
+              <div class="input-group ">
+                <input ng-model="userEditor.address" autocomplete="off" name="address" class="form-control" required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group mb-2 row ">
+          <div class="col-sm-12">
+            <label class="col-form-label ">Secteur d'activité <span style="color: red">*</span> [[userEditor.branch_activity]]</label>
+            <div class="form-group">
+              <select class="form-control" name="branch_activity" ng-model="userEditor.branch_activity"
+                      title="Secteur d'activité" required>
+                <option ng-repeat="ab in branchActivity" ng-value="ab.term_id">[[ab.name]]</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+
+    <div class="uk-modal-footer">
+      <div class="row">
+        <div class="col-sm-6 uk-text-left d-flex">
+          <p class="info-status mt-auto mb-auto" ng-show="status">[[status]]</p>
+        </div>
+        <div class="col-sm-6 uk-text-right">
+          <button class="btn btn-blue ml-4" ng-click="updateUser()" type="button">Enregistrer</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<!-- .end Modal-->
+
+<div class="profil-box">
+    <div class="ibox-body">
+      <h5 class="font-strong mb-4">GENERAL INFORMATION
+        <span class="badge badge-warning badge-circle ml-3" ng-click="openEditor()" style="cursor: pointer">
+          <i class="ti-pencil"></i>
+        </span>
+      </h5>
+      <div class="row mb-2">
+        <div class="col-6 text-muted">Nom du responsable :</div>
+        <div class="col-6">[[Entreprise.name]]</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6 text-muted">Salutation:</div>
+        <div class="col-6">[[Entreprise.greeting|Greet]]</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6 text-muted">Secteur d'activité:</div>
+        <div class="col-6">[[Entreprise.branch_activity.name]]</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6 text-muted">Adresse de l'entreprise:</div>
+        <div class="col-6">[[Entreprise.address]]</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6 text-muted">NIF:</div>
+        <div class="col-6">[[Entreprise.nif]]</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6 text-muted">STAT:</div>
+        <div class="col-6">[[Entreprise.stat]]</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6 text-muted">Région:</div>
+        <div class="col-6">[[Entreprise.region.name]]</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6 text-muted">Numéros de téléphone:</div>
+        <div class="col-6">[[Entreprise.phone]]</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6 text-muted">Email:</div>
+        <div class="col-6">[[Entreprise.email]]</div>
+      </div>
+    </div>
+  </div>

@@ -19,6 +19,34 @@ if ( ! class_exists( 'itJob' ) ) {
         $this->initRegister();
       } );
 
+      /**
+       * Activer l'offre.
+       * Cette evenement ce declanche quand l'administrateur publie une offre
+       * @param int $ID
+       */
+      add_action('publish_offers', function ($ID) {
+        // Activer l'offre
+        update_field('activated', 1, $ID);
+      }, 10, 1);
+
+      /**
+       * Activer le CV.
+       * Cette evenement ce declanche quand l'administrateur publie le CV
+       * @param int $ID
+       */
+      add_action( 'transition_post_status', function ($new_status, $old_status, $post) {
+        // Marquer le candidate possède un CV
+
+        if ('publish' === $new_status && 'candidate' === $post->post_type) {
+//            update_field( 'itjob_cv_hasCV', 1, $post->ID );
+          update_field( 'activated', 1, $post->ID );
+
+          //update_post_meta($post->ID, 'itjob_cv_hasCV', 1);
+          //update_post_meta($post->ID, 'activated', 1);
+        }
+
+      }, 10, 3 );
+
       add_action( 'je_postule', [ &$this, 'je_postule_Fn' ] );
 
       // TODO: Envoyer un mail information utilisateur et adminstration (pour s'informer d'un nouveau utilisateur)
@@ -102,18 +130,9 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( ! is_admin() && $query->is_main_query() ) {
           $Types = ['offers', 'candidate', 'company'];
           // Afficher les posts pour status 'en attente' et 'publier'
-          $query->set( 'post_status', [ 'publish', 'pending' ] );
+          $query->set( 'post_status', [ 'publish' ] );
           $post_type = $query->get( 'post_type' );
 
-          if (in_array($post_type, $Types)) {
-            $meta_query = $query->get('meta_query');
-            $meta_query[] = [
-              'key' => 'activated',
-              'value' => 1,
-              'compare' => '=',
-              'type' => 'NUMERIC'
-            ];
-          }
           //$query->set( 'posts_per_page', 1 );
 
           if ( $query->is_search ) {
@@ -203,7 +222,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 if ( ! empty( $software ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
-                    'taxonomy'         => 'master_software',
+                    'taxonomy'         => 'software',
                     'field'            => 'term_id',
                     'terms'            => (int) $software,
                     'include_children' => false
@@ -216,7 +235,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 $meta_query[] = [
-                  'key'     => 'itjob_cv_activated',
+                  'key'     => 'activated',
                   'value'   => 1,
                   'compare' => '=',
                   'type'    => 'NUMERIC'
@@ -248,7 +267,7 @@ if ( ! class_exists( 'itJob' ) ) {
               }
 
               $meta_query[] = [
-                'key'     => 'itjob_cv_activated',
+                'key'     => 'activated',
                 'value'   => 1,
                 'compare' => '=',
                 'type'    => 'NUMERIC'
@@ -475,6 +494,9 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_style( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.css' );
       wp_register_script( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.min.js', [], $itJob->version, true );
 
+      wp_register_style( 'alertify', VENDOR_URL . '/alertifyjs/dist/css/alertify.css' );
+      wp_register_script( 'alertify', VENDOR_URL . '/alertifyjs/dist/js/alertify.js', [], '1.0.11', true );
+
       wp_register_style( 'froala-editor', VENDOR_URL . '/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
       wp_register_style( 'froala', VENDOR_URL . '/froala-editor/css/froala_style.min.css', [
         'froala-editor',
@@ -504,15 +526,17 @@ if ( ! class_exists( 'itJob' ) ) {
     }
 
     public function je_postule_Fn() {
-      // Vérifier si la page de création de CV exist
-      $addedCVPage = jobServices::page_exists('Ajouter un CV');
-      if ( ! $addedCVPage) return;
-      $addedCVUrl = sprintf('%s?offerId=%d&redir=%s', get_the_permalink($addedCVPage), get_the_ID(), get_the_permalink());
-      $button = "<a href=\"$addedCVUrl\">
-                  <button class=\"btn btn-blue btn-fix\">
-                    <span class=\"btn-icon\">Je postule </span>
-                  </button>
-                </a>";
+      global $itJob;
+      if ($itJob->services->isClient() === 'company') return;
+      $offer_id = get_the_ID();
+      $href= home_url("/apply/{$offer_id}");
+      $button = "<div class=\"float-right ml-3\">
+                  <a href=\"$href\">
+                    <button class=\"btn btn-blue btn-fix\">
+                      <span class=\"btn-icon\">Je postule </span>
+                    </button>
+                  </a>
+                 </div>";
       echo $button;
     }
 

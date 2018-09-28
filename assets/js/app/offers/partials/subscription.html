@@ -1,0 +1,40 @@
+<form name="subscriptionOffer" ng-submit="sendSubscription()" class="form-horizontal" novalidate>
+  <div class="ibox-body">
+
+    <div class="page-heading mb-5">
+      <h1 class="page-title">Choisissez le mode de diffusion</h1>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="index.html"><i class="la la-home font-20"></i></a>
+        </li>
+        <li class="breadcrumb-item">Offre</li>
+        <li class="breadcrumb-item">[[offers.postpromote]]</li>
+        <li class="breadcrumb-item">Mode de diffusion</li>
+      </ol>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox checkbox-grey checkbox-info">
+        <input type="radio" name="rateplan" ng-model="rateplan" value="standard">
+        <span class="input-span"></span><b>Standard</b> (option par defaut) vous selectionnez vous même les candidats pour votre offre</label>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox checkbox-grey checkbox-info">
+        <input type="radio" name="rateplan" ng-model="rateplan" value="sereine" >
+        <span class="input-span"></span><b>Sereine</b> ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre et vous ne recevrez plus de notification venant de cette offre, une option soumise à un frais supplémentaire  de x Ar payable par MVOLA</label>
+    </div>
+
+  </div>
+
+  <div class="ibox-footer">
+    <div class="row">
+      <div class="col-sm-5 d-flex align-items-center">
+      </div>
+      <div class="col-sm-4 ml-sm-auto">
+        <button class="btn btn-blue float-right mr-2" ng-disabled="isSubmit" type="submit">Publier mon offre</button>
+      </div>
+    </div>
+
+  </div>
+</form>

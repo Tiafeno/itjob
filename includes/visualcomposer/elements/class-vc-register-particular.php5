@@ -17,6 +17,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
   class vcRegisterParticular extends \WPBakeryShortCode {
     public function __construct() {
       add_action( 'init', [ &$this, 'register_particular_mapping' ] );
+
       add_shortcode( 'vc_register_particular', [ &$this, 'register_render_html' ] );
 
       // Crée une utilisateur pour le post candidate
@@ -87,13 +88,16 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       ], $itJob->version, true );
 
       /** @var STRING $redir */
+      $redirection = Http\Request::getValue( 'redir' );
+      $redirection = $redirection ? $redirection : $redir;
+
       wp_localize_script( 'form-particular', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
         'urlHelper' => [
           'singin' => home_url('/connexion/candidate'),
-          'redir'  => is_null($redir) ? null : $redir
+          'redir'  => is_null($redirection) ? null : $redirection
         ]
       ] );
 
@@ -133,6 +137,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         'address'      => Http\Request::getValue( 'address' ),
         'region'       => Http\Request::getValue( 'region' ), // region ID
         'city'         => Http\Request::getValue( 'country' ), // city ID
+        'greeting'     => Http\Request::getValue( 'greeting ' ),
         'email'        => $userEmail
       ];
 
@@ -163,7 +168,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
     }
 
     /**
-     * Ajouter un utilisateur après l'enregistrement d'un candidat (post)
+     * Ajouter un utilisateur après l'enregistrement d'un candidat (post) s'il n'existe pas
      * @action acf/save_post
      *
      * @param $post_id
@@ -179,8 +184,8 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       $email = &$value;
       $post  = get_post( $post_id );
       // (WP_User|false) WP_User object on success, false on failure.
-      $userExist = get_user_by( 'email', $email );
-      if ( $userExist ) {
+      $isUser = get_user_by( 'email', $email );
+      if ( $isUser ) {
         return $value;
       }
 

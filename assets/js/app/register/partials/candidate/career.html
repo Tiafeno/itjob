@@ -1,5 +1,11 @@
 <div class="ibox-body">
 
+  <script type="text/ng-template" id="auto-complete-template">
+    <div class="right-panel">
+      <span style="font-size: 12px; font-family: Poppins, sans-serif;">{{data.name}}</span>
+    </div>
+  </script>
+
   <div class="form-group">
     <h4>Formations / Diplômes</h4>
     <div class="row mb-1">
@@ -9,7 +15,7 @@
             <div class="training-remove p-absolute" ng-show="training.id !== 0" ng-click="removeTraining(training.id)"><i class="ti-trash"></i> </div>
             <div class="">
               <label class="col-form-label pt-0">Année <span style="color: red">*</span></label>
-              <div class="input-daterange input-group form-group" id="datepicker">
+              <div class="input-daterange input-group form-group" id="datepicker-training">
                 <input class="input-sm form-control" type="text" autocomplete="off" ng-model="training.start" name="start" value="08/08/2018">
                 <span class="input-group-addon pl-2 pr-2">à</span>
                 <input class="input-sm form-control" type="text" autocomplete="off" ng-model="training.end" name="end" value="20/08/2018">
@@ -67,24 +73,38 @@
     <label class="font-normal">Les langues <span style="color: red">*</span></label>
       <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
     <tags-input ng-model="formData.languages" display-property="name" placeholder="Les langues" replace-spaces-with-dashes="false" required>
-      <auto-complete source="queryLanguages($query)"
+      <auto-complete source="queryItems($query, 'language')"
                       min-length="0"
-                      load-on-focus="false"
-                      load-on-empty="false"
+                      load-on-focus="true"
+                      load-on-empty="true"
                       max-results-to-show="10"
-                      template="language-template">
+                      template="auto-complete-template">
       </auto-complete>
     </tags-input>
-    <script type="text/ng-template" id="language-template">
-      <div class="right-panel">
-        <span style="font-size: 12px">{{data.name}}</span>
-      </div>
-    </script>
+
       <p class="mention-text col-md-8 mt-1">
         Ajouter des langues s'il ne ﬁgure pas dans la liste et valider par “ENTRER” ou le virgule “,”
         et <b>éviter les fautes d'orthographe</b>
       </p>
   </div>
+
+    <div class="mt-5 form-group" id="software">
+      <label class="font-normal">Outils et technologie</label>
+      <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
+      <tags-input ng-model="formData.softwares" display-property="name" placeholder="Outils et technologie" replace-spaces-with-dashes="false" >
+        <auto-complete source="queryItems($query, 'software')"
+                       min-length="0"
+                       load-on-focus="false"
+                       load-on-empty="false"
+                       max-results-to-show="10"
+                       template="auto-complete-template">
+        </auto-complete>
+      </tags-input>
+      <p class="mention-text col-md-8 mt-1">
+        S'il ne ﬁgure pas dans la liste, pour ajouter valider par “ENTRER” ou le virgule “,”
+        et <b>éviter les fautes d'orthographe</b>
+      </p>
+    </div>
 
   <div class="form-group mt-5">
       <h4>Expériences professionnelles</h4>
@@ -95,7 +115,7 @@
               <div class="training-remove p-absolute" ng-show="experience.id !== 0" ng-click="removeExperience(experience.id)"><i class="ti-trash"></i> </div>
               <div class="">
                 <label class="col-form-label pt-0">Année <span style="color: red">*</span></label>
-                <div class="input-daterange input-group form-group" id="datepicker">
+                <div class="input-daterange input-group form-group" id="datepicker-experience">
                   <input class="input-sm form-control" type="text" autocomplete="off" ng-model="experience.start" name="start" value="08/08/2018">
                   <span class="input-group-addon pl-2 pr-2">à</span>
                   <input class="input-sm form-control" type="text" autocomplete="off" ng-model="experience.end" name="end" value="20/08/2018">

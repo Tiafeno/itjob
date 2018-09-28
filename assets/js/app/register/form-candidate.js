@@ -31,6 +31,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           access: ['$q', '$rootScope', function ($q, $rootScope) {
 
             if (typeof $rootScope.formData === 'undefined') {
+              // Refuser et retourner si le formlaire n'est pas complete
               return $q.reject({
                 redirect: 'form.informations'
               });
@@ -39,13 +40,14 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
               typeof $rootScope.formData.jobSougths === 'undefined' ||
               _.isEmpty($rootScope.formData.jobSougths) ||
               typeof $rootScope.formData.abranch === 'undefined') {
-
+              // Refuser l'accès si les champs ou les variables si-dessus ne sont pas valide
               return $q.reject({
                 redirect: 'form.informations'
               });
             }
           }],
           driveLicences: function ($q) {
+            // Permis de conduire (Schema)
             const licences = [
               {
                 _id: 0,
@@ -77,8 +79,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           }
         },
         controller: function ($rootScope, $scope, $http, driveLicences) {
-          let self = this;
-
           // Effacer une nouvelle formation
           $scope.removeTraining = id => {
             // Ne pas effacer le premier champ de formation
@@ -94,21 +94,25 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             });
           };
 
-
-          // Rechercher les langues
-          $rootScope.queryLanguages = function ($query) {
-            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=language', {
+          // Generateur d'auto-completion
+          $rootScope.queryItems = function ($query, taxonomy = null) {
+            if (_.isNull(taxonomy)) {
+              console.warn('Le taxonomie n\'est pas definie dans l\'arguments');
+              return false;
+            }
+            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
               cache: true
             })
               .then(function (response) {
-                const languages = response.data;
-                return languages.filter(function (language) {
-                  return language.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+                const dataTerms = response.data;
+                return dataTerms.filter(function (term) {
+                  let termName = term.name.toLowerCase();
+                  return termName.indexOf($query.toLowerCase()) != -1;
                 });
               });
           };
 
-
+          // Evenement d'initialisation du controller
           this.$onInit = function () {
             $rootScope.initDatePicker();
             $rootScope.driveLicences = _.clone(driveLicences);
@@ -125,7 +129,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 clearBtn: true,
               });
 
-              // Trouver un pays dnas la liste API
+              // Trouver un pays dans la liste API
               var country = new Bloodhound({
                 datumTokenizer: function (datum) {
                   return Bloodhound.tokenizers.whitespace(datum.value);
@@ -146,9 +150,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                   }
                 }
               });
-
               // Initialize the Bloodhound suggestion engine
               country.initialize();
+              // Initier l'element DOM
               jQuery('.country-apirest').typeahead(null, {
                 hint: false,
                 highlight: true,
@@ -184,10 +188,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 !item.hasOwnProperty('establishment');
               if (training) return $q.reject({redirect: 'form.career'});
             }
-
-            let languages = !$rootScope.formData.hasOwnProperty('languages');
-            if (languages) return $q.reject({redirect: 'form.career'});
-
+            // Verifier les valeurs du champs experiences s'il sont bien definie
             let experiences = !$rootScope.formData.hasOwnProperty('experiences');
             if (experiences) return $q.reject({redirect: 'form.career'});
             for (let item of $rootScope.formData.experiences) {
@@ -197,6 +198,10 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 !item.hasOwnProperty('positionHeld');
               if (experiences) return $q.reject({redirect: 'form.career'});
             }
+
+            let languages = !$rootScope.formData.hasOwnProperty('languages');
+            if (languages) return $q.reject({redirect: 'form.career'});
+
           }]
         },
         controller: ['$rootScope', '$scope', 'initScripts', 'Services', function ($rootScope, $scope, initScripts, Services) {
@@ -219,7 +224,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       .state('form.informations', {
         url: '/informations',
         templateUrl: itOptions.partials_url + '/candidate/informations.html',
-
         controller: function ($rootScope, $http, $window, initScripts) {
 
           const fileFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
@@ -286,8 +290,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             initScripts.__init__();
           };
           //$rootScope.formData.jobSougths = Services.getTaxonomy('job_sought');
-          $rootScope.queryJobs = function ($query) {
-            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=job_sought', {
+          $rootScope.queryJobs = function ($query, taxonomy) {
+            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
               cache: true
             })
               .then(function (response) {
@@ -427,7 +431,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     return {
       restrict: 'A',
       scope: true,
-      link: (scope, element, attrs) => {
+      link: (scope, element) => {
         let onChangeHandler = scope.$eval(attrs.inputOnChange);
         element.on("change", onChangeHandler);
         element.on('$destroy', function () {
@@ -566,6 +570,10 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           $rootScope.loading = false;
         });
     };
+
+    $rootScope.$watch('formData', (value) => {
+      console.log(value);
+    }, true);
 
   }).run(function ($state, $rootScope) {
   $state.defaultErrorHandler(function (error) {

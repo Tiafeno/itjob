@@ -101,7 +101,7 @@ if ( ! class_exists( 'vcCandidate' ) ):
       /** @var string $title */
       $args = [
         'title'      => $title,
-        'candidates' => $itJob->services->getFeaturedPost( 'candidate', 'itjob_cv_featured' )
+        'candidates' => $itJob->services->getFeaturedPost( 'candidate' )
       ];
       wp_enqueue_style( 'candidate' );
       try {
@@ -128,12 +128,7 @@ if ( ! class_exists( 'vcCandidate' ) ):
       /** @var string $title */
       $args = [
         'title'      => $title,
-        'candidates' => $itJob->services->getRecentlyPost( 'candidate', 4, [
-          'key'     => 'itjob_cv_activated',
-          'compare' => '=',
-          'value'   => 1,
-          'type'    => 'NUMERIC'
-        ] ),
+        'candidates' => $itJob->services->getRecentlyPost( 'candidate', 4),
         'archive_cv_url' => get_post_type_archive_link('candidate')
       ];
       try {
