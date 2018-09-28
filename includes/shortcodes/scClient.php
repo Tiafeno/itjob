@@ -17,14 +17,14 @@ if ( ! class_exists( 'scClient' ) ) :
     public $Candidate = null;
 
     public function __construct() {
-      if (class_exists('includes\post\Company') && class_exists('includes\post\Candidate')) {
-        $userTypes = ['company', 'candidate'];
+      if ( class_exists( 'includes\post\Company' ) && class_exists( 'includes\post\Candidate' ) ) {
+        $userTypes  = [ 'company', 'candidate' ];
         $this->User = wp_get_current_user();
-        $userRole = $this->User->roles[0];
-        if ($this->User->ID !== 0 && in_array($userRole, $userTypes)) {
-          $class_name = ucfirst($userRole);
-          $class_name = "includes\\post\\$class_name";
-          $this->Company = call_user_func([$class_name, 'get_company_by'], $this->User->ID);
+        $userRole   = $this->User->roles[0];
+        if ( $this->User->ID !== 0 && in_array( $userRole, $userTypes ) ) {
+          $class_name    = ucfirst( $userRole );
+          $class_name    = "includes\\post\\$class_name";
+          $this->Company = call_user_func( [ $class_name, 'get_company_by' ], $this->User->ID );
         }
       } else {
         return;
@@ -197,7 +197,7 @@ if ( ! class_exists( 'scClient' ) ) :
       $result       = (int) $wpdb->get_var( $wpdb->prepare( $query, [] ) );
       if ( $result > 0 ) {
         $wpdb->flush();
-        $pt           = new Offers( $post_id );
+        $pt = new Offers( $post_id );
         if ( (int) $pt->company->ID === $this->Company->getId() ) {
           $isTrash = wp_trash_post( $post_id );
           if ( $isTrash ):
@@ -226,12 +226,20 @@ if ( ! class_exists( 'scClient' ) ) :
      * Function ajax
      * @route admin-ajax.php?action=update_alert_filter&alerts=<json>
      */
-    public function update_alert_filter () {
-      if ( ! is_user_logged_in() || ! wp_doing_ajax()) {
+    public function update_alert_filter() {
+      global $itJob;
+      if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
         wp_send_json( false );
       }
-
+      if ($itJob->services->isClient() === 'company'):
+        $alerts = Http\Request::getValue('alerts');
+        $alerts = \json_decode($alerts);
+        $alerts = array_map(function($std) { return $std->text; }, $alerts);
+        $data = update_field('itjob_company_alerts', implode(',', $alerts), $this->Company->getId());
+        wp_send_json(['success' => true, 'data' => $data]);
+      endif;
     }
+
     /**
      * Function ajax
      * Récuperer les information nécessaire pour l'espace client
@@ -244,11 +252,11 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $User = wp_get_current_user();
       if ( $itJob->services->isClient() === 'company' ) {
-        $alert = get_field( 'itjob_company_alerts', $this->Company->getId());
+        $alert = get_field( 'itjob_company_alerts', $this->Company->getId() );
         wp_send_json( [
           'Company' => Company::get_company_by( $User->ID ),
           'Offers'  => $this->__get_company_offers(),
-          'Alerts'  => explode(',', $alert)
+          'Alerts'  => explode( ',', $alert )
         ] );
       } else {
         // candidate

@@ -252,13 +252,24 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       $scope.onSaveAlert = () => {
         if (_.isEmpty($scope.alerts)) return;
         $scope.alertLoading = true;
-        $http.post(itOptions.Helper.ajax_url, {
-          action: 'update_alert_filter',
-          alerts: JSON.stringify($scope.alerts)
+        var form = new FormData();
+        form.append('action', 'update_alert_filter');
+        form.append('alerts', JSON.stringify($scope.alerts));
+        $http({
+          method: 'POST',
+          url: itOptions.Helper.ajax_url,
+          headers: {
+            'Content-Type': undefined
+          },
+          data: form
         })
           .success((data, status) => {
+            // Handle success
             $scope.alertLoading = false;
             console.log(data);
+          })
+          .error((data, status) => {
+            // Handle error
           })
       };
 

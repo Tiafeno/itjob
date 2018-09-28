@@ -1064,7 +1064,7 @@
             {
                 "key": "field_5babe022f79b7",
                 "label": "Alerte",
-                "name": "itjob_company_alerte",
+                "name": "itjob_company_alerts",
                 "type": "text",
                 "instructions": "Je souhaite être informé quand un candidat dont le vœux comporte ces mots",
                 "required": 0,
