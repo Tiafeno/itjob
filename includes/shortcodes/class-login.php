@@ -71,7 +71,6 @@ if ( ! class_exists( 'scLogin' ) ) :
       );
 
       /** @var STRING $redir */
-
       $redirection = Http\Request::getValue( 'redir' );
       $redirection = $redirection ? $redirection : $redir;
 
@@ -107,7 +106,6 @@ if ( ! class_exists( 'scLogin' ) ) :
         'angular-animate',
         'angular-aria',
       ], $itJob->version, true );
-
       $custom_area_url = jobServices::page_exists( 'Espace client' );
       $custom_area_url = $custom_area_url ? $custom_area_url : home_url( '/' );
       wp_localize_script( 'login', 'itOptions', [
@@ -116,7 +114,7 @@ if ( ! class_exists( 'scLogin' ) ) :
           'customer_area_url' => get_the_permalink($custom_area_url),
           'redir'             => $redirection
         ]
-      ] );
+      ]);
 
       try {
         // Get pos type object
@@ -125,14 +123,18 @@ if ( ! class_exists( 'scLogin' ) ) :
 
         do_action('get_notice');
 
-        /** @var STRING $title */
-        return $Engine->render( '@SC/login.html.twig', [
+        $EngineData = [
           'title' => $title,
           'uri'   => (object) [
             'theme'  => get_template_directory_uri(),
             'singup' => $singup_url . '?redir='.$redirection
           ]
-        ] );
+        ];
+        $forgot_pwd = jobServices::page_exists('Forgot password');
+        $EngineData['uri']->forgot_pwd_url =  (0 !== $forgot_pwd) ? get_the_permalink((int)$forgot_pwd) : 'javascript: alert("No link")';
+
+        /** @var STRING $title */
+        return $Engine->render( '@SC/login.html.twig', $EngineData);
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {
       } catch ( Twig_Error_Syntax $e ) {
