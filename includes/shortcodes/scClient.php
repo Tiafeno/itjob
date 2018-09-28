@@ -20,8 +20,9 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( class_exists( 'includes\post\Company' ) && class_exists( 'includes\post\Candidate' ) ) {
         $userTypes  = [ 'company', 'candidate' ];
         $this->User = wp_get_current_user();
-        $userRole   = $this->User->roles[0];
-        if ( $this->User->ID !== 0 && in_array( $userRole, $userTypes ) ) {
+        if ( $this->User->ID !== 0) {
+          $userRole   = $this->User->roles[0];
+          if ( ! in_array( $userRole, $userTypes )) return;
           $class_name    = ucfirst( $userRole );
           $class_name    = "includes\\post\\$class_name";
           $this->Company = call_user_func( [ $class_name, 'get_company_by' ], $this->User->ID );
