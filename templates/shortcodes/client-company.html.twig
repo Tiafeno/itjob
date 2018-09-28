@@ -105,24 +105,18 @@
 
               <div class="col-sm-6">
                 <div class="ibox-body">
-                  <h5 class="font-strong mb-4">BIOGRAPHY</h5>
+                  <h5 class="font-strong mb-4">
+                    BIOGRAPHY
+                    <span class="badge badge-danger ml-3" style="cursor: pointer">
+                      En construction
+                    </span>
+                  </h5>
                   <p>Lorem Ipsum Aliqua id consequat laborum incididunt adipiscing ut consectetur dolor voluptate non est ex dolore voluptate fugiat adipiscing qui deserunt nisi magna irure tempor non cupidatat amet fugiat est ad sint adipiscing
                     est officia cillum consectetur reprehenderit non.</p>
                 </div>
 
-                <div class="alert-content">
-                  <div class="ibox-body">
-                    <h5 class="font-strong mb-4">Créer une alerte</h5>
-                    <p>Je souhaite être informé quand un candidat comporte les mots suivants dans ces informations:</p>
+                <alerts on-save="onSaveAlert()" alerts="alerts" alert-loading="alertLoading"></alerts>
 
-                    <tags-input ng-model="alerts" placeholder="Alerte" replace-spaces-with-dashes="false">
-                    </tags-input>
-
-                    <div>
-                      <button class="btn btn-success" ng-click="onSaveAlert()" ng-disabled="alertLoading">Valider</button>
-                    </div>
-                  </div>
-                </div>
               </div>
 
 

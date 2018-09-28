@@ -215,6 +215,23 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       }]
     }
   }])
+  .directive('alerts', [function() {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/alert.html',
+      scope: {
+        onSave: '&',
+        alerts: '=',
+        alertLoading: '='
+      },
+      link: function (scope, element, attrs) {
+
+      },
+      controller: ['$scope', function ($scope) {
+
+      }]
+    }
+  }])
   .controller('clientCompanyCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService',
     function ($scope, $http, $q, clientFactory, clientService) {
       $scope.alertLoading = false;
@@ -263,8 +280,9 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
           },
           data: form
         })
-          .success((data, status) => {
+          .then(response => {
             // Handle success
+            var data = response.data;
             $scope.alertLoading = false;
             console.log(data);
           })

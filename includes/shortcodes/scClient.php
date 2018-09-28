@@ -236,7 +236,9 @@ if ( ! class_exists( 'scClient' ) ) :
         $alerts = \json_decode($alerts);
         $alerts = array_map(function($std) { return $std->text; }, $alerts);
         $data = update_field('itjob_company_alerts', implode(',', $alerts), $this->Company->getId());
-        wp_send_json(['success' => true, 'data' => $data]);
+        if ($data)
+          wp_send_json(['success' => true]);
+
       endif;
     }
 
