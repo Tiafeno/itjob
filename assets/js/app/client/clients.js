@@ -69,10 +69,10 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       return _.findWhere(postStatus, {slug: jQuery.trim(inputValue)}).label;
     }
   }])
-  .directive('generalInformation', [function () {
+  .directive('generalInformationCompany', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/general-information.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/general-information-company.html',
       scope: {
         Entreprise: '=company',
         regions: '&',
@@ -223,13 +223,15 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         onSave: '&',
         alerts: '=',
         alertLoading: '='
-      },
-      link: function (scope, element, attrs) {
-
-      },
-      controller: ['$scope', function ($scope) {
-
-      }]
+      }
+    }
+  }])
+  .directive('biography', [function() {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/biography.html',
+      scope: {
+      }
     }
   }])
   .controller('clientCompanyCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService',
@@ -282,13 +284,10 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         })
           .then(response => {
             // Handle success
-            var data = response.data;
+            let data = response.data;
             $scope.alertLoading = false;
-            console.log(data);
-          })
-          .error((data, status) => {
-            // Handle error
-          })
+            if (data.success) { console.warn("Une erreur inconue s'est produit")}
+          });
       };
 
       $scope.$watch('alerts', value => { console.log(value);}, true);
