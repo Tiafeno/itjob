@@ -167,45 +167,41 @@
   <table class="table table-bordered table-hover" id="products-table">
 
     <thead class="thead-default thead-lg">
-    <tr>
-      <th>ID</th>
-      <th>Status</th>
-      <th>En ligne</th>
-      <th>Candidat(s)</th>
-      <th>Poste à promouvoir</th>
-      <th>Type de contrat</th>
-      <th>Secteur d'activité</th>
-      <th>Réference</th>
-      <th>Actions</th>
-    </tr>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>En ligne</th>
+        <th>Candidat(s)</th>
+        <th>Poste à promouvoir</th>
+        <th>Type de contrat</th>
+        <th>Secteur d'activité</th>
+        <th>Réference</th>
+        <th>Actions</th>
+      </tr>
     </thead>
 
     <tbody>
-    <tr ng-repeat="offer in Offers">
+      <tr ng-repeat="offer in Offers">
 
-      <td>[[offer.ID]]</td>
+        <td>[[offer.ID]]</td>
+        <td>
+          <span class="badge badge-pill" ng-class="{'badge-blue' : offer.offer_status == 'publish', 'badge-warning' : offer.offer_status == 'pending'}">
+            [[ offer.offer_status|Status]]
+          </span>
+        </td>
+        <td>
+          <span class="badge badge-pill" ng-class="{'badge-blue' : offer.activated , 'badge-danger' : !offer.activated }">
+            [[offer.activated ? 'OUI' : 'NON']]
+          </span>
+        </td>
+        <td>[[ offer.count_candidat_apply ]]</td>
+        <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
 
-      <td>
-        <span class="badge badge-pill" ng-class="{'badge-blue' : offer.offer_status == 'publish', 'badge-warning' : offer.offer_status == 'pending'}">
-          [[ offer.offer_status|Status]]
-        </span>
-      </td>
-
-      <td>
-        <span class="badge badge-pill" ng-class="{'badge-blue' : offer.activated , 'badge-danger' : !offer.activated }">
-          [[offer.activated ? 'OUI' : 'NON']]
-        </span>
-      </td>
-      <td>[[ offer.count_candidat_apply ]]</td>
-      <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
-
-      <td>[[ offer.contractType[ 'label' ] ]]</td>
-      <td>[[ offer.branch_activity.name ]]</td>
-
-
-      <td><span class="badge badge-info badge-pill">[[ offer.reference ]]</span></td>
-      <td><span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
-    </tr>
+        <td>[[ offer.contractType[ 'label' ] ]]</td>
+        <td>[[ offer.branch_activity.name ]]</td>
+        <td><span class="badge badge-info badge-pill">[[ offer.reference ]]</span></td>
+        <td><span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
+      </tr>
     </tbody>
 
   </table>
