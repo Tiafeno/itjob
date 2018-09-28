@@ -1,7 +1,15 @@
 <form name="formCompany" ng-submit="submitForm(formCompany.$valid)" class="form-horizontal p-5" novalidate>
+
+  <div id="modal-media-youtube" class="uk-flex-top" uk-modal>
+    <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+      <button class="uk-modal-close-outside" type="button" uk-close></button>
+      <iframe src="https://www.youtube-nocookie.com/embed/nu8AL588a1o" width="560" height="315" frameborder="0" uk-video></iframe>
+    </div>
+  </div>
+
   <div class="page-heading mb-5">
     <h4 class="page-title">FORMULAIRE ENTREPRISE</h4>
-    <h6>Vous pouvez aussi <a href="" class="text-blue">regarder la vidéo explicative</a>.</h6>
+    <h6>Vous pouvez aussi <a href="#modal-media-youtube" uk-toggle class="text-blue">regarder la vidéo explicative</a>.</h6>
   </div>
 
   <div class="col-md-12 pl-0" ng-show="!_.isNull(itOptions.urlHelper.redir)">
