@@ -3,6 +3,7 @@
 namespace includes\shortcode;
 
 use Http;
+use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
 
@@ -38,6 +39,7 @@ if ( ! class_exists( 'scClient' ) ) :
       add_action( 'wp_ajax_update_offer', [ &$this, 'update_offer' ] );
       add_action( 'wp_ajax_update_profil', [ &$this, 'update_profil' ] );
       add_action( 'wp_ajax_update_alert_filter', [ &$this, 'update_alert_filter' ] );
+      add_action( 'wp_ajax_get_postuled_candidate', [ &$this, 'get_postuled_candidate' ] );
     }
 
     public function sc_render_html( $attrs, $content = '' ) {
@@ -173,7 +175,6 @@ if ( ! class_exists( 'scClient' ) ) :
       foreach ( $form as $key => $value ) {
         update_field( "itjob_company_{$key}", $value, $company_id );
       }
-
       wp_send_json( [ 'success' => true ] );
 
     }
@@ -241,6 +242,24 @@ if ( ! class_exists( 'scClient' ) ) :
           wp_send_json(['success' => true]);
 
       endif;
+    }
+
+    public function get_postuled_candidate() {
+      $offer_id = Http\Request::getValue('oId');
+      $offer_id = (int)$offer_id;
+      $postuledCandidates = [];
+      $Offer = new Offers($offer_id);
+      if ($Offer->is_offer() && $Offer->count_candidat_apply >= 1) {
+        $candidate_ids = $Offer->candidat_apply;
+        foreach ($candidate_ids as $key => $candidate_id) {
+          array_push($postuledCandidates, Candidate::get_candidate_by($candidate_id));
+        }
+        wp_send_json($postuledCandidates);
+      } else {
+        wp_send_json(false);
+      }
+
+      die;
     }
 
     /**

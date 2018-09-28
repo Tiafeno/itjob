@@ -170,8 +170,10 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
           autoclose: true
         });
       },
-      controller: ['$scope', '$q', 'clientFactory', function ($scope, $q, clientFactory) {
+      controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
         $scope.offerEditor = {};
+        $scope.loadingCandidats = false;
+        $scope.postuledCandidats = [];
         $scope.openEditor = (offerId) => {
           let offer = _.findWhere($scope.Offers, {
             ID: parseInt(offerId)
@@ -193,9 +195,6 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
             }
           });
         };
-        $scope.$watch('current', value => {
-
-        });
         $scope.editOffer = (offerId) => {
           let offerForm = new FormData();
           let formObject = Object.keys($scope.offerEditor);
@@ -212,6 +211,18 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
               $scope.init();
             });
         };
+        $scope.viewApply = (offer_id) => {
+          $scope.loadingCandidats = true;
+          let offer = _.find($scope.Offers, (item) => item.ID === offer_id);
+          if (!offer.my_offer || offer.count_candidat_apply <= 0) return;
+
+          UIkit.modal('#modal-view-candidat').show();
+          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {cache: false})
+            .then(resp => {
+              $scope.postuledCandidats = resp.data;
+              $scope.loadingCandidats = false;
+            })
+        }
       }]
     }
   }])

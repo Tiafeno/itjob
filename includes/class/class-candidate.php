@@ -14,6 +14,7 @@ final class Candidate extends UserParticular implements \iCandidate {
 
   private $activated;
   public $title;
+  public $candidate_url;
   public $reference;
   public $district; // Region
   public $status; // Je cherche...
@@ -53,6 +54,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     parent::__construct();
 
     $this->title    = $this->reference = $output->post_title;
+    $this->candidate_url = get_the_permalink($this->getId());
     $this->postType = $output->post_type;
 
     if ( $this->acfElements() ) {

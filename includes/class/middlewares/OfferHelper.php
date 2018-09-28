@@ -26,6 +26,7 @@ trait OfferHelper {
       $Company = new \includes\post\Company($this->company->ID);
       if ($User->ID === $Company->author->ID) {
         $this->my_offer = true;
+        // Array of user id
         $applyField = get_field('itjob_users_apply', $offer_id);
         if ($applyField) {
           $this->count_candidat_apply = count($applyField);

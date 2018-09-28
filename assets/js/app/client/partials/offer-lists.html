@@ -123,6 +123,47 @@
   </div>
 </div>
 
+<div id="modal-view-candidat" uk-modal>
+  <div class="uk-modal-dialog">
+
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Les candidates</h2>
+    </div>
+
+    <div class="uk-modal-body" uk-overflow-auto>
+      <div class="">
+        <div class="ibox-body">
+          <div ng-show="loadingCandidats">
+            <div class="d-block mt-5 mb-5">
+              <div class="row">
+                <div class="col-md-6 m-auto">
+                  <div class="text-center">
+                    <p>Chargement en cours ...</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ul ng-show="!loadingCandidats" class="media-list media-list-divider mr-2 scroller" data-height="580px">
+            <li class="media align-items-center" ng-repeat="postuled in postuledCandidats">
+              <div class="media-body d-flex align-items-center">
+                <div class="flex-1">
+                  <div class="media-heading">[[ postuled.title ]]</div>
+                  <small class="text-muted text-info">[[ postuled.branch_activity[0] ]]</small>
+                </div>
+                <a target="_blank" ng-href="[[ postuled.candidate_url ]]" class="btn btn-sm btn-outline-secondary btn-rounded">Voir le CV</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!--                    Dialog begin -->
 <div class="modal fade" id="featured-dialog" aria-labelledby="featured-dialog" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -194,7 +235,7 @@
             [[offer.activated ? 'OUI' : 'NON']]
           </span>
         </td>
-        <td>[[ offer.count_candidat_apply ]]</td>
+        <td><span style="cursor: pointer" ng-click="viewApply(offer.ID)">[[ offer.count_candidat_apply ]]</span></td>
         <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
 
         <td>[[ offer.contractType[ 'label' ] ]]</td>

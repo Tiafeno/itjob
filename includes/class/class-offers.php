@@ -16,6 +16,9 @@ final class Offers implements \iOffer {
   /** @var int $ID - Identification de l'offre */
   public $ID;
 
+  /** @var url $offer_url - Contient le liens de l'offre */
+  public $offer_url;
+
   /** @var bool $activated - 1: Activer, 0: Non disponible */
   public $activated;
 
@@ -65,6 +68,7 @@ final class Offers implements \iOffer {
   private $featured;
 
 
+
   public function __construct( $postId = null ) {
     if ( is_null( $postId ) ) {
       return false;
@@ -79,6 +83,7 @@ final class Offers implements \iOffer {
     $this->ID              = $output->ID;
     $this->post_type       = $output->post_type;
     $this->title           = $output->post_title; // Position Filled
+    $this->offer_url       = get_the_permalink($output->ID);
     $this->offer_status    = $output->post_status;
     /**
      * La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
