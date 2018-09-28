@@ -526,13 +526,17 @@ if ( ! class_exists( 'itJob' ) ) {
     }
 
     public function je_postule_Fn() {
+      global $itJob;
+      if ($itJob->services->isClient() === 'company') return;
       $offer_id = get_the_ID();
       $href= home_url("/apply/{$offer_id}");
-      $button = "<a href=\"$href\">
-                  <button class=\"btn btn-blue btn-fix\">
-                    <span class=\"btn-icon\">Je postule </span>
-                  </button>
-                </a>";
+      $button = "<div class=\"float-right ml-3\">
+                  <a href=\"$href\">
+                    <button class=\"btn btn-blue btn-fix\">
+                      <span class=\"btn-icon\">Je postule </span>
+                    </button>
+                  </a>
+                 </div>";
       echo $button;
     }
 

@@ -110,17 +110,15 @@ wp_enqueue_style( 'themify-icons' );
 
                   </div>
                   <div class="col-md-6">
-                    <div class="row">
-                      <div class="col-md-6">
+                    <div>
+                      <div class="float-right ml-3">
                         <a href="<?= get_post_type_archive_link( 'offers' ) ?>" class="float-right">
                           <button class="btn btn-outline-primary btn-fix">
                             <span class="btn-icon"><i class="ti-angle-left"></i>Retour</span>
                           </button>
                         </a>
                       </div>
-                      <div class="col-md-6">
-                        <?= do_action('je_postule'); ?>
-                      </div>
+                      <?= do_action('je_postule'); ?>
                     </div>
 
 
