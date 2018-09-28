@@ -92,7 +92,7 @@ if ( ! class_exists( 'scClient' ) ) :
           ] );
 
           return $Engine->render( '@SC/client-company.html.twig', [
-            'client' => Company::get_company_by( $this->User->ID ),
+            'client' => $this->Company,
             'Helper' => [
               'template_url' => get_template_directory_uri()
             ]

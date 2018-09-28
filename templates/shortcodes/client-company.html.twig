@@ -93,14 +93,17 @@
           <div class="ibox-body">
             <div class="row">
               <div class="col-sm-6">
-                <general-information-company
-                  abranchs="asyncTerms('branch_activity')"
-                  regions="asyncTerms('region')"
-                  all-city="asyncTerms('city')"
-                  init="Initialize()"
-                  company="Company">
 
-                </general-information-company>
+                {% if client.author.roles[0] == 'company' %}
+                  <general-information-company
+                    abranchs="asyncTerms('branch_activity')"
+                    regions="asyncTerms('region')"
+                    all-city="asyncTerms('city')"
+                    init="Initialize()"
+                    company="Company">
+                  </general-information-company>
+                {% endif %}
+
               </div>
 
               <div class="col-sm-6">

@@ -56,10 +56,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     if ( $this->acfElements() ) {
       $this->email      = get_field( 'itjob_cv_email', $this->getId() );
       $User             = get_user_by( 'email', $this->email );
-      $this->userAuthor = $User->data;
       // Remove login information (security)
-      unset( $this->userAuthor->user_login, $this->userAuthor->user_pass );
-
+      $this->author = Obj\jobServices::getUserData( $User->ID );
       // get Terms
       $this->fieldTax();
     }

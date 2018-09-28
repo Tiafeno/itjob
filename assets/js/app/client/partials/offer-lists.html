@@ -182,31 +182,29 @@
 
     <tbody>
     <tr ng-repeat="offer in Offers">
+
       <td>[[offer.ID]]</td>
+
       <td>
         <span class="badge badge-pill" ng-class="{'badge-blue' : offer.offer_status == 'publish', 'badge-warning' : offer.offer_status == 'pending'}">
           [[ offer.offer_status|Status]]
         </span>
       </td>
+
       <td>
         <span class="badge badge-pill" ng-class="{'badge-blue' : offer.activated , 'badge-danger' : !offer.activated }">
           [[offer.activated ? 'OUI' : 'NON']]
         </span>
       </td>
-      <td>
-        <a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a>
-      </td>
+      <td>[[ offer.count_candidat_apply ]]</td>
+      <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
+
       <td>[[ offer.contractType[ 'label' ] ]]</td>
       <td>[[ offer.branch_activity.name ]]</td>
-      <td>[[ offer.count_candidat_apply ]]</td>
-      <td>
-        <span class="badge badge-info badge-pill">[[ offer.reference ]]</span>
-      </td>
-      <td>
-        <span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID)" style="cursor: pointer">
-          <i class="ti-pencil"></i>
-        </span>
-      </td>
+
+
+      <td><span class="badge badge-info badge-pill">[[ offer.reference ]]</span></td>
+      <td><span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
     </tr>
     </tbody>
 
