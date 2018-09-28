@@ -322,7 +322,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       /** @var url $redir */
       $redirHttp = Http\Request::getValue('redir');
-      $redirection = !is_null($redir) ? "?redir={$redir}" : ($redirHttp ? $redirHttp : '');
+      $redirection = !is_null($redir) ? "?redir={$redir}" : ($redirHttp ? "?redir={$redirHttp}" : '');
       wp_localize_script( 'form-company', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
