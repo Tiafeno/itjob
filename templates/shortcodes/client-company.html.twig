@@ -91,15 +91,43 @@
       <div class="tab-pane fade active show" id="profil">
         <div class="page-content">
           <div class="ibox-body">
+            <div class="row">
+              <div class="col-sm-6">
+                <general-information
+                  abranchs="asyncTerms('branch_activity')"
+                  regions="asyncTerms('region')"
+                  all-city="asyncTerms('city')"
+                  init="Initialize()"
+                  company="Company">
 
-            <general-information
-              abranchs="asyncTerms('branch_activity')"
-              regions="asyncTerms('region')"
-              all-city="asyncTerms('city')"
-              init="Initialize()"
-              company="Company">
+                </general-information>
+              </div>
 
-            </general-information>
+              <div class="col-sm-6">
+                <div class="ibox-body">
+                  <h5 class="font-strong mb-4">BIOGRAPHY</h5>
+                  <p>Lorem Ipsum Aliqua id consequat laborum incididunt adipiscing ut consectetur dolor voluptate non est ex dolore voluptate fugiat adipiscing qui deserunt nisi magna irure tempor non cupidatat amet fugiat est ad sint adipiscing
+                    est officia cillum consectetur reprehenderit non.</p>
+                </div>
+
+                <div class="alert-content">
+                  <div class="ibox-body">
+                    <h5 class="font-strong mb-4">Créer une alerte</h5>
+                    <p>Je souhaite être informé quand un candidat comporte les mots suivants dans ces informations:</p>
+
+                    <tags-input ng-model="alerts" placeholder="Alerte" replace-spaces-with-dashes="false">
+                    </tags-input>
+
+                    <div>
+                      <button class="btn btn-success" ng-click="onSaveAlert()" ng-disabled="alertLoading">Valider</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+
 
           </div>
         </div>
@@ -110,7 +138,6 @@
       <div class="tab-pane fade text-center" id="offers">
         <div class="page-content">
           <div class="ibox-body">
-
             <offer-lists 
               offers="offerLists"
               init="Initialize()"

@@ -8,8 +8,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'jobServices' ) ) :
   class jobServices {
     public $args;
-
+    private $Client = false;
     public function __construct() {
+      $user = wp_get_current_user();
+      if ($user->ID !== 0) {
+        $this->Client = isset($user->roles[0]) ? $user->roles[0] : false;
+      }
+    }
+
+    public function isClient() {
+      return $this->Client;
     }
 
 

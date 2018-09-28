@@ -106,6 +106,10 @@ final class Company implements \iCompany {
     }
   }
 
+  public function getId() {
+    return $this->ID;
+  }
+
   public function is_company() {
     return get_post_type( $this->ID ) === 'company';
   }

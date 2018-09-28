@@ -1,4 +1,4 @@
-angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
+angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'])
   .value('froalaConfig', {
     toolbarInline: false,
     quickInsertTags: null,
@@ -29,8 +29,8 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
   }])
   .service('clientService', ['$http', function ($http) {
     this.offers = _.clone(itOptions.offers);
-    this.Company = () => {
-      return $http.get(itOptions.Helper.ajax_url + '?action=client_company', {
+    this.clientArea = () => {
+      return $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
         cache: false
       });
     }
@@ -142,6 +142,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
           e.target.blur();
           $scope.status = false;
         });
+
       }]
     }
   }])
@@ -216,6 +217,8 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
   }])
   .controller('clientCompanyCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService',
     function ($scope, $http, $q, clientFactory, clientService) {
+      $scope.alertLoading = false;
+      $scope.alerts = [];
       $scope.loading = true;
       $scope.Company = {};
       $scope.offerLists = [];
@@ -226,22 +229,17 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
         console.log('Initialize');
         $scope.loading = true;
         clientService
-          .Company()
+          .clientArea()
           .then(resp => {
             var data = resp.data;
             $scope.Company = _.clone(data.Company);
             $scope.offerLists = _.clone(data.Offers);
+            $scope.alerts = _.reject(data.Alerts, alert => _.isEmpty(alert) );
             $scope.countOffer = $scope.offerLists.length;
             $scope.loading = false;
           });
       };
-
       $scope.Initialize();
-
-      this.$onInit = function () {
-
-      };
-
       $scope.asyncTerms = (Taxonomy) => {
         if (Taxonomy !== 'city') {
           return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=' + Taxonomy, {
@@ -250,9 +248,21 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngSanitize'])
         } else {
           return clientFactory.getCity();
         }
-        
+      };
+      $scope.onSaveAlert = () => {
+        if (_.isEmpty($scope.alerts)) return;
+        $scope.alertLoading = true;
+        $http.post(itOptions.Helper.ajax_url, {
+          action: 'update_alert_filter',
+          alerts: JSON.stringify($scope.alerts)
+        })
+          .success((data, status) => {
+            $scope.alertLoading = false;
+            console.log(data);
+          })
       };
 
+      $scope.$watch('alerts', value => { console.log(value);}, true);
       // Trash offert
       $scope.trashOffer = function (offerId) {
         var offer = _.findWhere(clientService.offers, {

@@ -44,33 +44,6 @@ wp_enqueue_style( 'themify-icons' );
                       Détail de l'offre
                     </h5>
                   </div>
-                  <div class="col-md-7">
-                    <button class="btn btn-warning btn-fix text-uppercase" data-toggle="modal" data-target="#new-question-dialog">
-                      <span style="font-size: 11px">Mettre en avant votre annonce</span>
-                    </button>
-<!--                    Dialog begin -->
-                    <div class="modal fade" id="new-question-dialog" aria-labelledby="new-question-dialog" tabindex="-1" role="dialog">
-                      <div class="modal-dialog" role="document">
-                        <form class="modal-content">
-                          <div class="modal-header p-4">
-                            <h5 class="modal-title">Mettre en avant votre annonce</h5>
-                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">×</span>
-                            </button>
-                          </div>
-                          <div class="modal-body p-4">
-                            <div class="form-group mb-4">
-                              <p>
-                                Pour plus d'informations, contactez le service commercial au:<br>
-                                <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034 93 962 18</a>.
-                              </p>
-                            </div>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-<!--                  Dialog end -->
-                  </div>
                 </div>
                 <div class="mt-4">
                   <div>Offre ajoutéé le : <?= $offers->datePublication ?></div>

@@ -53,12 +53,6 @@ require 'includes/class/widgets/widget-shortcode.php';
 require 'includes/class/widgets/widget-accordion.php';
 require 'includes/class/widgets/widget-header-search.php';
 
-$itJob = (object) [
-  'version'  => $theme->get( 'Version' ),
-  'root'     => require 'includes/class/class-itjob.php',
-  'services' => require 'includes/class/class-jobservices.php'
-];
-
 $interfaces = [
   'includes/class/interfaces/iOffer.php',
   'includes/class/interfaces/iCompany.php',
@@ -73,6 +67,12 @@ require_once 'includes/class/class-offers.php';
 require_once 'includes/class/class-particular.php';
 require_once 'includes/class/class-company.php';
 require_once 'includes/class/class-candidate.php';
+
+$itJob = (object) [
+  'version'  => $theme->get( 'Version' ),
+  'root'     => require 'includes/class/class-itjob.php',
+  'services' => require 'includes/class/class-jobservices.php'
+];
 
 // shortcodes
 $shortcode = (object) [

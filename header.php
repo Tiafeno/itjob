@@ -141,6 +141,36 @@
     .card {
       background-color: transparent;
     }
+
+    tags-input .host {
+      margin-top: 0px !important;
+    }
+
+    tags-input .tags {
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      box-shadow: none !important;
+    }
+    tags-input .tags .tag-item {
+      background: #18c5a9 !important;
+      color: aliceblue !important;
+      border: none !important;
+    }
+    tags-input .tags .tag-item {
+      font: 11px "Poppins",Helvetica,Arial,sans-serif !important;
+      line-height: normal;
+      font-weight: bold !important;
+      font-size: 12px !important;
+      line-height: 27px !important;
+
+    }
+    tags-input .tags .tag-item .remove-button {
+      color: #ffffff !important;
+    }
+    tags-input .tags .input {
+      /* height: inherit !important; */
+      font: 13px "Poppins",Helvetica,Arial,sans-serif !important;
+      padding: 0 0 0 14px !important;
+    }
   </style>
 </head>
 <body <?php body_class(); ?> >
