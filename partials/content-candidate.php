@@ -28,7 +28,7 @@ if ( ! $candidate->is_activated()) { return; }
               </tr>
               <tr>
                 <td>Secteur d'activité:</td>
-                <td><?= $candidate->branch_activity[0]; ?></td>
+                <td><?= $candidate->branch_activity->name; ?></td>
               </tr>
               <tr>
                 <td>Permis:</td>

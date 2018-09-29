@@ -77,9 +77,13 @@ $itJob = (object) [
 // shortcodes
 $shortcode = (object) [
   'scImport' => require 'includes/shortcodes/class-import-csv.php',
-  'scLogin'  => require 'includes/shortcodes/class-login.php',
-  'scClient' => require 'includes/shortcodes/scClient.php'
+  'scLogin'  => require 'includes/shortcodes/class-login.php'
 ];
+
+add_action('init', function() {
+  global $shortcode;
+  $shortcode->scClient = require 'includes/shortcodes/scClient.php';
+});
 
 // Visual composer elements
 $elementsVC = (object) [

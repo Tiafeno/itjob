@@ -137,6 +137,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         'address'      => Http\Request::getValue( 'address' ),
         'region'       => Http\Request::getValue( 'region' ), // region ID
         'city'         => Http\Request::getValue( 'country' ), // city ID
+        'cellphone'    => Http\Request::getValue( 'cellphone' ),
         'greeting'     => Http\Request::getValue( 'greeting ' ),
         'email'        => $userEmail
       ];
@@ -154,6 +155,14 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       // Ajouter un titre au CV
       $post_id = (int) $result;
       wp_update_post( [ 'ID' => $post_id, 'post_title' => 'CV' . $post_id ] );
+
+      // save repeater field
+      $value  = [];
+      $phones = json_decode( $form->cellphone );
+      foreach ( $phones as $row => $phone ) {
+        $value[] = [ 'number' => $phone->value ];
+      }
+      update_field( 'itjob_cv_phone', $value, $post_id );
 
       $this->update_acf_field( $post_id, $form );
       wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );

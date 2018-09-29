@@ -103,8 +103,24 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       $scope.uri = {};
       $scope.uri.singin = itOptions.urlHelper.singin;
       $scope.uri.redir = itOptions.urlHelper.redir;
+      $scope.countPhone = 1;
       $scope.particularForm = {};
       $scope.particularForm.greeting = 'mr';
+      $scope.particularForm.cellphone = [
+        {
+          id: 0,
+          value: ''
+        }
+      ];
+      $scope.addPhone = function () {
+        $scope.particularForm.cellphone.push({id: $scope.countPhone, value: ''});
+        $scope.countPhone += 1;
+      };
+      $scope.removePhone = function (id) {
+        $scope.particularForm.cellphone = _.filter($scope.particularForm.cellphone, function (cellphone) {
+          return cellphone.id != id;
+        });
+      };
       $scope.formSubmit = function (isValid) {
         if ($scope.pcForm.$invalid) {
           angular.forEach($scope.pcForm.$error, function (field) {
@@ -124,6 +140,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         particularFormObject.forEach(function (property) {
           particularData.set(property, Reflect.get($scope.particularForm, property));
         });
+        particularData.append('cellphone', JSON.stringify($scope.particularForm.cellphone));
         $scope.error = false;
         services
           .sendPostForm(particularData)
@@ -143,6 +160,9 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
             });
           })
       };
+      $scope.$watch('particularForm', value => {
+        console.log($scope.pcForm);
+      }, true);
       //  JQLite
       var jqSelects = jQuery("select.form-control.find");
       jQuery.each(jqSelects, function (index, element) {

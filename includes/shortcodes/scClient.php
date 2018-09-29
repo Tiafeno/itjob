@@ -82,17 +82,19 @@ if ( ! class_exists( 'scClient' ) ) :
       try {
         do_action( 'get_notice' );
 
+        $wp_localize_script_args = [
+          'Helper' => [
+            'ajax_url'      => admin_url( 'admin-ajax.php' ),
+            'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
+          ]
+        ];
+
         if ( in_array( 'company', $client_roles, true ) ) {
           // Template recruteur ici ...
-
+          $wp_localize_script_args['Helper']['add_offer_url'] = get_permalink( (int) ADD_OFFER_PAGE );
+          $wp_localize_script_args['client_type'] = 'company';
           // Script localize for company customer area
-          wp_localize_script( 'espace-client', 'itOptions', [
-            'Helper' => [
-              'add_offer_url' => get_permalink( (int) ADD_OFFER_PAGE ),
-              'ajax_url'      => admin_url( 'admin-ajax.php' ),
-              'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
-            ]
-          ] );
+          wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
 
           return $Engine->render( '@SC/client-company.html.twig', [
             'client' => $this->Company,
@@ -103,11 +105,21 @@ if ( ! class_exists( 'scClient' ) ) :
         }
 
         if ( in_array( 'candidate', $client_roles, true ) ) {
+          $wp_localize_script_args['client_type'] = 'candidate';
+          wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
+
           // Template candidat ici ...
+          return $Engine->render( '@SC/client-candidate.html.twig', [
+            'client' => $this->Candidate,
+            'display_name' => $this->Candidate->get_display_name(),
+            'Helper' => [
+              'template_url' => get_template_directory_uri()
+            ]
+          ] );
         }
-      } catch ( Twig_Error_Loader $e ) {
-      } catch ( Twig_Error_Runtime $e ) {
-      } catch ( Twig_Error_Syntax $e ) {
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
         return $e->getRawMessage();
       }
     }
@@ -148,34 +160,35 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         wp_send_json( false );
       }
+      $candidate_id = Http\Request::getValue( 'candidate_id', null );
       $company_id = Http\Request::getValue( 'company_id', null );
-      if ( is_null( $company_id ) ) {
-        wp_send_json( false );
-      }
-      $form  = [
-        'address'  => Http\Request::getValue( 'address' ),
-        'greeting' => Http\Request::getValue( 'greeting' ),
-        'name'     => Http\Request::getValue( 'name' ),
-        'stat'     => Http\Request::getValue( 'stat' ),
-        'nif'      => Http\Request::getValue( 'nif' )
-      ];
-      $terms = [
-        'branch_activity' => Http\Request::getValue( 'branch_activity' ),
-        'region'          => Http\Request::getValue( 'region' ),
-        'city'            => Http\Request::getValue( 'country' ),
-      ];
+      if ( ! is_null( $company_id ) ) {
+        $form  = [
+          'address'  => Http\Request::getValue( 'address' ),
+          'greeting' => Http\Request::getValue( 'greeting', null ),
+          'name'     => Http\Request::getValue( 'name' ),
+          'stat'     => Http\Request::getValue( 'stat', null ),
+          'nif'      => Http\Request::getValue( 'nif', null )
+        ];
+        $terms = [
+          'branch_activity' => Http\Request::getValue( 'branch_activity' ),
+          'region'          => Http\Request::getValue( 'region' ),
+          'city'            => Http\Request::getValue( 'country' ),
+        ];
 
-      foreach ( $terms as $key => $value ) {
-        $isError = wp_set_post_terms( $company_id, [ (int) $value ], $key );
-        if ( is_wp_error( $isError ) ) {
-          wp_send_json( [ 'success' => false, 'msg' => $isError->get_error_message() ] );
+        foreach ( $terms as $key => $value ) {
+          $isError = wp_set_post_terms( $company_id, [ (int) $value ], $key );
+          if ( is_wp_error( $isError ) ) {
+            wp_send_json( [ 'success' => false, 'msg' => $isError->get_error_message() ] );
+          }
         }
-      }
 
-      foreach ( $form as $key => $value ) {
-        update_field( "itjob_company_{$key}", $value, $company_id );
+        foreach ( $form as $key => $value ) {
+          if ( ! is_null($value))
+            update_field( "itjob_company_{$key}", $value, $company_id );
+        }
+        wp_send_json( [ 'success' => true ] );
       }
-      wp_send_json( [ 'success' => true ] );
 
     }
 
@@ -233,15 +246,31 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
         wp_send_json( false );
       }
-      if ($itJob->services->isClient() === 'company'):
-        $alerts = Http\Request::getValue('alerts');
-        $alerts = \json_decode($alerts);
-        $alerts = array_map(function($std) { return $std->text; }, $alerts);
-        $data = update_field('itjob_company_alerts', implode(',', $alerts), $this->Company->getId());
-        if ($data)
-          wp_send_json(['success' => true]);
-
-      endif;
+      $alerts = Http\Request::getValue('alerts');
+      $alerts = \json_decode($alerts);
+      if ($itJob->services->isClient() === 'company') {
+        // Company
+        $alerts = array_map( function ( $std ) {
+          return $std->text;
+        }, $alerts );
+        $data   = update_field( 'itjob_company_alerts', implode( ',', $alerts ), $this->Company->getId() );
+        if ( $data ) {
+          wp_send_json( [ 'success' => true ] );
+        }
+      } else {
+        $notification = get_field('itjob_cv_notifEmploi', $this->Candidate->getId());
+        // Candidate
+        $alerts = array_map( function ( $std ) {
+          return $std->text;
+        }, $alerts );
+        $values = [
+          'notification' => $notification['notification'],
+          'branch_activity' => $notification['branch_activity'],
+          'job_sought' => implode( ',', $alerts )
+        ];
+        $data   = update_field( 'itjob_cv_notifEmploi', $values, $this->Candidate->getId() );
+        wp_send_json( [ 'success' => !$data ] );
+      }
     }
 
     public function get_postuled_candidate() {
@@ -283,6 +312,13 @@ if ( ! class_exists( 'scClient' ) ) :
       } else {
         // candidate
 
+        $notification = get_field( 'itjob_cv_notifEmploi', $this->Candidate->getId() );
+        $Candidate = Candidate::get_candidate_by( $User->ID );
+        $Candidate->isMyCV();
+        wp_send_json( [
+          'Candidate' => $Candidate,
+          'Alerts'  => explode( ',', $notification['job_sought'] )
+        ] );
       }
     }
 

@@ -7,11 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 abstract class UserParticular {
-  private $ID = 0; // User id
-  private $Candidate; // Object candidate
-  private $firstName;
-  private $lastName;
-  private $phones = [];
+  private $__ID = 0; // User id
+  private $__Candidate; // Object candidate
+  private $__firstName;
+  private $__lastName;
+  private $__phones = [];
 
   protected $email;
 
@@ -31,11 +31,15 @@ abstract class UserParticular {
   }
 
   public function getId() {
-    return $this->ID;
+    return $this->__ID;
   }
 
   public function setId( $id ) {
-    $this->ID = $id;
+    $this->__ID = $id;
+  }
+
+  public function get_display_name() {
+    return "{$this->__firstName} {$this->__lastName}";
   }
 
   public function __construct( $candidate_id = null ) {
@@ -46,12 +50,12 @@ abstract class UserParticular {
     if ( ! is_null( $candidate_id ) ) {
       $this->setId( $candidate_id );
       // Object candidate
-      $this->Candidate = new Candidate( $candidate_id );
+      $this->__Candidate = new Candidate( $candidate_id );
     }
 
     $this->greeting  = get_field( 'itjob_cv_greeting', $this->getId() );
-    $this->firstName = get_field( 'itjob_cv_firstname', $this->getId() );
-    $this->lastName  = get_field( 'itjob_cv_lastname', $this->getId() );
+    $this->__firstName = get_field( 'itjob_cv_firstname', $this->getId() );
+    $this->__lastName  = get_field( 'itjob_cv_lastname', $this->getId() );
 
     $birthdayDate       = get_field( 'itjob_cv_birthdayDate', $this->getId() );
     $this->birthdayDate = date( 'd/m/Y', strtotime( $birthdayDate ) );
@@ -61,9 +65,13 @@ abstract class UserParticular {
     $phones = get_field( 'itjob_cv_phone', $this->getId() );
     if ( $phones ) {
       foreach ( $phones as $phone ):
-        array_push( $this->phones, $phone['number'] );
+        array_push( $this->__phones, $phone['number'] );
       endforeach;
     }
+  }
+
+  protected function getCellphone() {
+    return $this->__phones;
   }
 
 }
