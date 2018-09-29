@@ -135,8 +135,13 @@
 
     /* Espace client code */
     .tabs-line .nav-link:hover, .tabs-line .nav-link.active {
-      color: #71808f;
+      color: #000000;
       border-bottom-color: #f39c12;
+    }
+    .nav-pills .nav-link, .nav-tabs .nav-link {
+      color: #71808f;
+      font-weight: 600;
+      font-family: Montserrat, sans-serif;
     }
     .card {
       background-color: transparent;

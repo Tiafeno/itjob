@@ -69,6 +69,52 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       return _.findWhere(postStatus, {slug: jQuery.trim(inputValue)}).label;
     }
   }])
+  .directive('generalInformationCandidate', [function() {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/general-information-candidate.html',
+      scope: {
+        Candidate: '=candidate',
+        regions: '&',
+        allCity: '&',
+        abranchs: '&',
+        init: '&init'
+      },
+      controller: ['$scope', '$q', 'clientFactory', function ($scope, $q, clientFactory) {
+        $scope.candidateEditor = {};
+        $scope.loadingEditor = false;
+        $scope.status = false;
+
+        $scope.openEditor = () => {
+          $scope.loadingEditor = true;
+          UIkit.modal('#modal-edit-candidate-overflow').show();
+          $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
+            $scope.loadingEditor = false;
+            $scope.Regions        = _.clone(data[0]);
+            $scope.branchActivity = _.clone(data[1]);
+            $scope.Citys          = _.clone(data[2]);
+            const incInput = ['address', 'birthdayDate'];
+            incInput.forEach((InputValue) => {
+              if ($scope.Candidate.hasOwnProperty(InputValue)) {
+                $scope.candidateEditor[InputValue] = _.clone($scope.Candidate[InputValue]);
+              }
+            });
+            $scope.candidateEditor.greeting = $scope.Candidate.greeting.value;
+            $scope.candidateEditor.branch_activity = $scope.Candidate.branch_activity.term_id;
+            $scope.candidateEditor.region = $scope.Candidate.region.term_id;
+            $scope.candidateEditor.country = $scope.Candidate.country.term_id;
+            UIkit.modal('#modal-edit-candidate-overflow').show();
+          });
+        };
+
+        $scope.updateCandidateInformation = () => {
+          alert('En construction');
+        };
+
+      }]
+
+    }
+  }])
   .directive('generalInformationCompany', [function () {
     return {
       restrict: 'E',
@@ -221,10 +267,10 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
             .then(resp => {
               $scope.postuledCandidats = resp.data;
               $scope.loadingCandidats = false;
-            })
-        }
+            });
+        };
       }]
-    }
+    };
   }])
   .directive('alerts', [function() {
     return {
@@ -245,7 +291,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       }
     }
   }])
-  .controller('clientCompanyCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService',
+  .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService',
     function ($scope, $http, $q, clientFactory, clientService) {
       $scope.alertLoading = false;
       $scope.alerts = [];
@@ -262,10 +308,16 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
           .clientArea()
           .then(resp => {
             var data = resp.data;
-            $scope.Company = _.clone(data.Company);
-            $scope.offerLists = _.clone(data.Offers);
-            $scope.alerts = _.reject(data.Alerts, alert => _.isEmpty(alert) );
-            $scope.countOffer = $scope.offerLists.length;
+            if (itOptions.client_type === 'company') {
+              $scope.Company = _.clone(data.Company);
+              $scope.offerLists = _.clone(data.Offers);
+              $scope.alerts = _.reject(data.Alerts, alert => _.isEmpty(alert) );
+              $scope.countOffer = $scope.offerLists.length;
+            } else {
+              $scope.Candidate = _.clone(data.Candidate);
+              $scope.alerts = _.clone(data.Alerts);
+            }
+
             $scope.loading = false;
           });
       };

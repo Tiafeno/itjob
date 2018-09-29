@@ -33,16 +33,16 @@
   })(jQuery);
 </script>
 <div class="page-header mt-5" ng-app="clientApp">
-  <div class="ibox flex-1" ng-controller="clientCompanyCtrl">
+  <div class="ibox flex-1" ng-controller="clientCtrl">
     <div class="ibox-body">
       <div class="flexbox">
         <div class="flexbox-b">
           <div>
             <h4>{{ client.title|capitalize }}</h4>
-            <div class="text-muted font-13 mb-3">
+            {#<div class="text-muted font-13 mb-3">
               <span class="mr-3"><i class="ti-location-pin mr-2"></i>{{ client.address|capitalize }}</span>
               <span><i class="ti-calendar mr-2"></i>{{ client.addDate|capitalize }}</span>
-            </div>
+            </div>#}
             <div>
               <span class="mr-3">
                 <span class="badge badge-success badge-circle mr-2 font-14" style="height:30px;width:30px;">
@@ -94,7 +94,6 @@
             <div class="row">
               <div class="col-sm-6">
 
-                {% if client.author.roles[0] == 'company' %}
                   <general-information-company
                     abranchs="asyncTerms('branch_activity')"
                     regions="asyncTerms('region')"
@@ -102,7 +101,6 @@
                     init="Initialize()"
                     company="Company">
                   </general-information-company>
-                {% endif %}
 
               </div>
 

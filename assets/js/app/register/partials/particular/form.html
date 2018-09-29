@@ -71,14 +71,14 @@
     <div class="row mb-4">
       <div class="col-md-6 form-group">
         <label class="form-control-label">Région</label>
-        <select class="form-control find" name="region" ng-model="particularForm.region" title="Région">
+        <select class="form-control find" name="region" ng-model="particularForm.region" title="Région" required>
           <option></option>
           <option ng-repeat="rg in $ctrl.region" value="{{rg.term_id}}">{{rg.name}}</option>
         </select>
       </div>
     </div>
 
-    <div class="row mb-1">
+    <div class="row mb-4">
       <div class="col-md-6 form-group">
         <label class="form-control-label">Code postal ou nom d'une ville</label>
         <select class="form-control input-mode country" name="country" ng-model="particularForm.country" title="Tapez le nom d'un ville" required>
@@ -87,6 +87,44 @@
         </select>
       </div>
     </div>
+
+
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Numéros de téléphone</label>
+      <div class="col-sm-6">
+        <div ng-form="setPhone" ng-repeat="phone in particularForm.cellphone track by phone.id" class="form-group row">
+          <div class="col-sm-10 pr-0">
+            <input class="form-control mt-1" name="cellphone" ng-model="phone.value"
+                   type="text"
+                   placeholder="Numéro de téléphone" required>
+
+            <div ng-messages="setPhone.cellphone.$error" class="alert alert-info d-block mt-1" role="alert" multiple>
+              <div ng-message="required">Veuillez saisir un numero de téléphone.</div>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" tabindex="0"
+                    data-toggle="tooltip" data-placement="left" title="Enlever ce numero"
+                    ng-click="removePhone(phone.id)">
+              <i class="la la-minus-circle"></i></button>
+          </div>
+        </div>
+
+        <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" data-placement="right"
+                data-toggle="tooltip" title="Ajouter un numero" ng-click="addPhone()"><i
+          class="la la-plus-circle"></i></button>
+
+        <p class="mt-4 mention-text">
+          Ajouter le numéro téléphone un par un.
+          <br>Cliquer sur le bouton « + » pour ajouter un autre numéro.
+          <span class="mt-1 d-block"></span>
+          <br>Les formats de numéro téléphone validé intègre les préﬁxes suivants (034 ... ou 039... ou +26133.. ou
+          0026132...
+          ou 00261 39 12 345 67).
+        </p>
+      </div>
+    </div>
+
 
     <div class="row mb-1">
       <div class="col-md-6 form-group">

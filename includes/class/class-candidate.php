@@ -16,7 +16,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   public $title;
   public $candidate_url;
   public $reference;
-  public $district; // Region
+  public $region; // Region
   public $status; // Je cherche...
   public $driveLicences; // A, B, C & A`
   public $jobSought;
@@ -25,11 +25,12 @@ final class Candidate extends UserParticular implements \iCandidate {
   public $trainings = [];
   public $experiences = [];
   public $centerInterest;
-  public $jobNotif; // False|Array
-  public $trainingNotif;
+  public $jobNotif = false;
+  public $trainingNotif = false;
   public $newsletter;
   public $branch_activity;
   public $tags;
+  public $avatar;
 
   /**
    * Candidate constructor.
@@ -57,11 +58,14 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->candidate_url = get_the_permalink($this->getId());
     $this->postType = $output->post_type;
 
-    if ( $this->acfElements() ) {
+    if ( $this->is_candidate() ) {
+      $this->acfElements();
       $this->email      = get_field( 'itjob_cv_email', $this->getId() );
       $User             = get_user_by( 'email', $this->email );
       // Remove login information (security)
       $this->author = Obj\jobServices::getUserData( $User->ID );
+      $this->avatar = wp_get_attachment_image_src( get_post_thumbnail_id( $this->getId() ), 'large' );
+
       // get Terms
       $this->fieldTax();
     }
@@ -141,16 +145,12 @@ final class Candidate extends UserParticular implements \iCandidate {
    * Vérifier si le candidate est notifier pour les formations
    * @return bool
    */
-  public function isTrainingNotif() {
+  protected function getTrainingNotif() {
     $notif = get_field( 'itjob_cv_notifFormation', $this->getId() );
     if ( $notif ) {
       if ( $notif['notification'] ) {
         $this->trainingNotif = (object) [ 'branch_activity' => $notif['branch_activity'] ];
-
-        return true;
       }
-    } else {
-      return false;
     }
   }
 
@@ -158,20 +158,28 @@ final class Candidate extends UserParticular implements \iCandidate {
    * Vérifier si le candidate est notifier pour les emplois publier
    * @return bool
    */
-  public function isJobNotif() {
-    $notif = get_field( 'itjbob_cv_notifEmploi', $this->getId() );
-    if ( $notif ) {
+  protected function getJobNotif() {
+    $notif = get_field( 'itjob_cv_notifEmploi', $this->getId() );
+    if ($notif) {
       if ( $notif['notification'] ) {
-        $branchActivity = [ 'branch_activity' => $notif['branch_activity'] ]; // Object Term
-        $jobSought      = [ 'job_sought' => $notif['job_sought'] ];
-        $this->jobNotif = (object) array_merge( $branchActivity, $jobSought );
-
-        return true;
-      } else {
-        return $this->jobNotif = false;
+        $this->jobNotif = [
+          'branch_activity' => $notif['branch_activity'],
+          'job_sought' => $notif['job_sought']
+        ];
       }
-    } else {
-      return false;
+    }
+  }
+
+  /**
+   * Vérifier si le CV est le mien
+   * Si oui, Ajouter mes notifications sur les emplois et formations
+   */
+  public function isMyCV() {
+    $User = wp_get_current_user();
+    if ($User->user_email === $this->email || is_user_admin()) {
+      $this->getJobNotif();
+      $this->getTrainingNotif();
+      $this->cellphone = $this->getCellphone();
     }
   }
 
@@ -179,14 +187,25 @@ final class Candidate extends UserParticular implements \iCandidate {
    * Récuperer les terms
    */
   private function fieldTax() {
+    // Get postuled offer
+    $this->postuled = get_field('itjob_cv_offer_apply', $this->getId());
     $this->languages       = wp_get_post_terms( $this->getId(), 'language', [ "fields" => "all" ] );
+    // Get softwares
     $softwares             = wp_get_post_terms( $this->getId(), 'software', [ "fields" => "all" ] );
     $this->softwares       = $this->getActivateField( $softwares );
-    $this->district        = wp_get_post_terms( $this->getId(), 'region', [ "fields" => "all" ] );
+    // Get region
+    $this->region        = wp_get_post_terms( $this->getId(), 'region', [ "fields" => "all" ] );
+    $this->region        = $this->region[0];
+    // Get region
+    $this->country        = wp_get_post_terms( $this->getId(), 'city', [ "fields" => "all" ] );
+    $this->country        = $this->country[0];
+    // Récuperer les emplois recherché
     $jobSoughts            = wp_get_post_terms( $this->getId(), 'job_sought', [ "fields" => "all" ] );
     $this->jobSought       = $this->getActivateField( $jobSoughts );
+
     $this->tags            = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
-    $this->branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "names" ] );
+    $this->branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "all" ] );
+    $this->branch_activity = $this->branch_activity[0];
   }
 
   private function getActivateField( $terms ) {

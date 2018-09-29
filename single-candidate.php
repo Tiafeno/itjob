@@ -2,7 +2,6 @@
 global $candidate;
 get_header();
 wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.css');
-
 ?>
   <style>
     ol.candidate-skill-list {
@@ -73,7 +72,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <i class="fa fa-check-circle mr-2 candidate-icon-verify"></i>
                       <?= $candidate->title ?>
                     </h1>
-                    <h5 class="mb-2 text-muted"><?= reset($candidate->branch_activity) ?></h5>
+                    <h5 class="mb-2 text-muted"><?= $candidate->branch_activity->name ?></h5>
 <!--                    Devider-->
                     <hr class="uk-width-4-4">
 
@@ -109,7 +108,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                   </div>
                   <div class="col-md-4 d-flex align-items-top">
                     <div class="mt-2">
-                      <p class="mb-1"><i class="ti-location-pin mr-2"></i> <?= $candidate->district[0]->name ?></p>
+                      <p class="mb-1"><i class="ti-location-pin mr-2"></i> <?= $candidate->region->name ?></p>
                       <p class="mb-1"><i class="ti-agenda mr-2"></i> Déposée le <?= $candidate->dateAdd ?></p>
                     </div>
                   </div>
