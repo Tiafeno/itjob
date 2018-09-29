@@ -162,34 +162,49 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $candidate_id = Http\Request::getValue( 'candidate_id', null );
       $company_id = Http\Request::getValue( 'company_id', null );
+      $terms = [
+        'branch_activity' => Http\Request::getValue( 'branch_activity' ),
+        'region'          => Http\Request::getValue( 'region' ),
+        'city'            => Http\Request::getValue( 'country' ),
+      ];
       if ( ! is_null( $company_id ) ) {
         $form  = [
-          'address'  => Http\Request::getValue( 'address' ),
+          //'address'  => Http\Request::getValue( 'address' ),
           'greeting' => Http\Request::getValue( 'greeting', null ),
           'name'     => Http\Request::getValue( 'name' ),
           'stat'     => Http\Request::getValue( 'stat', null ),
           'nif'      => Http\Request::getValue( 'nif', null )
         ];
-        $terms = [
-          'branch_activity' => Http\Request::getValue( 'branch_activity' ),
-          'region'          => Http\Request::getValue( 'region' ),
-          'city'            => Http\Request::getValue( 'country' ),
-        ];
-
-        foreach ( $terms as $key => $value ) {
-          $isError = wp_set_post_terms( $company_id, [ (int) $value ], $key );
-          if ( is_wp_error( $isError ) ) {
-            wp_send_json( [ 'success' => false, 'msg' => $isError->get_error_message() ] );
-          }
-        }
 
         foreach ( $form as $key => $value ) {
           if ( ! is_null($value))
             update_field( "itjob_company_{$key}", $value, $company_id );
         }
-        wp_send_json( [ 'success' => true ] );
+      } else {
+        $input  = [
+          //'address'  => Http\Request::getValue( 'address' ),
+          'greeting' => Http\Request::getValue( 'greeting', null ),
+        ];
+        foreach ( $input as $key => $value ) {
+          if ( ! is_null($value))
+            update_field( "itjob_cv_{$key}", $value, $candidate_id );
+        }
+
+      }
+      $post_id = is_null($candidate_id) ? $company_id : $candidate_id;
+      foreach ( $terms as $key => $value ) {
+        $isError = wp_set_post_terms( $post_id, [ (int) $value ], $key );
+        if ( is_wp_error( $isError ) ) {
+          wp_send_json( [ 'success' => false, 'msg' => $isError->get_error_message() ] );
+        }
       }
 
+      // TODO: Modifier une adresse
+      // Pour modifier une adresse, le nouveau adresse sera ajouter dans un meta post '__address_update'.
+      // Champ: itjob_cv_address_update, Le champ est vide par défault. Si le champ n'est pas vide c'est que l'utilisateur
+      // veux changer son adresse et que celui-ci est en attente de validation.
+
+      wp_send_json( [ 'success' => true ] );
     }
 
     /**

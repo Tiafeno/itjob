@@ -108,7 +108,26 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         };
 
         $scope.updateCandidateInformation = () => {
-          alert('En construction');
+          $scope.status = "Enregistrement en cours ...";
+          let candidatForm = new FormData();
+          let formObject = Object.keys($scope.candidateEditor);
+          candidatForm.append('action', 'update_profil');
+          candidatForm.append('candidate_id', parseInt($scope.Entreprise.ID));
+          formObject.forEach(function (property) {
+            let propertyValue = Reflect.get($scope.userEditor, property);
+            candidatForm.set(property, propertyValue);
+          });
+          clientFactory
+            .sendPostForm(candidatForm)
+            .then(resp => {
+              let dat = resp.data;
+              if (dat.success) {
+                $scope.status = 'Votre information a bien été enregistrer avec succès';
+                $scope.init();
+              } else {
+                $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
+              }
+            });
         };
 
       }]
