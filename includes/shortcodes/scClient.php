@@ -167,7 +167,7 @@ if ( ! class_exists( 'scClient' ) ) :
         'region'          => Http\Request::getValue( 'region' ),
         'city'            => Http\Request::getValue( 'country' ),
       ];
-      if ( ! is_null( $company_id ) ) {
+      if ( ! empty( $company_id ) ) {
         $form  = [
           //'address'  => Http\Request::getValue( 'address' ),
           'greeting' => Http\Request::getValue( 'greeting', null ),
@@ -183,10 +183,12 @@ if ( ! class_exists( 'scClient' ) ) :
       } else {
         $input  = [
           //'address'  => Http\Request::getValue( 'address' ),
-          'greeting' => Http\Request::getValue( 'greeting', null ),
+          'greeting' => Http\Request::getValue( 'greeting' ),
         ];
+
         foreach ( $input as $key => $value ) {
-          if ( ! is_null($value))
+
+          if ($value)
             update_field( "itjob_cv_{$key}", $value, $candidate_id );
         }
 
