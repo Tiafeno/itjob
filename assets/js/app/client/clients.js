@@ -333,6 +333,22 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       },
       controller: ['$scope', function ($scope) {
         this.$onInit = () => {
+        };
+        $scope.addNewExperience = () => {
+
+        };
+      }]
+    }
+  }])
+  .directive('trainings', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/trainings.html',
+      scope: {
+        Candidate: "=candidate",
+      },
+      controller: ['$scope', function ($scope) {
+        this.$onInit = () => {
         }
       }]
     }
