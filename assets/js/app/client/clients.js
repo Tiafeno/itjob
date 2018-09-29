@@ -1,11 +1,8 @@
-angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'])
+const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize'])
   .value('froalaConfig', {
     toolbarInline: false,
     quickInsertTags: null,
     toolbarButtons: ['bold', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
-  })
-  .config(function ($interpolateProvider) {
-    $interpolateProvider.startSymbol('[[').endSymbol(']]');
   })
   .factory('clientFactory', ['$http', '$q', function ($http, $q) {
     return {
@@ -53,7 +50,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       }).label;
     }
   }])
-  .filter('Status', [function() {
+  .filter('Status', [function () {
     const postStatus = [
       {
         slug: 'publish',
@@ -69,7 +66,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       return _.findWhere(postStatus, {slug: jQuery.trim(inputValue)}).label;
     }
   }])
-  .directive('generalInformationCandidate', [function() {
+  .directive('generalInformationCandidate', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/general-information-candidate.html',
@@ -80,7 +77,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         abranchs: '&',
         init: '&init'
       },
-      controller: ['$scope', '$q', 'clientFactory', function ($scope, $q, clientFactory) {
+      controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
         $scope.candidateEditor = {};
         $scope.loadingEditor = false;
         $scope.status = false;
@@ -90,9 +87,9 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
           UIkit.modal('#modal-edit-candidate-overflow').show();
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
             $scope.loadingEditor = false;
-            $scope.Regions        = _.clone(data[0]);
+            $scope.Regions = _.clone(data[0]);
             $scope.branchActivity = _.clone(data[1]);
-            $scope.Citys          = _.clone(data[2]);
+            $scope.Citys = _.clone(data[2]);
             const incInput = ['address', 'birthdayDate'];
             incInput.forEach((InputValue) => {
               if ($scope.Candidate.hasOwnProperty(InputValue)) {
@@ -123,12 +120,13 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
               let dat = resp.data;
               if (dat.success) {
                 $scope.status = 'Votre information a bien été enregistrer avec succès';
-                $scope.init();
+                $route.reload();
               } else {
                 $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
               }
             });
         };
+
         UIkit.util.on('#modal-edit-candidate-overflow', 'hide', function (e) {
           e.preventDefault();
           e.target.blur();
@@ -156,9 +154,9 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         $scope.userEditor = {};
         $scope.openEditor = () => {
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
-            $scope.Regions        = _.clone(data[0]);
+            $scope.Regions = _.clone(data[0]);
             $scope.branchActivity = _.clone(data[1]);
-            $scope.Citys          = _.clone(data[2]);
+            $scope.Citys = _.clone(data[2]);
             const incInput = ['address', 'greeting', 'name', 'stat', 'nif'];
             const incTerm = ['branch_activity', 'region', 'country'];
             incInput.forEach((InputValue) => {
@@ -228,6 +226,20 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       },
       link: function (scope, element, attrs) {
         scope.Helper = itOptions.Helper;
+
+        let table = $('#products-table').DataTable({
+          pageLength: 10,
+          fixedHeader: false,
+          responsive: true,
+          "sDom": 'rtip',
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+          }
+        });
+        jQuery('#key-search').on('keyup', function () {
+          table.search(this.value).draw();
+        });
+
         jQuery('.input-group.date').datepicker({
           format: "mm/dd/yyyy",
           language: "fr",
@@ -248,9 +260,9 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
           });
 
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
-            $scope.Regions        = _.clone(data[0]);
+            $scope.Regions = _.clone(data[0]);
             $scope.branchActivity = _.clone(data[1]);
-            $scope.Citys          = _.clone(data[2]);
+            $scope.Citys = _.clone(data[2]);
             $scope.offerEditor = _.mapObject(offer, (val, key) => {
               if (typeof val.term_id !== 'undefined') return val.term_id;
               if (typeof val.label !== 'undefined') return val.value;
@@ -294,7 +306,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       }]
     };
   }])
-  .directive('alerts', [function() {
+  .directive('alerts', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/alert.html',
@@ -305,43 +317,45 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       }
     }
   }])
-  .directive('biography', [function() {
+  .directive('biography', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/biography.html',
-      scope: {
-      }
+      scope: {}
     }
   }])
-  .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService',
-    function ($scope, $http, $q, clientFactory, clientService) {
+  .directive('experiences', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html',
+      scope: {
+        Candidate: "=candidate",
+      },
+      controller: ['$scope', function ($scope) {
+        this.$onInit = () => {
+        }
+      }]
+    }
+  }])
+  .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService', 'Client',
+    function ($scope, $http, $q, clientFactory, clientService, Client) {
       $scope.alertLoading = false;
       $scope.alerts = [];
-      $scope.loading = true;
       $scope.Company = {};
+      $scope.Candidate = {};
       $scope.offerLists = [];
       $scope.countOffer = 0;
 
       // Récuperer les données du client
       $scope.Initialize = () => {
         console.log('Initialize');
-        $scope.loading = true;
-        clientService
-          .clientArea()
-          .then(resp => {
-            var data = resp.data;
-            if (itOptions.client_type === 'company') {
-              $scope.Company = _.clone(data.Company);
-              $scope.offerLists = _.clone(data.Offers);
-              $scope.alerts = _.reject(data.Alerts, alert => _.isEmpty(alert) );
-              $scope.countOffer = $scope.offerLists.length;
-            } else {
-              $scope.Candidate = _.clone(data.Candidate);
-              $scope.alerts = _.clone(data.Alerts);
-            }
-
-            $scope.loading = false;
-          });
+        if (Client.post_type === 'company') {
+          $scope.Company = _.clone(Client.Company);
+          $scope.offerLists = _.clone(Client.Offers);
+        } else {
+          $scope.Candidate = _.clone(Client.Candidate);
+        }
+        $scope.alerts = _.clone(Client.Alerts);
       };
       $scope.Initialize();
       $scope.asyncTerms = (Taxonomy) => {
@@ -371,11 +385,12 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
             // Handle success
             let data = response.data;
             $scope.alertLoading = false;
-            if (data.success) { console.warn("Une erreur inconue s'est produit")}
+            if (data.success) {
+              console.warn("Une erreur inconue s'est produit")
+            }
           });
       };
 
-      $scope.$watch('alerts', value => { console.log(value);}, true);
       // Trash offert
       $scope.trashOffer = function (offerId) {
         var offer = _.findWhere(clientService.offers, {

@@ -65,11 +65,12 @@ if ( ! class_exists( 'scClient' ) ) :
       // scripts
       wp_enqueue_script( 'sweetalert' );
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
-      wp_enqueue_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
+      wp_register_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
         'angular',
         'angular-aria',
         'angular-messages',
         'angular-sanitize',
+        'angular-route',
         'datatable',
         'ng-tags',
         'b-datepicker',
@@ -90,6 +91,9 @@ if ( ! class_exists( 'scClient' ) ) :
         ];
 
         if ( in_array( 'company', $client_roles, true ) ) {
+          wp_enqueue_script('app-company', get_template_directory_uri() . '/assets/js/app/client/configs-company.js', [
+            'espace-client'
+          ], $itJob->version, true);
           // Template recruteur ici ...
           $wp_localize_script_args['Helper']['add_offer_url'] = get_permalink( (int) ADD_OFFER_PAGE );
           $wp_localize_script_args['client_type'] = 'company';
@@ -97,7 +101,6 @@ if ( ! class_exists( 'scClient' ) ) :
           wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
 
           return $Engine->render( '@SC/client-company.html.twig', [
-            'client' => $this->Company,
             'Helper' => [
               'template_url' => get_template_directory_uri()
             ]
@@ -105,12 +108,14 @@ if ( ! class_exists( 'scClient' ) ) :
         }
 
         if ( in_array( 'candidate', $client_roles, true ) ) {
+          wp_enqueue_script('app-candidate', get_template_directory_uri() . '/assets/js/app/client/configs-candidate.js', [
+            'espace-client'
+          ], $itJob->version, true);
           $wp_localize_script_args['client_type'] = 'candidate';
           wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
 
           // Template candidat ici ...
           return $Engine->render( '@SC/client-candidate.html.twig', [
-            'client' => $this->Candidate,
             'display_name' => $this->Candidate->get_display_name(),
             'Helper' => [
               'template_url' => get_template_directory_uri()
@@ -324,7 +329,8 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( [
           'Company' => Company::get_company_by( $User->ID ),
           'Offers'  => $this->__get_company_offers(),
-          'Alerts'  => explode( ',', $alert )
+          'Alerts'  => explode( ',', $alert ),
+          'post_type' => 'company'
         ] );
       } else {
         // candidate
@@ -334,7 +340,8 @@ if ( ! class_exists( 'scClient' ) ) :
         $Candidate->isMyCV();
         wp_send_json( [
           'Candidate' => $Candidate,
-          'Alerts'  => explode( ',', $notification['job_sought'] )
+          'Alerts'  => explode( ',', $notification['job_sought'] ),
+          'post_type' => 'candidate'
         ] );
       }
     }

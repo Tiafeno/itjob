@@ -180,6 +180,7 @@ final class Candidate extends UserParticular implements \iCandidate {
       $this->getJobNotif();
       $this->getTrainingNotif();
       $this->cellphone = $this->getCellphone();
+      $this->display_name = $this->get_display_name();
     }
   }
 

@@ -1,0 +1,82 @@
+<div class="">
+  <div class="ibox-head">
+    <div class="ibox-title text-uppercase">Expérience</div>
+    <div class="ibox-tools">
+      <a class="dropdown-toggle font-18" data-toggle="dropdown"><i class="ti-ticket"></i></a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item"><i class="ti-pencil mr-2"></i>Ajouter une experience</a>
+      </div>
+    </div>
+  </div>
+  <div class="ibox-body">
+    <ul class="media-list media-list-divider scroller mr-2" data-height="470px">
+
+      <li class="media" ng-repeat="experience in Candidate.experiences">
+        <div class="media-body d-flex">
+          <div class="flex-1">
+            <h5 class="media-heading">
+              [[ experience.exp_positionHeld ]]
+            </h5>
+            <h6 class="text-muted">
+              [[ experience.exp_company ]]
+            </h6>
+            <div class="d-flex align-items-center font-13">
+              <span class="text-muted">[[ experience.exp_dateBegin ]] - [[ experience.exp_dateEnd ]]</span>
+            </div>
+            <p class="font-13 text-light mb-1">[[ experience.exp_mission ]]</p>
+          </div>
+          <div class="text-right" style="width:100px;">
+            <!--<span class="badge badge-primary badge-pill mb-2">Open</span>-->
+            <div>
+              <small class="text-muted font-12" style="cursor:pointer;">
+                <i class="fa fa-edit mr-2"></i>Modifier
+              </small>
+            </div>
+          </div>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+</div>
+
+<div class="">
+  <div class="ibox-head">
+    <div class="ibox-title text-uppercase">Formation</div>
+    <div class="ibox-tools">
+      <a class="dropdown-toggle font-18" data-toggle="dropdown"><i class="ti-ticket"></i></a>
+      <div class="dropdown-menu dropdown-menu-right">
+        <a class="dropdown-item"><i class="ti-pencil mr-2"></i>Ajouter une experience</a>
+      </div>
+    </div>
+  </div>
+  <div class="ibox-body">
+    <ul class="media-list media-list-divider scroller mr-2" data-height="470px">
+
+      <li class="media" ng-repeat="training in Candidate.trainings">
+        <div class="media-body d-flex">
+          <div class="flex-1">
+            <h5 class="media-heading">
+              [[ training.training_establishment ]]
+            </h5>
+            <h6 class="text-muted">
+              [[ training.training_diploma ]]
+            </h6>
+            <div class="d-flex align-items-center font-13">
+              <span class="text-muted">[[ training.training_dateBegin ]] - [[ training.training_dateEnd ]]</span>
+            </div>
+          </div>
+          <div class="text-right" style="width:100px;">
+            <!--<span class="badge badge-primary badge-pill mb-2">Open</span>-->
+            <div>
+              <small class="text-muted font-12" style="cursor:pointer;">
+                <i class="fa fa-edit mr-2"></i>Modifier
+              </small>
+            </div>
+          </div>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+</div>

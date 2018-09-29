@@ -1,0 +1,75 @@
+<div class="ibox-body">
+  <div class="flexbox">
+    <div class="flexbox-b">
+      <div>
+        <h4>[[ Company.title ]]</h4>
+        <div>
+          <span class="mr-3">
+            <span class="badge badge-success badge-circle mr-2 font-14" style="height:30px;width:30px;">
+              <i class="ti-user"></i>
+            </span>
+            Entreprise
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="d-inline-flex">
+      <div class="px-4 text-center">
+        <div class="text-muted font-13">OFFRE(S)</div>
+        <div class="h2 mt-2">[[ offerLists.length ]]</div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
+  <li class="nav-item">
+    <a class="nav-link active" data-target="#profil" data-toggle="tab">
+      Profil
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-target="#offers" data-toggle="tab">
+      Mes offres
+    </a>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade active show" id="profil">
+    <div class="page-content">
+      <div class="ibox-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <general-information-company
+              abranchs="asyncTerms('branch_activity')"
+              regions="asyncTerms('region')"
+              all-city="asyncTerms('city')"
+              init="Initialize()"
+              company="Company">
+            </general-information-company>
+          </div>
+          <div class="col-sm-6">
+            <biography></biography>
+            <alerts on-save="onSaveAlert()" alerts="alerts" alert-loading="alertLoading"></alerts>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-pane fade text-center" id="offers">
+    <div class="page-content">
+      <div class="ibox-body">
+        <offer-lists
+          offers="offerLists"
+          init="Initialize()"
+          company="Company"
+          abranchs="asyncTerms('branch_activity')"
+          regions="asyncTerms('region')"
+          all-city="asyncTerms('city')">
+        </offer-lists>
+
+      </div>
+    </div>
+  </div>
+</div>
