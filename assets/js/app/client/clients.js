@@ -129,7 +129,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
               }
             });
         };
-        UIkit.util.on('#modal-edit-user-overflow', 'hide', function (e) {
+        UIkit.util.on('#modal-edit-candidate-overflow', 'hide', function (e) {
           e.preventDefault();
           e.target.blur();
           $scope.status = false;
