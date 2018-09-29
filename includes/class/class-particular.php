@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 abstract class UserParticular {
-  private $__ID = 0; // User id
+  public $ID = 0; // User id
   private $__Candidate; // Object candidate
   private $__firstName;
   private $__lastName;
@@ -31,11 +31,11 @@ abstract class UserParticular {
   }
 
   public function getId() {
-    return $this->__ID;
+    return $this->ID;
   }
 
   public function setId( $id ) {
-    $this->__ID = $id;
+    $this->ID = $id;
   }
 
   public function get_display_name() {

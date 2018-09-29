@@ -112,9 +112,9 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
           let candidatForm = new FormData();
           let formObject = Object.keys($scope.candidateEditor);
           candidatForm.append('action', 'update_profil');
-          candidatForm.append('candidate_id', parseInt($scope.Entreprise.ID));
+          candidatForm.append('candidate_id', parseInt($scope.Candidate.ID));
           formObject.forEach(function (property) {
-            let propertyValue = Reflect.get($scope.userEditor, property);
+            let propertyValue = Reflect.get($scope.candidateEditor, property);
             candidatForm.set(property, propertyValue);
           });
           clientFactory
