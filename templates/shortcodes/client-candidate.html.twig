@@ -3,6 +3,13 @@
     font-family: 'Montserrat', sans-serif;
     font-size: 13px;
   }
+
+  .ng-dirty.ng-invalid,
+  .ng-touched.ng-invalid,
+  form.ng-submitted .ng-pristine.ng-invalid{
+    border-color: #f75a5f;
+  }
+
   .uk-modal-title {
     font-family: 'Montserrat', sans-serif;
   }
@@ -13,7 +20,8 @@
     background-color: #34495f;
     color: aliceblue;
   }
-  .dropdown-menu .dropdown-item, .dropdown-menu > li > a {
+  experiences .dropdown-menu .dropdown-item, .dropdown-menu > li > a,
+  trainings .dropdown-menu .dropdown-item, .dropdown-menu > li > a {
     color: #34495f !important;
   }
 

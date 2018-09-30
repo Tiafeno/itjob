@@ -1,3 +1,122 @@
+<!-- Modal -->
+<div id="modal-add-experience-overflow" uk-modal>
+  <div class="uk-modal-dialog">
+
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Experience</h2>
+    </div>
+
+    <form name="eform" ng-submit="submitForm(eform.$valid)" novalidate>
+
+      <div class="uk-modal-body" uk-overflow-auto>
+
+        <div class="col-sm-12">
+          <label class="col-form-label ">Intitulé du poste <span style="color: red">*</span></label>
+          <div class="form-group">
+            <div class="input-group">
+              <input ng-model="Exp.position" placeholder="Ex: Assistant" autocomplete="off" name="position" class="form-control" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <label class="col-form-label ">Entreprise <span style="color: red">*</span></label>
+          <div class="form-group">
+            <div class="input-group">
+              <input ng-model="Exp.company" placeholder="Ex: Google" autocomplete="on" name="company" class="form-control" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <label class="col-form-label ">Lieu <span style="color: red">*</span></label>
+          <div class="form-group">
+            <div class="input-group">
+              <input ng-model="Exp.place" placeholder="Ex: Antananarivo, Madagascar" autocomplete="off" name="place" class="form-control" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group col-md-6">
+
+            <div class="col-sm-12">
+              <p class="">De <span style="color: red">*</span></p>
+            </div>
+            <div  class="col-sm-12">
+              <div class="form-group">
+                <select class="form-control" name="begin_mounth" ng-model="Exp.dateBegin.mounth" required>
+                  <option value="">Mois</option>
+                  <option ng-value="mounth" ng-repeat="mounth in mounths">[[mounth]]</option>
+                </select>
+              </div>
+            </div>
+            <div  class="col-sm-12">
+              <div class="form-group">
+                <select class="form-control" name="begin_year" ng-model="Exp.dateBegin.year" required>
+                  <option value="">Année</option>
+                  <option ng-value="year" ng-repeat="year in years">[[year]]</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="form-group col-md-6" ng-show="Exp.dateBegin.mounth && Exp.dateBegin.year">
+
+            <div class="col-sm-12">
+              <p class="text-uppercase">à <span style="color: red">*</span></p>
+            </div>
+            <div  class="col-sm-12">
+              <div class="form-group">
+                <select class="form-control" name="end_mounth" ng-model="Exp.dateEnd.mounth" required>
+                  <option value="">Mois</option>
+                  <option ng-value="mounth" ng-repeat="mounth in mounths">[[mounth]]</option>
+                </select>
+              </div>
+            </div>
+            <div  class="col-sm-12">
+              <div class="form-group">
+                <select class="form-control" name="end_year" ng-model="Exp.dateEnd.year" required>
+                  <option value="">Année</option>
+                  <option ng-value="year" ng-repeat="year in dateEndRange">[[year]]</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <label class="col-form-label ">Description </label>
+          <div class="form-group">
+            <div class="input-group">
+              <textarea ng-model="Exp.mission" rows="8" placeholder="Votre mission" name="mission" class="form-control" ></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="uk-modal-footer">
+        <div class="row">
+          <div class="col-sm-6 uk-text-left d-flex">
+            <p class="info-status mt-auto mb-auto" ng-show="status">[[status]]</p>
+          </div>
+          <div class="col-sm-6 uk-text-right">
+            <button class="btn btn-blue ml-4" type="submit">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+<!-- .end Modal-->
+
 <div class="">
   <div class="ibox-head">
     <div class="ibox-title text-uppercase">Expérience</div>

@@ -26,6 +26,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   }])
   .service('clientService', ['$http', function ($http) {
     this.offers = _.clone(itOptions.offers);
+    this.mounths = [
+      'janvier', 'février', 'mars',
+      'avril', 'mai', 'juin',
+      'juillet', 'août', 'septembre',
+      'octobre', 'novembre', 'décembre'
+    ];
     this.clientArea = () => {
       return $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
         cache: false
@@ -324,19 +330,72 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       scope: {}
     }
   }])
-  .directive('experiences', [function () {
+  .directive('experiences', ['clientService', function (clientService) {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/experiences.html',
       scope: {
         Candidate: "=candidate",
       },
-      controller: ['$scope', function ($scope) {
+      controller: ['$scope', '$http', function ($scope, $http) {
+        $scope.mounths = clientService.mounths;
+        $scope.years = _.range(1959, new Date().getFullYear() + 1);
+        $scope.dateEndRange = [];
         this.$onInit = () => {
         };
         $scope.addNewExperience = () => {
-
+          UIkit.modal('#modal-add-experience-overflow').show();
         };
+        // Envoyer le formulaire d'ajout
+        $scope.submitForm = (isValid) => {
+          if (!isValid) return;
+          const subForm = new FormData();
+          let place = $scope.Exp.place.split(',');
+          let city = place[0];
+          let country = place[place.length - 1];
+          let Experiences = _.clone($scope.Candidate.experiences);
+          Experiences.push({
+            exp_positionHeld: $scope.Exp.position,
+            exp_company: $scope.Exp.company,
+            exp_country: jQuery.trim(country),
+            exp_city: jQuery.trim(city),
+            exp_dateBegin: $scope.Exp.dateBegin.mounth + ", " + $scope.Exp.dateBegin.year,
+            exp_dateEnd: $scope.Exp.dateEnd.mounth + ", " + $scope.Exp.dateEnd.year,
+          });
+          subForm.append('action', 'update_experiences');
+          subForm.append('experiences', JSON.stringify(Experiences));
+          $http({
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: subForm
+          })
+            .then(resp => {
+              let data = resp.data;
+              if (data.success) {
+                $scope.$apply(() => {
+                  $scope.Candidate.experiences = data.experiences;
+                });
+              }
+            })
+        };
+        // Event on modal dialog close or hide
+        UIkit.util.on('#modal-add-experience-overflow', 'hide', function (e) {
+          e.preventDefault();
+          e.target.blur();
+          $scope.Exp = {};
+          $scope.eform.$setPristine();
+          $scope.eform.$setUntouched();
+        });
+        $scope.$watch('Exp', v => {
+          if (v == undefined || v.dateBegin == undefined) return;
+          if (! _.isUndefined(v.dateBegin.year)) {
+            let year = v.dateBegin.year;
+            $scope.dateEndRange = _.range(year, new Date().getFullYear() + 1)
+          }
+        }, true);
       }]
     }
   }])
