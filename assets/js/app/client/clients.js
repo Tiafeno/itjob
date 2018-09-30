@@ -375,9 +375,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             .then(resp => {
               let data = resp.data;
               if (data.success) {
-                $scope.$apply(() => {
-                  $scope.Candidate.experiences = data.experiences;
-                });
+                $scope.Candidate.experiences = data.experiences;
               }
             })
         };
