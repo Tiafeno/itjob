@@ -341,8 +341,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.mounths = clientService.mounths;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
         $scope.dateEndRange = [];
-        this.$onInit = () => {
-        };
         $scope.addNewExperience = () => {
           UIkit.modal('#modal-add-experience-overflow').show();
         };
