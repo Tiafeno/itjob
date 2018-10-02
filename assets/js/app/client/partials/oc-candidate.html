@@ -52,6 +52,7 @@
                     init="Initialize()"
                     candidate="Candidate">
                   </general-information-candidate>
+                  <change-password></change-password>
                 </div>
                 <div class="col-sm-6">
                   <!-- Biography directive -->
@@ -75,6 +76,7 @@
                     <trainings candidate="Candidate" ></trainings>
                   </div>
                   <div ng-show="!cv.hasCV">
+                    <p>Nous n'avons trouvé aucun CV.</p>
                     <a ng-href="[[cv.addCVUrl]]" class="btn btn-outline-blue">Ajouter un CV</a>
                   </div>
                 </div>

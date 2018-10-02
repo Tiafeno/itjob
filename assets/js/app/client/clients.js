@@ -72,6 +72,21 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       return _.findWhere(postStatus, {slug: jQuery.trim(inputValue)}).label;
     }
   }])
+  .directive('changePassword', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/change-password.html',
+      scope: {},
+      link: function (scope, element, attrs) {
+        scope.openEditor = () => {
+          
+        }
+      },
+      controller: ['$scope', function ( $scope ) {
+
+      }]
+    };
+  }])
   .directive('generalInformationCandidate', [function () {
     return {
       restrict: 'E',
@@ -404,6 +419,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       },
       controller: ['$scope', function ($scope) {
         this.$onInit = () => {
+          UIkit.modal('#modal-change-pwd-overflow').show();
         }
       }]
     }

@@ -38,6 +38,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_update_alert_filter', [ &$this, 'update_alert_filter' ] );
         add_action( 'wp_ajax_get_postuled_candidate', [ &$this, 'get_postuled_candidate' ] );
         add_action( 'wp_ajax_update_experiences', [ &$this, 'update_experiences' ] );
+        add_action( 'wp_ajax_update-user-password', [ &$this, 'change_user_password' ] );
       }
 
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
@@ -167,7 +168,7 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
-     * Modifier le profil
+     Modifier le profil de l'utilisateur
      */
     public function update_profil() {
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
@@ -219,8 +220,27 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
-     * Function ajax
-     * @route admin-ajax.php?action=trash_offer&pId=<int>
+     Modifier le mot de passe de l'utilisateur
+     @route admin-ajax.php?action=update-user-password
+     */
+    public function change_user_password() {
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $oldPwd = Http\Request::getValue('oldpwd');
+      $pwd = Http\Request::getValue("pwd");
+      if (wp_check_password( $oldPwd, $this->User->data->user_pass, $this->User->ID) ) :
+        wp_set_password( $pwd, $this->User->ID );
+        wp_send_json(['success' => true]);
+      else:
+        wp_send_json(['success' => false, 'msg' => 'Une erreur s\est produit,
+        Il est probable que l\'ancienmot de passe n\'est pas correct']);
+      endif;
+
+    }
+    /**
+     Ajouter une offre dans la corbeille
+     @route admin-ajax.php?action=trash_offer&pId=<int>
      */
     public function client_trash_offer() {
       global $wpdb;
