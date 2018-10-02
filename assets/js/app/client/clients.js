@@ -411,6 +411,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService', 'Client',
     function ($scope, $http, $q, clientFactory, clientService, Client) {
       $scope.alertLoading = false;
+      $scope.cv = {};
+      $scope.cv.hasCV = false;
+      $scope.cv.addCVUrl = itOptions.Helper.add_cv;
       $scope.alerts = [];
       $scope.Company = {};
       $scope.Candidate = {};
@@ -425,6 +428,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.offerLists = _.clone(Client.Offers);
         } else {
           $scope.Candidate = _.clone(Client.Candidate);
+          if ( ! _.isNull(Client.Candidate.status) ) {
+            $scope.cv.hasCV = true;
+          }
         }
         $scope.alerts = _.reject(Client.Alerts, (alert) => _.isEmpty(alert));
       };
@@ -461,7 +467,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             }
           });
       };
-
       // Trash offert
       $scope.trashOffer = function (offerId) {
         var offer = _.findWhere(clientService.offers, {

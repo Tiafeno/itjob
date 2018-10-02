@@ -68,9 +68,15 @@
             <div class="ibox-body">
               <div class="row">
                 <div class="col-lg-8">
-                  <!-- Experience directive -->
-                  <experiences candidate="Candidate" ></experiences>
-                  <trainings candidate="Candidate" ></trainings>
+                  <div ng-show="cv.hasCV">
+                    <!-- Experience directive -->
+                    <experiences candidate="Candidate" ></experiences>
+                    <!-- Formation directive --->
+                    <trainings candidate="Candidate" ></trainings>
+                  </div>
+                  <div ng-show="!cv.hasCV">
+                    <a ng-href="[[cv.addCVUrl]]" class="btn btn-outline-blue">Ajouter un CV</div>
+                  </div>
                 </div>
                 <div class="col-lg-6"></div>
               </div>

@@ -112,6 +112,9 @@ if ( ! class_exists( 'scClient' ) ) :
           wp_enqueue_script('app-candidate', get_template_directory_uri() . '/assets/js/app/client/configs-candidate.js', [
             'espace-client'
           ], $itJob->version, true);
+
+          $add_cv_id = includes\object\jobServices::page_exists('Ajouter un CV');
+          $wp_localize_script_args['Helper']['add_cv'] = get_permalink( (int) $add_cv_id );
           $wp_localize_script_args['client_type'] = 'candidate';
           wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
 
@@ -119,7 +122,7 @@ if ( ! class_exists( 'scClient' ) ) :
           return $Engine->render( '@SC/client-candidate.html.twig', [
             'display_name' => $this->Candidate->get_display_name(),
             'Helper' => [
-              'template_url' => get_template_directory_uri()
+              'template_url' => get_template_directory_uri(),
             ]
           ] );
         }
