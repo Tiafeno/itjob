@@ -426,7 +426,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         } else {
           $scope.Candidate = _.clone(Client.Candidate);
         }
-        $scope.alerts = _.clone(Client.Alerts);
+        $scope.alerts = _.reject(Client.Alerts, (alert) => !_.isEmpty(alert));
       };
       $scope.Initialize();
       $scope.asyncTerms = (Taxonomy) => {

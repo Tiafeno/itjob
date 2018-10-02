@@ -372,9 +372,10 @@ if ( ! class_exists( 'scClient' ) ) :
         $notification = get_field( 'itjob_cv_notifEmploi', $this->Candidate->getId() );
         $Candidate = Candidate::get_candidate_by( $User->ID );
         $Candidate->isMyCV();
+        $alerts = explode( ',', $notification['job_sought'] );
         wp_send_json( [
           'Candidate' => $Candidate,
-          'Alerts'  => explode( ',', $notification['job_sought'] ),
+          'Alerts'  => $alerts,
           'post_type' => 'candidate'
         ] );
       }
