@@ -206,7 +206,7 @@ final class Candidate extends UserParticular implements \iCandidate {
 
     $this->tags            = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
     $this->branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "all" ] );
-    $this->branch_activity = $this->branch_activity[0];
+    $this->branch_activity = !is_array($this->branch_activity) || !empty($this->branch_activity) ? $this->branch_activity[0] : null;
   }
 
   private function getActivateField( $terms ) {
@@ -295,4 +295,3 @@ final class Candidate extends UserParticular implements \iCandidate {
   public function update() {
   }
 }
-
