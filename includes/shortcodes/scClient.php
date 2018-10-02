@@ -113,7 +113,7 @@ if ( ! class_exists( 'scClient' ) ) :
             'espace-client'
           ], $itJob->version, true);
 
-          $add_cv_id = includes\object\jobServices::page_exists('Ajouter un CV');
+          $add_cv_id = \includes\object\jobServices::page_exists('Ajouter un CV');
           $wp_localize_script_args['Helper']['add_cv'] = get_permalink( (int) $add_cv_id );
           $wp_localize_script_args['client_type'] = 'candidate';
           wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
