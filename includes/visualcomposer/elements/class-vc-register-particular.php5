@@ -138,7 +138,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         'region'       => Http\Request::getValue( 'region' ), // region ID
         'city'         => Http\Request::getValue( 'country' ), // city ID
         'cellphone'    => Http\Request::getValue( 'cellphone' ),
-        'greeting'     => Http\Request::getValue( 'greeting ' ),
+        'greeting'     => Http\Request::getValue( 'greeting' ),
         'email'        => $userEmail
       ];
 
