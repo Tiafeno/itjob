@@ -275,31 +275,32 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       },
       link: function (scope, element, attrs) {
         scope.Helper = itOptions.Helper;
-
-        // let table = jQuery('#products-table').DataTable({
-        //   pageLength: 10,
-        //   fixedHeader: false,
-        //   responsive: true,
-        //   "sDom": 'rtip',
-        //   language: {
-        //     url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
-        //   }
-        // });
-        // jQuery('#key-search').on('keyup', function () {
-        //   table.search(this.value).draw();
-        // });
-        //
-        // jQuery('.input-group.date').datepicker({
-        //   format: "mm/dd/yyyy",
-        //   language: "fr",
-        //   startView: 2,
-        //   todayBtn: false,
-        //   keyboardNavigation: true,
-        //   forceParse: false,
-        //   autoclose: true
-        // });
       },
       controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
+        this.$onInit = () => {
+          let table = jQuery('#products-table').DataTable({
+            pageLength: 10,
+            fixedHeader: false,
+            responsive: true,
+            "sDom": 'rtip',
+            language: {
+              url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+            }
+          });
+          jQuery('#key-search').on('keyup', function () {
+            table.search(this.value).draw();
+          });
+
+          jQuery('.input-group.date').datepicker({
+            format: "mm/dd/yyyy",
+            language: "fr",
+            startView: 2,
+            todayBtn: false,
+            keyboardNavigation: true,
+            forceParse: false,
+            autoclose: true
+          });
+        };
         $scope.offerEditor = {};
         $scope.loadingCandidats = false;
         $scope.postuledCandidats = [];
