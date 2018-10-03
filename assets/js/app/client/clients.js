@@ -276,7 +276,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       link: function (scope, element, attrs) {
         scope.Helper = itOptions.Helper;
 
-        let table = $('#products-table').DataTable({
+        let table = jQuery('#products-table').DataTable({
           pageLength: 10,
           fixedHeader: false,
           responsive: true,
