@@ -87,7 +87,23 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             }
           },
           submitHandler: function(form) {
+            const Fm = new FormData();
+            Fm.append('action', 'update-user-password');
+            Fm.append('oldpwd', scope.oldpwd);
+            Fm.append('pwd', scope.pwd);
             // Submit form validate
+            $http({
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: Fm
+            })
+              .then(resp => {
+                let data = resp.data;
+                // Update password success
+              })
           }
         });
         scope.openEditor = () => {
