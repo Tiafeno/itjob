@@ -169,7 +169,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               let dat = resp.data;
               if (dat.success) {
                 $scope.status = 'Votre information a bien été enregistrer avec succès';
-                $route.reload();
+                $scope.init();
               } else {
                 $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
               }
