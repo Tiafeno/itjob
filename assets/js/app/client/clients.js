@@ -275,10 +275,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       },
       link: function (scope, element, attrs) {
         scope.Helper = itOptions.Helper;
-      },
-      controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
-        $scope.$on('$viewContentLoaded', function(){
-          //Here your view content is fully loaded !!
+        element.ready(function() {
           const table = jQuery('#products-table').DataTable({
             pageLength: 10,
             fixedHeader: false,
@@ -302,6 +299,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             autoclose: true
           });
         });
+      },
+      controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
         $scope.offerEditor = {};
         $scope.loadingCandidats = false;
         $scope.postuledCandidats = [];
