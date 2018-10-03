@@ -169,7 +169,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               let dat = resp.data;
               if (dat.success) {
                 $scope.status = 'Votre information a bien été enregistrer avec succès';
-                $scope.init();
+                $route.reload();
               } else {
                 $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
               }
@@ -198,7 +198,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       link: function (scope, element, attrs) {
 
       },
-      controller: ['$scope', '$q', 'clientFactory', function ($scope, $q, clientFactory) {
+      controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
         $scope.status = false;
         $scope.userEditor = {};
         $scope.openEditor = () => {
@@ -245,7 +245,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               let dat = resp.data;
               if (dat.success) {
                 $scope.status = 'Votre information a bien été enregistrer avec succès';
-                $scope.init();
+                $route.reload();
               } else {
                 $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
               }
