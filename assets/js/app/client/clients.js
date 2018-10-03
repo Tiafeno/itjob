@@ -133,7 +133,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
 
         $scope.openEditor = () => {
           $scope.loadingEditor = true;
-          UIkit.modal('#modal-edit-candidate-overflow').show();
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
             $scope.loadingEditor = false;
             $scope.Regions = _.clone(data[0]);
@@ -169,6 +168,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               let dat = resp.data;
               if (dat.success) {
                 $scope.status = 'Votre information a bien été enregistrer avec succès';
+                UIkit.modal('#modal-edit-candidate-overflow').hide();
                 $route.reload();
               } else {
                 $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
@@ -245,6 +245,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               let dat = resp.data;
               if (dat.success) {
                 $scope.status = 'Votre information a bien été enregistrer avec succès';
+                UIkit.modal('#modal-edit-user-overflow').hide();
                 $route.reload();
               } else {
                 $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
