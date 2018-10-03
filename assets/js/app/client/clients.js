@@ -275,7 +275,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       },
       link: function (scope, element, attrs) {
         scope.Helper = itOptions.Helper;
-        element.ready(function() {
+        angular.element(document).ready(function() {
           const table = jQuery('#products-table').DataTable({
             pageLength: 10,
             fixedHeader: false,
@@ -298,6 +298,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             forceParse: false,
             autoclose: true
           });
+          console.log("Load datatable");
         });
       },
       controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
