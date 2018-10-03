@@ -235,7 +235,7 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json(['success' => true]);
       else:
         wp_send_json(['success' => false, 'msg' => 'Une erreur s\est produit,
-        Il est probable que l\'ancienmot de passe n\'est pas correct']);
+        Il est probable que l\'ancien mot de passe n\'est pas correct']);
       endif;
 
     }
