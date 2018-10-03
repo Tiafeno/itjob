@@ -88,11 +88,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           },
           submitHandler: function(form) {
             // Submit form validate
-            console.log(scope.pwd);
           }
         });
         scope.openEditor = () => {
-
+          UIkit.modal('#modal-change-pwd-overflow').show();
         }
       },
       controller: ['$scope', function ( $scope ) {
@@ -432,7 +431,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       },
       controller: ['$scope', function ($scope) {
         this.$onInit = () => {
-          UIkit.modal('#modal-change-pwd-overflow').show();
         }
       }]
     }
