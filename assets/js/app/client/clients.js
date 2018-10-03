@@ -298,7 +298,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             forceParse: false,
             autoclose: true
           });
-          console.log("Load datatable");
+          console.log("Load datatable:");
+          console.log(scope.Offers);
         });
       },
       controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
