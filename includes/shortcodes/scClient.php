@@ -65,6 +65,7 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
       // scripts
       wp_enqueue_script( 'sweetalert' );
+      wp_enqueue_script( 'jquery-validate' );
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
       wp_register_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
         'angular',

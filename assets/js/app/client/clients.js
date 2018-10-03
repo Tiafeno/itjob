@@ -72,14 +72,27 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       return _.findWhere(postStatus, {slug: jQuery.trim(inputValue)}).label;
     }
   }])
-  .directive('changePassword', [function () {
+  .directive('changePassword', ['$http', function ($http) {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/change-password.html',
       scope: {},
       link: function (scope, element, attrs) {
+        jQuery( "#changePwdForm" ).validate({
+          rules: {
+            oldpwd: "required",
+            pwd: "required",
+            confpwd: {
+              equalTo: "#pwd"
+            }
+          },
+          submitHandler: function(form) {
+            // Submit form validate
+            console.log(scope.pwd);
+          }
+        });
         scope.openEditor = () => {
-          
+
         }
       },
       controller: ['$scope', function ( $scope ) {
@@ -336,14 +349,14 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         alerts: '=',
         alertLoading: '='
       }
-    }
+    };
   }])
   .directive('biography', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/biography.html',
       scope: {}
-    }
+    };
   }])
   .directive('experiences', ['clientService', function (clientService) {
     return {
@@ -448,7 +461,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             $scope.cv.hasCV = true;
           }
         }
-        $scope.alerts = _.reject(Client.Alerts, (alert) => _.isEmpty(alert));
+        $scope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
       };
       $scope.Initialize();
       $scope.asyncTerms = (Taxonomy) => {
