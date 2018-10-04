@@ -318,7 +318,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'job_sought' => implode( ',', $alerts )
         ];
         $data   = update_field( 'itjob_cv_notifEmploi', $values, $this->Candidate->getId() );
-        wp_send_json( [ 'success' => !$data ] );
+        wp_send_json( [ 'success' => $data ] );
       }
     }
 
