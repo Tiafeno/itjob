@@ -263,13 +263,13 @@
                     <li class="dropdown dropdown-user">
                       <a class="nav-link dropdown-toggle link" data-toggle="dropdown">
                         <span class="mr-2 text-uppercase p-relative" style="bottom: 3px;">
-                          Espace Client
+                          Mon compte
                         </span>
                         <i class="ti-user uk-text-large"></i>
                       </a>
                       <div class="dropdown-menu dropdown-arrow dropdown-menu-right admin-dropdown-menu">
                         <div class="dropdown-arrow"></div>
-                        <a class="dropdown-item" href="<?= $espace_client_link ?>"><i class="ti-layout"></i> Mon compte</a>
+                        <a class="dropdown-item" href="<?= $espace_client_link ?>"><i class="ti-layout"></i>Espace Client</a>
                         <a class="dropdown-item" href="<?= wp_logout_url( home_url( '/' ) ) ?>"><i class="ti-shift-left"></i> Déconnecter</a>
                       </div>
                     </li>

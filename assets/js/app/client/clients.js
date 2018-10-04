@@ -478,10 +478,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.Initialize = () => {
         console.log('Initialize');
         if (Client.post_type === 'company') {
-          $scope.Company = _.clone(Client.Company);
+          $scope.Company    = _.clone(Client.Company);
           $scope.offerLists = _.clone(Client.Offers);
         } else {
-          $scope.Candidate = _.clone(Client.Candidate);
+          $scope.Candidate  = _.clone(Client.Candidate);
           if ( ! _.isNull(Client.Candidate.status) ) {
             $scope.cv.hasCV = true;
           }

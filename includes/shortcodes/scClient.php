@@ -313,9 +313,9 @@ if ( ! class_exists( 'scClient' ) ) :
           return $std->text;
         }, $alerts );
         $values = [
-          'notification' => $notification['notification'],
+          'notification'    => $notification['notification'],
           'branch_activity' => $notification['branch_activity'],
-          'job_sought' => implode( ',', $alerts )
+          'job_sought'      => implode( ',', $alerts )
         ];
         $data   = update_field( 'itjob_cv_notifEmploi', $values, $this->Candidate->getId() );
         wp_send_json( [ 'success' => $data ] );
