@@ -377,13 +377,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       }
     };
   }])
-  .directive('biography', [function () {
-    return {
-      restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/biography.html',
-      scope: {}
-    };
-  }])
   .directive('experiences', ['clientService', function (clientService) {
     return {
       restrict: 'E',
