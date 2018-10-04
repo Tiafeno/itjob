@@ -275,20 +275,24 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         init: '&init'
       },
       link: function (scope, element, attrs) {
+        scope.focusFire = false;
         scope.Helper = itOptions.Helper;
         angular.element(document).ready(function() {
-          console.log(scope.Offers);
-          const table = jQuery('#products-table').DataTable({
-            pageLength: 10,
-            fixedHeader: false,
-            responsive: true,
-            "sDom": 'rtip',
-            language: {
-              url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
-            }
-          });
-          jQuery('#key-search').on('keyup', function () {
-            table.search(this.value).draw();
+          jQuery('#key-search').focus(function() {
+            if (scope.focusFire) return;
+            const table = jQuery('#products-table').DataTable({
+              pageLength: 10,
+              fixedHeader: false,
+              responsive: true,
+              "sDom": 'rtip',
+              language: {
+                url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+              }
+            });
+            jQuery('#key-search').on('keyup', function () {
+              table.search(this.value).draw();
+            });
+            scope.focusFire = true;
           });
 
           jQuery('.input-group.date').datepicker({
@@ -300,7 +304,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             forceParse: false,
             autoclose: true
           });
-          console.log("Load datatable:");
+          console.log("Load datatable");
 
         });
       },
