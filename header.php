@@ -224,7 +224,8 @@
                   <?php
                   if ( ! is_user_logged_in() ) {
                     $page_login_id    = LOGIN_PAGE ? (int) LOGIN_PAGE : 0;
-                    $oc_url = includes\object\jobServices::page_exists( 'Espace client' );
+                    $oc_id = includes\object\jobServices::page_exists( 'Espace client' );
+                    $oc_url = get_the_permalink($oc_id);
                     ?>
                     <li class="dropdown dropdown-user">
                       <a class="nav-link dropdown-toggle link" data-toggle="dropdown">
