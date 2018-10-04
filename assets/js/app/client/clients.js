@@ -278,6 +278,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         scope.focusFire = false;
         scope.Helper = itOptions.Helper;
         angular.element(document).ready(function() {
+          // Load datatable on focus search input
           jQuery('#key-search').focus(function() {
             if (scope.focusFire) return;
             const table = jQuery('#products-table').DataTable({
@@ -289,7 +290,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
               }
             });
-            jQuery('#key-search').on('keyup', function () {
+            jQuery('#key-search').on('keyup', () => {
               table.search(this.value).draw();
             });
             scope.focusFire = true;
