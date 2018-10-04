@@ -103,6 +103,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               .then(resp => {
                 let data = resp.data;
                 // Update password success
+                UIkit.modal('#modal-change-pwd-overflow').hide();
               })
           }
         });

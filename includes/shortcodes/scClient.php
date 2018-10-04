@@ -93,6 +93,7 @@ if ( ! class_exists( 'scClient' ) ) :
           ]
         ];
 
+        // Load company template
         if ( in_array( 'company', $client_roles, true ) ) {
           wp_enqueue_script('app-company', get_template_directory_uri() . '/assets/js/app/client/configs-company.js', [
             'espace-client'
@@ -110,6 +111,7 @@ if ( ! class_exists( 'scClient' ) ) :
           ] );
         }
 
+        // Load candidate template
         if ( in_array( 'candidate', $client_roles, true ) ) {
           wp_enqueue_script('app-candidate', get_template_directory_uri() . '/assets/js/app/client/configs-candidate.js', [
             'espace-client'
