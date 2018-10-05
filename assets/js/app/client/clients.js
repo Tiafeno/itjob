@@ -26,7 +26,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   }])
   .service('clientService', ['$http', function ($http) {
     this.offers = _.clone(itOptions.offers);
-    this.mounths = [
+    this.months = [
       'janvier', 'février', 'mars',
       'avril', 'mai', 'juin',
       'juillet', 'août', 'septembre',
@@ -78,7 +78,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       templateUrl: itOptions.Helper.tpls_partials + '/change-password.html',
       scope: {},
       link: function (scope, element, attrs) {
-        jQuery( "#changePwdForm" ).validate({
+        jQuery("#changePwdForm").validate({
           rules: {
             oldpwd: "required",
             pwd: "required",
@@ -86,7 +86,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               equalTo: "#pwd"
             }
           },
-          submitHandler: function(form) {
+          submitHandler: function (form) {
             const Fm = new FormData();
             Fm.append('action', 'update-user-password');
             Fm.append('oldpwd', scope.oldpwd);
@@ -113,7 +113,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           UIkit.modal('#modal-change-pwd-overflow').show();
         }
       },
-      controller: ['$scope', function ( $scope ) {
+      controller: ['$scope', function ($scope) {
 
       }]
     };
@@ -280,9 +280,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       link: function (scope, element, attrs) {
         scope.focusFire = false;
         scope.Helper = itOptions.Helper;
-        angular.element(document).ready(function() {
+        angular.element(document).ready(function () {
           // Load datatable on focus search input
-          jQuery('#key-search').focus(function() {
+          jQuery('#key-search').focus(function () {
             if (scope.focusFire) return;
             const table = jQuery('#products-table').DataTable({
               pageLength: 10,
@@ -387,28 +387,91 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         Candidate: "=candidate",
       },
       controller: ['$scope', '$http', function ($scope, $http) {
-        $scope.mounths = clientService.mounths;
+        const self = this;
+        $scope.mode = null; // 0:new, 1:update
+        $scope.Exp = {};
+        $scope.months = clientService.months;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
         $scope.dateEndRange = [];
         $scope.addNewExperience = () => {
+          $scope.mode = 0;
+          $scope.Exp.position_currently_works = true;
+          UIkit.modal('#modal-add-experience-overflow').show();
+        };
+        // Modifier une expérience
+        $scope.editExperience = (positionHeld) => {
+          $scope.mode = 1;
+          let experience = _.find($scope.Candidate.experiences, experience => experience.exp_positionHeld == positionHeld);
+          let momentDateBegin = moment(experience.exp_dateBegin, 'MMMM, YYYY', 'fr');
+          let dateEndObj = '';
+          if ( ! _.isEmpty(experience.exp_dateEnd)) {
+            let momentDateEnd = moment(experience.exp_dateEnd, 'MMMM, YYYY', 'fr');
+            dateEndObj = {
+              month: momentDateEnd.format('MMMM'),
+              year: parseInt(momentDateEnd.format('YYYY'))
+            };
+          }
+          $scope.Exp = {
+            position: experience.exp_positionHeld,
+            company: experience.exp_company,
+            place: experience.exp_city + ', ' + experience.exp_country,
+            mission: experience.mission,
+            position_currently_works: _.isEmpty(experience.exp_dateEnd) ? true : false,
+            dateBegin: {
+              month: momentDateBegin.format('MMMM'),
+              year: parseInt(momentDateBegin.format('YYYY'))
+            },
+            dateEnd: dateEndObj
+          };
           UIkit.modal('#modal-add-experience-overflow').show();
         };
         // Envoyer le formulaire d'ajout
         $scope.submitForm = (isValid) => {
           if (!isValid) return;
-          const subForm = new FormData();
           let place = $scope.Exp.place.split(',');
           let city = place[0];
           let country = place[place.length - 1];
-          let Experiences = _.clone($scope.Candidate.experiences);
+          let beginFormat = $scope.Exp.dateBegin.month + ", " + $scope.Exp.dateBegin.year;
+          let dateBegin = moment(beginFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+          let dateEnd = '';
+          if ( ! $scope.Exp.position_currently_works) {
+            let endFormat = $scope.Exp.dateEnd.month + ", " + $scope.Exp.dateEnd.year;
+            dateEnd = moment(endFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+          }
+          let Experiences = [];
+          if ($scope.mode === 0) { // Nouvelle experience
+            Experiences = _.map($scope.Candidate.experiences, exp => {
+              exp.exp_dateBegin = moment(exp.exp_dateBegin, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+              if ( ! _.isEmpty(exp.exp_dateEnd)) {
+                exp.exp_dateEnd = moment(exp.exp_dateEnd, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+              } else {
+                exp.position_currently_works = true;
+              }
+
+              return experience;
+            });
+          } else {
+            // Récuperer les experiences sauf celui qu'on est entrain de modifier
+            Experiences = _.reject($scope.Candidate.experiences, exp => {
+              return exp.exp_positionHeld === $scope.Exp.position;
+            });
+          }
+
+
           Experiences.push({
             exp_positionHeld: $scope.Exp.position,
             exp_company: $scope.Exp.company,
             exp_country: jQuery.trim(country),
             exp_city: jQuery.trim(city),
-            exp_dateBegin: $scope.Exp.dateBegin.mounth + ", " + $scope.Exp.dateBegin.year,
-            exp_dateEnd: $scope.Exp.dateEnd.mounth + ", " + $scope.Exp.dateEnd.year,
+            exp_dateBegin: dateBegin,
+            exp_dateEnd: dateEnd,
           });
+          // Mettre à jour l'expérience
+          console.log(Experiences);
+          //self.updateExperience(Experiences);
+        };
+        self.updateExperience = (Experiences) => {
+          const subForm = new FormData();
           subForm.append('action', 'update_experiences');
           subForm.append('experiences', JSON.stringify(Experiences));
           $http({
@@ -423,6 +486,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               let data = resp.data;
               if (data.success) {
                 $scope.Candidate.experiences = data.experiences;
+                $scope.mode = null;
+                UIkit.modal('#modal-add-experience-overflow').hide();
               }
             })
         };
@@ -435,8 +500,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.eform.$setUntouched();
         });
         $scope.$watch('Exp', v => {
+          console.log(v);
           if (v == undefined || v.dateBegin == undefined) return;
-          if (! _.isUndefined(v.dateBegin.year)) {
+          if (!_.isUndefined(v.dateBegin.year)) {
             let year = v.dateBegin.year;
             $scope.dateEndRange = _.range(year, new Date().getFullYear() + 1)
           }
@@ -473,11 +539,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.Initialize = () => {
         console.log('Initialize');
         if (Client.post_type === 'company') {
-          $scope.Company    = _.clone(Client.Company);
+          $scope.Company = _.clone(Client.Company);
           $scope.offerLists = _.clone(Client.Offers);
         } else {
-          $scope.Candidate  = _.clone(Client.Candidate);
-          if ( ! _.isNull(Client.Candidate.status) ) {
+          $scope.Candidate = _.clone(Client.Candidate);
+          if (!_.isNull(Client.Candidate.status)) {
             $scope.cv.hasCV = true;
           }
         }

@@ -65,6 +65,7 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
       // scripts
       wp_enqueue_script( 'sweetalert' );
+      wp_enqueue_script( 'moment-locales' );
       wp_enqueue_script( 'jquery-validate' );
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
       wp_register_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
@@ -346,7 +347,8 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $resolve = update_field( 'itjob_cv_experiences', $new_experiences, $this->Candidate->getId() );
       if ($resolve) {
-        wp_send_json(['success' => true, 'experiences' => $new_experiences]);
+        $experiences = get_field('itjob_cv_experiences', $this->Candidate->getId());
+        wp_send_json(['success' => true, 'experiences' => $experiences]);
       } else {
         wp_send_json(['success' => false]);
       }
