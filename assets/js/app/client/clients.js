@@ -285,7 +285,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             const table = jQuery('#products-table').DataTable({
               pageLength: 10,
               fixedHeader: false,
-              responsive: true,
+              responsive: false,
               "sDom": 'rtip',
               language: {
                 url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
