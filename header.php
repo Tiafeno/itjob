@@ -154,7 +154,7 @@
     }
 
     tags-input .tags {
-      box-shadow: 0px 0px 0px 0 #d3d3d3 inset !important;
+      box-shadow: 0px 0px 0px 0 #d3d3d3 inset;
     }
     tags-input.ng-invalid .tags {
       box-shadow: 0 0 6px 0px rgba(255,0,0,.6);
