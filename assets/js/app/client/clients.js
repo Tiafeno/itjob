@@ -199,7 +199,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         init: '&init'
       },
       link: function (scope, element, attrs) {
-
       },
       controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
         $scope.status = false;
@@ -216,7 +215,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 $scope.userEditor[InputValue] = _.clone($scope.Entreprise[InputValue]);
               }
             });
-
             incTerm.forEach(TermValue => {
               if ($scope.Entreprise.hasOwnProperty(TermValue)) {
                 if (typeof $scope.Entreprise[TermValue].term_id !== 'undefined') {
@@ -226,7 +224,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 }
               }
             });
-
             if (!_.isEmpty($scope.userEditor)) {
               UIkit.modal('#modal-edit-user-overflow').show();
             }
@@ -393,12 +390,18 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.months = clientService.months;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
         $scope.dateEndRange = [];
+        /**
+         * Ajouter une nouvelle expérience
+         */
         $scope.addNewExperience = () => {
           $scope.mode = 0;
           $scope.Exp.position_currently_works = true;
           UIkit.modal('#modal-add-experience-overflow').show();
         };
-        // Modifier une expérience
+        /**
+         * Modifier une expérience
+         * @param {string} positionHeld 
+         */
         $scope.editExperience = (positionHeld) => {
           $scope.mode = 1;
           let experience = _.find($scope.Candidate.experiences, experience => experience.exp_positionHeld == positionHeld);
@@ -425,7 +428,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           };
           UIkit.modal('#modal-add-experience-overflow').show();
         };
-        // Envoyer le formulaire d'ajout
+        /**
+         * Envoyer le formulaire d'ajout
+         * @param {bool} isValid 
+         */
         $scope.submitForm = (isValid) => {
           if (!isValid) return;
           let place = $scope.Exp.place.split(',');
@@ -447,7 +453,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               } else {
                 exp.position_currently_works = true;
               }
-
               return experience;
             });
           } else {
@@ -456,8 +461,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               return exp.exp_positionHeld === $scope.Exp.position;
             });
           }
-
-
           Experiences.push({
             exp_positionHeld: $scope.Exp.position,
             exp_company: $scope.Exp.company,
@@ -467,9 +470,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             exp_dateEnd: dateEnd,
           });
           // Mettre à jour l'expérience
-          console.log(Experiences);
-          //self.updateExperience(Experiences);
+          self.updateExperience(Experiences);
         };
+        /**
+         * Cette fonction permet de mettre à jours les expériences
+         * @param {object} Experiences 
+         */
         self.updateExperience = (Experiences) => {
           const subForm = new FormData();
           subForm.append('action', 'update_experiences');
@@ -500,7 +506,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.eform.$setUntouched();
         });
         $scope.$watch('Exp', v => {
-          console.log(v);
           if (v == undefined || v.dateBegin == undefined) return;
           if (!_.isUndefined(v.dateBegin.year)) {
             let year = v.dateBegin.year;
@@ -534,7 +539,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.Candidate = {};
       $scope.offerLists = [];
       $scope.countOffer = 0;
-
       // Récuperer les données du client
       $scope.Initialize = () => {
         console.log('Initialize');
