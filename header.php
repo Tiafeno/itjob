@@ -154,8 +154,10 @@
     }
 
     tags-input .tags {
-      border: 1px solid rgba(0, 0, 0, 0.1) !important;
-      box-shadow: none !important;
+      box-shadow: 0px 0px 0px 0 #d3d3d3 inset;
+    }
+    tags-input.ng-invalid .tags {
+      box-shadow: 0 0 6px 0px rgba(255,0,0,.6);
     }
     tags-input .tags .tag-item {
       background: #18c5a9 !important;
