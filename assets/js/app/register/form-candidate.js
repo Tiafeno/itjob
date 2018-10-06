@@ -315,20 +315,18 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
              */
             $rootScope.next = (state) => {
               if (typeof $rootScope.formData.featuredImage === 'undefined') {
-                swal("Votre profil a plus de chances d'être sélectionner si vous mettez une Photo d’identité.", {
-                  buttons: {
-                    cancel: "Plus tard",
-                    defeat: true,
-                  },
-                })
-                  .then((value) => {
-                    switch (value) {
-                      case "defeat":
-                        break;
-                      default:
-                        $state.go(state);
-                    }
-                  });
+                alertify
+                  .okBtn("Oui")
+                  .cancelBtn("Plus tard")
+                  .confirm("Votre profil a plus de chances d'être sélectionner si vous mettez une Photo d’identité.",
+                    function (ev) {
+                      // Oui
+                      ev.preventDefault();
+                    }, function (ev) {
+                      // Plus tard
+                      ev.preventDefault();
+                      $state.go(state);
+                    });
               } else {
                 $state.go(state);
               }

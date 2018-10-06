@@ -120,6 +120,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       wp_enqueue_style( 'b-datepicker-3' );
       wp_enqueue_style( 'sweetalert' );
+      wp_enqueue_style( 'alertify' );
       wp_enqueue_style( 'bootstrap-tagsinput' );
       wp_enqueue_style( 'ng-tags-bootstrap' );
       wp_enqueue_script( 'form-candidate', get_template_directory_uri() . '/assets/js/app/register/form-candidate.js', [
@@ -131,10 +132,11 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         'ngFileUpload',
         'b-datepicker',
         'daterangepicker',
-        'sweetalert',
         'bootstrap-tagsinput',
         'ng-tags',
-        'typeahead'
+        'typeahead',
+        'alertify',
+        'sweetalert'
       ], $itJob->version, true );
 
       // Verifier si l'ajout du CV consiste à postuler sur une offre
