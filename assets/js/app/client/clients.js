@@ -346,6 +346,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.offerEditor = {};
         $scope.loadingCandidats = false;
         $scope.postuledCandidats = [];
+
+        /**
+         * Ouvrire une boite de dialoge pour modifier une offre
+         * @param {int} offerId 
+         */
         $scope.openEditor = (offerId) => {
           let offer = _.findWhere($scope.Offers, {
             ID: parseInt(offerId)
@@ -367,6 +372,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             }
           });
         };
+
+        /**
+         * Modifier une offre
+         * @param {int} offerId 
+         */
         $scope.editOffer = (offerId) => {
           let offerForm = new FormData();
           let formObject = Object.keys($scope.offerEditor);
@@ -383,15 +393,18 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               $scope.init();
             });
         };
+
+        /**
+         * Afficher les candidates qui ont postulee 
+         * @param {int} offer_id 
+         */
         $scope.viewApply = (offer_id) => {
           $scope.loadingCandidats = true;
           let offer = _.find($scope.Offers, (item) => item.ID === offer_id);
           if (!offer.my_offer || offer.count_candidat_apply <= 0) return;
 
           UIkit.modal('#modal-view-candidat').show();
-          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {
-              cache: false
-            })
+          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {cache: false})
             .then(resp => {
               $scope.postuledCandidats = resp.data;
               $scope.loadingCandidats = false;
@@ -557,24 +570,81 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       scope: {
         Candidate: "=candidate",
       },
-      controller: ['$scope', function ($scope) {
-        $scope.mode = null; // 0: new, 1:update
+      controller: ['$scope', '$http', function ($scope, $http) {
+        // 0: Nouvelle formation, 
+        // 1: Modifier la formation, 
+        // null: Pas d'action
+        $scope.mode = null; 
+        // Cette variable contient les nouvelles informations a modifier ou ajouter
         $scope.Train = {};
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
         this.$onInit = () => {};
 
+        /**
+         * Ajouter une nouvelle formation
+         */
         $scope.newTraining = () => {
           $scope.mode = 0;
           UIkit.modal('#modal-add-training-overflow').show();
         };
 
-        $scope.editTraining = () => {
-
+        /**
+         * Modifier la formation
+         * @param {string} establishment
+         */
+        $scope.editTraining = (establishment) => {
+          
         };
 
+        /**
+         * Envoyer le formulaire pour mettre a jour les formations\
+         * @param {bool} isValid 
+         */
         $scope.submitForm = (isValid) => {
           if (!isValid || _.isNull($scope.mode)) return;
+          let Trainings = _.clone($scope.Candidate.trainings);
+          switch ($scope.mode) {
+            case 0:
+              // Nouvelle formation
+              Trainings.push($scope.Train);
+              break;
+            case 1:
+              // Modifier une formation
+              // TODO: Ajouter un code pour modifier une formation
+              return;
+              break;
+            default:
+              console.log("Une erreur s'est produite dans le formulaire");
+              return false;
+          }
+          $scope.updateTraining(Trainings);
           $scope.mode = null
+        };
+
+        /**
+         * Mettre a jour les formations ajouter ou modifier dans l'OC
+         * @param {object} trainings
+         */
+        $scope.updateTraining = (trainings) => {
+          const subForm = new FormData();
+          subForm.append('action', 'update_trainings');
+          subForm.append('trainings', JSON.stringify(trainings));
+          $http({
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
+            .then(resp => {
+              let data = resp.data;
+              if (data.success) {
+                UIkit.modal('#modal-add-training-overflow').hide();
+                $scope.Candidate.trainings = data.trainings;
+                $scope.mode = null;
+              }
+            })
         };
 
         UIkit.util.on('#modal-add-training-overflow', 'hide', function (e) {
@@ -585,7 +655,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         });
 
         $scope.$watch('Train', value => {
-          console.log(value);
+          
         }, true);
       }]
     }
@@ -623,6 +693,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           return clientFactory.getCity();
         }
       };
+
+      /**
+       * Mettre a jour les alerts (Ajouter, Supprimer)
+       * Une alerte permet de notifier l'utilisateur par email
+       * Si une publication (offre, annonce, travaille temporaire) comportent ces mots
+       */
       $scope.onSaveAlert = () => {
         if (_.isEmpty($scope.alerts)) return;
         $scope.alertLoading = true;
@@ -646,7 +722,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             }
           });
       };
-      // Trash offert
+      
+      /**
+       * Envoyer une offre dans la corbeille
+       * @param {int} offerId
+       */
       $scope.trashOffer = function (offerId) {
         var offer = _.findWhere(clientService.offers, {
           ID: parseInt(offerId)

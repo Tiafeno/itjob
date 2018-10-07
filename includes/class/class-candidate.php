@@ -95,17 +95,24 @@ final class Candidate extends UserParticular implements \iCandidate {
   }
 
   /**
-   * @return bool
+   * Verifier si le post est un candida (CV) valide ou pas
+   * @return {} bool
    */
   public function is_candidate() {
     return $this->postType === 'candidate';
   }
 
+  /**
+   * Verifier si le CVest visible dans le site ou pas
+   */
   public function is_activated() {
     $activation = get_field('activated', $this->getId());
     return (bool)$activation;
   }
 
+  /**
+   * Verifier si le CV est publier (valider) ou autres
+   */
   public function is_publish() {
     $post_status = ['pending', 'draft', 'private', 'trash'];
     return !in_array($this->postType, $post_status) ? 1 : 0;

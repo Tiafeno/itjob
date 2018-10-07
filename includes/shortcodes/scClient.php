@@ -37,8 +37,9 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_update_profil', [ &$this, 'update_profil' ] );
         add_action( 'wp_ajax_update_alert_filter', [ &$this, 'update_alert_filter' ] );
         add_action( 'wp_ajax_get_postuled_candidate', [ &$this, 'get_postuled_candidate' ] );
-        add_action( 'wp_ajax_update_experiences', [ &$this, 'update_experiences' ] );
         add_action( 'wp_ajax_update-user-password', [ &$this, 'change_user_password' ] );
+        add_action( 'wp_ajax_update_experiences', [ &$this, 'update_experiences' ] );
+        add_action( 'wp_ajax_update_trainings', [ &$this, 'update_trainings' ] );
       }
 
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
@@ -84,46 +85,34 @@ if ( ! class_exists( 'scClient' ) ) :
       $client       = get_userdata( $this->User->ID );
       $client_roles = $client->roles;
       try {
-
         do_action( 'get_notice' );
-
         $wp_localize_script_args = [
           'Helper' => [
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
             'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
           ]
         ];
-
+        define('OC_URL', get_template_directory_uri() . '/assets/js/app/client');
         // Load company template
         if ( in_array( 'company', $client_roles, true ) ) {
-          wp_enqueue_script('app-company', get_template_directory_uri() . '/assets/js/app/client/configs-company.js', [
-            'espace-client'
-          ], $itJob->version, true);
-          // Template recruteur ici ...
+          wp_enqueue_script('app-company', OC_URL . '/configs-company.js', ['espace-client'], $itJob->version, true);
           $wp_localize_script_args['Helper']['add_offer_url'] = get_permalink( (int) ADD_OFFER_PAGE );
           $wp_localize_script_args['client_type'] = 'company';
-          // Script localize for company customer area
           wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
-
           return $Engine->render( '@SC/client-company.html.twig', [
             'Helper' => [
               'template_url' => get_template_directory_uri()
             ]
           ] );
         }
-
-        // Load candidate template
+        
         if ( in_array( 'candidate', $client_roles, true ) ) {
-          wp_enqueue_script('app-candidate', get_template_directory_uri() . '/assets/js/app/client/configs-candidate.js', [
-            'espace-client'
-          ], $itJob->version, true);
-
+          // Load candidate template
+          wp_enqueue_script('app-candidate', OC_URL . '/configs-candidate.js', ['espace-client'], $itJob->version, true);
           $add_cv_id = \includes\object\jobServices::page_exists('Ajouter un CV');
           $wp_localize_script_args['Helper']['add_cv'] = get_permalink( (int) $add_cv_id );
           $wp_localize_script_args['client_type'] = 'candidate';
           wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
-
-          // Template candidat ici ...
           return $Engine->render( '@SC/client-candidate.html.twig', [
             'display_name' => $this->Candidate->get_display_name(),
             'Helper' => [
@@ -224,8 +213,8 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
-     Modifier le mot de passe de l'utilisateur
-     @route admin-ajax.php?action=update-user-password
+     * Modifier le mot de passe de l'utilisateur
+     * @route admin-ajax.php?action=update-user-password
      */
     public function change_user_password() {
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
@@ -243,8 +232,8 @@ if ( ! class_exists( 'scClient' ) ) :
 
     }
     /**
-     Ajouter une offre dans la corbeille
-     @route admin-ajax.php?action=trash_offer&pId=<int>
+     * Ajouter une offre dans la corbeille
+     * @route admin-ajax.php?action=trash_offer&pId=<int>
      */
     public function client_trash_offer() {
       global $wpdb;
@@ -303,10 +292,8 @@ if ( ! class_exists( 'scClient' ) ) :
         $alerts = array_map( function ( $std ) {
           return $std->text;
         }, $alerts );
-        $data   = update_field( 'itjob_company_alerts', implode( ',', $alerts ), $this->Company->getId() );
-        if ( $data ) {
-          wp_send_json( [ 'success' => true ] );
-        }
+        update_field( 'itjob_company_alerts', implode( ',', $alerts ), $this->Company->getId() );
+        wp_send_json( [ 'success' => true ] );
       } else {
         $notification = get_field('itjob_cv_notifEmploi', $this->Candidate->getId());
         // Candidate
@@ -318,14 +305,14 @@ if ( ! class_exists( 'scClient' ) ) :
           'branch_activity' => $notification['branch_activity'],
           'job_sought'      => implode( ',', $alerts )
         ];
-        $data   = update_field( 'itjob_cv_notifEmploi', $values, $this->Candidate->getId() );
-        wp_send_json( [ 'success' => $data ] );
+        update_field( 'itjob_cv_notifEmploi', $values, $this->Candidate->getId() );
+        wp_send_json( [ 'success' => true ] );
       }
     }
 
     /**
      * Function ajax
-     * @route admin-ajax.php?action=update_experiences&experience=<json>
+     * @route admin-ajax.php?action=update_experiences&experiences=<json>
      */
     public function update_experiences() {
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
@@ -338,8 +325,8 @@ if ( ! class_exists( 'scClient' ) ) :
       $experiences = json_decode($experiences);
       foreach ( $experiences as $experience ) {
         $new_experiences[] = [
-          'exp_dateBegin'    => $experience->exp_dateBegin, // Formated value; ERROR
-          'exp_dateEnd'      => $experience->exp_dateEnd, // Frmated value; ERROR
+          'exp_dateBegin'    => $experience->exp_dateBegin,
+          'exp_dateEnd'      => $experience->exp_dateEnd,
           'exp_country'      => $experience->exp_country,
           'exp_city'         => $experience->exp_city,
           'exp_company'      => $experience->exp_company,
@@ -350,6 +337,34 @@ if ( ! class_exists( 'scClient' ) ) :
       update_field( 'itjob_cv_experiences', $new_experiences, $this->Candidate->getId() );
       $experiences = get_field('itjob_cv_experiences', $this->Candidate->getId());
       wp_send_json(['success' => true, 'experiences' => $experiences]);
+    }
+
+    /**
+     * Fonction ajax - Mettre a jour les formations
+     * @route admin-ajax.php?action=update_trainings&trainings=<json>
+     */
+    public function update_trainings() {
+      if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
+        wp_send_json( false );
+      }
+      $new_trainings = [];
+      $trainings = Http\Request::getValue('trainings', null);
+      if (is_null($trainings) || empty($trainings))
+        wp_send_json(['success' => false]);
+      $trainings = json_decode($trainings);
+      foreach ( $trainings as $training ) {
+        $new_trainings[] = [
+          'training_dateBegin'    => $training->training_dateBegin,
+          'training_dateEnd'      => $training->training_dateEnd,
+          'training_diploma'      => $training->training_diploma,
+          'training_city'         => $training->training_city,
+          'training_country'      => $training->training_country,
+          'training_establishment'      => $experience->training_establishment
+        ];
+      }
+      update_field( 'itjob_cv_trainings', $new_trainings, $this->Candidate->getId() );
+      $trainings = get_field('itjob_cv_trainings', $this->Candidate->getId());
+      wp_send_json(['success' => true, 'trainings' => $trainings]);
     }
 
     /**

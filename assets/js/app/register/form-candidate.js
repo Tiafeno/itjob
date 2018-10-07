@@ -489,8 +489,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
 
     $rootScope.formData.trainings = [{
       id: training_id,
-      start: '08/08/2018',
-      end: '08/13/2018'
+      start: 2018,
+      end: 2018
     }];
       
     // Ajouter une formation
@@ -498,8 +498,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       training_id += 1;
       $rootScope.formData.trainings.push({
         id: training_id,
-        start: '',
-        end: ''
+        start: 0,
+        end: 0
       });
       $rootScope.initDatePicker();
     };
