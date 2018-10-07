@@ -516,6 +516,7 @@ if ( ! class_exists( 'itJob' ) ) {
           'jquery',
           'bootstrap'
         ], '1.12.4', true );
+      wp_register_script('moment-locales', VENDOR_URL . '/moment/min/moment-with-locales.min.js', [], '2.19.1', true);
       wp_register_script( 'adminca', get_template_directory_uri() . '/assets/adminca/adminca.js', [
         'bootstrap',
         'jq-slimscroll',

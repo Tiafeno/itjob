@@ -180,128 +180,159 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
 
             // Verifier les valeurs des champs (Formations, experiences & langue)
             let training = !$rootScope.formData.hasOwnProperty('trainings');
-            if (training) return $q.reject({redirect: 'form.career'});
+            if (training) return $q.reject({ redirect: 'form.career' });
             for (let item of $rootScope.formData.trainings) {
               training = !item.hasOwnProperty('city') ||
                 !item.hasOwnProperty('country') ||
                 !item.hasOwnProperty('diploma') ||
                 !item.hasOwnProperty('establishment');
-              if (training) return $q.reject({redirect: 'form.career'});
+              if (training) return $q.reject({ redirect: 'form.career' });
             }
             // Verifier les valeurs du champs experiences s'il sont bien definie
             let experiences = !$rootScope.formData.hasOwnProperty('experiences');
-            if (experiences) return $q.reject({redirect: 'form.career'});
+            if (experiences) return $q.reject({ redirect: 'form.career' });
             for (let item of $rootScope.formData.experiences) {
               experiences = !item.hasOwnProperty('city') ||
                 !item.hasOwnProperty('country') ||
                 !item.hasOwnProperty('company') ||
                 !item.hasOwnProperty('positionHeld');
-              if (experiences) return $q.reject({redirect: 'form.career'});
+              if (experiences) return $q.reject({ redirect: 'form.career' });
             }
 
             let languages = !$rootScope.formData.hasOwnProperty('languages');
-            if (languages) return $q.reject({redirect: 'form.career'});
+            if (languages) return $q.reject({ redirect: 'form.career' });
 
           }]
         },
-        controller: ['$rootScope', '$scope', 'initScripts', 'Services', function ($rootScope, $scope, initScripts, Services) {
-          this.$onInit = () => {
-            window.setTimeout(() => {
-              jQuery('.tagsinput').tagsinput({
-                tagClass: 'label label-success'
-              });
-              initScripts.__init__();
-            }, 600);
-          };
+        controller: ['$rootScope', '$scope', 'initScripts', 'Services',
+          function ($rootScope, $scope, initScripts, Services) {
+            this.$onInit = () => {
+              window.setTimeout(() => {
+                jQuery('.tagsinput').tagsinput({
+                  tagClass: 'label label-success'
+                });
+                initScripts.__init__();
+              }, 600);
+            };
 
-          $scope.queryJobs = function ($query) {
-            return Services.getJobs($query);
-          };
-        }]
+            $scope.queryJobs = function ($query) {
+              return Services.getJobs($query);
+            };
+          }]
       })
 
       // Default route (/form/informations)
       .state('form.informations', {
         url: '/informations',
         templateUrl: itOptions.partials_url + '/candidate/informations.html',
-        controller: function ($rootScope, $http, $window, initScripts) {
+        controller: ['$rootScope', '$http', '$state', 'initScripts',
+          function ($rootScope, $http, $state, initScripts) {
 
-          const fileFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
-          /**
-           * Cette fonction permet de redimensionner une image
-           *
-           * @param imgObj - the image element
-           * @param newWidth - the new width
-           * @param newHeight - the new height
-           * @param startX - the x point we start taking pixels
-           * @param startY - the y point we start taking pixels
-           * @param ratio - the ratio
-           * @returns {string}
-           */
-          const drawImage = (imgObj, newWidth, newHeight, startX, startY, ratio) => {
-            //set up canvas for thumbnail
-            const tnCanvas = document.createElement('canvas');
-            const tnCanvasContext = tnCanvas.getContext('2d');
-            tnCanvas.width = newWidth;
-            tnCanvas.height = newHeight;
+            const fileFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
+            /**
+             * Cette fonction permet de redimensionner une image
+             *
+             * @param imgObj - the image element
+             * @param newWidth - the new width
+             * @param newHeight - the new height
+             * @param startX - the x point we start taking pixels
+             * @param startY - the y point we start taking pixels
+             * @param ratio - the ratio
+             * @returns {string}
+             */
+            const drawImage = (imgObj, newWidth, newHeight, startX, startY, ratio) => {
+              //set up canvas for thumbnail
+              const tnCanvas = document.createElement('canvas');
+              const tnCanvasContext = tnCanvas.getContext('2d');
+              tnCanvas.width = newWidth;
+              tnCanvas.height = newHeight;
 
-            /* use the sourceCanvas to duplicate the entire image. This step was crucial for iOS4 and under devices. Follow the link at the end of this post to see what happens when you don’t do this */
-            const bufferCanvas = document.createElement('canvas');
-            const bufferContext = bufferCanvas.getContext('2d');
-            bufferCanvas.width = imgObj.width;
-            bufferCanvas.height = imgObj.height;
-            bufferContext.drawImage(imgObj, 0, 0);
+              /* use the sourceCanvas to duplicate the entire image. This step was crucial for iOS4 and under devices. Follow the link at the end of this post to see what happens when you don’t do this */
+              const bufferCanvas = document.createElement('canvas');
+              const bufferContext = bufferCanvas.getContext('2d');
+              bufferCanvas.width = imgObj.width;
+              bufferCanvas.height = imgObj.height;
+              bufferContext.drawImage(imgObj, 0, 0);
 
-            /* now we use the drawImage method to take the pixels from our bufferCanvas and draw them into our thumbnail canvas */
-            tnCanvasContext.drawImage(bufferCanvas, startX, startY, newWidth * ratio, newHeight * ratio, 0, 0, newWidth, newHeight);
-            return tnCanvas.toDataURL();
-          };
+              /* now we use the drawImage method to take the pixels from our bufferCanvas and draw them into our thumbnail canvas */
+              tnCanvasContext.drawImage(bufferCanvas, startX, startY, newWidth * ratio, newHeight * ratio, 0, 0, newWidth, newHeight);
+              return tnCanvas.toDataURL();
+            };
 
-          /**
-           * Récuperer les valeurs dispensable pour une image pré-upload
-           * @param {File} file
-           * @returns {Promise<any>}
-           */
-          $rootScope.imgPromise = (file) => {
-            return new Promise((resolve, reject) => {
-              const byteLimite = 2097152; // 2Mb
-              if (file && file.size <= byteLimite) {
-                let fileReader = new FileReader();
-                fileReader.onload = (Event) => {
-                  const img = new Image();
-                  img.src = Event.target.result;
-                  img.onload = () => {
-                    const ms = Math.min(img.width, img.height);
-                    const mesure = (ms < 600) ? ms : 600;
-                    const imgCrop = drawImage(img, mesure, mesure, 0, 0, 1);
-                    resolve({
-                      src: imgCrop
-                    });
+            /**
+             * Récuperer les valeurs dispensable pour une image pré-upload
+             * @param {File} file
+             * @returns {Promise<any>}
+             */
+            $rootScope.imgPromise = (file) => {
+              return new Promise((resolve, reject) => {
+                const byteLimite = 2097152; // 2Mb
+                if (file && file.size <= byteLimite) {
+                  let fileReader = new FileReader();
+                  fileReader.onload = (Event) => {
+                    const img = new Image();
+                    img.src = Event.target.result;
+                    img.onload = () => {
+                      const ms = Math.min(img.width, img.height);
+                      const mesure = (ms < 600) ? ms : 600;
+                      const imgCrop = drawImage(img, mesure, mesure, 0, 0, 1);
+                      resolve({
+                        src: imgCrop
+                      });
+                    };
                   };
-                };
-                fileReader.readAsDataURL(file);
-              } else {
-                reject('Le fichier sélectionné est trop volumineux. La taille maximale est 2Mo.');
-              }
-            });
-          };
-
-          this.$onInit = () => {
-            initScripts.__init__();
-          };
-          //$rootScope.formData.jobSougths = Services.getTaxonomy('job_sought');
-          $rootScope.queryJobs = function ($query, taxonomy) {
-            return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
-              cache: true
-            })
-              .then(function (response) {
-                const jobs = response.data;
-                return jobs.filter(function (job) {
-                  return job.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
-                });
+                  fileReader.readAsDataURL(file);
+                } else {
+                  reject('Le fichier sélectionné est trop volumineux. La taille maximale est 2Mo.');
+                }
               });
-          };
-        }
+            };
+
+            this.$onInit = () => {
+              initScripts.__init__();
+            };
+
+            /**
+             * Recuperer les emplois et les filtres
+             * @param {string} $query 
+             * @param {string} taxonomy 
+             */
+            $rootScope.queryJobs = function ($query, taxonomy) {
+              return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
+                cache: true
+              })
+                .then(function (response) {
+                  const jobs = response.data;
+                  return jobs.filter(function (job) {
+                    return job.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+                  });
+                });
+            };
+
+            /**
+             * Page suivante
+             * @param {path} state 
+             */
+            $rootScope.next = (state) => {
+              if (typeof $rootScope.formData.featuredImage === 'undefined') {
+                alertify
+                  .okBtn("Oui")
+                  .cancelBtn("Plus tard")
+                  .confirm("Votre profil a plus de chances d'être sélectionner si vous mettez une Photo d’identité.",
+                    function (ev) {
+                      // Oui
+                      ev.preventDefault();
+                    }, function (ev) {
+                      // Plus tard
+                      ev.preventDefault();
+                      $state.go(state);
+                    });
+              } else {
+                $state.go(state);
+              }
+            };
+
+          }]
       });
 
     $urlRouterProvider.otherwise('/form/informations');
@@ -390,10 +421,10 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       },
       getStatus: function () {
         const status = [
-        {
-          _id: 0,
-          label: 'Je cherche un emploi'
-        },
+          {
+            _id: 0,
+            label: 'Je cherche un emploi'
+          },
           {
             _id: 1,
             label: 'Je souhaite entretenir mon réseau'
@@ -409,7 +440,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
         return $http({
           url: itOptions.ajax_url,
           method: "POST",
-          headers: {'Content-Type': undefined},
+          headers: { 'Content-Type': undefined },
           data: formData
         });
       },
@@ -520,7 +551,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       if ($rootScope.f) {
         $rootScope.f.upload = Upload.upload({
           url: itOptions.ajax_url,
-          data: {file: $rootScope.f, action: 'ajx_upload_media'}
+          data: { file: $rootScope.f, action: 'ajx_upload_media' }
         });
 
         $rootScope.f.upload
@@ -576,20 +607,20 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     }, true);
 
   }).run(function ($state, $rootScope) {
-  $state.defaultErrorHandler(function (error) {
-    // This is a naive example of how to silence the default error handler.
-    if (error.detail !== undefined) {
-      $state.go(error.detail.redirect);
-    }
+    $state.defaultErrorHandler(function (error) {
+      // This is a naive example of how to silence the default error handler.
+      if (error.detail !== undefined) {
+        $state.go(error.detail.redirect);
+      }
 
-  });
+    });
 
-  $rootScope.$on('$stateChangeStart', function (evt, toState, toParams, fromState, fromParams) {
-    //alert("$stateChangeStart " + fromState.name + JSON.stringify(fromParams) + " -> " + toState.name + JSON.stringify(toParams));
+    $rootScope.$on('$stateChangeStart', function (evt, toState, toParams, fromState, fromParams) {
+      //alert("$stateChangeStart " + fromState.name + JSON.stringify(fromParams) + " -> " + toState.name + JSON.stringify(toParams));
+    });
+    /* if ( ! $rootScope.cvForm.$invalid) {
+      return $q.resolve(true);
+    } else {
+      return $q.reject({redirect: 'form.informations'});
+    } */
   });
-  /* if ( ! $rootScope.cvForm.$invalid) {
-    return $q.resolve(true);
-  } else {
-    return $q.reject({redirect: 'form.informations'});
-  } */
-});

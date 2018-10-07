@@ -28,7 +28,19 @@
                       title="Type de contrat" required>
                 <option value="cdd">CDD</option>
                 <option value="cdi">CDI</option>
-              </select> 
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group mb-2 row ">
+          <div class="col-sm-12">
+            <label class="col-form-label ">Secteur d'activité <span style="color: red">*</span> [[offerEditor.branch_activity]]</label>
+            <div class="form-group">
+              <select class="form-control" name="branch_activity" ng-model="offerEditor.branch_activity"
+                      title="Secteur d'activité" required>
+                <option ng-repeat="ab in branchActivity" ng-value="ab.term_id">[[ab.name]]</option>
+              </select>
             </div>
           </div>
         </div>
@@ -59,19 +71,6 @@
             <div class="form-group">
               <select class="form-control input-mode country" name="country" ng-model="offerEditor.country" required>
                 <option value="[[city.term_id]]" ng-value="offerEditor.country" ng-repeat="city in Citys">([[city.postal_code]]) [[city.name]]</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="form-group mb-2 row ">
-          <div class="col-sm-12">
-            <label class="col-form-label ">Secteur d'activité <span style="color: red">*</span> [[offerEditor.branch_activity]]</label>
-            <div class="form-group">
-              <select class="form-control" name="branch_activity" ng-model="offerEditor.branch_activity"
-                      title="Secteur d'activité" required>
-                <option ng-repeat="ab in branchActivity" ng-value="ab.term_id">[[ab.name]]</option>
               </select>
             </div>
           </div>

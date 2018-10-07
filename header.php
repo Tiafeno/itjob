@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2018 Tiafeno Finel
+ * Copyright (c) 2018 Falicrea
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files, to deal
@@ -19,6 +19,8 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
+ * Contact: contact@falicrea.com
  */
 ?>
 <!DOCTYPE html>
@@ -151,9 +153,8 @@
       margin-top: 0px !important;
     }
 
-    tags-input .tags {
-      border: 1px solid rgba(0, 0, 0, 0.1) !important;
-      box-shadow: none !important;
+    tags-input.ng-invalid .tags {
+      box-shadow: 0 0 6px 0px rgba(255,0,0,.6);
     }
     tags-input .tags .tag-item {
       background: #18c5a9 !important;
@@ -222,6 +223,8 @@
                   <?php
                   if ( ! is_user_logged_in() ) {
                     $page_login_id    = LOGIN_PAGE ? (int) LOGIN_PAGE : 0;
+                    $oc_id = includes\object\jobServices::page_exists( 'Espace client' );
+                    $oc_url = get_the_permalink($oc_id);
                     ?>
                     <li class="dropdown dropdown-user">
                       <a class="nav-link dropdown-toggle link" data-toggle="dropdown">
@@ -234,13 +237,13 @@
                         <div class="dropdown-arrow"></div>
                         <div class="dropdown-header">
                           <div class="admin-menu-features">
-                            <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/candidate') ?>">
+                            <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/candidate?redir='.$oc_url) ?>">
 <!--                              <i class="fa fa-user-tie"></i>-->
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-solid.svg" />
                               <span class="text-white">PARTICULIERS</span>
                             </a>
 
-                            <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/company') ?>">
+                            <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/company?redir='.$oc_url) ?>">
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-tie-solid.svg" />
                               <span class="text-white">PROFESIONNELS</span>
                             </a>
@@ -259,13 +262,13 @@
                     <li class="dropdown dropdown-user">
                       <a class="nav-link dropdown-toggle link" data-toggle="dropdown">
                         <span class="mr-2 text-uppercase p-relative" style="bottom: 3px;">
-                          Espace Client
+                          Mon compte
                         </span>
                         <i class="ti-user uk-text-large"></i>
                       </a>
                       <div class="dropdown-menu dropdown-arrow dropdown-menu-right admin-dropdown-menu">
                         <div class="dropdown-arrow"></div>
-                        <a class="dropdown-item" href="<?= $espace_client_link ?>"><i class="ti-layout"></i> Mon compte</a>
+                        <a class="dropdown-item" href="<?= $espace_client_link ?>"><i class="ti-layout"></i>Espace Client</a>
                         <a class="dropdown-item" href="<?= wp_logout_url( home_url( '/' ) ) ?>"><i class="ti-shift-left"></i> Déconnecter</a>
                       </div>
                     </li>
@@ -282,4 +285,3 @@
       </header>
     </div>
   </div>
-

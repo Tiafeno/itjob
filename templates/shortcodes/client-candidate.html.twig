@@ -2,12 +2,30 @@
   .form-group .form-control {
     font-family: 'Montserrat', sans-serif;
     font-size: 13px;
+    border-color: rgba(0, 0, 0, 0.74);
   }
+
+  .ng-dirty.ng-invalid,
+  .ng-touched.ng-invalid,
+  form.ng-submitted .ng-pristine.ng-invalid{
+    border-color: #f75a5f;
+  }
+
   .uk-modal-title {
     font-family: 'Montserrat', sans-serif;
+    font-size: 17px;
+    font-weight: 500;
   }
   .col-form-label {
     font-size: 13px;
+  }
+  .ibox .ibox-head {
+    background-color: #34495f;
+    color: aliceblue;
+  }
+  experiences .dropdown-menu .dropdown-item, .dropdown-menu > li > a,
+  trainings .dropdown-menu .dropdown-item, .dropdown-menu > li > a {
+    color: #34495f !important;
   }
 
 </style>
@@ -15,116 +33,7 @@
 
 </script>
 <div class="page-header mt-5" ng-app="clientApp">
-  <div class="ibox flex-1" ng-controller="clientCtrl">
-    <div class="row">
-      <div class="col-lg-4">
-        <div class="card text-center centered mb-4" style="max-width:320px;">
-          <div class="card-body">
-            <div class="card-avatar mt-3 mb-4">
-              <img class="img-circle" src="{{ client.avatar[0] }}" alt="image">
-            </div>
-            <h4 class="card-title mb-1">{{ display_name }}</h4>
-            <div class="text-pink"><i class="ti-location-pin mr-2"></i>{{ client.address|capitalize }}</div>
-            <p class="mt-4 mb-4">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            <div class="d-flex align-items-center  mb-5">
-              <div class="text-center m-auto">
-                <h2 class="text-pink m-0">
-                  {% if client.postuled %}
-                    {{ client.postuled|length }}
-                  {% else %}
-                    0
-                  {% endif %}
-                </h2>
-                <div class="text-muted text-uppercase">postulé</div>
-              </div>
-            </div>
-            <div class="d-flex justify-content-around align-items-center">
-              <button class="btn btn-secondary btn-rounded">
-                <span class="btn-icon"><i class="la la-commenting"></i>Notification</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-8">
-        <div class="mt-4">
-          <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
-            <li class="nav-item">
-              <a class="nav-link active" href="#profil" data-toggle="tab">
-                Profil
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#cv" data-toggle="tab">
-                Mon CV
-              </a>
-            </li>
-          </ul>
-
-          <div class="tab-content" ng-show="loading">
-            <div class="d-block mt-5 mb-5">
-              <div class="row">
-                <div class="col-md-4 m-auto">
-                  <div class="text-center">
-                    <img src="{{ Helper['template_url'] }}/img/loading.gif" width="45" />
-                    <p>Chargement de contenue ...</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tab-content" ng-show="!loading">
-            {# Profil utilisateur #}
-            <div class="tab-pane fade active show" id="profil">
-              <div class="page-content">
-                <div class="ibox-body">
-                  <div class="row">
-                    <div class="col-sm-6">
-
-                      <general-information-candidate
-                        abranchs="asyncTerms('branch_activity')"
-                        regions="asyncTerms('region')"
-                        all-city="asyncTerms('city')"
-                        init="Initialize()"
-                        candidate="Candidate">
-                      </general-information-candidate>
-
-                    </div>
-
-                    <div class="col-sm-6">
-
-                      <biography></biography>
-
-                      <alerts on-save="onSaveAlert()" alerts="alerts" alert-loading="alertLoading"></alerts>
-
-                    </div>
-
-
-                  </div>
-
-
-                </div>
-              </div>
-            </div>
-            {# .end Profil utilisateur#}
-
-            {# Les offres #}
-            <div class="tab-pane fade text-center" id="cv">
-              <div class="page-content">
-                <div class="ibox-body">
-
-
-                </div>
-              </div>
-            </div>
-            {# .end offres#}
-
-          </div>
-        </div>
-
-
-      </div>
-    </div>
-
+  <div class="ibox flex-1" >
+    <div ng-view></div>
   </div>
 </div>

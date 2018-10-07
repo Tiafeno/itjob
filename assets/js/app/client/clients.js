@@ -1,11 +1,8 @@
-angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'])
+const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize'])
   .value('froalaConfig', {
     toolbarInline: false,
     quickInsertTags: null,
     toolbarButtons: ['bold', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
-  })
-  .config(function ($interpolateProvider) {
-    $interpolateProvider.startSymbol('[[').endSymbol(']]');
   })
   .factory('clientFactory', ['$http', '$q', function ($http, $q) {
     return {
@@ -29,6 +26,12 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
   }])
   .service('clientService', ['$http', function ($http) {
     this.offers = _.clone(itOptions.offers);
+    this.months = [
+      'janvier', 'février', 'mars',
+      'avril', 'mai', 'juin',
+      'juillet', 'août', 'septembre',
+      'octobre', 'novembre', 'décembre'
+    ];
     this.clientArea = () => {
       return $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
         cache: false
@@ -53,7 +56,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       }).label;
     }
   }])
-  .filter('Status', [function() {
+  .filter('Status', [function () {
     const postStatus = [
       {
         slug: 'publish',
@@ -69,7 +72,53 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       return _.findWhere(postStatus, {slug: jQuery.trim(inputValue)}).label;
     }
   }])
-  .directive('generalInformationCandidate', [function() {
+  .directive('changePassword', ['$http', function ($http) {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/change-password.html',
+      scope: {},
+      link: function (scope, element, attrs) {
+        jQuery("#changePwdForm").validate({
+          rules: {
+            oldpwd: "required",
+            pwd: "required",
+            confpwd: {
+              equalTo: "#pwd"
+            }
+          },
+          submitHandler: function (form) {
+            const Fm = new FormData();
+            Fm.append('action', 'update-user-password');
+            Fm.append('oldpwd', scope.oldpwd);
+            Fm.append('pwd', scope.pwd);
+            // Submit form validate
+            $http({
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: Fm
+            })
+              .then(resp => {
+                let data = resp.data;
+                // Update password success
+                if (!data.success) return;
+                UIkit.modal('#modal-change-pwd-overflow').hide();
+                location.reload();
+              })
+          }
+        });
+        scope.openEditor = () => {
+          UIkit.modal('#modal-change-pwd-overflow').show();
+        }
+      },
+      controller: ['$scope', function ($scope) {
+
+      }]
+    };
+  }])
+  .directive('generalInformationCandidate', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/general-information-candidate.html',
@@ -80,19 +129,18 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         abranchs: '&',
         init: '&init'
       },
-      controller: ['$scope', '$q', 'clientFactory', function ($scope, $q, clientFactory) {
+      controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
         $scope.candidateEditor = {};
         $scope.loadingEditor = false;
         $scope.status = false;
 
         $scope.openEditor = () => {
           $scope.loadingEditor = true;
-          UIkit.modal('#modal-edit-candidate-overflow').show();
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
             $scope.loadingEditor = false;
-            $scope.Regions        = _.clone(data[0]);
+            $scope.Regions = _.clone(data[0]);
             $scope.branchActivity = _.clone(data[1]);
-            $scope.Citys          = _.clone(data[2]);
+            $scope.Citys = _.clone(data[2]);
             const incInput = ['address', 'birthdayDate'];
             incInput.forEach((InputValue) => {
               if ($scope.Candidate.hasOwnProperty(InputValue)) {
@@ -108,11 +156,35 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         };
 
         $scope.updateCandidateInformation = () => {
-          alert('En construction');
+          $scope.status = "Enregistrement en cours ...";
+          let candidatForm = new FormData();
+          let formObject = Object.keys($scope.candidateEditor);
+          candidatForm.append('action', 'update_profil');
+          candidatForm.append('candidate_id', parseInt($scope.Candidate.ID));
+          formObject.forEach(function (property) {
+            let propertyValue = Reflect.get($scope.candidateEditor, property);
+            candidatForm.set(property, propertyValue);
+          });
+          clientFactory
+            .sendPostForm(candidatForm)
+            .then(resp => {
+              let dat = resp.data;
+              if (dat.success) {
+                $scope.status = 'Votre information a bien été enregistrer avec succès';
+                UIkit.modal('#modal-edit-candidate-overflow').hide();
+                $route.reload();
+              } else {
+                $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
+              }
+            });
         };
 
+        UIkit.util.on('#modal-edit-candidate-overflow', 'hide', function (e) {
+          e.preventDefault();
+          e.target.blur();
+          $scope.status = false;
+        });
       }]
-
     }
   }])
   .directive('generalInformationCompany', [function () {
@@ -127,16 +199,15 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         init: '&init'
       },
       link: function (scope, element, attrs) {
-
       },
-      controller: ['$scope', '$q', 'clientFactory', function ($scope, $q, clientFactory) {
+      controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
         $scope.status = false;
         $scope.userEditor = {};
         $scope.openEditor = () => {
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
-            $scope.Regions        = _.clone(data[0]);
+            $scope.Regions = _.clone(data[0]);
             $scope.branchActivity = _.clone(data[1]);
-            $scope.Citys          = _.clone(data[2]);
+            $scope.Citys = _.clone(data[2]);
             const incInput = ['address', 'greeting', 'name', 'stat', 'nif'];
             const incTerm = ['branch_activity', 'region', 'country'];
             incInput.forEach((InputValue) => {
@@ -144,7 +215,6 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
                 $scope.userEditor[InputValue] = _.clone($scope.Entreprise[InputValue]);
               }
             });
-
             incTerm.forEach(TermValue => {
               if ($scope.Entreprise.hasOwnProperty(TermValue)) {
                 if (typeof $scope.Entreprise[TermValue].term_id !== 'undefined') {
@@ -154,7 +224,6 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
                 }
               }
             });
-
             if (!_.isEmpty($scope.userEditor)) {
               UIkit.modal('#modal-edit-user-overflow').show();
             }
@@ -176,7 +245,8 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
               let dat = resp.data;
               if (dat.success) {
                 $scope.status = 'Votre information a bien été enregistrer avec succès';
-                $scope.init();
+                UIkit.modal('#modal-edit-user-overflow').hide();
+                $route.reload();
               } else {
                 $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
               }
@@ -205,15 +275,38 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         init: '&init'
       },
       link: function (scope, element, attrs) {
+        scope.focusFire = false;
         scope.Helper = itOptions.Helper;
-        jQuery('.input-group.date').datepicker({
-          format: "mm/dd/yyyy",
-          language: "fr",
-          startView: 2,
-          todayBtn: false,
-          keyboardNavigation: true,
-          forceParse: false,
-          autoclose: true
+        angular.element(document).ready(function () {
+          // Load datatable on focus search input
+          jQuery('#key-search').focus(function () {
+            if (scope.focusFire) return;
+            const table = jQuery('#products-table').DataTable({
+              pageLength: 10,
+              fixedHeader: false,
+              responsive: false,
+              "sDom": 'rtip',
+              language: {
+                url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+              }
+            });
+            jQuery('#key-search').on('keyup', () => {
+              table.search(this.value).draw();
+            });
+            scope.focusFire = true;
+          });
+
+          jQuery('.input-group.date').datepicker({
+            format: "mm/dd/yyyy",
+            language: "fr",
+            startView: 2,
+            todayBtn: false,
+            keyboardNavigation: true,
+            forceParse: false,
+            autoclose: true
+          });
+          console.log("Load datatable");
+
         });
       },
       controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
@@ -226,9 +319,9 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
           });
 
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
-            $scope.Regions        = _.clone(data[0]);
+            $scope.Regions = _.clone(data[0]);
             $scope.branchActivity = _.clone(data[1]);
-            $scope.Citys          = _.clone(data[2]);
+            $scope.Citys = _.clone(data[2]);
             $scope.offerEditor = _.mapObject(offer, (val, key) => {
               if (typeof val.term_id !== 'undefined') return val.term_id;
               if (typeof val.label !== 'undefined') return val.value;
@@ -272,7 +365,7 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
       }]
     };
   }])
-  .directive('alerts', [function() {
+  .directive('alerts', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/alert.html',
@@ -281,45 +374,184 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
         alerts: '=',
         alertLoading: '='
       }
-    }
+    };
   }])
-  .directive('biography', [function() {
+  .directive('experiences', ['clientService', function (clientService) {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/biography.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html',
       scope: {
-      }
+        Candidate: "=candidate",
+      },
+      controller: ['$scope', '$http', function ($scope, $http) {
+        const self = this;
+        $scope.mode = null; // 0:new, 1:update
+        $scope.Exp = {};
+        $scope.months = clientService.months;
+        $scope.years = _.range(1959, new Date().getFullYear() + 1);
+        $scope.dateEndRange = [];
+        /**
+         * Ajouter une nouvelle expérience
+         */
+        $scope.addNewExperience = () => {
+          $scope.mode = 0;
+          $scope.Exp.position_currently_works = true;
+          UIkit.modal('#modal-add-experience-overflow').show();
+        };
+        /**
+         * Modifier une expérience
+         * @param {string} positionHeld 
+         */
+        $scope.editExperience = (positionHeld) => {
+          $scope.mode = 1;
+          let experience = _.find($scope.Candidate.experiences, experience => experience.exp_positionHeld == positionHeld);
+          let momentDateBegin = moment(experience.exp_dateBegin, 'MMMM, YYYY', 'fr');
+          let dateEndObj = '';
+          if ( ! _.isEmpty(experience.exp_dateEnd)) {
+            let momentDateEnd = moment(experience.exp_dateEnd, 'MMMM, YYYY', 'fr');
+            dateEndObj = {
+              month: momentDateEnd.format('MMMM'),
+              year: parseInt(momentDateEnd.format('YYYY'))
+            };
+          }
+          $scope.Exp = {
+            position: experience.exp_positionHeld,
+            company: experience.exp_company,
+            place: experience.exp_city + ', ' + experience.exp_country,
+            mission: experience.mission,
+            position_currently_works: _.isEmpty(experience.exp_dateEnd) ? true : false,
+            dateBegin: {
+              month: momentDateBegin.format('MMMM'),
+              year: parseInt(momentDateBegin.format('YYYY'))
+            },
+            dateEnd: dateEndObj
+          };
+          UIkit.modal('#modal-add-experience-overflow').show();
+        };
+        /**
+         * Envoyer le formulaire d'ajout
+         * @param {bool} isValid 
+         */
+        $scope.submitForm = (isValid) => {
+          if (!isValid) return;
+          let place = $scope.Exp.place.split(',');
+          let city = place[0];
+          let country = place[place.length - 1];
+          let beginFormat = $scope.Exp.dateBegin.month + ", " + $scope.Exp.dateBegin.year;
+          let dateBegin = moment(beginFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+          let dateEnd = '';
+          if ( ! $scope.Exp.position_currently_works) {
+            let endFormat = $scope.Exp.dateEnd.month + ", " + $scope.Exp.dateEnd.year;
+            dateEnd = moment(endFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+          }
+          let Experiences = [];
+          if ($scope.mode === 0) { // Nouvelle experience
+            Experiences = _.map($scope.Candidate.experiences, exp => {
+              exp.exp_dateBegin = moment(exp.exp_dateBegin, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+              if ( ! _.isEmpty(exp.exp_dateEnd)) {
+                exp.exp_dateEnd = moment(exp.exp_dateEnd, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+              } else {
+                exp.position_currently_works = true;
+              }
+              return experience;
+            });
+          } else {
+            // Récuperer les experiences sauf celui qu'on est entrain de modifier
+            Experiences = _.reject($scope.Candidate.experiences, exp => {
+              return exp.exp_positionHeld === $scope.Exp.position;
+            });
+          }
+          Experiences.push({
+            exp_positionHeld: $scope.Exp.position,
+            exp_company: $scope.Exp.company,
+            exp_country: jQuery.trim(country),
+            exp_city: jQuery.trim(city),
+            exp_dateBegin: dateBegin,
+            exp_dateEnd: dateEnd,
+          });
+          // Mettre à jour l'expérience
+          self.updateExperience(Experiences);
+        };
+        /**
+         * Cette fonction permet de mettre à jours les expériences
+         * @param {object} Experiences 
+         */
+        self.updateExperience = (Experiences) => {
+          const subForm = new FormData();
+          subForm.append('action', 'update_experiences');
+          subForm.append('experiences', JSON.stringify(Experiences));
+          $http({
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: subForm
+          })
+            .then(resp => {
+              let data = resp.data;
+              if (data.success) {
+                $scope.Candidate.experiences = data.experiences;
+                $scope.mode = null;
+                UIkit.modal('#modal-add-experience-overflow').hide();
+              }
+            })
+        };
+        // Event on modal dialog close or hide
+        UIkit.util.on('#modal-add-experience-overflow', 'hide', function (e) {
+          e.preventDefault();
+          e.target.blur();
+          $scope.Exp = {};
+          $scope.eform.$setPristine();
+          $scope.eform.$setUntouched();
+        });
+        $scope.$watch('Exp', v => {
+          if (v == undefined || v.dateBegin == undefined) return;
+          if (!_.isUndefined(v.dateBegin.year)) {
+            let year = v.dateBegin.year;
+            $scope.dateEndRange = _.range(year, new Date().getFullYear() + 1)
+          }
+        }, true);
+      }]
     }
   }])
-  .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService',
-    function ($scope, $http, $q, clientFactory, clientService) {
+  .directive('trainings', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/trainings.html',
+      scope: {
+        Candidate: "=candidate",
+      },
+      controller: ['$scope', function ($scope) {
+        this.$onInit = () => {
+        }
+      }]
+    }
+  }])
+  .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService', 'Client',
+    function ($scope, $http, $q, clientFactory, clientService, Client) {
       $scope.alertLoading = false;
+      $scope.cv = {};
+      $scope.cv.hasCV = false;
+      $scope.cv.addCVUrl = itOptions.Helper.add_cv;
       $scope.alerts = [];
-      $scope.loading = true;
       $scope.Company = {};
+      $scope.Candidate = {};
       $scope.offerLists = [];
       $scope.countOffer = 0;
-
       // Récuperer les données du client
       $scope.Initialize = () => {
         console.log('Initialize');
-        $scope.loading = true;
-        clientService
-          .clientArea()
-          .then(resp => {
-            var data = resp.data;
-            if (itOptions.client_type === 'company') {
-              $scope.Company = _.clone(data.Company);
-              $scope.offerLists = _.clone(data.Offers);
-              $scope.alerts = _.reject(data.Alerts, alert => _.isEmpty(alert) );
-              $scope.countOffer = $scope.offerLists.length;
-            } else {
-              $scope.Candidate = _.clone(data.Candidate);
-              $scope.alerts = _.clone(data.Alerts);
-            }
-
-            $scope.loading = false;
-          });
+        if (Client.post_type === 'company') {
+          $scope.Company = _.clone(Client.Company);
+          $scope.offerLists = _.clone(Client.Offers);
+        } else {
+          $scope.Candidate = _.clone(Client.Candidate);
+          if (!_.isNull(Client.Candidate.status)) {
+            $scope.cv.hasCV = true;
+          }
+        }
+        $scope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
       };
       $scope.Initialize();
       $scope.asyncTerms = (Taxonomy) => {
@@ -349,11 +581,11 @@ angular.module('clientApp', ['ngMessages', 'froala', 'ngTagsInput', 'ngSanitize'
             // Handle success
             let data = response.data;
             $scope.alertLoading = false;
-            if (data.success) { console.warn("Une erreur inconue s'est produit")}
+            if (data.success) {
+              console.warn("Une erreur inconue s'est produit")
+            }
           });
       };
-
-      $scope.$watch('alerts', value => { console.log(value);}, true);
       // Trash offert
       $scope.trashOffer = function (offerId) {
         var offer = _.findWhere(clientService.offers, {

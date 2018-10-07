@@ -56,7 +56,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
           }
         });
       }
-    }
+    };
   }])
   .directive('ngMail', ['services', function (services) {
     return {
@@ -161,7 +161,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
           })
       };
       $scope.$watch('particularForm', value => {
-        console.log($scope.pcForm);
+
       }, true);
       //  JQLite
       var jqSelects = jQuery("select.form-control.find");

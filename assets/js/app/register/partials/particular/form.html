@@ -98,8 +98,8 @@
                    type="text"
                    placeholder="Numéro de téléphone" required>
 
-            <div ng-messages="setPhone.cellphone.$error" class="alert alert-info d-block mt-1" role="alert" multiple>
-              <div ng-message="required">Veuillez saisir un numero de téléphone.</div>
+            <div ng-messages="setPhone.cellphone.$error" role="alert" multiple>
+              <div ng-message="required" class="alert alert-info d-block mt-1">Veuillez saisir un numero de téléphone.</div>
             </div>
           </div>
           <div class="col-sm-2">
@@ -144,8 +144,9 @@
       <div class="col-md-6 sol-sm-6 mt-1">
         <label class="form-control-label">Mot de passe</label>
         <input class="form-control" type="password" name="pwd" ng-model="particularForm.pwd" autocomplete="off"
-               ng-pattern="/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d$@$!%*#?&]{8,20}$/" required>
-        <span class="help-block uk-text-small">Utilisez au moins 8 caractères avec des lettres, des chiffres et des symboles</span>
+               ng-pattern="/^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/" required>
+        <span class="help-block uk-text-small">Votre mot de passe doit comporter un minimum de 8 caractères,
+          se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.</span>
       </div>
       <div class="col-md-6 sol-sm-6 mt-1">
         <label class="form-control-label">Confirmez le mot de passe.</label>
