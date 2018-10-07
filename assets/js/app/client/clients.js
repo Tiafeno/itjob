@@ -394,9 +394,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/alert.html',
       scope: {
-        onSave: '&',
-        alerts: '=',
-        message: '@',
+        onSave: '&', // Function pass
+        alerts: '=', // Two way variable pass
+        message: '@', // String pass
         alertLoading: '='
       }
     };
