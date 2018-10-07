@@ -104,6 +104,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                   "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
               },
               confpwd: {
+                required: "Ce champ est obligatoire",
                 equalTo: "Les mots de passes ne sont pas identiques."
               }
             },
