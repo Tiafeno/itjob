@@ -66,8 +66,7 @@ if ( ! class_exists('jePostule')):
         $User = wp_get_current_user();
         $Candidate = Candidate::get_candidate_by($User->ID);
         if ( ! $Candidate || ! $Candidate->is_candidate()) return $message_access_refused;
-
-        if ( ! $Candidate->hasCV()) {
+        if ( ! $Candidate->hasCV() || !$Candidate->is_publish() || !$Candidate->is_activated()) {
           do_action('add_notice', "Vous devez crée un CV avant de postuler", "warning");
           return do_shortcode("[vc_register_candidate redir='{$current_uri}']");
         }

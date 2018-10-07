@@ -15,6 +15,7 @@ abstract class UserParticular {
 
   protected $email;
 
+  public $has_cv = false;
   public $greeting;
   public $birthdayDate;
   public $address;
@@ -26,8 +27,8 @@ abstract class UserParticular {
    * @return bool
    */
   public function hasCV() {
-    $activated = get_field( 'activated', $this->getId() );
-    return (bool) $activated;
+    $activated = get_field( 'itjob_cv_hasCV', $this->getId() );
+    return $this->has_cv = (bool) $activated;
   }
 
   public function getId() {

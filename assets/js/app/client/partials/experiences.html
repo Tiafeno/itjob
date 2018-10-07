@@ -27,13 +27,23 @@
         </div>
 
         <div class="col-sm-12">
-          <label class="col-form-label ">Lieu <span style="color: red">*</span></label>
+          <label class="col-form-label ">Ville <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-model="Exp.place" placeholder="Ex: Antananarivo, Madagascar" autocomplete="off" name="place" class="form-control" required>
+              <input ng-model="Exp.city" placeholder="Ex: Antananarivo" autocomplete="off" name="city" class="form-control" required>
             </div>
           </div>
         </div>
+
+        
+        <div class="col-sm-12">
+            <label class="col-form-label ">Pays <span style="color: red">*</span></label>
+            <div class="form-group">
+              <div class="input-group">
+                <input ng-model="Exp.country" placeholder="Ex: Madagascar" autocomplete="off" name="country" class="form-control" required>
+              </div>
+            </div>
+          </div>
 
         <div class="row">
           <div class="form-group col-md-6">
@@ -149,7 +159,7 @@
             <div class="d-flex align-items-center font-13">
               <span class="text-muted">[[ experience.exp_dateBegin ]] - [[ experience.exp_dateEnd == "" ? 'Aujourd\'hui' : experience.exp_dateEnd ]]</span>
             </div>
-            <p class="font-13 text-light mb-1">[[ experience.exp_mission ]]</p>
+            <p class="font-13 text-light mb-1" ng-bind-html="experience.exp_mission"></p>
           </div>
           <div class="text-right" style="width:100px;">
             <!--<span class="badge badge-primary badge-pill mb-2">Open</span>-->

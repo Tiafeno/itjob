@@ -103,7 +103,7 @@ final class Candidate extends UserParticular implements \iCandidate {
 
   public function is_activated() {
     $activation = get_field('activated', $this->getId());
-    return $activation;
+    return (bool)$activation;
   }
 
   public function is_publish() {
@@ -181,6 +181,7 @@ final class Candidate extends UserParticular implements \iCandidate {
       $this->getTrainingNotif();
       $this->cellphone = $this->getCellphone();
       $this->display_name = $this->get_display_name();
+      $this->hasCV();
     }
   }
 

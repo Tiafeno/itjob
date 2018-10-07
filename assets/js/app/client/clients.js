@@ -7,7 +7,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .factory('clientFactory', ['$http', '$q', function ($http, $q) {
     return {
       getCity: function () {
-        return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {cache: true})
+        return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {
+            cache: true
+          })
           .then(function (resp) {
             return resp.data;
           });
@@ -39,8 +41,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
     }
   }])
   .filter('Greet', [function () {
-    const Greeting = [
-      {
+    const Greeting = [{
         greeting: 'mrs',
         label: 'Madame'
       },
@@ -57,8 +58,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
     }
   }])
   .filter('Status', [function () {
-    const postStatus = [
-      {
+    const postStatus = [{
         slug: 'publish',
         label: 'Vérifier'
       },
@@ -69,7 +69,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
     ];
     return (inputValue) => {
       if (typeof inputValue === 'undefined') return inputValue;
-      return _.findWhere(postStatus, {slug: jQuery.trim(inputValue)}).label;
+      return _.findWhere(postStatus, {
+        slug: jQuery.trim(inputValue)
+      }).label;
     }
   }])
   .directive('changePassword', ['$http', function ($http) {
@@ -79,7 +81,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       scope: {},
       link: function (scope, element, attrs) {
         if (jQuery().validate) {
-          jQuery.validator.addMethod("pwdpattern", function(value) {
+          jQuery.validator.addMethod("pwdpattern", function (value) {
             return /^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/.test(value)
           });
           jQuery("#changePwdForm").validate({
@@ -115,13 +117,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               Fm.append('pwd', scope.pwd);
               // Submit form validate
               $http({
-                url: itOptions.Helper.ajax_url,
-                method: "POST",
-                headers: {
-                  'Content-Type': undefined
-                },
-                data: Fm
-              })
+                  url: itOptions.Helper.ajax_url,
+                  method: "POST",
+                  headers: {
+                    'Content-Type': undefined
+                  },
+                  data: Fm
+                })
                 .then(resp => {
                   let data = resp.data;
                   // Update password success
@@ -132,7 +134,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             }
           });
         }
-        
+
         scope.openEditor = () => {
           UIkit.modal('#modal-change-pwd-overflow').show();
         };
@@ -230,8 +232,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         abranchs: '&',
         init: '&init'
       },
-      link: function (scope, element, attrs) {
-      },
+      link: function (scope, element, attrs) {},
       controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
         $scope.status = false;
         $scope.userEditor = {};
@@ -388,7 +389,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           if (!offer.my_offer || offer.count_candidat_apply <= 0) return;
 
           UIkit.modal('#modal-view-candidat').show();
-          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {cache: false})
+          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {
+              cache: false
+            })
             .then(resp => {
               $scope.postuledCandidats = resp.data;
               $scope.loadingCandidats = false;
@@ -440,7 +443,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           let experience = _.find($scope.Candidate.experiences, experience => experience.exp_positionHeld == positionHeld);
           let momentDateBegin = moment(experience.exp_dateBegin, 'MMMM, YYYY', 'fr');
           let dateEndObj = {};
-          if ( ! _.isEmpty(experience.exp_dateEnd)) {
+          if (!_.isEmpty(experience.exp_dateEnd)) {
             let momentDateEnd = moment(experience.exp_dateEnd, 'MMMM, YYYY', 'fr');
             dateEndObj = {
               month: momentDateEnd.format('MMMM'),
@@ -450,8 +453,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.Exp = {
             position: experience.exp_positionHeld,
             company: experience.exp_company,
-            place: experience.exp_city + ', ' + experience.exp_country,
-            mission: experience.mission,
+            city: experience.exp_city,
+            country: experience.exp_country,
+            mission: experience.exp_mission,
             position_currently_works: _.isEmpty(experience.exp_dateEnd) ? true : false,
             dateBegin: {
               month: momentDateBegin.format('MMMM'),
@@ -467,18 +471,15 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
          */
         $scope.submitForm = (isValid) => {
           if (!isValid) return;
-          let place = $scope.Exp.place.split(',');
-          let city = place[0];
-          let country = place[place.length - 1];
           let beginFormat = $scope.Exp.dateBegin.month + ", " + $scope.Exp.dateBegin.year;
           let dateBegin = moment(beginFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
           let dateEnd = '';
-          if ( ! $scope.Exp.position_currently_works) {
+          if (!$scope.Exp.position_currently_works) {
             let endFormat = $scope.Exp.dateEnd.month + ", " + $scope.Exp.dateEnd.year;
             dateEnd = moment(endFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
           }
           let Experiences = [];
-          if ($scope.mode === 1) { 
+          if ($scope.mode === 1) {
             // Récuperer les experiences sauf celui qu'on est entrain de modifier
             Experiences = _.reject($scope.Candidate.experiences, exp => {
               return exp.exp_positionHeld === $scope.Exp.position;
@@ -488,7 +489,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           // Modifier les formats des date pour les autres expériences 
           Experiences = _.map(listOfExperiences, exp => {
             exp.exp_dateBegin = moment(exp.exp_dateBegin, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
-            if ( ! _.isEmpty(exp.exp_dateEnd)) {
+            if (!_.isEmpty(exp.exp_dateEnd)) {
               exp.exp_dateEnd = moment(exp.exp_dateEnd, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
             } else {
               exp.position_currently_works = true;
@@ -499,8 +500,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           Experiences.push({
             exp_positionHeld: $scope.Exp.position,
             exp_company: $scope.Exp.company,
-            exp_country: jQuery.trim(country),
-            exp_city: jQuery.trim(city),
+            exp_country: $scope.Exp.country,
+            exp_city: $scope.Exp.city,
             exp_dateBegin: dateBegin,
             exp_dateEnd: dateEnd,
           });
@@ -516,13 +517,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           subForm.append('action', 'update_experiences');
           subForm.append('experiences', JSON.stringify(Experiences));
           $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -535,7 +536,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         // Event on modal dialog close or hide
         UIkit.util.on('#modal-add-experience-overflow', 'hide', function (e) {
           e.preventDefault();
-          e.target.blur();
           $scope.Exp = {};
           $scope.eform.$setPristine();
           $scope.eform.$setUntouched();
@@ -558,8 +558,35 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         Candidate: "=candidate",
       },
       controller: ['$scope', function ($scope) {
-        this.$onInit = () => {
-        }
+        $scope.mode = null; // 0: new, 1:update
+        $scope.Train = {};
+        $scope.years = _.range(1959, new Date().getFullYear() + 1);
+        this.$onInit = () => {};
+
+        $scope.newTraining = () => {
+          $scope.mode = 0;
+          UIkit.modal('#modal-add-training-overflow').show();
+        };
+
+        $scope.editTraining = () => {
+
+        };
+
+        $scope.submitForm = (isValid) => {
+          if (!isValid || _.isNull($scope.mode)) return;
+          $scope.mode = null
+        };
+
+        UIkit.util.on('#modal-add-training-overflow', 'hide', function (e) {
+          e.preventDefault();
+          $scope.Train = {};
+          $scope.tform.$setPristine();
+          $scope.tform.$setUntouched();
+        });
+
+        $scope.$watch('Train', value => {
+          console.log(value);
+        }, true);
       }]
     }
   }])
@@ -582,9 +609,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.offerLists = _.clone(Client.Offers);
         } else {
           $scope.Candidate = _.clone(Client.Candidate);
-          if (!_.isNull(Client.Candidate.status)) {
-            $scope.cv.hasCV = true;
-          }
+          $scope.cv.hasCV = $scope.Candidate.has_cv;
         }
         $scope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
       };
@@ -605,13 +630,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         form.append('action', 'update_alert_filter');
         form.append('alerts', JSON.stringify($scope.alerts));
         $http({
-          method: 'POST',
-          url: itOptions.Helper.ajax_url,
-          headers: {
-            'Content-Type': undefined
-          },
-          data: form
-        })
+            method: 'POST',
+            url: itOptions.Helper.ajax_url,
+            headers: {
+              'Content-Type': undefined
+            },
+            data: form
+          })
           .then(response => {
             // Handle success
             let data = response.data;
