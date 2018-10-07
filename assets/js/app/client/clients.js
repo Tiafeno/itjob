@@ -135,7 +135,15 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         
         scope.openEditor = () => {
           UIkit.modal('#modal-change-pwd-overflow').show();
-        }
+        };
+
+        // Event on modal dialog close or hide
+        UIkit.util.on('#modal-change-pwd-overflow', 'hide', function (e) {
+          e.preventDefault();
+          e.target.blur();
+          scope.changePwdForm.$setPristine();
+          scope.changePwdForm.$setUntouched();
+        });
       },
       controller: ['$scope', function ($scope) {
 
