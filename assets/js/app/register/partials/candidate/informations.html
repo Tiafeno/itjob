@@ -42,7 +42,7 @@
           <tags-input ng-model="formData.jobSougths" max-lenght="2" max-tags="2" display-property="name" placeholder="Emploi recherché" replace-spaces-with-dashes="false" required>
             <auto-complete source="queryJobs($query, 'job_sought')"
                            load-on-focus="false"
-                           load-on-empty="true"
+                           load-on-empty="false"
                            max-results-to-show="10"
                            template="job-template">
             </auto-complete>
