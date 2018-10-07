@@ -78,37 +78,60 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       templateUrl: itOptions.Helper.tpls_partials + '/change-password.html',
       scope: {},
       link: function (scope, element, attrs) {
-        jQuery("#changePwdForm").validate({
-          rules: {
-            oldpwd: "required",
-            pwd: "required",
-            confpwd: {
-              equalTo: "#pwd"
-            }
-          },
-          submitHandler: function (form) {
-            const Fm = new FormData();
-            Fm.append('action', 'update-user-password');
-            Fm.append('oldpwd', scope.oldpwd);
-            Fm.append('pwd', scope.pwd);
-            // Submit form validate
-            $http({
-              url: itOptions.Helper.ajax_url,
-              method: "POST",
-              headers: {
-                'Content-Type': undefined
+        if (jQuery().validate) {
+          jQuery.validator.addMethod("pwdpattern", function(value) {
+            return /^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/.test(value)
+          });
+          jQuery("#changePwdForm").validate({
+            rules: {
+              oldpwd: "required",
+              pwd: {
+                required: true,
+                pwdpattern: true,
+                minlength: 8,
               },
-              data: Fm
-            })
-              .then(resp => {
-                let data = resp.data;
-                // Update password success
-                if (!data.success) return;
-                UIkit.modal('#modal-change-pwd-overflow').hide();
-                location.reload();
+              confpwd: {
+                equalTo: "#pwd"
+              }
+            },
+            messages: {
+              oldpwd: {
+                required: "Ce champ est obligatoire"
+              },
+              pwd: {
+                required: "Ce champ est obligatoire",
+                pwdpattern: "Votre mot de passe doit comporter un minimum de 8 caractères, " +
+                  "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
+              },
+              confpwd: {
+                equalTo: "Les mots de passes ne sont pas identiques."
+              }
+            },
+            submitHandler: function (form) {
+              const Fm = new FormData();
+              Fm.append('action', 'update-user-password');
+              Fm.append('oldpwd', scope.oldpwd);
+              Fm.append('pwd', scope.pwd);
+              // Submit form validate
+              $http({
+                url: itOptions.Helper.ajax_url,
+                method: "POST",
+                headers: {
+                  'Content-Type': undefined
+                },
+                data: Fm
               })
-          }
-        });
+                .then(resp => {
+                  let data = resp.data;
+                  // Update password success
+                  if (!data.success) return;
+                  UIkit.modal('#modal-change-pwd-overflow').hide();
+                  location.reload();
+                })
+            }
+          });
+        }
+        
         scope.openEditor = () => {
           UIkit.modal('#modal-change-pwd-overflow').show();
         }
