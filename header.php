@@ -97,9 +97,6 @@
     .btn.dropdown-arrow:after {
       margin-left: 0 !important;
     }
-    header.header .dropdown-user i.ti-user {
-      //color: #12a5d1
-    }
 
     header.header .dropdown-user .dropdown-menu .dropdown-item,
     .dropdown-menu > li > a {
