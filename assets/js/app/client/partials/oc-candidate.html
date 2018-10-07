@@ -84,9 +84,43 @@
                     <a ng-href="[[cv.addCVUrl]]" class="btn btn-outline-blue">Ajouter un CV</a>
                   </div>
                 </div>
-                <div class="col-lg-12"></div>
-              </div>
+                <div class="col-lg-12">
+                  <hr>
+                  <div class="row">
+                    <!-- langues -->
+                    <div class="ibox-body col-lg-6">
+                      <h4>Langues</h4>
+                      <div class="row">
+                        <div class="col-11 d-flex align-items-center">
+                          <ol class="language-list m-0">
+                            <li ng-repeat="language in Candidate.languages">
+                              <p class="mb-0">[[language.name]]</p>
+                            </li>
+                          </ol>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- .end langues -->
+                    <!-- Permis de conduire -->
+                    <div class="ibox-body col-lg-6">
+                      <h4>Permis de conduire</h4>
+                      <div class="row">
+                        <div class="col-11 d-flex align-items-center">
+                          <ol ng-show="Candidate.driveLicences !== ''" class="drivelicence-list m-0 pl-0">
+                            <li class="badge badge-default mr-2" ng-repeat="licence in Candidate.driveLicences">
+                              [[licence.label]]
+                            </li>
+                          </ol>
+                          <p ng-show="Candidate.driveLicences === ''">Aucun</p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- .end Permis de conduire -->
+                  </div>
+                  
 
+                </div>
+              </div>
             </div>
           </div>
         </div>
