@@ -474,7 +474,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     };
   }])
   .controller('formController',[
-    "$scope", "$rootScope", "Services", "abranchs", "languages", "jobSoughts", "Upload",
+    "$scope", "$rootScope", "Services", "abranchs", "languages", "jobSougths", "Upload",
     function ($scope, $rootScope, Services, abranchs, languages, jobSougths, Upload) {
     let training_id = 0;
     let experience_id = 0;
