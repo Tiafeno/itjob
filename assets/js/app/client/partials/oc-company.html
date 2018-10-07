@@ -50,7 +50,12 @@
             <change-password></change-password>
           </div>
           <div class="col-sm-6">
-            <alerts on-save="onSaveAlert()" alerts="alerts" alert-loading="alertLoading"></alerts>
+            <alerts on-save="onSaveAlert()" 
+            message="Je souhaite être informé quand un candidat comportent les expressions suivantes: Saissez le mot et appuyez sur entrée ou `,` pour ajouter"
+            alerts="alerts" 
+            alert-loading="alertLoading">
+
+            </alerts>
           </div>
         </div>
       </div>

@@ -396,6 +396,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       scope: {
         onSave: '&',
         alerts: '=',
+        message: '=',
         alertLoading: '='
       }
     };
