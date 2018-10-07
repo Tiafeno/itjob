@@ -127,6 +127,15 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 language: "fr",
                 clearBtn: true,
               });
+              jQuery('.input-daterange').datepicker({
+                format: "mm/dd/yyyy",
+                language: "fr",
+                startView: 2,
+                todayBtn: false,
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true
+              });
 
               // Trouver un pays dans la liste API
               var country = new Bloodhound({
