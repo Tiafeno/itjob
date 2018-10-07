@@ -135,7 +135,7 @@
     </div>
   </div>
   <div class="ibox-body">
-    <ul class="media-list media-list-divider scroller mr-2" data-height="470px">
+    <ul class="media-list media-list-divider scroller mr-2">
 
       <li class="media" ng-repeat="experience in Candidate.experiences">
         <div class="media-body d-flex">
@@ -147,7 +147,7 @@
               [[ experience.exp_company ]]
             </h6>
             <div class="d-flex align-items-center font-13">
-              <span class="text-muted">[[ experience.exp_dateBegin ]] - [[ experience.exp_dateEnd ]]</span>
+              <span class="text-muted">[[ experience.exp_dateBegin ]] - [[ experience.exp_dateEnd == "" ? 'Aujourd\'hui' : experience.exp_dateEnd ]]</span>
             </div>
             <p class="font-13 text-light mb-1">[[ experience.exp_mission ]]</p>
           </div>

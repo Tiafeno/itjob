@@ -439,7 +439,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.mode = 1;
           let experience = _.find($scope.Candidate.experiences, experience => experience.exp_positionHeld == positionHeld);
           let momentDateBegin = moment(experience.exp_dateBegin, 'MMMM, YYYY', 'fr');
-          let dateEndObj = '';
+          let dateEndObj = {};
           if ( ! _.isEmpty(experience.exp_dateEnd)) {
             let momentDateEnd = moment(experience.exp_dateEnd, 'MMMM, YYYY', 'fr');
             dateEndObj = {
@@ -478,22 +478,24 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             dateEnd = moment(endFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
           }
           let Experiences = [];
-          if ($scope.mode === 0) { // Nouvelle experience
-            Experiences = _.map($scope.Candidate.experiences, exp => {
-              exp.exp_dateBegin = moment(exp.exp_dateBegin, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
-              if ( ! _.isEmpty(exp.exp_dateEnd)) {
-                exp.exp_dateEnd = moment(exp.exp_dateEnd, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
-              } else {
-                exp.position_currently_works = true;
-              }
-              return experience;
-            });
-          } else {
+          if ($scope.mode === 1) { 
             // Récuperer les experiences sauf celui qu'on est entrain de modifier
             Experiences = _.reject($scope.Candidate.experiences, exp => {
               return exp.exp_positionHeld === $scope.Exp.position;
             });
           }
+          let listOfExperiences = ($scope.mode === 0) ? _.clone($scope.Candidate.experiences) : Experiences;
+          // Modifier les formats des date pour les autres expériences 
+          Experiences = _.map(listOfExperiences, exp => {
+            exp.exp_dateBegin = moment(exp.exp_dateBegin, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+            if ( ! _.isEmpty(exp.exp_dateEnd)) {
+              exp.exp_dateEnd = moment(exp.exp_dateEnd, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
+            } else {
+              exp.position_currently_works = true;
+            }
+            return exp;
+          });
+
           Experiences.push({
             exp_positionHeld: $scope.Exp.position,
             exp_company: $scope.Exp.company,
@@ -524,9 +526,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             .then(resp => {
               let data = resp.data;
               if (data.success) {
+                UIkit.modal('#modal-add-experience-overflow').hide();
                 $scope.Candidate.experiences = data.experiences;
                 $scope.mode = null;
-                UIkit.modal('#modal-add-experience-overflow').hide();
               }
             })
         };

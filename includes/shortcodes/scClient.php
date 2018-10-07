@@ -332,7 +332,9 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( false );
       }
       $new_experiences = [];
-      $experiences = Http\Request::getValue('experiences');
+      $experiences = Http\Request::getValue('experiences', null);
+      if (is_null($experiences) || empty($experiences))
+        wp_send_json(['success' => false]);
       $experiences = json_decode($experiences);
       foreach ( $experiences as $experience ) {
         $new_experiences[] = [
@@ -345,13 +347,9 @@ if ( ! class_exists( 'scClient' ) ) :
           'exp_mission'      => $experience->exp_mission
         ];
       }
-      $resolve = update_field( 'itjob_cv_experiences', $new_experiences, $this->Candidate->getId() );
-      if ($resolve) {
-        $experiences = get_field('itjob_cv_experiences', $this->Candidate->getId());
-        wp_send_json(['success' => true, 'experiences' => $experiences]);
-      } else {
-        wp_send_json(['success' => false]);
-      }
+      update_field( 'itjob_cv_experiences', $new_experiences, $this->Candidate->getId() );
+      $experiences = get_field('itjob_cv_experiences', $this->Candidate->getId());
+      wp_send_json(['success' => true, 'experiences' => $experiences]);
     }
 
     /**
