@@ -89,7 +89,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <div class="col-md-6 mt-3">
                         <p class="mb-1 uk-text-bold">Permis de conduire:</p>
                         <?php
-                        if (!empty($candidate->drivLicences)) {
+                        if (!empty($candidate->driveLicences)) {
                           foreach ($candidate->driveLicences as $driveLicence):
                             echo sprintf('<span class="badge badge-default mr-2">%s</span>', $driveLicence['label']);
                           endforeach;
