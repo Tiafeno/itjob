@@ -110,7 +110,7 @@ final class Offers implements \iOffer {
   }
 
   public function is_publish() {
-    return $this->post_type === 'pending' || $this->post_type === 'draft' ? 0 : 1;
+    return $this->offer_status === 'publish' ? 1 : 0;
   }
 
   /**
