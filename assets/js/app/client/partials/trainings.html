@@ -69,7 +69,7 @@
             </div>
             <div class="col-sm-12">
               <div class="form-group">
-                <select class="form-control" name="end_year" ng-model="Train.training_dateEnd">
+                <select class="form-control" name="end_year" ng-model="Train.training_dateEnd" required>
                   <option value="">Année</option>
                   <option ng-value="year" ng-repeat="year in years">[[year]]</option>
                 </select>
@@ -126,7 +126,7 @@
           <div class="text-right" style="width:100px;">
             <!--<span class="badge badge-primary badge-pill mb-2">Open</span>-->
             <div>
-              <small class="text-muted font-12" style="cursor:pointer;" ng-click="editTraining(training.training_establishment)">
+              <small class="text-muted font-12" style="cursor:pointer;" ng-click="editTraining(training.id)">
                 <i class="fa fa-edit mr-2"></i>Modifier
               </small>
             </div>
