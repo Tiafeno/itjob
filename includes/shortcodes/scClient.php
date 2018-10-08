@@ -90,6 +90,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'Helper' => [
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
             'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
+            'img_url' => get_template_directory_uri() . '/img',
           ]
         ];
         define('OC_URL', get_template_directory_uri() . '/assets/js/app/client');

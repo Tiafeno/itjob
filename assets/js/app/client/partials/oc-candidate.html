@@ -1,9 +1,50 @@
+<!-- Modal contact -->
+<div id="modal-candidate-profil-editor" uk-modal>
+  <div class="uk-modal-dialog">
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Modifier l’introduction</h2>
+    </div>
+    <div class="uk-modal-body" uk-overflow-auto>
+      <form name="editProfilForm" novalidate>
+        <div class="row">
+          <div class="col-md-6 col-sm-6" style="margin-bottom: 80px">
+              <div class="add-new-picture">
+                <img src="">
+              </div>
+              <div pre-upload class="p-relative">
+                <div class="p-absolute ml-4" style="width: 125px; bottom: -62px;">
+                  <div class="uk-text-bold">Photo</div>
+                  <button type="file" ngf-select="uploadFiles($file, $invalidFiles)"
+                  accept="image/*" class="btn" ngf-max-size="2MB">Choisir un fichier</button>
+                </div>
+              </div>
+            </div>
+        </div>
+      </form>
+    </div>
+    <div class="uk-modal-footer">
+      <div class="row">
+        <div class="col-sm-12 uk-text-right">
+          <button class="btn btn-blue ml-4 uk-modal-close" type="button">Ok</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- .end modal -->
+
 <div class="row">
   <div class="col-lg-4">
     <div class="card text-center centered mb-4" style="max-width:320px;">
       <div class="card-body">
+        <span class="badge badge-blue badge-circle float-right" uk-toggle="target: #modal-candidate-profil-editor" style="cursor: pointer">
+          <i class="ti-pencil"></i>
+        </span>
+
         <div class="card-avatar mt-3 mb-4">
-          <img class="img-circle" src="[[ Candidate.avatar[0] ]]" alt="image">
+          <img class="img-circle" src="[[ Candidate.avatar ]]" alt="image">
         </div>
         <h4 class="card-title mb-1">[[ Candidate.display_name ]]</h4>
         <div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Candidate.address ]]</div>

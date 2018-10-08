@@ -693,17 +693,27 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService', 'Client',
     function ($scope, $http, $q, clientFactory, clientService, Client) {
       $scope.alertLoading = false;
+      $scope.alerts = [];
+      $scope.featuredImage = '';
+      // Candidate
       $scope.cv = {};
       $scope.cv.hasCV = false;
       $scope.cv.addCVUrl = itOptions.Helper.add_cv;
-      $scope.alerts = [];
-      $scope.Company = {};
       $scope.Candidate = {};
+      // Company
+      $scope.Company = {};
       $scope.offerLists = [];
       $scope.countOffer = 0;
-      // Récuperer les données du client
+      
+      /**
+       * Récuperer les données sur le client
+       */
       $scope.Initialize = () => {
         console.log('Initialize');
+
+        let sexe = (Client.Candidate.greeting.value === 'mr') ? 'male' : 'female';
+        $scope.featuredImage =itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
+
         if (Client.post_type === 'company') {
           $scope.Company = _.clone(Client.Company);
           $scope.offerLists = _.clone(Client.Offers);
@@ -712,19 +722,15 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.Candidate = _.mapObject(Candidate, (value, key) => {
             switch (key) {
               case 'experiences':
-                return _.map(value, (experience, index) => {
-                  experience.id = index;
-                  return experience;
-                });
-                break;
-              
               case 'trainings':
-                return _.map(value, (training, index) => {
-                  training.id = index;
-                  return training;
+                return _.map(value, (element, index) => {
+                  element.id = index;
+                  return element;
                 });
                 break;
-            
+              case 'avatar':
+                return !value ? $scope.featuredImage : value[0];
+                break;
               default:
                 return value;
                 break;
@@ -735,6 +741,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
       };
       $scope.Initialize();
+
+      /**
+       * Récuperer les terms d'une taxonomie
+       * @param {string} Taxonomy 
+       */
       $scope.asyncTerms = (Taxonomy) => {
         if (Taxonomy !== 'city') {
           return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=' + Taxonomy, {
@@ -773,6 +784,58 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             }
           });
       };
+      
+      /**
+       * Afficher la boite de dialogue pour modifier un candidate
+       */
+      $scope.onViewModalCandidateProfil = () => {
+        if (jQuery().validate) {
+          jQuery("#editProfilForm").validate({
+            rules: {
+              pwd: {
+                required: true,
+                pwdpattern: true,
+                minlength: 8,
+              }
+            },
+            messages: {
+              pwd: {
+                required: "Ce champ est obligatoire"
+              }
+            },
+            submitHandler: function (form) {
+              const Fm = new FormData();
+              Fm.append('action', 'update-candidate-profil');
+              Fm.append('oldpwd', scope.oldpwd);
+              Fm.append('pwd', scope.pwd);
+              // Submit form validate
+              $http({
+                  url: itOptions.Helper.ajax_url,
+                  method: "POST",
+                  headers: {
+                    'Content-Type': undefined
+                  },
+                  data: Fm
+                })
+                .then(resp => {
+                  let data = resp.data;
+                  // Update password success
+                  if ( ! data.success) return;
+                  UIkit.modal('#modal-candidate-profil-editor').hide();
+                })
+            }
+          });
+        }
+      };
+
+      $scope.onSaveCandidate = () => {
+
+      };
+
+      UIkit.util.on('#modal-candidate-profil-editor', 'show', function (e) {
+        e.preventDefault();
+        $scope.onViewModalCandidateProfil();
+      });
       
       /**
        * Envoyer une offre dans la corbeille
