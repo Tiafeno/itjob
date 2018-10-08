@@ -183,8 +183,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $jobSougths = Http\Request::getValue( 'jobSougths' );
       $jobSougths = \json_decode( $jobSougths );
 
-      $driveLicences = Http\Request::getValue( 'driveLicence', false );
-      if ( $driveLicences ) {
+      $driveLicences = Http\Request::getValue( 'driveLicence', [] );
+      if ( $driveLicences && !empty($driveLicences) ) {
         $driveLicences = \json_decode( $driveLicences );
       }
 
@@ -262,7 +262,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           return $LicenceSchema[ $key ];
         }
       }, array_keys( (array) $form->driveLicences ) );
-      update_field( 'itjob_cv_driveLicence', implode( ',', $licences ) );
+      $licences = empty($licences) ? '' : implode( ',', $licences );
+      update_field( 'itjob_cv_driveLicence', $licences );
 
       // Update notification
       if ( $form->notifEmploi ) {
@@ -342,9 +343,10 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           array_push( $tabContainer, $tab->term_id );
         } else {
           $eT = term_exists($tab->name, $taxonomy);
-          if (0 !== $eT || !is_null($eT)) {
-            $eTI = is_array($eT) ? $eT->term_id : (is_int($eT) ? $eT : null);
-            array_push($tabContainer, $eTI);
+          if ( 0 !== $eT || ! is_null($eT) ) {
+            $eTI = is_array($eT) ? $eT[ 'term_id' ] : (is_int($eT) ? $eT : null);
+            if ( ! is_null($eTI) )
+              array_push( $tabContainer, $eTI );
           }
           $term = wp_insert_term(
             $tab->name,   // the term

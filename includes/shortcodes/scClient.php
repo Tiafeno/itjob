@@ -359,7 +359,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'training_diploma'      => $training->training_diploma,
           'training_city'         => $training->training_city,
           'training_country'      => $training->training_country,
-          'training_establishment'      => $experience->training_establishment
+          'training_establishment'      => $training->training_establishment
         ];
       }
       update_field( 'itjob_cv_trainings', $new_trainings, $this->Candidate->getId() );
