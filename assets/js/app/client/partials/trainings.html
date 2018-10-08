@@ -82,10 +82,11 @@
 
       <div class="uk-modal-footer">
         <div class="row">
-          <div class="col-sm-6 uk-text-left d-flex">
+          <div class="col-sm-4 uk-text-left d-flex">
             <p class="info-status mt-auto mb-auto" ng-show="status">[[status]]</p>
           </div>
-          <div class="col-sm-6 uk-text-right">
+          <div class="col-sm-8 uk-text-right">
+            <button class="btn btn-danger ml-4" ng-show="mode === 1" data-ng-click="onDeleteTraining(Train.id)">Supprimer</button>
             <button class="btn btn-blue ml-4" type="submit">Enregistrer</button>
           </div>
         </div>

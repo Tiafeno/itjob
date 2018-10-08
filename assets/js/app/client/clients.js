@@ -436,7 +436,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       },
       controller: ['$scope', '$http', function ($scope, $http) {
         const self = this;
-        $scope.mode = null; // 0:new, 1:update
+        /**
+         * 0: Nouvelle experience
+         * 1: Modifier l'experience
+         * 2: Supprimer l'experience
+         */
+        $scope.mode = null;
         $scope.Exp = {};
         $scope.months = clientService.months;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
@@ -482,6 +487,23 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             dateEnd: dateEndObj
           };
           UIkit.modal('#modal-add-experience-overflow').show();
+        };
+
+        /**
+         * Supprimer une experience dans la base de donnée
+         * @param {int} experienceId 
+         */
+        $scope.onDeleteExperience = (experienceId) => {
+          $scope.mode = 2;
+          UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', { labels: { ok: 'Supprimer', cancel: 'Annuler' } })
+          .then(function () {
+            let Experiences = _.reject($scope.Candidate.experinces, (experience) => experience.id === parseInt(experienceId));
+            self.updateExperience(Experiences);
+            $scope.mode = null;
+          }, () => {
+            alertify.erreur("Une erreur s'est produite pendant la suppression.")
+            $scope.mode = null;
+          });
         };
 
         /**
@@ -580,9 +602,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         Candidate: "=candidate",
       },
       controller: ['$scope', '$http', function ($scope, $http) {
-        // 0: Nouvelle formation, 
-        // 1: Modifier la formation, 
-        // null: Pas d'action
+        const self = this;
+        /**
+         * 0: Nouvelle formation
+         * 1: Modifier la formation
+         * 2: Supprimer la formation
+         */
         $scope.mode = null;
         // Cette variable contient les nouvelles informations a modifier ou ajouter
         $scope.Train = {};
@@ -599,7 +624,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
 
         /**
          * Modifier la formation
-         * @param {string} establishment
+         * @param {int} trainingId
          */
         $scope.editTraining = (trainingId) => {
           $scope.mode = 1;
@@ -619,6 +644,23 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           });
           UIkit.modal('#modal-add-training-overflow').show();
         };
+
+        /**
+         * Supprimer une formation dans la base de donnée
+         * @param {int} trainingId 
+         */
+        $scope.onDeleteTraining = (trainingId) => {
+          $scope.mode = 2;
+          UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', { labels: { ok: 'Supprimer', cancel: 'Annuler' } })
+          .then(function () {
+            let Trainings = _.reject($scope.Candidate.trainings, (training) => training.id === parseInt(trainingId));
+            self.updateTraining(Trainings);
+            $scope.mode = null;
+          }, () => {
+            alertify.erreur("Une erreur s'est produite pendant la suppression.")
+            $scope.mode = null;
+          });
+        }
 
         /**
          * Envoyer le formulaire pour mettre a jour les formations\
@@ -647,7 +689,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               return false;
               break;
           }
-          $scope.updateTraining(Trainings);
+          self.updateTraining(Trainings);
           $scope.mode = null
         };
 
@@ -655,7 +697,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
          * Mettre a jour les formations ajouter ou modifier dans l'OC
          * @param {object} trainings
          */
-        $scope.updateTraining = (trainings) => {
+        self.updateTraining = (trainings) => {
           const subForm = new FormData();
           subForm.append('action', 'update_trainings');
           subForm.append('trainings', JSON.stringify(trainings));
@@ -686,12 +728,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.tform.$setPristine();
           $scope.tform.$setUntouched();
         });
-
-        $scope.$watch('Train', value => {
-
-        }, true);
-      }]
-    }
+      }]}
   }])
   .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService', 'Client', 'Upload',
     function ($scope, $http, $q, clientFactory, clientService, Client, Upload) {
