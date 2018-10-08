@@ -248,8 +248,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       update_field( 'itjob_cv_status', (int) $form->status, $this->Candidate->getId() );
 
       $centerInterest = [
-        'various' => $form->various,
-        'projet'  => $form->projet
+        'various' => json_decode($form->various),
+        'projet'  => json_decode($form->projet)
       ];
       update_field( 'itjob_cv_centerInterest', $centerInterest, $this->Candidate->getId() );
 
