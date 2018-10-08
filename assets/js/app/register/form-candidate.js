@@ -177,7 +177,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       // url will be /form/interests
       .state('form.interests', {
         url: '/interests',
-        templateUrl: itOptions.partials_url + '/candidate/interests.html',
+        templateUrl: itOptions.partials_url + '/candidate/Interests.html',
         resolve: {
           access: ['$q', '$rootScope', function ($q, $rootScope) {
             if (typeof $rootScope.formData === 'undefined') {
