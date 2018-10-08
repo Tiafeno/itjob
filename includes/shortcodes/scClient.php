@@ -38,6 +38,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_update_alert_filter', [ &$this, 'update_alert_filter' ] );
         add_action( 'wp_ajax_get_postuled_candidate', [ &$this, 'get_postuled_candidate' ] );
         add_action( 'wp_ajax_update-user-password', [ &$this, 'change_user_password' ] );
+        add_action( 'wp_ajax_update-candidate-profil', [ &$this, 'update_candidate_profil' ] );
         add_action( 'wp_ajax_update_experiences', [ &$this, 'update_experiences' ] );
         add_action( 'wp_ajax_update_trainings', [ &$this, 'update_trainings' ] );
       }
@@ -75,6 +76,7 @@ if ( ! class_exists( 'scClient' ) ) :
         'angular-messages',
         'angular-sanitize',
         'angular-route',
+        'ngFileUpload',
         'datatable',
         'ng-tags',
         'b-datepicker',
@@ -162,7 +164,7 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
-     Modifier le profil de l'utilisateur
+     * Modifier le profil de l'utilisateur
      */
     public function update_profil() {
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
@@ -232,6 +234,22 @@ if ( ! class_exists( 'scClient' ) ) :
       endif;
 
     }
+
+    /**
+     * Function ajax
+     * Modifier l'introduction du candidate
+     */
+    public function update_candidate_profil() {
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $status = Http\Request::getValue('status');
+      $newsletter = Http\Request::getValue('newsletter');
+      update_field('itjob_cv_status', $status, $this->Candidate->getId());
+      update_field('itjob_cv_newsletter', $newsletter, $this->Candidate->getId());
+      wp_send_json(['success' => true]);
+    }
+
     /**
      * Ajouter une offre dans la corbeille
      * @route admin-ajax.php?action=trash_offer&pId=<int>

@@ -1,4 +1,4 @@
-const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize'])
+const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
   .value('froalaConfig', {
     toolbarInline: false,
     quickInsertTags: null,
@@ -404,7 +404,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           if (!offer.my_offer || offer.count_candidat_apply <= 0) return;
 
           UIkit.modal('#modal-view-candidat').show();
-          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {cache: false})
+          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {
+              cache: false
+            })
             .then(resp => {
               $scope.postuledCandidats = resp.data;
               $scope.loadingCandidats = false;
@@ -491,7 +493,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           let beginFormat = $scope.Exp.dateBegin.month + ", " + $scope.Exp.dateBegin.year;
           let dateBegin = moment(beginFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
           let dateEnd = '';
-          if ( ! $scope.Exp.position_currently_works) {
+          if (!$scope.Exp.position_currently_works) {
             let endFormat = $scope.Exp.dateEnd.month + ", " + $scope.Exp.dateEnd.year;
             dateEnd = moment(endFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
           }
@@ -580,7 +582,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         // 0: Nouvelle formation, 
         // 1: Modifier la formation, 
         // null: Pas d'action
-        $scope.mode = null; 
+        $scope.mode = null;
         // Cette variable contient les nouvelles informations a modifier ou ajouter
         $scope.Train = {};
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
@@ -607,7 +609,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               case 'training_dateEnd':
                 return parseInt(value);
                 break;
-            
+
               default:
                 return value;
                 break;
@@ -685,40 +687,49 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         });
 
         $scope.$watch('Train', value => {
-          
+
         }, true);
       }]
     }
   }])
-  .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService', 'Client',
-    function ($scope, $http, $q, clientFactory, clientService, Client) {
+  .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService', 'Client', 'Upload',
+    function ($scope, $http, $q, clientFactory, clientService, Client, Upload) {
+      const self = this;
+      // Contient les valeurs d'introduction
+      $scope.profilEditor = {};
       $scope.alertLoading = false;
       $scope.alerts = [];
+      // Contient l'image par default de l'OC
       $scope.featuredImage = '';
+      // La valeur reste `false` si la photo de profil n'est pas toucher
+      $scope.avatarFile = false;
       // Candidate
       $scope.cv = {};
       $scope.cv.hasCV = false;
       $scope.cv.addCVUrl = itOptions.Helper.add_cv;
       $scope.Candidate = {};
+      $scope.biography = "";
       // Company
       $scope.Company = {};
       $scope.offerLists = [];
       $scope.countOffer = 0;
-      
+
       /**
        * Récuperer les données sur le client
        */
       $scope.Initialize = () => {
         console.log('Initialize');
 
+        /** Crée une image par default */
         let sexe = (Client.Candidate.greeting.value === 'mr') ? 'male' : 'female';
-        $scope.featuredImage =itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
+        $scope.featuredImage = itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
 
         if (Client.post_type === 'company') {
           $scope.Company = _.clone(Client.Company);
           $scope.offerLists = _.clone(Client.Offers);
         } else {
           const Candidate = _.clone(Client.Candidate);
+          $scope.biography = Client.Candidate.has_cv ? Client.Candidate.status.label : '';
           $scope.Candidate = _.mapObject(Candidate, (value, key) => {
             switch (key) {
               case 'experiences':
@@ -740,7 +751,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         }
         $scope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
       };
-      $scope.Initialize();
 
       /**
        * Récuperer les terms d'une taxonomie
@@ -784,59 +794,168 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             }
           });
       };
-      
+
+      /**
+       * Cette fonction permet de redimensionner une image
+       *
+       * @param imgObj - the image element
+       * @param newWidth - the new width
+       * @param newHeight - the new height
+       * @param startX - the x point we start taking pixels
+       * @param startY - the y point we start taking pixels
+       * @param ratio - the ratio
+       * @returns {string}
+       */
+      const drawImage = (imgObj, newWidth, newHeight, startX, startY, ratio) => {
+        //set up canvas for thumbnail
+        const tnCanvas = document.createElement('canvas');
+        const tnCanvasContext = tnCanvas.getContext('2d');
+        tnCanvas.width = newWidth;
+        tnCanvas.height = newHeight;
+
+        /* use the sourceCanvas to duplicate the entire image. This step was crucial for iOS4 and under devices. Follow the link at the end of this post to see what happens when you don’t do this */
+        const bufferCanvas = document.createElement('canvas');
+        const bufferContext = bufferCanvas.getContext('2d');
+        bufferCanvas.width = imgObj.width;
+        bufferCanvas.height = imgObj.height;
+        bufferContext.drawImage(imgObj, 0, 0);
+
+        /* now we use the drawImage method to take the pixels from our bufferCanvas and draw them into our thumbnail canvas */
+        tnCanvasContext.drawImage(bufferCanvas, startX, startY, newWidth * ratio, newHeight * ratio, 0, 0, newWidth, newHeight);
+        return tnCanvas.toDataURL();
+      };
+
+      /**
+       * Récuperer les valeurs dispensable pour une image pré-upload
+       * @param {File} file
+       * @returns {Promise<any>}
+       */
+      self.imgPromise = (file) => {
+        return new Promise((resolve, reject) => {
+          const byteLimite = 2097152; // 2Mb
+          if (file && file.size <= byteLimite) {
+            let fileReader = new FileReader();
+            fileReader.onload = (Event) => {
+              const img = new Image();
+              img.src = Event.target.result;
+              img.onload = () => {
+                const ms = Math.min(img.width, img.height);
+                const mesure = (ms < 600) ? ms : 600;
+                const imgCrop = drawImage(img, mesure, mesure, 0, 0, 1);
+                resolve({
+                  src: imgCrop
+                });
+              };
+            };
+            fileReader.readAsDataURL(file);
+          } else {
+            reject('Le fichier sélectionné est trop volumineux. La taille maximale est 2Mo.');
+          }
+        });
+      };
+
+      $scope.uploadImage = function (file, errFiles) {
+        $scope.avatarFile = file;
+        if (_.isNull(file)) return;
+        self.imgPromise(file)
+          .then(result => {
+            $scope.$apply(() => {
+              $scope.profilEditor.featuredImage = result.src;
+            });
+          })
+          .catch(e => {
+            alertify.error(e);
+          });
+      };
+
       /**
        * Afficher la boite de dialogue pour modifier un candidate
        */
       $scope.onViewModalCandidateProfil = () => {
+        $scope.profilEditor.featuredImage = $scope.Candidate.avatar;
+        $scope.profilEditor.status = $scope.Candidate.status.value;
+        $scope.profilEditor.newsletter = $scope.Candidate.newsletter;
         if (jQuery().validate) {
           jQuery("#editProfilForm").validate({
             rules: {
-              pwd: {
+              status: {
                 required: true,
-                pwdpattern: true,
-                minlength: 8,
               }
             },
             messages: {
-              pwd: {
+              status: {
                 required: "Ce champ est obligatoire"
               }
             },
             submitHandler: function (form) {
               const Fm = new FormData();
               Fm.append('action', 'update-candidate-profil');
-              Fm.append('oldpwd', scope.oldpwd);
-              Fm.append('pwd', scope.pwd);
-              // Submit form validate
-              $http({
+              Fm.append('status', $scope.profilEditor.status);
+              Fm.append('newsletter', $scope.profilEditor.newsletter ? 1 : 0);
+
+              if ($scope.avatarFile) {
+                $scope.avatarFile.upload = Upload.upload({
                   url: itOptions.Helper.ajax_url,
-                  method: "POST",
-                  headers: {
-                    'Content-Type': undefined
-                  },
-                  data: Fm
-                })
-                .then(resp => {
-                  let data = resp.data;
-                  // Update password success
-                  if ( ! data.success) return;
-                  UIkit.modal('#modal-candidate-profil-editor').hide();
-                })
+                  data: {
+                    file: $scope.avatarFile,
+                    action: 'ajx_upload_media'
+                  }
+                });
+
+                $scope.avatarFile.upload
+                  .then(function (response) { // Success
+                    $scope.avatarFile.result = response.data;
+                    $scope.onSaveCandidateProfil(Fm);
+                  }, response => { // Error
+                    if (response.status > 0)
+                      alertify.error(response.status + ': ' + response.data);
+                  }, evt => { // Progress
+                    $scope.avatarFile.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                  });
+              } else {
+                $scope.onSaveCandidateProfil(Fm);
+              }
             }
           });
         }
       };
 
-      $scope.onSaveCandidate = () => {
-
+      /**
+       * Enregistrer les introduction de l'utilisateur
+       * @param {FormData} formData 
+       */
+      $scope.onSaveCandidateProfil = (formData) => {
+        $http({
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: formData
+          })
+          .then(resp => {
+            let data = resp.data;
+            if (!data.success) return;
+            UIkit.modal('#modal-candidate-profil-editor').hide();
+            location.reload();
+          })
       };
 
       UIkit.util.on('#modal-candidate-profil-editor', 'show', function (e) {
         e.preventDefault();
-        $scope.onViewModalCandidateProfil();
+        $scope.$apply(() => {
+          $scope.onViewModalCandidateProfil();
+        })
       });
-      
+
+      UIkit.util.on('#modal-candidate-profil-editor', 'hide', function (e) {
+        e.preventDefault();
+        $scope.$apply(() => {
+          $scope.avatarFile = false;
+          $scope.profilEditor = {};
+        })
+      });
+
       /**
        * Envoyer une offre dans la corbeille
        * @param {int} offerId
@@ -876,8 +995,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               }
             });
         });
-
-
       }
+
+      // Inititialise controlleur
+      $scope.Initialize();
+
+
     }
   ])
