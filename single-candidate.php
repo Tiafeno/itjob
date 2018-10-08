@@ -102,7 +102,6 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         } else {
                           echo 'Aucun';
                         }
-
                         ?>
                       </div>
 

@@ -80,6 +80,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       templateUrl: itOptions.Helper.tpls_partials + '/change-password.html',
       scope: {},
       link: function (scope, element, attrs) {
+        scope.password = {};
+        scope.error = false;
         if (jQuery().validate) {
           jQuery.validator.addMethod("pwdpattern", function (value) {
             return /^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/.test(value)
@@ -113,8 +115,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             submitHandler: function (form) {
               const Fm = new FormData();
               Fm.append('action', 'update-user-password');
-              Fm.append('oldpwd', scope.oldpwd);
-              Fm.append('pwd', scope.pwd);
+              Fm.append('oldpwd', scope.password.oldpwd);
+              Fm.append('pwd', scope.password.pwd);
               // Submit form validate
               $http({
                   url: itOptions.Helper.ajax_url,
@@ -127,7 +129,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 .then(resp => {
                   let data = resp.data;
                   // Update password success
-                  if (!data.success) return;
+                  if ( ! data.success) {
+                    scope.error = true;
+                    return;
+                  }
+                  scope.error = false;
                   UIkit.modal('#modal-change-pwd-overflow').hide();
                   location.reload();
                 })
@@ -135,16 +141,15 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           });
         }
 
-        scope.openEditor = () => {
-          UIkit.modal('#modal-change-pwd-overflow').show();
-        };
-
         // Event on modal dialog close or hide
-        UIkit.util.on('#modal-change-pwd-overflow', 'hide', function (e) {
-          e.preventDefault();
-          e.target.blur();
-          scope.changePwdForm.$setPristine();
-          scope.changePwdForm.$setUntouched();
+        jQuery('#modal-change-pwd-overflow').on('hidden.bs.modal', function () {
+          scope.$apply(() => {
+            scope.changePwdForm.$setPristine();
+            scope.changePwdForm.$setUntouched();
+            scope.password = {};
+            scope.error = false;
+          });
+          
         });
       },
       controller: ['$scope', function ($scope) {
@@ -729,6 +734,16 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.tform.$setUntouched();
         });
       }]}
+  }])
+  .directive('notifications', [function() {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/notifications.html',
+      scope: {},
+      controller: ['$scope', function($scope) {
+
+      }]
+    }
   }])
   .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService', 'Client', 'Upload',
     function ($scope, $http, $q, clientFactory, clientService, Client, Upload) {
