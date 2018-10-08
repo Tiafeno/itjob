@@ -489,7 +489,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
          * @param {bool} isValid 
          */
         $scope.submitForm = (isValid) => {
-          if (!isValid) return;
+          if ( ! isValid || ! $scope.eform.$dirty) return;
+
           let beginFormat = $scope.Exp.dateBegin.month + ", " + $scope.Exp.dateBegin.year;
           let dateBegin = moment(beginFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
           let dateEnd = '';
@@ -624,7 +625,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
          * @param {bool} isValid 
          */
         $scope.submitForm = (isValid) => {
-          if (!isValid || _.isNull($scope.mode)) return;
+          if (!isValid || _.isNull($scope.mode) || ! $scope.tform.$dirty) return;
           let Trainings = _.clone($scope.Candidate.trainings);
           switch ($scope.mode) {
             case 0:
@@ -789,8 +790,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             // Handle success
             let data = response.data;
             $scope.alertLoading = false;
-            if (data.success) {
-              console.warn("Une erreur inconue s'est produit")
+            if ( ! data.success) {
+              alertify.error("Une erreur inconue s'est produit")
+            } else {
+              alertify.success('Enregistrer avec succès')
             }
           });
       };
@@ -888,11 +891,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               }
             },
             submitHandler: function (form) {
+              if ( ! $scope.editProfilForm.$dirty) return;
               const Fm = new FormData();
               Fm.append('action', 'update-candidate-profil');
               Fm.append('status', $scope.profilEditor.status);
               Fm.append('newsletter', $scope.profilEditor.newsletter ? 1 : 0);
-
               if ($scope.avatarFile) {
                 $scope.avatarFile.upload = Upload.upload({
                   url: itOptions.Helper.ajax_url,
@@ -901,7 +904,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                     action: 'ajx_upload_media'
                   }
                 });
-
                 $scope.avatarFile.upload
                   .then(function (response) { // Success
                     $scope.avatarFile.result = response.data;
@@ -950,10 +952,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
 
       UIkit.util.on('#modal-candidate-profil-editor', 'hide', function (e) {
         e.preventDefault();
-        $scope.$apply(() => {
-          $scope.avatarFile = false;
-          $scope.profilEditor = {};
-        })
+        $scope.avatarFile = false;
+        $scope.profilEditor = {};
       });
 
       /**

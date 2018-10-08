@@ -64,6 +64,7 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_enqueue_style( 'sweetalert' );
       wp_enqueue_style( 'ng-tags-bootstrap' );
       wp_enqueue_style( 'froala' );
+      wp_enqueue_style( 'alertify' );
       wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
       // scripts
       wp_enqueue_script( 'sweetalert' );
@@ -78,6 +79,7 @@ if ( ! class_exists( 'scClient' ) ) :
         'angular-route',
         'ngFileUpload',
         'datatable',
+        'alertify',
         'ng-tags',
         'b-datepicker',
         'fr-datepicker',
@@ -302,7 +304,7 @@ if ( ! class_exists( 'scClient' ) ) :
     public function update_alert_filter() {
       global $itJob;
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
-        wp_send_json( false );
+        wp_send_json( ['success' => false] );
       }
       $alerts = Http\Request::getValue('alerts');
       $alerts = \json_decode($alerts);
