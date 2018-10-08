@@ -45,6 +45,12 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
       margin-bottom: auto;
       margin-top: auto;
     }
+    .candidate-content .informations i {
+      font-size: 16px;
+    }
+    .candidate-content .informations p {
+      display: flex;
+    }
   </style>
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
@@ -107,9 +113,10 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                     </div>
                   </div>
                   <div class="col-md-4 d-flex align-items-top">
-                    <div class="mt-2">
-                      <p class="mb-1"><i class="ti-location-pin mr-2"></i> <?= $candidate->region->name ?></p>
-                      <p class="mb-1"><i class="ti-agenda mr-2"></i> Déposée le <?= $candidate->dateAdd ?></p>
+                    <div class="mt-2 informations">
+                      <p class="mb-2"><i class="ti-id-badge mr-2"></i> <?= $candidate->greeting['value'] === 'mr' ? 'Homme' : 'Femme' ?></p>
+                      <p class="mb-2"><i class="ti-map-alt mr-2"></i> <?= $candidate->region->name ?></p>
+                      <p class="mb-2"><i class="ti-agenda mr-2"></i> Déposée le <?= $candidate->dateAdd ?></p>
                     </div>
                   </div>
                 </div>
