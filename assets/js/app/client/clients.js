@@ -773,14 +773,15 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.Initialize = () => {
         console.log('Initialize');
 
-        /** Crée une image par default */
-        let sexe = (Client.Candidate.greeting.value === 'mr') ? 'male' : 'female';
-        $scope.featuredImage = itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
+        
 
         if (Client.post_type === 'company') {
           $scope.Company = _.clone(Client.Company);
           $scope.offerLists = _.clone(Client.Offers);
         } else {
+          /** Crée une image par default */
+          let sexe = (Client.Candidate.greeting.value === 'mr') ? 'male' : 'female';
+          $scope.featuredImage = itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
           const Candidate = _.clone(Client.Candidate);
           $scope.biography = Client.Candidate.has_cv ? Client.Candidate.status.label : '';
           $scope.Candidate = _.mapObject(Candidate, (value, key) => {
