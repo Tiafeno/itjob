@@ -427,12 +427,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
 
           UIkit.modal('#modal-view-candidat').show();
           $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {
-              cache: false
-            })
-            .then(resp => {
-              $scope.postuledCandidats = resp.data;
-              $scope.loadingCandidats = false;
-            });
+            cache: false
+          })
+          .then(resp => {
+            $scope.postuledCandidats = resp.data;
+            $scope.loadingCandidats = false;
+          });
         };
       }]
     };
@@ -793,7 +793,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.Company = _.clone(Client.Company);
           $scope.offerLists = _.clone(Client.Offers);
         } else {
-          /** Crée une image par default */
+          // Candidat
+          // Crée une image par default
           let sexe = (Client.Candidate.greeting.value === 'mr') ? 'male' : 'female';
           $scope.featuredImage = itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
           const Candidate = _.clone(Client.Candidate);
@@ -816,8 +817,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             }
           });
           $scope.cv.hasCV = $scope.Candidate.has_cv;
+          if ( ! $scope.cv.hasCV) {
+            jQuery('#modal-info-editor').modal('show')
+          }
         }
         $scope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
+        // jQuery
       };
 
       /**
@@ -924,6 +929,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         });
       };
 
+      /**
+       * Upload featured image
+       * @param file
+       * @param errFiles
+       */
       $scope.uploadImage = function (file, errFiles) {
         $scope.avatarFile = file;
         if (_.isNull(file)) return;

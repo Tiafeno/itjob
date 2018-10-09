@@ -18,6 +18,37 @@
     display: block;
   }
 </style>
+
+<!-- Modal information -->
+<div id="modal-info-editor" class="modal fade" aria-labelledby="modal-info-editor" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="ibox modal-content">
+        <div class="ibox-head">
+          <div class="ibox-title">Qu'est-ce que vous voulez faire?</div>
+        </div>
+
+        <div class="modal-body">
+          <ul class="timeline scroller">
+            <li class="timeline-item">
+              <span class="timeline-point"></span>
+              <span class="flexbox">Crée votre CV pour être visible par les recruteurs et Postuler aux offres</span>
+            </li>
+            <li class="timeline-item">
+              <span class="timeline-point"></span>
+              <span class="flexbox">S’inscrire à une formation ou demander une formation</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary btn-fix btn-thick" data-dismiss="modal" type="button">Fermer
+          </button>
+        </div>
+    </div>
+  </div>
+</div>
+<!-- .end information -->
+
 <!-- Modal contact -->
 <div id="modal-candidate-profil-editor" uk-modal>
   <div class="uk-modal-dialog">
@@ -36,7 +67,8 @@
               <div class="p-absolute" style="width: 125px; bottom: -62px;">
                 <div class="uk-text-bold">Photo</div>
                 <button type="file" ngf-select="uploadImage($file, $invalidFiles)" accept="image/*" class="btn"
-                  ngf-max-size="2MB">Choisir une image</button>
+                        ngf-max-size="2MB">Choisir une image
+                </button>
               </div>
             </div>
           </div>
@@ -44,8 +76,9 @@
 
             <div class="form-group">
               <label class="col-form-label ">Mon status <span style="color: red">*</span></label>
-              <select class="form-control" name="status" id="status" ng-model="profilEditor.status" ng-value="profilEditor.status"
-                title="Status" required>
+              <select class="form-control" name="status" id="status" ng-model="profilEditor.status"
+                      ng-value="profilEditor.status"
+                      title="Status" required>
                 <option value="0">Je cherche un emploi</option>
                 <option value="1">Je souhaite entretenir mon réseau</option>
                 <option value="2">Je cherche un stage</option>
@@ -54,7 +87,7 @@
 
             <div class="form-group">
               <label class="col-form-label ">Adresse e-mail</label>
-              <input class="form-control" name="email" id="email" ng-model="Candidate.author.data.user_email" disabled />
+              <input class="form-control" name="email" id="email" ng-model="Candidate.author.data.user_email" disabled/>
             </div>
 
             <div class="form-group mt-4">
@@ -80,7 +113,8 @@
 <!-- .end modal -->
 
 <!-- Modal contact -->
-<div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1" role="dialog">
+<div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1"
+     role="dialog">
   <div class="modal-dialog" role="document">
     <div class="ibox text-left modal-content">
       <div class="ibox-head">
@@ -93,15 +127,17 @@
       <div class="ibox-body">
         <p>
           Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:<br>
-          <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034
-            93 962 18</a>.
+          <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a
+          href="tel:+261349396218">034
+          93 962 18</a>.
         </p>
       </div>
 
       <div class="ibox-footer">
         <div class="row">
           <div class="col-sm-12 uk-text-right">
-            <button class="btn btn-outline-secondary btn-fix btn-thick btn-air" data-dismiss="modal" type="button">Ok</button>
+            <button class="btn btn-outline-secondary btn-fix btn-thick btn-air" data-dismiss="modal" type="button">Ok
+            </button>
           </div>
         </div>
       </div>
@@ -115,7 +151,7 @@
     <div class="card text-center centered mb-4" style="max-width:320px;">
       <div class="card-body">
         <span class="badge badge-blue badge-circle float-right" uk-toggle="target: #modal-candidate-profil-editor"
-          style="cursor: pointer">
+              style="cursor: pointer">
           <i class="ti-pencil"></i>
         </span>
 
@@ -141,6 +177,11 @@
     </div>
   </div>
   <div class="col-lg-8">
+    <div class="ibox-body alert alert-info alert-dismissable fade show">
+      <button class="close" data-dismiss="alert" aria-label="Close"></button>
+      <h4>Bonjour <b>[[Candidate.display_name]]</b></h4>
+      <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
+    </div>
     <div class="mt-4">
       <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
         <li class="nav-item">
@@ -162,15 +203,16 @@
                 <div class="col-sm-6">
                   <!-- Information général directive -->
                   <general-information-candidate abranchs="asyncTerms('branch_activity')" regions="asyncTerms('region')"
-                    all-city="asyncTerms('city')" init="Initialize()" candidate="Candidate">
+                                                 all-city="asyncTerms('city')" init="Initialize()"
+                                                 candidate="Candidate">
                   </general-information-candidate>
                   <change-password></change-password>
                 </div>
                 <div class="col-sm-6">
                   <!-- Alerts directive -->
-                  <alerts on-save="onSaveAlert()" alerts="alerts" message="Je souhaite être informé quand une publication comportent les mots suivants:"
-                    alert-loading="alertLoading">
-
+                  <alerts on-save="onSaveAlert()" alerts="alerts"
+                          message="Je souhaite être informé quand une publication comportent les mots suivants:"
+                          alert-loading="alertLoading">
                   </alerts>
                 </div>
               </div>
