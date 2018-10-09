@@ -75,6 +75,22 @@ function itjob_get_notice() {
   }
 }
 
+add_action('i_am_interested_this_candidate', function () {
+  global $itJob, $post;
+  wp_enqueue_style('alertify');
+  wp_enqueue_script('interests', get_template_directory_uri().'/assets/js/app/interests/interests.js', ['angular', 'alertify'], $itJob->version, true);
+  wp_localize_script('interests', 'itOptions', [
+    'Helper' => [
+      'ajax_url' => admin_url( 'admin-ajax.php' ),
+      'partialsUrl' => get_template_directory_uri() . '/assets/js/app/interests/partials'
+    ]
+  ]);
+  $app = "<div class='d-inline-block' ng-app='interestsApp'>";
+  $app .= "<ask-cv cv-id='".$post->ID."'></ask-cv>";
+  $app .= "</div>";
+  echo $app;
+});
+
 /**
  * Envoyer une candidature
  * Call in single-offers.php line 32

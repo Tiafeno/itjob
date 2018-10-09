@@ -77,7 +77,8 @@ $itJob = (object) [
 // shortcodes
 $shortcode = (object) [
   'scImport' => require 'includes/shortcodes/class-import-csv.php',
-  'scLogin'  => require 'includes/shortcodes/class-login.php'
+  'scLogin'  => require 'includes/shortcodes/class-login.php',
+  'scInterests'  => require 'includes/shortcodes/class-interests.php'
 ];
 
 add_action('init', function() {

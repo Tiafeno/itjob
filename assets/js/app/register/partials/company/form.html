@@ -59,6 +59,7 @@
       <div class="col-sm-6">
         <input class="form-control" name="address" ng-model="company.address" type="text" placeholder="Adresse"
                required>
+        <p class="mention-text mt-1">Cette donnée n’est jamais partagée et utilisée uniquement pour la gestion de votre compte</p>
         <div ng-messages="formCompany.address.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.address.$invalid && formCompany.address.$touched">
           <div ng-message="required">Le champ adresse est obligatoire.</div>

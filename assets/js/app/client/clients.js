@@ -34,11 +34,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       'juillet', 'août', 'septembre',
       'octobre', 'novembre', 'décembre'
     ];
-    this.clientArea = () => {
-      return $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
-        cache: false
-      });
-    }
   }])
   .filter('Greet', [function () {
     const Greeting = [{

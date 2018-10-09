@@ -106,21 +106,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
               'description' => "Une titre pour le formulaire",
               'admin_label' => true,
               'weight'      => 0
-            ),
-//            array(
-//              'type'        => 'dropdown',
-//              'class'       => 'vc-ij-position',
-//              'heading'     => 'Type de formulaire',
-//              'param_name'  => 'form',
-//              'value'       => array(
-//                'Entreprise'     => 'company',
-//                'Candidate (CV)' => 'candidate'
-//              ),
-//              'std'         => 'company',
-//              'description' => "Un formulaire que vous souhaiter utiliser",
-//              'admin_label' => true,
-//              'weight'      => 0
-//            ),
+            )
           )
         )
       );

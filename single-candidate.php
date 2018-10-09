@@ -235,9 +235,9 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                 <div class="row pt-3">
                   <div class="col-md-4"></div>
                   <div class="col-md-8 text-right">
-                    <a href="<?= get_post_type_archive_link( 'candidate' ) ?>" class="btn btn-outline-blue btn-fix">
-                      <span class="btn-icon"><i class="ti-star"></i>Ce candidat m'interesse</span>
-                    </a>
+
+                    <?php do_action('i_am_interested_this_candidate'); ?>
+
                     <a href="<?= get_post_type_archive_link( 'candidate' ) ?>" class="ml-2">
                       <button class="btn btn-outline-secondary btn-fix">
                         <span class="btn-icon"><i class="ti-angle-left"></i>Retour</span>
