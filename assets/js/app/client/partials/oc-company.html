@@ -1,3 +1,34 @@
+<!-- Modal contact -->
+<div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="ibox text-left modal-content">
+      <div class="ibox-head">
+        <div class="ibox-title">Modifier mes informations</div>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+
+      <div class="ibox-body">
+        <p>
+          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:<br>
+          <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034
+            93 962 18</a>.
+        </p>
+      </div>
+
+      <div class="ibox-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-outline-secondary btn-fix btn-thick btn-air" data-dismiss="modal" type="button">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- .end modal -->
+
 <div class="ibox-body">
   <div class="flexbox">
     <div class="flexbox-b">
@@ -40,20 +71,14 @@
       <div class="ibox-body">
         <div class="row">
           <div class="col-sm-6">
-            <general-information-company
-              abranchs="asyncTerms('branch_activity')"
-              regions="asyncTerms('region')"
-              all-city="asyncTerms('city')"
-              init="Initialize()"
-              company="Company">
+            <general-information-company abranchs="asyncTerms('branch_activity')" regions="asyncTerms('region')"
+              all-city="asyncTerms('city')" init="Initialize()" company="Company">
             </general-information-company>
             <change-password></change-password>
           </div>
           <div class="col-sm-6">
-            <alerts on-save="onSaveAlert()" 
-            message="Je souhaite être informé quand un candidat comportent les expressions suivantes: Saissez le mot et appuyez sur entrée ou `,` pour ajouter"
-            alerts="alerts" 
-            alert-loading="alertLoading">
+            <alerts on-save="onSaveAlert()" message="Je souhaite être informé quand un candidat comportent les expressions suivantes: Saissez le mot et appuyez sur entrée ou `,` pour ajouter"
+              alerts="alerts" alert-loading="alertLoading">
             </alerts>
           </div>
         </div>
@@ -64,13 +89,8 @@
   <div class="tab-pane fade text-center" id="offers">
     <div class="page-content">
       <div class="ibox-body">
-        <offer-lists
-          offers="offerLists"
-          init="Initialize()"
-          company="Company"
-          abranchs="asyncTerms('branch_activity')"
-          regions="asyncTerms('region')"
-          all-city="asyncTerms('city')">
+        <offer-lists offers="offerLists" init="Initialize()" company="Company" abranchs="asyncTerms('branch_activity')"
+          regions="asyncTerms('region')" all-city="asyncTerms('city')">
         </offer-lists>
 
       </div>

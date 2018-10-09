@@ -91,7 +91,6 @@
         </div>
 
       </form>
-
     </div>
 
     <div class="uk-modal-footer">
@@ -103,17 +102,19 @@
           <button class="btn btn-blue ml-4" ng-click="updateUser()" type="button">Enregistrer</button>
         </div>
       </div>
-
     </div>
 
   </div>
 </div>
 <!-- .end Modal-->
 
+
+
 <div class="profil-box">
     <div class="ibox-body">
       <h5 class="font-strong mb-4">MES INFORMATIONS
-        <span class="badge badge-warning badge-circle ml-3" ng-click="openEditor()" style="cursor: pointer">
+        <!--  Target: #modal-contact-overflow is in -->
+        <span class="badge badge-warning badge-circle ml-3" data-toggle="modal" data-target="#modal-contact-overflow" style="cursor: pointer">
           <i class="ti-pencil"></i>
         </span>
       </h5>

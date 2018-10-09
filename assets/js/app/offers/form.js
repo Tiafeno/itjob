@@ -13,8 +13,8 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
   })
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
-
-    const states = [{
+    const states = [
+      {
         name: 'form',
         templateUrl: itOptions.partials_url + '/form.html',
         url: '/form',
@@ -80,9 +80,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
 
           // Activate Popovers
           jQuery('[data-toggle="popover"]').popover();
-
           $scope.$watch('rateplan', value => {
-
           });
         }]
       },

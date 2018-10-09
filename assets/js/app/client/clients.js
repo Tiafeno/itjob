@@ -241,12 +241,16 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
         $scope.status = false;
         $scope.userEditor = {};
+
+        /**
+         * Ouvrir l'editeur d'information utilisateur
+         */
         $scope.openEditor = () => {
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
             $scope.Regions = _.clone(data[0]);
             $scope.branchActivity = _.clone(data[1]);
             $scope.Citys = _.clone(data[2]);
-            const incInput = ['address', 'greeting', 'name', 'stat', 'nif'];
+            const incInput = ['address', 'name', 'stat', 'nif'];
             const incTerm = ['branch_activity', 'region', 'country'];
             incInput.forEach((InputValue) => {
               if ($scope.Entreprise.hasOwnProperty(InputValue)) {
@@ -263,10 +267,15 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               }
             });
             if (!_.isEmpty($scope.userEditor)) {
+              $scope.userEditor.greeting = $scope.Entreprise.greeting.value;
               UIkit.modal('#modal-edit-user-overflow').show();
             }
           });
         };
+
+        /**
+         * Mettre à jours les informations de l'utilisateur
+         */
         $scope.updateUser = () => {
           $scope.status = "Enregistrement en cours ...";
           let userForm = new FormData();
@@ -290,6 +299,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               }
             });
         };
+        
         // Event on modal dialog close or hide
         UIkit.util.on('#modal-edit-user-overflow', 'hide', function (e) {
           e.preventDefault();
