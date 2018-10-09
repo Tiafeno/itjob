@@ -404,8 +404,15 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           clientFactory
             .sendPostForm(offerForm)
             .then(resp => {
-              UIkit.modal('#modal-edit-offer-overflow').hide();
-              $scope.init();
+              let data = resp.data;
+              if (data.success) {
+                // Mettre à jours la liste des offres
+                $scope.Offers = _.clone(data.offers);
+                UIkit.modal('#modal-edit-offer-overflow').hide();
+                alertify.success("L'offre a été mise à jour avec succès");
+              } else {
+                alertify.error("Une erreur s'est produite pendant l'enregistrement");
+              }
             });
         };
 

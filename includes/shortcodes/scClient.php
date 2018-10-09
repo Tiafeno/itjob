@@ -162,7 +162,7 @@ if ( ! class_exists( 'scClient' ) ) :
       foreach ( $form as $key => $value ) {
         update_field( "itjob_offer_{$key}", $value, $post_id );
       }
-      wp_send_json( [ 'success' => true, 'form' => $form ] );
+      wp_send_json( [ 'success' => true, 'offers' => $this->__get_company_offers() ] );
     }
 
     /**
