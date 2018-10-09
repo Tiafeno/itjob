@@ -22,7 +22,7 @@ function itjob_pagination() {
  */
 function itjob_current_user_is_company() {
   if ( ! is_user_logged_in() ) {
-    return null;
+    return false;
   }
   $User = wp_get_current_user();
   $Comp = \includes\post\Company::get_company_by($User->ID);
@@ -35,9 +35,11 @@ function itjob_current_user_is_company() {
  */
 function itjob_current_user_is_particular() {
   if ( ! is_user_logged_in() ) {
-    return null;
+    return false;
   }
-
+  $User = wp_get_current_user();
+  $Cand = \includes\post\Candidate::get_candidate_by($User->ID);
+  return $Cand->is_candidate();
 }
 
 // Ajouter une notification
@@ -73,6 +75,9 @@ function itjob_get_notice() {
   }
 }
 
+/**
+ * Call in single-offers.php line 32
+ */
 add_action('send_apply_offer', function () {
   $action = Http\Request::getValue('action');
   if (trim($action) === 'send_apply') {

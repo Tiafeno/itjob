@@ -782,9 +782,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
        */
       $scope.Initialize = () => {
         console.log('Initialize');
-
-        
-
         if (Client.post_type === 'company') {
           $scope.Company = _.clone(Client.Company);
           $scope.offerLists = _.clone(Client.Offers);

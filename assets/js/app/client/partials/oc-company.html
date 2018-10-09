@@ -1,5 +1,6 @@
 <!-- Modal contact -->
-<div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1" role="dialog">
+<div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1"
+     role="dialog">
   <div class="modal-dialog" role="document">
     <div class="ibox text-left modal-content">
       <div class="ibox-head">
@@ -12,15 +13,17 @@
       <div class="ibox-body">
         <p>
           Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:<br>
-          <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034
-            93 962 18</a>.
+          <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a
+          href="tel:+261349396218">034
+          93 962 18</a>.
         </p>
       </div>
 
       <div class="ibox-footer">
         <div class="row">
           <div class="col-sm-12 uk-text-right">
-            <button class="btn btn-outline-secondary btn-fix btn-thick btn-air" data-dismiss="modal" type="button">Ok</button>
+            <button class="btn btn-outline-secondary btn-fix btn-thick btn-air" data-dismiss="modal" type="button">Ok
+            </button>
           </div>
         </div>
       </div>
@@ -29,18 +32,18 @@
 </div>
 <!-- .end modal -->
 
-<div class="ibox-body">
+<div class="">
   <div class="flexbox">
     <div class="flexbox-b">
-      <div>
-        <h4>[[ Company.title ]]</h4>
-        <div>
-          <span class="mr-3">
-            <span class="badge badge-success badge-circle mr-2 font-14" style="height:30px;width:30px;">
-              <i class="ti-user"></i>
-            </span>
-            Entreprise
-          </span>
+      <div class="card text-center centered mb-4" style="max-width:320px;">
+        <div class="card-body">
+          <h4 class="card-title text-left mb-3" style="font-size: 41px; font-weight: bold">
+            [[ Company.title ]]
+          </h4>
+          <!--<div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Company.address ]]</div>-->
+          <div class="d-flex justify-content-around align-items-center">
+            <notifications></notifications>
+          </div>
         </div>
       </div>
     </div>
@@ -52,47 +55,60 @@
     </div>
   </div>
 </div>
-<ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
-  <li class="nav-item">
-    <a class="nav-link active" data-target="#profil" data-toggle="tab">
-      Profil
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" data-target="#offers" data-toggle="tab">
-      Mes offres
-    </a>
-  </li>
-</ul>
 
-<div class="tab-content">
-  <div class="tab-pane fade active show" id="profil">
-    <div class="page-content">
-      <div class="ibox-body">
-        <div class="row">
-          <div class="col-sm-6">
-            <general-information-company abranchs="asyncTerms('branch_activity')" regions="asyncTerms('region')"
-              all-city="asyncTerms('city')" init="Initialize()" company="Company">
-            </general-information-company>
-            <change-password></change-password>
-          </div>
-          <div class="col-sm-6">
-            <alerts on-save="onSaveAlert()" message="Je souhaite être informé quand un candidat comportent les expressions suivantes: Saissez le mot et appuyez sur entrée ou `,` pour ajouter"
-              alerts="alerts" alert-loading="alertLoading">
-            </alerts>
+<div class="row">
+  <div class="col-lg-12">
+    <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
+      <li class="nav-item">
+        <a class="nav-link active" data-target="#profil" data-toggle="tab">
+          Profil
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-target="#offers" data-toggle="tab">
+          Mes offres
+        </a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade active show" id="profil">
+        <div class="page-content">
+          <div class="ibox-body">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="ibox-body alert alert-info alert-dismissable fade show">
+                  <h4>Bonjour <b>[[Company.name]]</b></h4>
+                  <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
+                </div>
+                <hr>
+                <alerts on-save="onSaveAlert()"
+                        message="Je souhaite être informé quand un candidat comportent les expressions suivantes: Saissez le mot et appuyez sur entrée ou `,` pour ajouter"
+                        alerts="alerts" alert-loading="alertLoading">
+                </alerts>
+                <hr>
+                <change-password></change-password>
+              </div>
+              <div class="col-sm-6">
+                <general-information-company abranchs="asyncTerms('branch_activity')"
+                                             regions="asyncTerms('region')"
+                                             all-city="asyncTerms('city')"
+                                             init="Initialize()"
+                                             company="Company">
+                </general-information-company>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+      <div class="tab-pane fade text-center" id="offers">
+        <div class="page-content">
+          <div class="ibox-body">
+            <offer-lists offers="offerLists" init="Initialize()" company="Company" abranchs="asyncTerms('branch_activity')"
+                         regions="asyncTerms('region')" all-city="asyncTerms('city')">
+            </offer-lists>
 
-  <div class="tab-pane fade text-center" id="offers">
-    <div class="page-content">
-      <div class="ibox-body">
-        <offer-lists offers="offerLists" init="Initialize()" company="Company" abranchs="asyncTerms('branch_activity')"
-          regions="asyncTerms('region')" all-city="asyncTerms('city')">
-        </offer-lists>
-
+          </div>
+        </div>
       </div>
     </div>
   </div>
