@@ -119,7 +119,9 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                     </div>
                   </div>
                 </div>
+
                 <hr>
+
                 <div class="candidate-experience mt-5 mb-5">
                   <h4><i class="fa fa-graduation-cap"></i> Formations</h4>
                   <div class="cd-timeline timeline-1">
@@ -132,7 +134,6 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                           <h5><?= $trainings->training_establishment ?></h5>
                           <h6 class="text-muted"><?= $trainings->training_diploma ?></h6>
                           <p><?= $trainings->training_city . ', ' . $trainings->training_country ?></p>
-
                           <span class="cd-date badge badge-success"><?= ucfirst($trainings->training_dateBegin) ?> <b>-</b>
                             <?= ucfirst($trainings->training_dateEnd ? $trainings->training_dateEnd : 'Aujourd’hui') ?></span>
                         </div>
@@ -142,6 +143,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       ?>
                   </div>
                 </div>
+
                 <hr class="uk-devider">
                 <div class="candidate-experience mt-5">
                   <h4><i class="fa fa-user"></i> Experiences professionnelles</h4>
@@ -225,19 +227,19 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       </p>
                     </div>
                     <?php } ?>
-
                   </div>
                 </div>
-
-
               </div>
 
               <div class="candidate-footer ibox-footer mt-lg-3">
                 <div class="row pt-3">
-                  <div class="col-md-8"></div>
-                  <div class="col-md-4">
-                    <a href="<?= get_post_type_archive_link( 'candidate' ) ?>">
-                      <button class="btn btn-outline-primary btn-fix">
+                  <div class="col-md-4"></div>
+                  <div class="col-md-8 text-right">
+                    <a href="<?= get_post_type_archive_link( 'candidate' ) ?>" class="btn btn-outline-blue btn-fix">
+                      <span class="btn-icon"><i class="ti-star"></i>Ce candidat m'interesse</span>
+                    </a>
+                    <a href="<?= get_post_type_archive_link( 'candidate' ) ?>" class="ml-2">
+                      <button class="btn btn-outline-secondary btn-fix">
                         <span class="btn-icon"><i class="ti-angle-left"></i>Retour</span>
                       </button>
                     </a>

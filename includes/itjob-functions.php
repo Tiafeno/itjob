@@ -76,6 +76,7 @@ function itjob_get_notice() {
 }
 
 /**
+ * Envoyer une candidature
  * Call in single-offers.php line 32
  */
 add_action('send_apply_offer', function () {
