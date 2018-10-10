@@ -41,6 +41,9 @@ class scInterests {
     if (!$token || !$candidate_id || $User->ID === 0) return "Une erreur s'est produite";
     if (trim($token) === $User->data->user_pass && $candidate_id) {
       $Candidate = new Candidate($candidate_id);
+      // Une systéme pour limiter la visualisation des CV
+      // Virifier si le compte de l'entreprise est seine ou standart
+       
       // Added access token
       if ( ! $Candidate->hasTokenAccess($token)) {
         $Candidate->updateAccessToken();
