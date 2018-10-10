@@ -42,16 +42,17 @@ class scInterests {
     if (trim($token) === $User->data->user_pass && $candidate_id) {
       $Candidate = new Candidate($candidate_id);
       // Une systéme pour limiter la visualisation des CV
-      // Virifier si le compte de l'entreprise est seine ou standart
-       
+      // Verifier si le compte de l'entreprise est sereine ou standart
+      if (!$Candidate->is_candidate()) return "Un erreur dans l'url detecter";
+      $user_ids = get_field('itjob_company_interests', $Entreprise->getId());
+      $user_ids = $user_ids ? $user_ids : [];
+      if (count($user_ids) > 5) return "Vous avez atteint le nombre limite de votre bonus.";
       // Added access token
       if ( ! $Candidate->hasTokenAccess($token)) {
         $Candidate->updateAccessToken();
 
         // Mettre à jours la liste des candidats ajouter par l'entreprise
         $Entreprise = Company::get_company_by($User->ID);
-        $user_ids = get_field('itjob_company_interests', $Entreprise->getId());
-        $user_ids = $user_ids ? $user_ids : [];
         array_push($user_ids, $User->ID);
         update_field('itjob_company_interests', $user_ids, $Entreprise->getId());
       }
