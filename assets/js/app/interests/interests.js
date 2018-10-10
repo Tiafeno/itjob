@@ -32,6 +32,11 @@
                 if (!data.success) {
                   $scope.message.error = data.success;
                   $scope.message.body  = data.msg;
+
+                  if (data.status === 'logged') {
+                    $scope.login = data.data.loginUrl;
+                    $scope.singup = data.data.singupUrl;
+                  }
                   jQuery('#modal-error').modal('toggle')
                 } else {
                   alertify.confirm("Voulez-vous vraiment voir le CV du candidat au complet?",
@@ -43,7 +48,6 @@
                       // Close alert
                     });
                 }
-
               })
           }
         }]

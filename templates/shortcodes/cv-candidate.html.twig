@@ -12,7 +12,7 @@
 */
 
   #doc, #doc2, #doc3, #doc4, .yui-t1, .yui-t2, .yui-t3, .yui-t4, .yui-t5, .yui-t6, .yui-t7 {
-    font-family: Poppins;
+    font-family: Georgia;
   }
   .msg { padding: 10px; background: #222; position: relative; }
   .msg h1 { color: #fff;  }
@@ -20,7 +20,7 @@
   .msg a:hover { background: #266400; }
 
   /* //-- yui-grids style overrides -- */
-  body { font-family: Georgia; color: #444; }
+  doc2 { font-family: Georgia; color: #444; }
   #inner { padding: 10px 80px; margin: 80px auto; background: #f5f5f5; border: solid #666; border-width: 8px 0 2px 0; }
   .yui-gf { margin-bottom: 2em; padding-bottom: 2em; border-bottom: 1px solid #ccc; }
 
@@ -35,8 +35,8 @@
 
   /* //-- core typography and style -- */
   #hd h1 { font-size: 48px; text-transform: uppercase; letter-spacing: 3px; }
-  h2 { font-size: 152% }
-  h3, h4 { font-size: 122%; }
+  h2 { font-size: 152% !important; }
+  h3, h4 { font-size: 122% !important; }
   h1, h2, h3, h4 { color: #333; }
   p { font-size: 100%; line-height: 18px; padding-right: 3em; }
   a { color: #990003 }
@@ -64,7 +64,11 @@
   .skills-list ul { margin: 0; }
   .skills-list li { margin: 3px 0; padding: 3px 0; }
   .skills-list li span { font-size: 152%; display: block; margin-bottom: -2px; padding: 0 }
-  .talent { width: 32%; float: left }
+  .talent { width: 100%; float: left }
+  .talent li {
+    width: 50%;
+    float: left;
+  }
   .talent h2 { margin-bottom: 6px; }
 
   #srt-ttab { margin-bottom: 100px; text-align: center;  }
@@ -73,6 +77,7 @@
   /* --// override to force 1/8th width grids -- */
   .yui-gf .yui-u{width:80.2%;}
   .yui-gf div.first{width:12.3%;}
+
 </style>
 
 <div id="doc2" class="yui-t7">
@@ -81,15 +86,28 @@
     <div id="hd">
       <div class="yui-gc">
         <div class="yui-u first">
-          <h1>Jonathan Doe</h1>
-          <h2>Web Designer, Director</h2>
+          <div class="row">
+            <div class="col-lg-12">
+              <img class="img-circle" src="{{ candidate.avatar[0] }}" alt="image" width="100">
+            </div>
+            <div class="col-lg-12">
+              <h1>{{ candidate.display_name }}</h1>
+              <h2>{{ candidate.branch_activity.name }}</h2>
+            </div>
+          </div>
+
         </div>
 
         <div class="yui-u">
           <div class="contact-info">
-            <h3><a id="pdf" href="#">Download PDF</a></h3>
-            <h3><a href="mailto:name@yourdomain.com">name@yourdomain.com</a></h3>
-            <h3>(313) - 867-5309</h3>
+            <h3><a id="pdf" href="#" class="text-uppercase">Télécharger en PDF</a></h3>
+            <h3 class="d-inline-block"><a href="mailto:{{ candidate.author.data.user_email }}">{{ candidate.author.data.user_email }}</a></h3>
+            <div class="mt-2">
+              {% for phone in candidate.cellphone %}
+                <h3 class="mt-1" style="font-family: Poppins, sans-serif">{{ phone }}</h3>
+              {% endfor %}
+            </div>
+
           </div><!--// .contact-info -->
         </div>
       </div><!--// .yui-gc -->
@@ -99,118 +117,90 @@
       <div id="yui-main">
         <div class="yui-b">
 
-          <div class="yui-gf">
-            <div class="yui-u">
-
-              <div class="talent">
-                <h2>Web Design</h2>
-                <p>Assertively exploit wireless initiatives rather than synergistic core competencies. </p>
+          {% if candidate.centerInterest.projet is not empty %}
+            <div class="yui-gf">
+              <div class="yui-u first">
+                <h2>Projet</h2>
               </div>
-
-              <div class="talent">
-                <h2>Interface Design</h2>
-                <p>Credibly streamline mission-critical value with multifunctional functionalities. </p>
+              <div class="yui-u">
+                <p class="enlarge">
+                  {{ candidate.centerInterest.projet }}
+                </p>
               </div>
-
-              <div class="talent">
-                <h2>Project Direction</h2>
-                <p>Proven ability to lead and manage a wide variety of design and development projects in team and
-                  independent situations.</p>
-              </div>
-            </div>
-          </div><!--// .yui-gf -->
+            </div><!--// .yui-gf -->
+          {% endif %}
 
           <div class="yui-gf">
             <div class="yui-u first">
-              <h2>Technical</h2>
-            </div>
-            <div class="yui-u">
-              <ul class="talent">
-                <li>XHTML</li>
-                <li>CSS</li>
-                <li class="last">Javascript</li>
-              </ul>
-
-              <ul class="talent">
-                <li>Jquery</li>
-                <li>PHP</li>
-                <li class="last">CVS / Subversion</li>
-              </ul>
-
-              <ul class="talent">
-                <li>OS X</li>
-                <li>Windows XP/Vista</li>
-                <li class="last">Linux</li>
-              </ul>
-            </div>
-          </div><!--// .yui-gf-->
-
-          <div class="yui-gf">
-
-            <div class="yui-u first">
-              <h2>Experience</h2>
+              <h2>Experiences professionnelles</h2>
             </div><!--// .yui-u -->
 
             <div class="yui-u">
 
-              <div class="job">
-                <h2>Facebook</h2>
-                <h3>Senior Interface Designer</h3>
-                <h4>2005-2007</h4>
-                <p>Intrinsicly enable optimal core competencies through corporate relationships. Phosfluorescently
-                  implement worldwide vortals and client-focused imperatives. Conveniently initiate virtual paradigms
-                  and top-line convergence. </p>
-              </div>
-
-              <div class="job">
-                <h2>Apple Inc.</h2>
-                <h3>Senior Interface Designer</h3>
-                <h4>2005-2007</h4>
-                <p>Progressively reconceptualize multifunctional "outside the box" thinking through inexpensive methods
-                  of empowerment. Compellingly morph extensive niche markets with mission-critical ideas.
-                  Phosfluorescently deliver bricks-and-clicks strategic theme areas rather than scalable benefits. </p>
-              </div>
-
-              <div class="job">
-                <h2>Microsoft</h2>
-                <h3>Principal and Creative Lead</h3>
-                <h4>2004-2005</h4>
-                <p>Intrinsicly transform flexible manufactured products without excellent intellectual capital.
-                  Energistically evisculate orthogonal architectures through covalent action items. Assertively
-                  incentivize sticky platforms without synergistic materials. </p>
-              </div>
-
-
-              <div class="job last">
-                <h2>International Business Machines (IBM)</h2>
-                <h3>Lead Web Designer</h3>
-                <h4>2001-2004</h4>
-                <p>Globally re-engineer cross-media schemas through viral methods of empowerment. Proactively grow
-                  long-term high-impact human capital and highly efficient innovation. Intrinsicly iterate excellent
-                  e-tailers with timely e-markets.</p>
-              </div>
+              {% for experience in candidate.experiences %}
+                <div class="job {% if loop.last %} last {% endif %}">
+                  <h2>{{ experience.exp_company }}</h2>
+                  <h3 class="text-muted">{{ experience.exp_positionHeld }}</h3>
+                  <h4 style="font-family: Poppins, sans-serif">{{ experience.exp_dateBegin }} à {{ experience.exp_dateEnd }}</h4>
+                  {{ experience.exp_mission|raw }}
+                </div>
+              {% endfor %}
 
             </div><!--// .yui-u -->
           </div><!--// .yui-gf -->
 
-
-          <div class="yui-gf last">
+          <div class="yui-gf">
             <div class="yui-u first">
               <h2>Education</h2>
             </div>
             <div class="yui-u">
-              <h2>Indiana University - Bloomington, Indiana</h2>
-              <h3>Dual Major, Economics and English &mdash; <strong>4.0 GPA</strong></h3>
+              {% for training in candidate.trainings %}
+                <div class="job {% if loop.last %} last {% endif %}">
+                  <h2>{{ training.training_diploma }}</h2>
+                  <h3 class="text-muted">{{ training.training_establishment }}</h3>
+                  <p>{{ training.training_city }}, {{ training.training_country }}</p>
+                  <h4 style="font-family: Poppins, sans-serif">{{ training.training_dateBegin }} à {{ training.training_dateEnd }}</h4>
+                  {{ training.exp_mission|raw }}
+                </div>
+              {% endfor %}
             </div>
           </div><!--// .yui-gf -->
+          <div class="yui-gf">
+            <div class="yui-u first">
+              <h2>Outils et technologie</h2>
+            </div>
+            <div class="yui-u">
 
+              <ul class="talent">
+                {% for software in candidate.softwares %}
+                  <li class="{% if loop.last %}last{% endif %}">{{ software.name }}</li>
+                {% endfor %}
+              </ul>
+
+            </div>
+          </div><!--// .yui-gf-->
+
+          <div class="yui-gf last">
+            <div class="yui-u first">
+              <h2>Langues</h2>
+            </div>
+            <div class="yui-u">
+
+              <ul class="talent">
+                {% for language in candidate.languages %}
+                  <li class="{% if loop.last %}last{% endif %}">{{ language.name }}</li>
+                {% endfor %}
+              </ul>
+
+            </div>
+          </div><!--// .yui-gf-->
 
         </div><!--// .yui-b -->
       </div><!--// yui-main -->
     </div><!--// bd -->
 
     <div id="ft">
-      <p>Jonathan Doe &mdash; <a href="mailto:name@yourdomain.com">name@yourdomain.com</a> &mdash; (313) - 867-5309</p>
+      <p>{{ candidate.display_name }} &mdash; <a href="mailto:{{ candidate.author.data.user_email }}">{{ candidate.author.data.user_email }}</a></p>
     </div><!--// footer -->
 
   </div><!-- // inner -->

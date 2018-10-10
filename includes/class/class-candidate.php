@@ -13,6 +13,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   use \Auth;
 
   private $activated;
+  private $accessCompanyToken = '';
   public $title;
   public $candidate_url;
   public $reference;
@@ -184,11 +185,68 @@ final class Candidate extends UserParticular implements \iCandidate {
   public function isMyCV() {
     $User = wp_get_current_user();
     if ($User->user_email === $this->email || is_user_admin()) {
-      $this->getJobNotif();
-      $this->getTrainingNotif();
-      $this->cellphone = $this->getCellphone();
-      $this->display_name = $this->get_display_name();
-      $this->hasCV();
+      $this->getInformations();
+    }
+  }
+
+
+  protected function getInformations() {
+    $this->getJobNotif();
+    $this->getTrainingNotif();
+    $this->cellphone = $this->getCellphone();
+    $this->display_name = $this->get_display_name();
+    $this->hasCV();
+  }
+
+  /**
+   * Mettre à jours les token des entreprises dans une post meta
+   * @return array|bool|mixed
+   */
+  public function updateAccessToken() {
+    if (empty($this->accessCompanyToken)) return false;
+    $accessToken = get_post_meta($this->getId(), 'access_company_token', true);
+    if (!empty($accessToken)) {
+      if (!is_array($accessToken)) return false;
+      $Token = new Obj\Token(trim($this->accessCompanyToken));
+      foreach ($accessToken as $tk) {
+        if ($this->accessCompanyToken === $tk->getToken()) {
+          return $accessToken;
+          break;
+        }
+      }
+      array_push($accessToken, $Token);
+      update_post_meta($this->getId(), 'access_company_token', $accessToken);
+    } else {
+      $Token = new Obj\Token(trim($this->accessCompanyToken));
+      $accessToken = [$Token];
+      update_post_meta($this->getId(), 'access_company_token', $accessToken);
+    }
+    return $accessToken;
+  }
+
+  /**
+   * Verifier l'autorisation de l'entreprise avant de voir le CV au complet
+   * @param null|string $TOKEN
+   *
+   * @return bool
+   */
+  public function hasTokenAccess($TOKEN = null) {
+    $accessToken = get_post_meta($this->getId(), 'access_company_token', true);
+    if (is_null($TOKEN) || !is_user_logged_in()) return false;
+    $accessToken = empty($accessToken) ? [] : $accessToken;
+    $usr = wp_get_current_user();
+    $this->accessCompanyToken = $TOKEN;
+    if (is_array($accessToken)) {
+      foreach ($accessToken as $token) {
+        if ($token->getToken() === $usr->data->user_pass) {
+          $this->getInformations();
+          return true;
+          break;
+        }
+      }
+      return false;
+    } else {
+      return false;
     }
   }
 
