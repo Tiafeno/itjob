@@ -11,16 +11,13 @@
 ---------------------------------------------------------------------------------
 */
 
-  #doc, #doc2, #doc3, #doc4, .yui-t1, .yui-t2, .yui-t3, .yui-t4, .yui-t5, .yui-t6, .yui-t7 {
-    font-family: Georgia;
-  }
+
   .msg { padding: 10px; background: #222; position: relative; }
   .msg h1 { color: #fff;  }
   .msg a { margin-left: 20px; background: #408814; color: white; padding: 4px 8px; text-decoration: none; }
   .msg a:hover { background: #266400; }
 
   /* //-- yui-grids style overrides -- */
-  doc2 { font-family: Georgia; color: #444; }
   #inner { padding: 10px 80px; margin: 80px auto; background: #f5f5f5; border: solid #666; border-width: 8px 0 2px 0; }
   .yui-gf { margin-bottom: 2em; padding-bottom: 2em; border-bottom: 1px solid #ccc; }
 
@@ -34,7 +31,7 @@
   #ft p { margin-bottom: 0; text-align: center;   }
 
   /* //-- core typography and style -- */
-  #hd h1 { font-size: 48px; text-transform: uppercase; letter-spacing: 3px; }
+  #hd h1 { font-size: 48px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; }
   h2 { font-size: 152% !important; }
   h3, h4 { font-size: 122% !important; }
   h1, h2, h3, h4 { color: #333; }
@@ -46,10 +43,6 @@
   p.enlarge { font-size: 144%; padding-right: 6.5em; line-height: 24px; }
   p.enlarge span { color: #000 }
   .contact-info { margin-top: 7px; }
-  .first h2 { font-style: italic; }
-  .last { border-bottom: 0 }
-
-
   /* //-- section styles -- */
 
   a#pdf { display: block; float: left; background: #666; color: white; padding: 6px 50px 6px 12px; margin-bottom: 6px; text-decoration: none;  }
@@ -64,10 +57,11 @@
   .skills-list ul { margin: 0; }
   .skills-list li { margin: 3px 0; padding: 3px 0; }
   .skills-list li span { font-size: 152%; display: block; margin-bottom: -2px; padding: 0 }
-  .talent { width: 100%; float: left }
+  .talent { width: 100%; float: left; padding-left: 0; }
   .talent li {
     width: 50%;
     float: left;
+    list-style: none;
   }
   .talent h2 { margin-bottom: 6px; }
 
@@ -77,14 +71,20 @@
   /* --// override to force 1/8th width grids -- */
   .yui-gf .yui-u{width:80.2%;}
   .yui-gf div.first{width:12.3%;}
+  .yui-gf {
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    border-bottom: 1px solid #ccc;
+  }
+  .last { border-bottom: 0 }
 
 </style>
 
-<div id="doc2" class="yui-t7">
+<div id="doc2" class="yui-t7 container">
   <div id="inner">
 
     <div id="hd">
-      <div class="yui-gc">
+      <div class="row">
         <div class="yui-u first">
           <div class="row">
             <div class="col-lg-12">
@@ -110,7 +110,7 @@
 
           </div><!--// .contact-info -->
         </div>
-      </div><!--// .yui-gc -->
+      </div><!--// .row -->
     </div><!--// hd -->
 
     <div id="bd">
@@ -118,11 +118,11 @@
         <div class="yui-b">
 
           {% if candidate.centerInterest.projet is not empty %}
-            <div class="yui-gf">
-              <div class="yui-u first">
+            <div class="row yui-gf">
+              <div class="col-md-4">
                 <h2>Projet</h2>
               </div>
-              <div class="yui-u">
+              <div class="col-md-8">
                 <p class="enlarge">
                   {{ candidate.centerInterest.projet }}
                 </p>
@@ -130,33 +130,33 @@
             </div><!--// .yui-gf -->
           {% endif %}
 
-          <div class="yui-gf">
-            <div class="yui-u first">
+          <div class="row yui-gf">
+            <div class="col-md-4">
               <h2>Experiences professionnelles</h2>
-            </div><!--// .yui-u -->
+            </div><!--// .row -->
 
-            <div class="yui-u">
+            <div class="col-md-8">
 
               {% for experience in candidate.experiences %}
                 <div class="job {% if loop.last %} last {% endif %}">
-                  <h2>{{ experience.exp_company }}</h2>
+                  <h2 class="uk-text-bold">{{ experience.exp_company }}</h2>
                   <h3 class="text-muted">{{ experience.exp_positionHeld }}</h3>
                   <h4 style="font-family: Poppins, sans-serif">{{ experience.exp_dateBegin }} à {{ experience.exp_dateEnd }}</h4>
                   {{ experience.exp_mission|raw }}
                 </div>
               {% endfor %}
 
-            </div><!--// .yui-u -->
-          </div><!--// .yui-gf -->
+            </div>
+          </div><!--// .row -->
 
-          <div class="yui-gf">
-            <div class="yui-u first">
+          <div class="row yui-gf">
+            <div class="col-md-4">
               <h2>Education</h2>
             </div>
-            <div class="yui-u">
+            <div class="col-md-8">
               {% for training in candidate.trainings %}
                 <div class="job {% if loop.last %} last {% endif %}">
-                  <h2>{{ training.training_diploma }}</h2>
+                  <h2 class="uk-text-bold">{{ training.training_diploma }}</h2>
                   <h3 class="text-muted">{{ training.training_establishment }}</h3>
                   <p>{{ training.training_city }}, {{ training.training_country }}</p>
                   <h4 style="font-family: Poppins, sans-serif">{{ training.training_dateBegin }} à {{ training.training_dateEnd }}</h4>
@@ -164,12 +164,13 @@
                 </div>
               {% endfor %}
             </div>
-          </div><!--// .yui-gf -->
-          <div class="yui-gf">
-            <div class="yui-u first">
+          </div><!--// .row -->
+
+          <div class="row yui-gf">
+            <div class="col-md-4">
               <h2>Outils et technologie</h2>
             </div>
-            <div class="yui-u">
+            <div class="col-md-8">
 
               <ul class="talent">
                 {% for software in candidate.softwares %}
@@ -180,11 +181,11 @@
             </div>
           </div><!--// .yui-gf-->
 
-          <div class="yui-gf last">
-            <div class="yui-u first">
+          <div class="row yui-gf last">
+            <div class="col-md-4">
               <h2>Langues</h2>
             </div>
-            <div class="yui-u">
+            <div class="col-md-8">
 
               <ul class="talent">
                 {% for language in candidate.languages %}

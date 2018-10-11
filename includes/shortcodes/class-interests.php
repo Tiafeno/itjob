@@ -43,7 +43,7 @@ class scInterests {
       $Candidate = new Candidate($candidate_id);
       // Une systéme pour limiter la visualisation des CV
       // Virifier si le compte de l'entreprise est seine ou standart
-       
+
       // Added access token
       if ( ! $Candidate->hasTokenAccess($token)) {
         $Candidate->updateAccessToken();
@@ -58,7 +58,6 @@ class scInterests {
     } else {
       return "<p class='text-center mt-4'>La clé est non valide</p>";
     }
-    wp_enqueue_style('reset-fonts-grids', 'http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css');
     try {
       return $Engine->render( '@SC/cv-candidate.html.twig', [
         'candidate' => $Candidate,
