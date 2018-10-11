@@ -41,6 +41,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_update-candidate-profil', [ &$this, 'update_candidate_profil' ] );
         add_action( 'wp_ajax_update_experiences', [ &$this, 'update_experiences' ] );
         add_action( 'wp_ajax_update_trainings', [ &$this, 'update_trainings' ] );
+        add_action( 'wp_ajax_send_request_premium_plan', [ &$this, 'send_request_premium_plan' ] );
       }
 
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
@@ -103,6 +104,7 @@ if ( ! class_exists( 'scClient' ) ) :
           wp_enqueue_script('app-company', OC_URL . '/configs-company.js', ['espace-client'], $itJob->version, true);
           $wp_localize_script_args['Helper']['add_offer_url'] = get_permalink( (int) ADD_OFFER_PAGE );
           $wp_localize_script_args['client_type'] = 'company';
+          $wp_localize_script_args['token'] = $client->user_pass;
           wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
           return $Engine->render( '@SC/client-company.html.twig', [
             'Helper' => [
@@ -407,6 +409,30 @@ if ( ! class_exists( 'scClient' ) ) :
       }
 
       die;
+    }
+
+    public function send_request_premium_plan() {
+      global $Engine;
+      $information_message = "Pour plus d'informations, contactez le service commercial au: 032 45 378 60 - 033 82 591 13 - 034 93 962 18.";
+      if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
+        wp_send_json( false );
+      }
+      $account = (int)get_post_meta($this->Company->getId(), 'itjob_meta_account', true);
+      if ($account === 0 || empty($account)) {
+        // update_post_meta($this->Company->getId(), 'itjob_meta_account', 1);
+        $to = get_field('admin_mail', 'option');
+        $subject = "Demmande d'un compte premium";
+        $headers = [];
+        $headers[] = 'Content-Type: text/html; charset=UTF-8';
+        $headers[] = 'From: itjobmada <no-reply@itjobmada.com';
+        $content = $Engine->render('@MAIL/demande-offre-premium.html.twig', ['company' => $this->Company]);
+        $sender = wp_mail($to, $subject, $content, $headers);
+        if ($sender) {
+          wp_send_json_success("Votre demande à bien été envoyer.");
+        } else wp_send_json_error($information_message);
+      } else {
+        wp_send_json_error($information_message);
+      }
     }
 
     /**

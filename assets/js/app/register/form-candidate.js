@@ -326,7 +326,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 alertify
                   .okBtn("Oui")
                   .cancelBtn("Plus tard")
-                  .confirm("Votre profil a plus de chances d'être sélectionner si vous mettez une Photo d’identité.",
+                  .confirm("Votre profil a plus de chances d'être sélectionner si vous mettez une Photo d’identité." +
+                    " <br><br> <b>Voulez vous ajouter un photo maintenant?</b>",
                     function (ev) {
                       // Oui
                       ev.preventDefault();

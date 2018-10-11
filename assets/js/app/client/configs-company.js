@@ -18,3 +18,41 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
     })
     .otherwise({redirectTo: '/oc-company'});
 }])
+.directive('planPremium', [function() {
+  return {
+    restrict: 'E',
+    scope: true,
+    templateUrl: itOptions.Helper.tpls_partials + '/premium-plan.html',
+    link: function (scope, element, attr) {},
+    controller: ['$scope', '$http', function ($scope, $http) {
+      $scope.accountUpgrade = !$scope.Company.account;
+      $scope.updateAccount = () => {
+        alertify
+          .okBtn("Confirmer")
+          .cancelBtn("Annuler")
+          .confirm("Un mail sera envoyer à l'administrateur pour valider votre demande.<br> Pour plus d'informations, contactez le service commercial au:\n" +
+            "<b>032 45 378 60 - 033 82 591 13 - 034 93 962 18.</b>",
+            function (ev) {
+              // Oui
+              ev.preventDefault();
+              const formData = new FormData();
+              formData.append('action', 'send_request_premium_plan');
+              formData.append('token', itOptions.token);
+              $http({
+                url: itOptions.Helper.ajax_url,
+                method: "POST",
+                headers: { 'Content-Type': undefined },
+                data: formData
+              })
+                .then(resp => {
+                  let data = resp.data;
+
+                });
+            }, function (ev) {
+              // Plus tard
+              ev.preventDefault();
+            });
+      };
+    }]
+  }
+}])

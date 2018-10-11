@@ -132,6 +132,7 @@ try {
   $loader->addPath( TWIG_TEMPLATE_PATH . '/shortcodes', 'SC' );
   $loader->addPath( TWIG_TEMPLATE_PATH . '/widgets', 'WG' );
   $loader->addPath( TWIG_TEMPLATE_PATH . '/error', 'ERROR' );
+  $loader->addPath( TWIG_TEMPLATE_PATH . '/mail', 'MAIL' );
 
   /** @var Object $Engine */
   $Engine = new Twig_Environment( $loader, array(

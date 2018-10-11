@@ -35,7 +35,7 @@
 <div class="">
   <div class="flexbox">
     <div class="flexbox-b">
-      <div class="card text-center centered mb-4" style="max-width:320px;">
+      <div class="card text-center centered mb-4">
         <div class="card-body">
           <h4 class="card-title text-left mb-3" style="font-size: 41px; font-weight: bold">
             [[ Company.title ]]
@@ -43,6 +43,9 @@
           <!--<div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Company.address ]]</div>-->
           <div class="d-flex justify-content-around align-items-center">
             <notifications></notifications>
+            <button class="btn btn-secondary ml-2" data-toggle="modal" data-target="#modal-notification-overflow" >
+              <span class="btn-icon"><i class="fa fa-history"></i>Historique des CV</span>
+            </button>
           </div>
         </div>
       </div>
@@ -80,10 +83,10 @@
                   <h4>Bonjour <b>[[Company.name]]</b></h4>
                   <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
                 </div>
-                <hr>
                 <alerts on-save="onSaveAlert()"
                         message="Je souhaite être informé quand un candidat comportent les expressions suivantes: Saissez le mot et appuyez sur entrée ou `,` pour ajouter"
-                        alerts="alerts" alert-loading="alertLoading">
+                        alerts="alerts"
+                        alert-loading="alertLoading">
                 </alerts>
                 <hr>
                 <change-password></change-password>
@@ -95,6 +98,7 @@
                                              init="Initialize()"
                                              company="Company">
                 </general-information-company>
+                <plan-premium></plan-premium>
               </div>
             </div>
           </div>
@@ -103,8 +107,11 @@
       <div class="tab-pane fade text-center" id="offers">
         <div class="page-content">
           <div class="ibox-body">
-            <offer-lists offers="offerLists" init="Initialize()" company="Company" abranchs="asyncTerms('branch_activity')"
-                         regions="asyncTerms('region')" all-city="asyncTerms('city')">
+            <offer-lists offers="offerLists"
+                         company="Company"
+                         abranchs="asyncTerms('branch_activity')"
+                         regions="asyncTerms('region')"
+                         all-city="asyncTerms('city')">
             </offer-lists>
 
           </div>

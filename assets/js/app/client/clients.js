@@ -817,7 +817,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           }
         }
         $scope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
+
         // jQuery
+        // Activate Popovers
+        jQuery('[data-toggle="popover"]').popover();
       };
 
       /**

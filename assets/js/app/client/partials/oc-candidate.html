@@ -65,7 +65,14 @@
             </div>
             <div pre-upload class="p-relative">
               <div class="p-absolute" style="width: 125px; bottom: -62px;">
-                <div class="uk-text-bold">Photo</div>
+                <div class="uk-text-bold d-flex">Photo
+                  <span data-toggle="popover" data-trigger="hover"
+                        data-placement="right"
+                        data-html="true"
+                        data-content="Sur la photo votre visage doit être net, humaine et naturelle donc <b>une photo professionnelle</b>">
+                    <i class="fa fa-question-circle ml-1" style="font-size: 18px;cursor: pointer"></i>
+                  </span>
+                </div>
                 <button type="file" ngf-select="uploadImage($file, $invalidFiles)" accept="image/*" class="btn"
                         ngf-max-size="2MB">Choisir une image
                 </button>
