@@ -427,7 +427,8 @@ if ( ! class_exists( 'scClient' ) ) :
       $account = (int)get_post_meta($this->Company->getId(), 'itjob_meta_account', true);
       if ($account === 0 || empty($account)) {
         $to = get_field('admin_mail', 'option');
-        $subject = "Demmande d'un compte premium";
+        if (empty($to)) wp_send_json_error("Adresse e-mail de l'administrateur abscent");
+        $subject = "Demmande de compte premium";
         $headers = [];
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
         $headers[] = 'From: itjobmada <no-reply@itjobmada.com';
