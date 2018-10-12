@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-class Token {
+final class Token {
   protected $token;
   public function __construct($accessToken) {
     $this->token = $accessToken;

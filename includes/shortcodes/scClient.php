@@ -42,6 +42,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_update_experiences', [ &$this, 'update_experiences' ] );
         add_action( 'wp_ajax_update_trainings', [ &$this, 'update_trainings' ] );
         add_action( 'wp_ajax_send_request_premium_plan', [ &$this, 'send_request_premium_plan' ] );
+        add_action( 'wp_ajax_get_history_cv_view', [ &$this, 'get_history_cv_view' ] );
       }
 
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );

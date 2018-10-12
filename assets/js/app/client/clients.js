@@ -4,7 +4,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
     quickInsertTags: null,
     toolbarButtons: ['bold', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
   })
-  .factory('clientFactory', ['$http', '$q', function ($http, $q) {
+  .factory('clientFactory', ['$http', function ($http) {
     return {
       getCity: function () {
         return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {
@@ -26,7 +26,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       }
     };
   }])
-  .service('clientService', ['$http', function ($http) {
+  .service('clientService', [function () {
     this.offers = _.clone(itOptions.offers);
     this.months = [
       'janvier', 'février', 'mars',
@@ -810,7 +810,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 return value;
                 break;
             }
-          });
+          }); // .mapObject
           $scope.cv.hasCV = $scope.Candidate.has_cv;
           if ( ! $scope.cv.hasCV) {
             jQuery('#modal-info-editor').modal('show')
