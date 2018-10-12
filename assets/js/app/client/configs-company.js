@@ -26,6 +26,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
     link: function (scope, element, attr) {},
     controller: ['$scope', '$http', function ($scope, $http) {
       $scope.accountUpgrade = !$scope.Company.account;
+      $scope.sender = false;
       $scope.updateAccount = () => {
         alertify
           .okBtn("Confirmer")
@@ -35,9 +36,11 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
             function (ev) {
               // Oui
               ev.preventDefault();
+              let btnUpgrade = jQuery('#account_upgrade_btn');
               const formData = new FormData();
               formData.append('action', 'send_request_premium_plan');
               formData.append('token', itOptions.token);
+              btnUpgrade.text('Chargement en cours ...');
               $http({
                 url: itOptions.Helper.ajax_url,
                 method: "POST",
@@ -46,7 +49,8 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
               })
                 .then(resp => {
                   let data = resp.data;
-
+                  btnUpgrade.text("Votre demande a bien été envoyée");
+                  $scope.sender = true;
                 });
             }, function (ev) {
               // Annuler
