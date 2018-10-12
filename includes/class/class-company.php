@@ -17,6 +17,7 @@ final class Company implements \iCompany {
   public $greeting; // Mr, Mrs
   // Le nom de l'utilisateur ou le responsable
   public $name;
+  // Contient les information sur le compte utilisateur WP
   public $author;
   // Adresse email de l'utilisateur ou le responsable
   public $email;
@@ -31,6 +32,8 @@ final class Company implements \iCompany {
   public $notification = false;
   // Cette variable contient l'information sur le type du compte
   public $account = 0; // 0: Standart, 1: Premium
+  // Contient les identifiants des candidats ou utilisateur wordpress (User id)
+  private $interests = [];
 
   /**
    * @param string $handler - user_id, post_id (company post type) & email
@@ -107,6 +110,11 @@ final class Company implements \iCompany {
 
       $this->init();
     }
+  }
+
+  public function getInterests() {
+    $ids = get_field('itjob_company_interests', $this->ID);
+    return $this->interests = empty($ids) || !$ids ? [] : $ids;
   }
 
   public function getId() {
