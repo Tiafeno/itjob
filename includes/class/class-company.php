@@ -14,7 +14,7 @@ final class Company implements \iCompany {
 
   public $addDate;
   public $ID;
-  public $greeting; // Mr, Mrs
+  public $greeting; // mr: Monsieur, mrs: Madame
   // Le nom de l'utilisateur ou le responsable
   public $name;
   // Contient les information sur le compte utilisateur WP
@@ -112,19 +112,35 @@ final class Company implements \iCompany {
     }
   }
 
+  /**
+   * Recuperer les identifiants ou les CV que l'entreprise s'interest
+   * @return array|mixed|null
+   */
   public function getInterests() {
     $ids = get_field('itjob_company_interests', $this->ID);
     return $this->interests = empty($ids) || !$ids ? [] : $ids;
   }
 
+  /**
+   * Récuperer l'ID de l'entreprise (Non pas l'id de l'utilisateur)
+   * @return int
+   */
   public function getId() {
     return $this->ID;
   }
 
+  /**
+   * Vérifier si le jeton (id) est pour un compte entreprise ou autres
+   * @return bool
+   */
   public function is_company() {
     return get_post_type( $this->ID ) === 'company';
   }
 
+  /**
+   * Initialiser les prorpriétés de cette class
+   * @return bool
+   */
   private function init() {
     global $wp_version;
     if ( ! function_exists( 'get_field' ) ) {

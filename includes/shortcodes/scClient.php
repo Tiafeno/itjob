@@ -411,6 +411,12 @@ if ( ! class_exists( 'scClient' ) ) :
       die;
     }
 
+    /**
+     * Function ajax
+     * Envoyer un mail à l'administrateur pour une demande de compte premium
+     * La valeur du post meta 'itjob_meta_account' de l'entreprise sera 2 si la demande à bien étés envoyer
+     * NB: 0: Standert, 1: Premium et 2: En attente
+     */
     public function send_request_premium_plan() {
       global $Engine;
       $information_message = "Pour plus d'informations, contactez le service commercial au: 032 45 378 60 - 033 82 591 13 - 034 93 962 18.";
@@ -419,7 +425,6 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $account = (int)get_post_meta($this->Company->getId(), 'itjob_meta_account', true);
       if ($account === 0 || empty($account)) {
-        update_post_meta($this->Company->getId(), 'itjob_meta_account', 2);
         $to = get_field('admin_mail', 'option');
         $subject = "Demmande d'un compte premium";
         $headers = [];
@@ -433,10 +438,28 @@ if ( ! class_exists( 'scClient' ) ) :
         ]);
         $sender = wp_mail($to, $subject, $content, $headers);
         if ($sender) {
+          // Changer la valeur du post meta pour '2' qui signifie rester en attente de validation
+          update_post_meta($this->Company->getId(), 'itjob_meta_account', 2);
           wp_send_json_success("Votre demande à bien été envoyer.");
         } else wp_send_json_error($information_message);
       } else {
         wp_send_json_error($information_message);
+      }
+    }
+
+    /**
+     * Function ajax
+     * Récuperer les identifiants que un compte entreprise à activer
+     */
+    public function get_history_cv_view() {
+      if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
+        wp_send_json( false );
+      }
+      if ($this->Company instanceof Company) {
+        $interest_ids = $this->Company->getInterests();
+        wp_send_json_success($interest_ids);
+      } else {
+        wp_send_json_error("La classe n'est pas definie pour l'object entreprise. Signialer cette erreur à l'administrateur");
       }
     }
 
