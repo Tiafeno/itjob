@@ -419,7 +419,8 @@ if ( ! class_exists( 'scClient' ) ) :
      */
     public function send_request_premium_plan() {
       global $Engine;
-      $information_message = "Pour plus d'informations, contactez le service commercial au: 032 45 378 60 - 033 82 591 13 - 034 93 962 18.";
+      $information_message = "Une erreur s'est produite. <br> Pour signialer cette erreur veillez contactez" .
+                             " le service commercial au: 032 45 378 60 - 033 82 591 13 - 034 93 962 18.";
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
         wp_send_json( false );
       }
