@@ -225,7 +225,8 @@ final class Candidate extends UserParticular implements \iCandidate {
   }
 
   /**
-   * Verifier l'autorisation de l'entreprise avant de voir le CV au complet
+   * Verifier l'autorisation de l'entreprise avant de voir le CV au complete.
+   * Si l'information ou le token est valide, on recupere les informations du candidate
    * @param null|string $TOKEN
    *
    * @return bool

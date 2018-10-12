@@ -36,6 +36,7 @@ class scInterests {
       )
     );
     $User = wp_get_current_user();
+    $Entreprise = Company::get_company_by($User->ID);
     $candidate_id = (int)Http\Request::getValue('cvId');
     $token = Http\Request::getValue('token');
     if (!$token || !$candidate_id || $User->ID === 0) return "Une erreur s'est produite";
@@ -44,7 +45,7 @@ class scInterests {
       // Une systéme pour limiter la visualisation des CV
       // Verifier si le compte de l'entreprise est sereine ou standart
       if (!$Candidate->is_candidate()) return "Un erreur dans l'url detecter";
-      $user_ids = get_field('itjob_company_interests', $Candidate->getId());
+      $user_ids = get_field('itjob_company_interests', $Entreprise->getId());
       $user_ids = $user_ids ? $user_ids : [];
       if (count($user_ids) > 5) return "Vous avez atteint le nombre limite de votre bonus.";
       // Added access token
@@ -52,8 +53,7 @@ class scInterests {
         $Candidate->updateAccessToken();
 
         // Mettre à jours la liste des candidats ajouter par l'entreprise
-        $Entreprise = Company::get_company_by($User->ID);
-        array_push($user_ids, $User->ID);
+        array_push($user_ids, $Candidate->author->data->ID);
         update_field('itjob_company_interests', $user_ids, $Entreprise->getId());
       }
     } else {

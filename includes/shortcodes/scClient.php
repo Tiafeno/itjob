@@ -459,8 +459,17 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( false );
       }
       if ($this->Company instanceof Company) {
+        $Candidates = [];
+        $Token = $this->User->data->user_pass;
+        /** @var array $interest_ids  - Array of int, user id */
         $interest_ids = $this->Company->getInterests();
-        wp_send_json_success($interest_ids);
+        // Todo: Return candidate object
+        foreach ($interest_ids as $interest_id) {
+          $candidateInterest = Candidate::get_candidate_by((int)$interest_id);
+          $candidateInterest->hasTokenAccess($Token);
+          array_push($Candidates, $candidateInterest);
+        }
+        wp_send_json_success($Candidates);
       } else {
         wp_send_json_error("La classe n'est pas definie pour l'object entreprise. Signialer cette erreur à l'administrateur");
       }
