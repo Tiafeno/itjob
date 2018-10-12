@@ -419,13 +419,18 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $account = (int)get_post_meta($this->Company->getId(), 'itjob_meta_account', true);
       if ($account === 0 || empty($account)) {
-        // update_post_meta($this->Company->getId(), 'itjob_meta_account', 1);
+        update_post_meta($this->Company->getId(), 'itjob_meta_account', 2);
         $to = get_field('admin_mail', 'option');
         $subject = "Demmande d'un compte premium";
         $headers = [];
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
         $headers[] = 'From: itjobmada <no-reply@itjobmada.com';
-        $content = $Engine->render('@MAIL/demande-offre-premium.html.twig', ['company' => $this->Company]);
+        $content = $Engine->render('@MAIL/demande-offre-premium.html.twig', [
+          'company' => $this->Company,
+          'template_dir_url' => get_template_directory(),
+          // TODO: Liens vers l'espace administrateur
+          'dashboard_url' => '#dashboard'
+        ]);
         $sender = wp_mail($to, $subject, $content, $headers);
         if ($sender) {
           wp_send_json_success("Votre demande à bien été envoyer.");

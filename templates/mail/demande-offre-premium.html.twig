@@ -362,7 +362,7 @@
                   <div class="">
                     <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;"><![endif]-->
                     <div style="color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%; padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;">
-                      <div style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px;text-align: right"><span style="font-size: 18px; line-height: 21px;"><strong><span style="line-height: 21px; font-size: 18px;">Tiafeno Finel</span></strong></span></p></div>
+                      <div style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px;text-align: right"><span style="font-size: 18px; line-height: 21px;"><strong><span style="line-height: 21px; font-size: 18px;">{{ company.name }}</span></strong></span></p></div>
                     </div>
                     <!--[if mso]></td></tr></table><![endif]-->
                   </div>
@@ -405,7 +405,7 @@
                   <div class="">
                     <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;"><![endif]-->
                     <div style="color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%; padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;">
-                      <div style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px;text-align: right"><span style="font-size: 18px; line-height: 21px;"><strong><span style="line-height: 21px; font-size: 18px;">tiafenofnel@gmail.com</span></strong></span></p></div>
+                      <div style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px;text-align: right"><span style="font-size: 18px; line-height: 21px;"><strong><span style="line-height: 21px; font-size: 18px;">{{ company.email }}</span></strong></span></p></div>
                     </div>
                     <!--[if mso]></td></tr></table><![endif]-->
                   </div>
@@ -448,7 +448,7 @@
                   <div class="">
                     <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;"><![endif]-->
                     <div style="color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%; padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;">
-                      <div style="line-height:14px;font-size:12px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;"><p style="margin: 0;line-height: 14px;text-align: right;font-size: 12px"><span style="font-size: 18px; line-height: 21px;"><strong>Falicrea</strong></span></p></div>
+                      <div style="line-height:14px;font-size:12px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;"><p style="margin: 0;line-height: 14px;text-align: right;font-size: 12px"><span style="font-size: 18px; line-height: 21px;"><strong>{{ company.title }}</strong></span></p></div>
                     </div>
                     <!--[if mso]></td></tr></table><![endif]-->
                   </div>
@@ -491,7 +491,18 @@
                   <div class="">
                     <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;"><![endif]-->
                     <div style="color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%; padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;">
-                      <div style="line-height:14px;font-size:12px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;"><p style="margin: 0;line-height: 14px;text-align: right;font-size: 12px"><span style="font-size: 18px; line-height: 21px;"><strong>020 25 248 5 75</strong></span></p></div>
+                      <div style="line-height:14px;font-size:12px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
+                        <p style="margin: 0;line-height: 14px;text-align: right;font-size: 12px">
+                          <span style="font-size: 18px; line-height: 21px;">
+                            {% for phone in company.cellphones %}
+                              <strong>{{ phone }}</strong> {% if not loop.last %} - {% endif %}
+                            {% endfor %}
+                            {% if company.phone is not empty %}
+                              - <strong>{{ company.phone }}</strong>
+                            {% endif %}
+                          </span>
+                        </p>
+                      </div>
                     </div>
                     <!--[if mso]></td></tr></table><![endif]-->
                   </div>
@@ -534,7 +545,7 @@
                   <div class="">
                     <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;"><![endif]-->
                     <div style="color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%; padding-right: 0px; padding-left: 0px; padding-top: 10px; padding-bottom: 10px;">
-                      <div style="line-height:14px;font-size:12px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;"><p style="margin: 0;line-height: 14px;text-align: right;font-size: 12px"><span style="font-size: 18px; line-height: 21px;"><strong>Mandroseza Lot VQ5</strong></span></p></div>
+                      <div style="line-height:14px;font-size:12px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;"><p style="margin: 0;line-height: 14px;text-align: right;font-size: 12px"><span style="font-size: 18px; line-height: 21px;"><strong>{{ company.address }}</strong></span></p></div>
                     </div>
                     <!--[if mso]></td></tr></table><![endif]-->
                   </div>
@@ -561,7 +572,9 @@
                   <div align="center" class="button-container center " style="padding-right: 10px; padding-left: 10px; padding-top:10px; padding-bottom:10px;">
                     <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-spacing: 0; border-collapse: collapse; mso-table-lspace:0pt; mso-table-rspace:0pt;"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top:10px; padding-bottom:10px;" align="center"><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="" style="height:49pt; v-text-anchor:middle; width:333pt;" arcsize="11%" strokecolor="#FFFFFF" fillcolor="transparent"><w:anchorlock/><v:textbox inset="0,0,0,0"><center style="color:#FFFFFF; font-family:'Ubuntu', Tahoma, Verdana, Segoe, sans-serif; font-size:26px;"><![endif]-->
                     <div style="color: #FFFFFF; background-color: transparent; border-radius: 7px; -webkit-border-radius: 7px; -moz-border-radius: 7px; max-width: 445px; width: 435px;width: auto; border-top: 2px solid #FFFFFF; border-right: 2px solid #FFFFFF; border-bottom: 2px solid #FFFFFF; border-left: 2px solid #FFFFFF; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px; font-family: 'Ubuntu', Tahoma, Verdana, Segoe, sans-serif; text-align: center; mso-border-alt: none;">
-                      <span style="font-family:'Ubuntu', Tahoma, Verdana, Segoe, sans-serif;font-size:16px;line-height:32px;"><span style="font-size: 26px; line-height: 52px;">Tableau de bord</span></span>
+                      <a href="{{ dashboard_url }}">
+                        <span style="font-family:'Ubuntu', Tahoma, Verdana, Segoe, sans-serif;font-size:16px;line-height:32px;"><span style="font-size: 26px; line-height: 52px;">Tableau de bord</span></span>
+                      </a>
                     </div>
                     <!--[if mso]></center></v:textbox></v:roundrect></td></tr></table><![endif]-->
                   </div>
@@ -593,7 +606,7 @@
                       <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;Margin-right: 15px">
                         <tbody><tr style="vertical-align: top"><td align="left" valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                             <a href="https://www.facebook.com/" title="Facebook" target="_blank">
-                              <img src="images/facebook@2x.png" alt="Facebook" title="Facebook" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
+                              <img src="{{ template_dir_url }}img/facebook@2x.png" alt="Facebook" title="Facebook" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                             </a>
                             <div style="line-height:5px;font-size:1px">&#160;</div>
                           </td></tr>
@@ -602,7 +615,7 @@
                       <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;Margin-right: 15px">
                         <tbody><tr style="vertical-align: top"><td align="left" valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                             <a href="https://twitter.com/" title="Twitter" target="_blank">
-                              <img src="images/twitter@2x.png" alt="Twitter" title="Twitter" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
+                              <img src="{{ template_dir_url }}img/twitter@2x.png" alt="Twitter" title="Twitter" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                             </a>
                             <div style="line-height:5px;font-size:1px">&#160;</div>
                           </td></tr>
@@ -611,7 +624,7 @@
                       <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;Margin-right: 15px">
                         <tbody><tr style="vertical-align: top"><td align="left" valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                             <a href="https://plus.google.com/" title="Google+" target="_blank">
-                              <img src="images/googleplus@2x.png" alt="Google+" title="Google+" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
+                              <img src="{{ template_dir_url }}img/googleplus@2x.png" alt="Google+" title="Google+" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                             </a>
                             <div style="line-height:5px;font-size:1px">&#160;</div>
                           </td></tr>
@@ -620,7 +633,7 @@
                       <table align="left" border="0" cellspacing="0" cellpadding="0" width="32" height="32" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;Margin-right: 0">
                         <tbody><tr style="vertical-align: top"><td align="left" valign="middle" style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                             <a href="https://www.youtube.com/" title="YouTube" target="_blank">
-                              <img src="images/youtube@2x.png" alt="YouTube" title="YouTube" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
+                              <img src="{{ template_dir_url }}img/youtube@2x.png" alt="YouTube" title="YouTube" width="32" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                             </a>
                             <div style="line-height:5px;font-size:1px">&#160;</div>
                           </td></tr>

@@ -49,7 +49,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
 
                 });
             }, function (ev) {
-              // Plus tard
+              // Annuler
               ev.preventDefault();
             });
       };
