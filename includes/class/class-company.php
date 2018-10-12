@@ -133,10 +133,9 @@ final class Company implements \iCompany {
     $this->notification = get_field( 'itjob_company_notification', $this->ID );
     $this->phone        = get_field( 'itjob_company_phone', $this->ID );
     $this->account      = get_post_meta( $this->ID, 'itjob_meta_account', true );
-    $this->account      = empty( $this->account ) ? 0 : $this->account;
+    $this->account      = empty( $this->account ) ? 0 : (int)$this->account;
 
     $cellphones = get_field( 'itjob_company_cellphone', $this->ID );
-
     $this->cellphones = [];
     if ( is_array( $cellphones ) ) {
       foreach ( $cellphones as $cellphone ) {
