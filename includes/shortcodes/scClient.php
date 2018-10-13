@@ -3,6 +3,7 @@
 namespace includes\shortcode;
 
 use Http;
+use includes\object\jobServices;
 use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
@@ -456,7 +457,7 @@ if ( ! class_exists( 'scClient' ) ) :
      */
     public function get_history_cv_view() {
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
-        wp_send_json( false );
+        wp_send_json_error( "Accès refuser" );
       }
       if ($this->Company instanceof Company) {
         $Candidates = [];
@@ -488,11 +489,15 @@ if ( ! class_exists( 'scClient' ) ) :
       $User = wp_get_current_user();
       if ( $itJob->services->isClient() === 'company' ) {
         $alert = get_field( 'itjob_company_alerts', $this->Company->getId() );
+        $interest_page_id = jobServices::page_exists('Interest candidate');
         wp_send_json( [
-          'Company' => Company::get_company_by( $User->ID ),
+          'iClient' => Company::get_company_by( $User->ID ),
           'Offers'  => $this->__get_company_offers(),
           'Alerts'  => explode( ',', $alert ),
-          'post_type' => 'company'
+          'post_type' => 'company',
+          'Helper' => [
+            'interest_page_uri' => get_the_permalink($interest_page_id)
+          ]
         ] );
       } else {
         // candidate
@@ -502,7 +507,7 @@ if ( ! class_exists( 'scClient' ) ) :
         $Candidate->isMyCV();
         $alerts = explode( ',', $notification['job_sought'] );
         wp_send_json( [
-          'Candidate' => $Candidate,
+          'iClient' => $Candidate,
           'Alerts'  => $alerts,
           'post_type' => 'candidate'
         ] );

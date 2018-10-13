@@ -64,15 +64,16 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
   .directive('historyCv', [function () {
     return {
       restrict: "E",
-      scope: false,
+      scope: true,
       templateUrl: itOptions.Helper.tpls_partials + '/history-cv.html',
       controller: ["$scope", '$http', function ($scope, $http) {
+        $scope.Historicals = [];
         (function ($) {
           $('#modal-history-cv-overflow').on('show.bs.modal', function (e) {
-            $http.get(itOptions.Helper.ajax_url + '?action=get_history_cv_view', {cache: false})
-              .then(resp => {
-                let data = resp.data;
-                console.log(data);
+            $http.get(itOptions.Helper.ajax_url + '?action=get_history_cv_view', {cache: true})
+              .then(success => {
+                let resp = success.data;
+                $scope.Historicals = _.clone(resp.data);
               });
           })
         })(jQuery)

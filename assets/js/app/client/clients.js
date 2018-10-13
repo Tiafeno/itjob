@@ -764,6 +764,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.profilEditor = {};
       $scope.alertLoading = false;
       $scope.alerts = [];
+      $scope.Helper = {};
       // Contient l'image par default de l'OC
       $scope.featuredImage = '';
       // La valeur reste `false` si la photo de profil n'est pas toucher
@@ -785,15 +786,16 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.Initialize = () => {
         console.log('Initialize');
         if (Client.post_type === 'company') {
-          $scope.Company = _.clone(Client.Company);
+          $scope.Company = _.clone(Client.iClient);
+          $scope.Helper = _.clone(Client.Helper);
           $scope.offerLists = _.clone(Client.Offers);
         } else {
           // Candidat
           // Crée une image par default
-          let sexe = (Client.Candidate.greeting.value === 'mr') ? 'male' : 'female';
+          let sexe = (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';
           $scope.featuredImage = itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
-          const Candidate = _.clone(Client.Candidate);
-          $scope.biography = Client.Candidate.has_cv ? Client.Candidate.status.label : '';
+          const Candidate = _.clone(Client.iClient);
+          $scope.biography = Client.iClient.has_cv ? Client.iClient.status.label : '';
           $scope.Candidate = _.mapObject(Candidate, (value, key) => {
             switch (key) {
               case 'experiences':
