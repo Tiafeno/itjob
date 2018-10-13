@@ -42,6 +42,7 @@
 
 .container-offers .card .card-body {
   background: rgb(0, 71, 134);
+  min-height: 250px;
 }
 
 .container-offers .card .card-body .text-description {
