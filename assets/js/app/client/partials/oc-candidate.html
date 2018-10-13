@@ -17,9 +17,18 @@
     margin: auto;
     display: block;
   }
+  li.timeline-item a:hover {
+    font-weight: bold;
+  }
 </style>
 
 <!-- Modal information -->
+<script type="text/javascript">
+  (function($) {
+    var addedCvElement = $('#modal-info-editor').find('#added_cv');
+    addedCvElement.attr('href', itOptions.Helper.add_cv);
+  })(jQuery)
+</script>
 <div id="modal-info-editor" class="modal fade" aria-labelledby="modal-info-editor" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="ibox modal-content">
@@ -31,7 +40,7 @@
           <ul class="timeline scroller">
             <li class="timeline-item">
               <span class="timeline-point"></span>
-              <span class="flexbox">Crée votre CV pour être visible par les recruteurs et Postuler aux offres</span>
+              <a href="#ajouter_un_cv" id="added_cv" class="flexbox timeline-link">Crée votre CV pour être visible par les recruteurs et Postuler aux offres</a>
             </li>
             <li class="timeline-item">
               <span class="timeline-point"></span>
