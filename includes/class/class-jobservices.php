@@ -51,8 +51,7 @@ if ( ! class_exists( 'jobServices' ) ) :
         'orderby'        => 'DATE'
       ];
       if ( ! empty( $meta_query ) ) {
-        $this->args['meta_query'] = [];
-        array_push( $this->args['meta_query'], $meta_query );
+        $this->args['meta_query'][] = $meta_query;
       }
       $this->getPostContents( $recentlyContainer, $class_name );
 
