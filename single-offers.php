@@ -131,6 +131,11 @@ wp_enqueue_style( 'themify-icons' );
         </div>
         <div class="uk-width-1-3@s">
           <!--     Sidebar here ...     -->
+          <?php
+          if ( is_active_sidebar( 'single-offer-sidebar' ) ) {
+            dynamic_sidebar( 'single-offer-sidebar' );
+          }
+          ?>
         </div>
 
       </div>

@@ -333,15 +333,23 @@ if ( ! class_exists( 'itJob' ) ) {
         // Register sidebar
         // Offers
         register_sidebar( array(
-          'name'          => 'Archive Offre Haut',
+          'name'          => 'Archive Top (Offer)',
           'id'            => 'archive-offer-top',
           'description'   => 'Afficher des widgets en haut de la page archive',
           'before_widget' => '<div id="%1$s" class="widget mt-4 %2$s">',
           'after_widget'  => '</div>'
         ) );
         register_sidebar( array(
-          'name'          => 'Archive Offre Sidebar',
+          'name'          => 'Archive Sidebar (Offer)',
           'id'            => 'archive-offer-sidebar',
+          'description'   => 'Afficher des widgets sur côté de la page archive',
+          'before_widget' => '<div id="%1$s" class="widget mt-4 %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        register_sidebar( array(
+          'name'          => 'Single Sidebar (Offer)',
+          'id'            => 'single-offer-sidebar',
           'description'   => 'Afficher des widgets sur côté de la page archive',
           'before_widget' => '<div id="%1$s" class="widget mt-4 %2$s">',
           'after_widget'  => '</div>'
@@ -349,7 +357,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
         // CV
         register_sidebar( array(
-          'name'          => 'Archive CV Haut',
+          'name'          => 'Archive CV Top',
           'id'            => 'archive-cv-top',
           'description'   => 'Afficher des widgets en haut de la page archive',
           'before_widget' => '<div id="%1$s" class="widget mb-4 %2$s">',
