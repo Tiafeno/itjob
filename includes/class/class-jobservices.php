@@ -32,6 +32,16 @@ if ( ! class_exists( 'jobServices' ) ) :
       return \get_userdata( $userId );
     }
 
+    /**
+     * Cette fonction permet d'afficher les post recement ajouter dans le site.
+     * Le nombre de retour par default se limite à 3 posts
+     *
+     * @param string $class_name
+     * @param int $numberposts - Definir le nombre de post à retourner
+     * @param array $meta_query
+     *
+     * @return array
+     */
     public function getRecentlyPost( $class_name, $numberposts = 3, $meta_query = [] ) {
       $recentlyContainer = [];
       $this->args        = [
@@ -49,6 +59,16 @@ if ( ! class_exists( 'jobServices' ) ) :
       return $recentlyContainer;
     }
 
+    /**
+     * Cette function renvoie les post à la une (post pour status publier dans le site)
+     * Les post désactiver qui ne sont pas publier ne serons pas afficher,
+     * seul les post publier et activer seront retourner par cette fonction
+     *
+     * @param string $class_name
+     * @param array $meta_query
+     *
+     * @return array
+     */
     public function getFeaturedPost( $class_name, $meta_query = [] ) {
       $featuredContainer = [];
       $this->args        = [
@@ -58,7 +78,7 @@ if ( ! class_exists( 'jobServices' ) ) :
         'orderby'        => 'DATE'
       ];
       if ( ! empty( $meta_query ) ) {
-        array_push( $this->args['meta_query'], $meta_query );
+        $this->args['meta_query'][] =  $meta_query;
       }
       $this->getPostContents( $featuredContainer, $class_name );
 

@@ -1,144 +1,48 @@
 <div class="container-offers uk-padding-remove">
   <h5 class="container-offers-title">{{ title }}</h5>
   <div class="row mb-5 ml-0 mr-0">
-
-    <div class="col-md-3 col-sm-6 row-offer">
-      <div class="card ibox mb-4">
-        <div class="card-body">
-          <h4 class="card-title mb-4">
-            <a href="#">Dish of the day</a>
-          </h4>
-          <div class="">
-            <h4 class="card-title uk-margin-remove">Mission: </h4>
-            <p class="text-description mt-2">
-              Minim dolor in amet nulla laboris enim dolore consequat proident fugiat
-              culpa eiusmod proident sed excepteur.
-            </p>
-          </div>
-          <div class="card-information pt-3">
-            <div class="card-info">
-              Date limite: 31/08/2018
+    {% for offer in offers %}
+      <div class="col-md-3 col-sm-6 row-offer">
+        <div class="card ibox mb-4">
+          <div class="card-body">
+            <h4 class="card-title mb-4">
+              <a href="#">{{ offer.postPromote }}</a>
+            </h4>
+            <div class="">
+              <h4 class="card-title uk-margin-remove">Mission: </h4>
+              <p class="text-description mt-2">
+                {{ offer.mission|striptags[:100] }} {% if offer.mission|striptags|length > 100 %}...{% endif %}
+              </p>
             </div>
-            <div class="card-info pt-1">
-              Référence: BTP1328
-            </div>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              Voir l'offre
-            </div>
-            <div>
-              <a href="#" class="view"><i class="la la-plus-circle"></i></a>
+            <div class="card-information pt-3">
+              <div class="card-info">
+                Date limite: {{ offer.dateLimit }}
+              </div>
+              <div class="card-info pt-1">
+                Référence: {{ offer.reference }}
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6 row-offer">
-      <div class="card ibox mb-4">
-        <div class="card-body">
-          <h4 class="card-title mb-4">
-            <a href="#">Title of the news</a>
-          </h4>
-          <div class="">
-            <h4 class="card-title uk-margin-remove">Mission: </h4>
-            <p class="text-description mt-2">Minim dolor in amet nulla laboris enim dolore consequat proident fugiat
-              culpa eiusmod
-              proident sed excepteur.</p>
-          </div>
-          <div class="card-information pt-3">
-            <div class="card-info">
-              Date limite: 31/08/2018
-            </div>
-            <div class="card-info pt-1">
-              Référence: BTP1328
-            </div>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              Voir l'offre
-            </div>
-            <div>
-              <a href="#" class="view"><i class="la la-plus-circle"></i></a>
+          <div class="card-footer">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                Voir l'offre
+              </div>
+              <div>
+                <a href="#" class="view"><i class="la la-plus-circle"></i></a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    {% endfor %}
 
-    <div class="col-md-3 col-sm-6 row-offer">
-      <div class="card ibox mb-4">
-        <div class="card-body">
-          <h4 class="card-title mb-4">
-            <a href="#">Title of the news</a>
-          </h4>
-          <div class="">
-            <h4 class="card-title uk-margin-remove">Mission: </h4>
-            <p class="text-description mt-2">Minim dolor in amet nulla laboris enim dolore consequat proident fugiat
-              culpa eiusmod
-              proident sed excepteur.</p>
-          </div>
-          <div class="card-information pt-3">
-            <div class="card-info">
-              Date limite: 31/08/2018
-            </div>
-            <div class="card-info pt-1">
-              Référence: BTP1328
-            </div>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              Voir l'offre
-            </div>
-            <div>
-              <a href="#" class="view"><i class="la la-plus-circle"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6 row-offer">
-      <div class="card ibox mb-4">
-        <div class="card-body">
-          <h4 class="card-title mb-4">
-            <a href="#">Title of the news</a>
-          </h4>
-          <div class="">
-            <h4 class="card-title uk-margin-remove">Mission: </h4>
-            <p class="text-description mt-2">Minim dolor in amet nulla laboris enim dolore consequat proident fugiat
-              culpa eiusmod
-              proident sed excepteur.</p>
-          </div>
-          <div class="card-information pt-3">
-            <div class="card-info">
-              Date limite: 31/08/2018
-            </div>
-            <div class="card-info pt-1">
-              Référence: BTP1328
-            </div>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              Voir l'offre
-            </div>
-            <div>
-              <a href="#" class="view"><i class="la la-plus-circle"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
+    {#
+    * Metter le message pour ajouter votre annonce ici
+    * Le nombre d'annonce maximum est de 4
+    #}
+    {% if offers.length < 4 %}
+      <p>Mettez votre offre ici pour plus de visibilité</p>
+    {% endif %}
   </div>
 </div>
