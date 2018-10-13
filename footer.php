@@ -100,5 +100,6 @@
   }
 </style>
 <?php wp_footer(); ?>
+</div> <!-- .end offcanvas-content -->
 </body>
 </html>

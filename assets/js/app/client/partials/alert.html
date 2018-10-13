@@ -1,13 +1,13 @@
 <div class="alert-content">
   <div class="ibox-body">
     <h5 class="font-strong mb-4">Créer une alerte</h5>
-    <p>Je souhaite être informé quand un candidat comporte les mots suivants dans ces informations:</p>
+    <p>[[ message ]]</p>
 
     <tags-input ng-model="alerts" placeholder="Ajouter une alerte" replace-spaces-with-dashes="false">
     </tags-input>
 
     <div class="mt-2">
-      <button class="btn btn-success" ng-click="onSave()" ng-disabled="alertLoading">Valider</button>
+      <button class="btn btn-success" ng-click="onSave()" ng-disabled="alertLoading">Enregistrer</button>
     </div>
   </div>
 </div>

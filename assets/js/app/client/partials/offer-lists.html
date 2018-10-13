@@ -1,4 +1,3 @@
-
 <div id="modal-edit-offer-overflow" uk-modal>
   <div class="uk-modal-dialog">
 
@@ -14,18 +13,17 @@
         <div class="form-group mb-2 row">
           <div class="col-sm-12">
             <label class="col-form-label">Poste à pourvoir <span style="color: red">*</span></label>
-            <input class="form-control" name="postpromote" ng-model="offerEditor.postPromote" type="text"
-                   placeholder="Poste à pourvoir"
-                   required>
+            <input class="form-control" name="postpromote" ng-model="offerEditor.postPromote" type="text" placeholder="Poste à pourvoir"
+              required>
           </div>
         </div>
 
         <div class="form-group mb-2 row ">
-          <div  class="col-sm-12">
+          <div class="col-sm-12">
             <label class="col-form-label ">Type de contrat <span style="color: red">*</span></label>
             <div class="form-group">
-              <select class="form-control" name="contrattype" ng-model="offerEditor.contractType"
-                      title="Type de contrat" required>
+              <select class="form-control" name="contrattype" ng-model="offerEditor.contractType" title="Type de contrat"
+                required>
                 <option value="cdd">CDD</option>
                 <option value="cdi">CDI</option>
               </select>
@@ -35,10 +33,11 @@
 
         <div class="form-group mb-2 row ">
           <div class="col-sm-12">
-            <label class="col-form-label ">Secteur d'activité <span style="color: red">*</span> [[offerEditor.branch_activity]]</label>
+            <label class="col-form-label ">Secteur d'activité <span style="color: red">*</span>
+              [[offerEditor.branch_activity]]</label>
             <div class="form-group">
-              <select class="form-control" name="branch_activity" ng-model="offerEditor.branch_activity"
-                      title="Secteur d'activité" required>
+              <select class="form-control" name="branch_activity" ng-model="offerEditor.branch_activity" title="Secteur d'activité"
+                required>
                 <option ng-repeat="ab in branchActivity" ng-value="ab.term_id">[[ab.name]]</option>
               </select>
             </div>
@@ -49,7 +48,7 @@
           <div class="col-sm-12">
             <label class=" col-form-label">Salaire net proposé </label>
             <input class="form-control" name="proposedsallary" ng-value="0" ng-model="offerEditor.proposedSalary" type="number"
-                   placeholder="Salaire net proposé">
+              placeholder="Salaire net proposé">
           </div>
         </div>
 
@@ -57,8 +56,7 @@
           <div class="col-sm-12">
             <label class="col-form-label ">Region <span style="color: red">*</span></label>
             <div class="form-group">
-              <select class="form-control" name="region" ng-model="offerEditor.region"
-                      title="Region" required>
+              <select class="form-control" name="region" ng-model="offerEditor.region" title="Region" required>
                 <option ng-repeat="rg in Regions" ng-value="rg.term_id">[[rg.name]]</option>
               </select>
             </div>
@@ -70,7 +68,8 @@
             <label class="col-form-label">Code postal ou nom d'une ville </label>
             <div class="form-group">
               <select class="form-control input-mode country" name="country" ng-model="offerEditor.country" required>
-                <option value="[[city.term_id]]" ng-value="offerEditor.country" ng-repeat="city in Citys">([[city.postal_code]]) [[city.name]]</option>
+                <option value="[[city.term_id]]" ng-value="offerEditor.country" ng-repeat="city in Citys">([[city.postal_code]])
+                  [[city.name]]</option>
               </select>
             </div>
           </div>
@@ -82,7 +81,8 @@
             <div class="form-group">
               <div class="input-group date">
                 <span class="input-group-addon bg-white"><i class="fa fa-calendar"></i></span>
-                <input ng-model="offerEditor.dateLimit" autocomplete="off" name="datelimit" class="form-control" required>
+                <input ng-model="offerEditor.dateLimit" autocomplete="off" name="datelimit" class="form-control"
+                  required>
               </div>
             </div>
 
@@ -92,21 +92,21 @@
         <div class="form-group">
           <div class="form-label ">Mission <span style="color: red">*</span></div>
           <div class="mt-2">
-            <textarea froala="froalaOptions"  name="mission" ng-model="offerEditor.mission" required></textarea>
+            <textarea froala="froalaOptions" name="mission" ng-model="offerEditor.mission" required></textarea>
           </div>
         </div>
 
         <div class="form-group">
           <div class="form-label ">Profil recherché <span style="color: red">*</span></div>
           <div class="mt-2">
-            <textarea froala="froalaOptions"  name="profil"  ng-model="offerEditor.profil" required></textarea>
+            <textarea froala="froalaOptions" name="profil" ng-model="offerEditor.profil" required></textarea>
           </div>
         </div>
 
         <div class="form-group">
           <div class="form-label ">Autres informations <span style="color: red"></span></div>
           <div class="mt-2">
-            <textarea froala="froalaOptions" name="otherinformation"  ng-model="offerEditor.otherInformation"></textarea>
+            <textarea froala="froalaOptions" name="otherinformation" ng-model="offerEditor.otherInformation"></textarea>
           </div>
         </div>
 
@@ -122,66 +122,68 @@
   </div>
 </div>
 
-<div id="modal-view-candidat" uk-modal>
-  <div class="uk-modal-dialog">
+<div id="modal-view-candidat" class="modal fade" uk-modal>
+  <div class="modal-dialog" role="document">
+    <div class="ibox text-left modal-content">
+      <div class="ibox-head">
+        <div class="ibox-title">Les candidates</div>
+        <button class="uk-modal-close-default" type="button" data-dismiss="modal" aria-label="Close" uk-close>
+        </button>
+      </div>
 
-    <button class="uk-modal-close-default" type="button" uk-close></button>
-
-    <div class="uk-modal-header">
-      <h2 class="uk-modal-title">Les candidates</h2>
-    </div>
-
-    <div class="uk-modal-body" uk-overflow-auto>
-      <div class="">
-        <div class="ibox-body">
-          <div ng-show="loadingCandidats">
-            <div class="d-block mt-5 mb-5">
-              <div class="row">
-                <div class="col-md-6 m-auto">
-                  <div class="text-center">
-                    <p>Chargement en cours ...</p>
-                  </div>
+      <div class="ibox-body">
+        <div ng-show="loadingCandidats">
+          <div class="d-block mt-5 mb-5">
+            <div class="row">
+              <div class="col-md-6 m-auto">
+                <div class="text-center">
+                  <p>Chargement en cours ...</p>
                 </div>
               </div>
             </div>
           </div>
-          <ul ng-show="!loadingCandidats" class="media-list media-list-divider mr-2 scroller" data-height="580px">
-            <li class="media align-items-center" ng-repeat="postuled in postuledCandidats">
-              <div class="media-body d-flex align-items-center">
-                <div class="flex-1">
-                  <div class="media-heading">[[ postuled.title ]]</div>
-                  <small class="text-muted text-info">[[ postuled.branch_activity.name ]]</small>
-                </div>
-                <a target="_blank" ng-href="[[ postuled.candidate_url ]]" class="btn btn-sm btn-outline-secondary btn-rounded">Voir le CV</a>
-              </div>
-            </li>
-          </ul>
         </div>
+        <ul ng-show="!loadingCandidats" class="media-list media-list-divider mr-2 scroller" data-height="580px">
+          <li class="media align-items-center" ng-repeat="postuled in postuledCandidats">
+            <div class="media-body d-flex align-items-center">
+              <div class="flex-1">
+                <div class="media-heading">[[ postuled.title ]]</div>
+                <small class="text-muted text-info">[[ postuled.branch_activity.name ]]</small>
+              </div>
+              <a target="_blank" ng-href="[[ postuled.candidate_url ]]" class="btn btn-sm btn-outline-secondary btn-rounded">Voir
+                le CV</a>
+            </div>
+          </li>
+        </ul>
       </div>
 
     </div>
+
   </div>
 </div>
 
 <!--                    Dialog begin -->
 <div class="modal fade" id="featured-dialog" aria-labelledby="featured-dialog" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
-    <form class="modal-content">
-      <div class="modal-header p-4">
-        <h5 class="modal-title">Mettre en avant votre annonce</h5>
+    <div class="ibox text-left modal-content">
+      <div class="ibox-head">
+        <div class="ibox-title">Mettre en avant votre annonce</div>
         <button class="close" type="button" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span>
         </button>
       </div>
-      <div class="modal-body p-4">
+
+      <div class="ibox-body">
         <div class="form-group mb-4">
           <p>
             Pour plus d'informations, contactez le service commercial au:<br>
-            <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034 93 962 18</a>.
+            <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034
+              93 962 18</a>.
           </p>
         </div>
       </div>
-    </form>
+    </div>
+
   </div>
 </div>
 <!--                  Dialog end -->
@@ -191,8 +193,7 @@
   <div class="flexbox">
     <div class="input-group-icon input-group-icon-left mr-3">
       <span class="input-icon input-icon-right font-16"><i class="ti-search"></i></span>
-      <input class="form-control form-control-solid" id="key-search" type="text"
-             placeholder="Rechercher ...">
+      <input class="form-control form-control-solid" id="key-search" type="text" placeholder="Rechercher ...">
     </div>
 
     <a class="btn btn-outline-blue" target="_blank" ng-href="[[Helper.add_offer_url]]">Ajouter une offre</a>

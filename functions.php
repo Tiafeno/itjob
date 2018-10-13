@@ -41,6 +41,7 @@ $it_alerts = [];
 
 require 'includes/itjob-configs.php';
 require 'includes/itjob-functions.php';
+require 'includes/class/class-token.php';
 
 // middlewares
 require 'includes/class/middlewares/OfferHelper.php';
@@ -77,12 +78,15 @@ $itJob = (object) [
 // shortcodes
 $shortcode = (object) [
   'scImport' => require 'includes/shortcodes/class-import-csv.php',
-  'scLogin'  => require 'includes/shortcodes/class-login.php'
+  'scLogin'  => require 'includes/shortcodes/class-login.php',
+  'scInterests'  => require 'includes/shortcodes/class-interests.php'
 ];
 
 add_action('init', function() {
   global $shortcode;
   $shortcode->scClient = require 'includes/shortcodes/scClient.php';
+  $page_oc_id = \includes\object\jobServices::page_exists('Espace client');
+  add_rewrite_rule( '^espace-client/?', "index.php?page_id={$page_oc_id}" , 'top' );
 });
 
 // Visual composer elements
@@ -91,6 +95,7 @@ $elementsVC = (object) [
   'vcOffers'   => require 'includes/visualcomposer/elements/class-vc-offers.php',
   'vcCandidate'   => require 'includes/visualcomposer/elements/class-vc-candidate.php',
   'vcJePostule'   => require 'includes/visualcomposer/elements/class-vc-jepostule.php',
+  'vcSlider'   => require 'includes/visualcomposer/elements/class-slider.php',
   'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php5',
   'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
@@ -130,6 +135,7 @@ try {
   $loader->addPath( TWIG_TEMPLATE_PATH . '/shortcodes', 'SC' );
   $loader->addPath( TWIG_TEMPLATE_PATH . '/widgets', 'WG' );
   $loader->addPath( TWIG_TEMPLATE_PATH . '/error', 'ERROR' );
+  $loader->addPath( TWIG_TEMPLATE_PATH . '/mail', 'MAIL' );
 
   /** @var Object $Engine */
   $Engine = new Twig_Environment( $loader, array(

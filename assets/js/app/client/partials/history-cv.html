@@ -1,0 +1,40 @@
+
+<!-- Modal contact -->
+<div id="modal-history-cv-overflow" class="modal fade" aria-labelledby="modal-history-cv-overflow" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="ibox text-left modal-content">
+      <div class="ibox-head">
+        <button class="uk-modal-close-default" type="button" data-dismiss="modal" aria-label="Close" uk-close></button>
+        <div class="ibox-title">Historique des CV</div>
+      </div>
+      <div class="ibox-body">
+        <p class="loading-historical">Chargement en cours ...</p>
+        <ul class="media-list media-list-divider scroller mr-2" data-height="470px">
+          <li class="media" ng-repeat="History in Historicals">
+            <div class="media-body d-flex">
+              <div class="flex-1">
+                <div class="d-flex align-items-center font-13">
+                  <img class="img-circle mr-2 mb-1" ng-show="History.avatar" ng-src="[[ History.avatar[0] ]]" alt="image" width="22" />
+                  <h5 class="media-heading mb-0">[[History.display_name]]</h5>
+                </div>
+
+                <p class="font-13 text-light mb-1">[[History.branch_activity.name]]</p>
+                <div class="d-flex align-items-center font-13">
+                  <span class="text-muted">[[ History.address ]] - [[ History.country.name ]]</span>
+                </div>
+              </div>
+              <div class="text-right" style="width:100px;">
+                <a target="_blank" ng-href="[[Helper.interest_page_uri]]?token=[[Company.author.data.user_pass]]&cvId=[[History.ID]]" class="badge badge-blue badge-pill mb-2">Voir</a>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- .end modal -->
+
+<button class="btn btn-secondary ml-2" data-toggle="modal" data-target="#modal-history-cv-overflow" >
+  <span class="btn-icon"><i class="fa fa-history"></i>Historique des CV</span>
+</button>

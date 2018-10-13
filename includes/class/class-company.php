@@ -14,9 +14,10 @@ final class Company implements \iCompany {
 
   public $addDate;
   public $ID;
-  public $greeting; // Mr, Mrs
+  public $greeting; // mr: Monsieur, mrs: Madame
   // Le nom de l'utilisateur ou le responsable
   public $name;
+  // Contient les information sur le compte utilisateur WP
   public $author;
   // Adresse email de l'utilisateur ou le responsable
   public $email;
@@ -29,6 +30,10 @@ final class Company implements \iCompany {
   public $phone;
   public $newsletter = false;
   public $notification = false;
+  // Cette variable contient l'information sur le type du compte
+  public $account = 0; // 0: Standart, 1: Premium
+  // Contient les identifiants des candidats ou utilisateur wordpress (User id)
+  private $interests = [];
 
   /**
    * @param string $handler - user_id, post_id (company post type) & email
@@ -52,6 +57,7 @@ final class Company implements \iCompany {
         break;
     endswitch;
   }
+
   /**
    * Company constructor.
    *
@@ -78,9 +84,9 @@ final class Company implements \iCompany {
     if ( is_null( $output ) ) {
       return false;
     }
-    $this->ID    = $output->ID;
-    $this->title = $output->post_title;
-    $this->addDate = get_the_date( 'l, j F Y', $output);
+    $this->ID      = $output->ID;
+    $this->title   = $output->post_title;
+    $this->addDate = get_the_date( 'l, j F Y', $output );
 
     if ( $this->is_company() ) {
       // FIX: Corriger une erreur sur l'utilisateur si l'admin ajoute une company
@@ -91,29 +97,50 @@ final class Company implements \iCompany {
       $this->author = Obj\jobServices::getUserData( $user->ID );
 
       // Récuperer la region
-      $regions = wp_get_post_terms($this->ID, 'region');
-      $this->region = reset($regions);
+      $regions      = wp_get_post_terms( $this->ID, 'region' );
+      $this->region = reset( $regions );
 
       // Récuperer le nom et la code postal de la ville
-      $country = wp_get_post_terms($this->ID, 'city');
-      $this->country = reset($country);
+      $country       = wp_get_post_terms( $this->ID, 'city' );
+      $this->country = reset( $country );
 
       // Récuperer le secteur d'activité
-      $abranch = wp_get_post_terms($this->ID, 'branch_activity');
-      $this->branch_activity = reset($abranch);
+      $abranch               = wp_get_post_terms( $this->ID, 'branch_activity' );
+      $this->branch_activity = reset( $abranch );
 
       $this->init();
     }
   }
 
+  /**
+   * Recuperer les identifiants ou les CV que l'entreprise s'interest
+   * @return array|mixed|null
+   */
+  public function getInterests() {
+    $ids = get_field('itjob_company_interests', $this->ID);
+    return $this->interests = empty($ids) || !$ids ? [] : $ids;
+  }
+
+  /**
+   * Récuperer l'ID de l'entreprise (Non pas l'id de l'utilisateur)
+   * @return int
+   */
   public function getId() {
     return $this->ID;
   }
 
+  /**
+   * Vérifier si le jeton (id) est pour un compte entreprise ou autres
+   * @return bool
+   */
   public function is_company() {
     return get_post_type( $this->ID ) === 'company';
   }
 
+  /**
+   * Initialiser les prorpriétés de cette class
+   * @return bool
+   */
   private function init() {
     global $wp_version;
     if ( ! function_exists( 'get_field' ) ) {
@@ -129,14 +156,16 @@ final class Company implements \iCompany {
     $this->newsletter   = get_field( 'itjob_company_newsletter', $this->ID );
     $this->notification = get_field( 'itjob_company_notification', $this->ID );
     $this->phone        = get_field( 'itjob_company_phone', $this->ID );
+    $this->account      = get_post_meta( $this->ID, 'itjob_meta_account', true );
+    $this->account      = empty( $this->account ) ? 0 : (int)$this->account;
 
     $cellphones = get_field( 'itjob_company_cellphone', $this->ID );
-
     $this->cellphones = [];
-    if (is_array($cellphones))
-      foreach ($cellphones as $cellphone) {
-        array_push($this->cellphones, $cellphone['number']);
+    if ( is_array( $cellphones ) ) {
+      foreach ( $cellphones as $cellphone ) {
+        array_push( $this->cellphones, $cellphone['number'] );
       }
+    }
 
     return true;
   }

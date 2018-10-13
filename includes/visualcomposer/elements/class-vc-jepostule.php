@@ -18,6 +18,7 @@ if ( ! class_exists('jePostule')):
     public function __construct() {
       add_action('init', [&$this, 'jepostule_mapping'], 10, 0);
       add_shortcode('vc_jepostule', [&$this, 'jepostule_html']);
+      add_action( 'je_postule', [ &$this, 'je_postule_Fn' ] );
     }
 
     public function jepostule_mapping() {
@@ -66,8 +67,7 @@ if ( ! class_exists('jePostule')):
         $User = wp_get_current_user();
         $Candidate = Candidate::get_candidate_by($User->ID);
         if ( ! $Candidate || ! $Candidate->is_candidate()) return $message_access_refused;
-
-        if ( ! $Candidate->hasCV()) {
+        if ( ! $Candidate->hasCV() || !$Candidate->is_publish() || !$Candidate->is_activated()) {
           do_action('add_notice', "Vous devez crée un CV avant de postuler", "warning");
           return do_shortcode("[vc_register_candidate redir='{$current_uri}']");
         }
@@ -97,6 +97,25 @@ if ( ! class_exists('jePostule')):
         return $e->getRawMessage();
       }
     }
+
+    /**
+     * Cette action permet d'afficher le bouton "je postule'
+     */
+    public function je_postule_Fn() {
+      global $itJob;
+      if ($itJob->services->isClient() === 'company') return;
+      $offer_id = get_the_ID();
+      $href= home_url("/apply/{$offer_id}");
+      $button = "<div class=\"float-right ml-3\">
+                  <a href=\"$href\">
+                    <button class=\"btn btn-blue btn-fix\">
+                      <span class=\"btn-icon\">Je postule </span>
+                    </button>
+                  </a>
+                 </div>";
+      echo $button;
+    }
+
   }
 endif;
 

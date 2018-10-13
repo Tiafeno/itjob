@@ -16,9 +16,9 @@
             <div class="">
               <label class="col-form-label pt-0">Année <span style="color: red">*</span></label>
               <div class="input-daterange input-group form-group" id="datepicker-training">
-                <input class="input-sm form-control" type="text" autocomplete="off" ng-model="training.start" name="start" value="08/08/2018">
+                <input class="input-sm form-control input-daterange-years" type="text" autocomplete="off" ng-model="training.start" name="start" placeholder="Année" ng-value="">
                 <span class="input-group-addon pl-2 pr-2">à</span>
-                <input class="input-sm form-control" type="text" autocomplete="off" ng-model="training.end" name="end" value="20/08/2018">
+                <input class="input-sm form-control input-daterange-years" type="text" autocomplete="off" ng-model="training.end" name="end" placeholder="Année" ng-value="">
               </div>
             </div>
 
@@ -66,6 +66,15 @@
           {{driveLicence.label}}
         </label>
       </div>
+      <!-- Aucun permis -->
+      <div class="drivelicence">
+        <label class="checkbox checkbox-grey checkbox-ebony">
+          <input type="checkbox" class="">
+          <span class="input-span"></span>
+          Aucun
+        </label>
+      </div>
+
     </div>
   </div>
 
@@ -116,9 +125,9 @@
               <div class="">
                 <label class="col-form-label pt-0">Année <span style="color: red">*</span></label>
                 <div class="input-daterange input-group form-group" id="datepicker-experience">
-                  <input class="input-sm form-control" type="text" autocomplete="off" ng-model="experience.start" name="start" value="08/08/2018">
+                  <input class="input-sm form-control" type="text" autocomplete="off" ng-model="experience.start" name="start" ng-value="">
                   <span class="input-group-addon pl-2 pr-2">à</span>
-                  <input class="input-sm form-control" type="text" autocomplete="off" ng-model="experience.end" name="end" value="20/08/2018">
+                  <input class="input-sm form-control" type="text" autocomplete="off" ng-model="experience.end" name="end" ng-value="">
                 </div>
               </div>
 

@@ -8,15 +8,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'jobServices' ) ) :
   class jobServices {
     public $args;
+    private $User = null;
     private $Client = false;
     public function __construct() {
-      $user = wp_get_current_user();
-      if ($user->ID !== 0) {
-        $this->Client = isset($user->roles[0]) ? $user->roles[0] : false;
-      }
+
     }
 
     public function isClient() {
+      if ( ! $this->User instanceof \WP_User)
+        $this->User = wp_get_current_user();
+      if ($this->User->ID !== 0) {
+        $this->Client = isset($this->User->roles[0]) ? $this->User->roles[0] : false;
+      }
       return $this->Client;
     }
 
@@ -32,6 +35,16 @@ if ( ! class_exists( 'jobServices' ) ) :
       return \get_userdata( $userId );
     }
 
+    /**
+     * Cette fonction permet d'afficher les post recement ajouter dans le site.
+     * Le nombre de retour par default se limite à 3 posts
+     *
+     * @param string $class_name
+     * @param int $numberposts - Definir le nombre de post à retourner
+     * @param array $meta_query
+     *
+     * @return array
+     */
     public function getRecentlyPost( $class_name, $numberposts = 3, $meta_query = [] ) {
       $recentlyContainer = [];
       $this->args        = [
@@ -41,14 +54,23 @@ if ( ! class_exists( 'jobServices' ) ) :
         'orderby'        => 'DATE'
       ];
       if ( ! empty( $meta_query ) ) {
-        $this->args['meta_query'] = [];
-        array_push( $this->args['meta_query'], $meta_query );
+        $this->args['meta_query'][] = $meta_query;
       }
       $this->getPostContents( $recentlyContainer, $class_name );
 
       return $recentlyContainer;
     }
 
+    /**
+     * Cette function renvoie les post à la une (post pour status publier dans le site)
+     * Les post désactiver qui ne sont pas publier ne serons pas afficher,
+     * seul les post publier et activer seront retourner par cette fonction
+     *
+     * @param string $class_name
+     * @param array $meta_query
+     *
+     * @return array
+     */
     public function getFeaturedPost( $class_name, $meta_query = [] ) {
       $featuredContainer = [];
       $this->args        = [
@@ -58,7 +80,7 @@ if ( ! class_exists( 'jobServices' ) ) :
         'orderby'        => 'DATE'
       ];
       if ( ! empty( $meta_query ) ) {
-        array_push( $this->args['meta_query'], $meta_query );
+        $this->args['meta_query'][] =  $meta_query;
       }
       $this->getPostContents( $featuredContainer, $class_name );
 

@@ -45,6 +45,12 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
       margin-bottom: auto;
       margin-top: auto;
     }
+    .candidate-content .informations i {
+      font-size: 16px;
+    }
+    .candidate-content .informations p {
+      display: flex;
+    }
   </style>
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
@@ -89,14 +95,13 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <div class="col-md-6 mt-3">
                         <p class="mb-1 uk-text-bold">Permis de conduire:</p>
                         <?php
-                        if (!empty($candidate->drivLicences)) {
+                        if (!empty($candidate->driveLicences)) {
                           foreach ($candidate->driveLicences as $driveLicence):
                             echo sprintf('<span class="badge badge-default mr-2">%s</span>', $driveLicence['label']);
                           endforeach;
                         } else {
                           echo 'Aucun';
                         }
-
                         ?>
                       </div>
 
@@ -107,13 +112,16 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                     </div>
                   </div>
                   <div class="col-md-4 d-flex align-items-top">
-                    <div class="mt-2">
-                      <p class="mb-1"><i class="ti-location-pin mr-2"></i> <?= $candidate->region->name ?></p>
-                      <p class="mb-1"><i class="ti-agenda mr-2"></i> Déposée le <?= $candidate->dateAdd ?></p>
+                    <div class="mt-2 informations">
+                      <p class="mb-2"><i class="ti-id-badge mr-2"></i> <?= $candidate->greeting['value'] === 'mr' ? 'Homme' : 'Femme' ?></p>
+                      <p class="mb-2"><i class="ti-map-alt mr-2"></i> <?= $candidate->region->name ?></p>
+                      <p class="mb-2"><i class="ti-agenda mr-2"></i> Déposée le <?= $candidate->dateAdd ?></p>
                     </div>
                   </div>
                 </div>
+
                 <hr>
+
                 <div class="candidate-experience mt-5 mb-5">
                   <h4><i class="fa fa-graduation-cap"></i> Formations</h4>
                   <div class="cd-timeline timeline-1">
@@ -126,7 +134,6 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                           <h5><?= $trainings->training_establishment ?></h5>
                           <h6 class="text-muted"><?= $trainings->training_diploma ?></h6>
                           <p><?= $trainings->training_city . ', ' . $trainings->training_country ?></p>
-
                           <span class="cd-date badge badge-success"><?= ucfirst($trainings->training_dateBegin) ?> <b>-</b>
                             <?= ucfirst($trainings->training_dateEnd ? $trainings->training_dateEnd : 'Aujourd’hui') ?></span>
                         </div>
@@ -136,6 +143,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       ?>
                   </div>
                 </div>
+
                 <hr class="uk-devider">
                 <div class="candidate-experience mt-5">
                   <h4><i class="fa fa-user"></i> Experiences professionnelles</h4>
@@ -219,19 +227,19 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       </p>
                     </div>
                     <?php } ?>
-
                   </div>
                 </div>
-
-
               </div>
 
               <div class="candidate-footer ibox-footer mt-lg-3">
                 <div class="row pt-3">
-                  <div class="col-md-8"></div>
-                  <div class="col-md-4">
-                    <a href="<?= get_post_type_archive_link( 'candidate' ) ?>">
-                      <button class="btn btn-outline-primary btn-fix">
+                  <div class="col-md-4"></div>
+                  <div class="col-md-8 text-right">
+
+                    <?php do_action('i_am_interested_this_candidate'); ?>
+
+                    <a href="<?= get_post_type_archive_link( 'candidate' ) ?>" class="ml-2">
+                      <button class="btn btn-outline-secondary btn-fix">
                         <span class="btn-icon"><i class="ti-angle-left"></i>Retour</span>
                       </button>
                     </a>

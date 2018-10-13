@@ -2,6 +2,7 @@
 global $offers;
 get_header();
 wp_enqueue_style( 'themify-icons' );
+wp_enqueue_style( 'offers' );
 ?>
   <style type="text/css">
     .offer-top {
@@ -53,7 +54,7 @@ wp_enqueue_style( 'themify-icons' );
               </div>
 
               <div class="offer-content d-inline-block mt-4">
-                <h1><?= $offers->postPromote ?></h1>
+                <h1><?= ucfirst($offers->postPromote) ?></h1>
                 <div class="offer-description mt-4">
                   <h5 class="mt-3">Description</h5>
                   <div class="row mt-4">
@@ -131,6 +132,11 @@ wp_enqueue_style( 'themify-icons' );
         </div>
         <div class="uk-width-1-3@s">
           <!--     Sidebar here ...     -->
+          <?php
+          if ( is_active_sidebar( 'single-offer-sidebar' ) ) {
+            dynamic_sidebar( 'single-offer-sidebar' );
+          }
+          ?>
         </div>
 
       </div>

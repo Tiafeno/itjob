@@ -97,9 +97,6 @@
     .btn.dropdown-arrow:after {
       margin-left: 0 !important;
     }
-    header.header .dropdown-user i.ti-user {
-      //color: #12a5d1
-    }
 
     header.header .dropdown-user .dropdown-menu .dropdown-item,
     .dropdown-menu > li > a {
@@ -185,8 +182,8 @@
 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
   your browser</a> to improve your experience.</p>
 <![endif]-->
-
-<div class="uk-section uk-section-small uk-padding-remove uk-offcanvas-content">
+<div class="uk-offcanvas-content">
+<div class="uk-section uk-section-small uk-padding-remove">
 
   <div class="uk-section uk-section-small uk-padding-remove header-top">
     <div class="uk-container-medium uk-container">

@@ -30,6 +30,9 @@ if ( ! class_exists( 'vcOffers' ) ):
 
     }
 
+    /**
+     * Definir dans cette fonction les elements Visual composer
+     */
     public function vc_offers_mapping() {
       // Stop all if VC is not enabled
       if ( ! defined( 'WPB_VC_VERSION' ) ) {
@@ -145,7 +148,9 @@ if ( ! class_exists( 'vcOffers' ) ):
     }
 
     /**
-     * Ajouter une offre
+     * Function ajax
+     * Cette fonction permet d'ajouter une offre.
+     * La premiere (1) étape du formulaire d'ajout
      */
     public function ajx_insert_offers() {
       /**
@@ -197,7 +202,9 @@ if ( ! class_exists( 'vcOffers' ) ):
     }
 
     /**
-     * Mettre à jours le plan tarifaire de l'offre
+     * Function ajax.
+     * Mettre à jours le plan tarifaire de l'offre qu'on vient d'ajouter
+     * La deuxième (2) étape de formulaire d'ajout
      */
     public function update_offer_rateplan() {
       $offer_id = Http\Request::getValue('offerId');
@@ -214,6 +221,8 @@ if ( ! class_exists( 'vcOffers' ) ):
 
     /**
      * Ajouter ou mettre à jours les champs ACF de l'offre
+     * Call in `ajx_insert_offers` function
+     *
      * @param $post_id
      * @param $form
      */
@@ -268,7 +277,8 @@ if ( ! class_exists( 'vcOffers' ) ):
     }
 
     /**
-     * Afficher les offres recement ajouter
+     * Cette fonction est une shortcode
+     * Il permet d'afficher les offres recement ajouter
      *
      * @param array $attrs
      *
@@ -317,7 +327,8 @@ if ( ! class_exists( 'vcOffers' ) ):
     }
 
     /**
-     * Affiche les offres à la une par position
+     * Cette fonction est une shortcode.
+     * Affiche les offres à la une par position, la position est define dans l'attribut du shortcode
      *
      * @param array $attrs
      *
@@ -338,11 +349,24 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       /** @var string $position */
       /** @var string $title */
+      // Recuperer dans le service les offres publier et à la une
+      $offers = $itJob->services->getFeaturedPost('offers', [
+        'key' => 'itjob_offer_featured',
+        'value' => 1,
+        'compare' => '='
+      ]);
+      $site_url = get_site_url();
+      $added_featured_url = is_user_logged_in() ? null : home_url("connexion/company/?redir={$site_url}/espace-client");
+      if (is_null($added_featured_url)) {
+        $User = wp_get_current_user();
+        $Company = Company::get_company_by($User->ID);
+        $added_featured_url = $Company->is_company() ? null : false;
+      }
       $args = [
         'title'  => $title,
-        'offers' => $itJob->services->getFeaturedPost('offers')
+        'offers' => $offers,
+        'added_featured_offer_url' => $added_featured_url
       ];
-
       return ( trim( $position ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
     }
 
@@ -436,7 +460,7 @@ if ( ! class_exists( 'vcOffers' ) ):
      *
      * @return mixed
      */
-    public function getPositionSidebar( $args ) {
+    private function getPositionSidebar( $args ) {
       global $Engine;
       try {
         return $Engine->render( '@VC/offers/sidebar.html.twig', $args );
@@ -455,7 +479,7 @@ if ( ! class_exists( 'vcOffers' ) ):
      *
      * @return mixed
      */
-    public function getPositionContent( $args ) {
+    private function getPositionContent( $args ) {
       global $Engine;
       try {
         return $Engine->render( '@VC/offers/content.html.twig', $args );

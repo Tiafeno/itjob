@@ -1,13 +1,182 @@
+<style type="text/css">
+  .add-new-picture {
+    width: 95px;
+    border: 4px solid rgb(221, 221, 221);
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    height: 95px;
+    position: relative;
+    margin-left: 20px;
+  }
+
+  .add-new-picture img {
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    margin: auto;
+    display: block;
+  }
+  li.timeline-item a:hover {
+    font-weight: bold;
+  }
+</style>
+
+<!-- Modal information -->
+<script type="text/javascript">
+  (function($) {
+    var addedCvElement = $('#modal-info-editor').find('#added_cv');
+    addedCvElement.attr('href', itOptions.Helper.add_cv);
+  })(jQuery)
+</script>
+<div id="modal-info-editor" class="modal fade" aria-labelledby="modal-info-editor" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="ibox modal-content">
+        <div class="ibox-head">
+          <div class="ibox-title">Qu'est-ce que vous voulez faire?</div>
+        </div>
+
+        <div class="modal-body">
+          <ul class="timeline scroller">
+            <li class="timeline-item">
+              <span class="timeline-point"></span>
+              <a href="#ajouter_un_cv" id="added_cv" class="flexbox timeline-link">Crée votre CV pour être visible par les recruteurs et Postuler aux offres</a>
+            </li>
+            <li class="timeline-item">
+              <span class="timeline-point"></span>
+              <span class="flexbox">S’inscrire à une formation ou demander une formation</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary btn-fix btn-thick" data-dismiss="modal" type="button">Fermer
+          </button>
+        </div>
+    </div>
+  </div>
+</div>
+<!-- .end information -->
+
+<!-- Modal contact -->
+<div id="modal-candidate-profil-editor" uk-modal>
+  <div class="uk-modal-dialog">
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Modifier l’introduction</h2>
+    </div>
+    <form name="editProfilForm" id="editProfilForm">
+      <div class="uk-modal-body" uk-overflow-auto>
+        <div class="row">
+          <div class="col-md-4 col-sm-4" style="margin-bottom: 80px">
+            <div class="add-new-picture">
+              <img ng-src="[[profilEditor.featuredImage]]">
+            </div>
+            <div pre-upload class="p-relative">
+              <div class="p-absolute" style="width: 125px; bottom: -62px;">
+                <div class="uk-text-bold d-flex">Photo
+                  <span data-toggle="popover" data-trigger="hover"
+                        data-placement="right"
+                        data-html="true"
+                        data-content="Sur la photo votre visage doit être net, humaine et naturelle donc <b>une photo professionnelle</b>">
+                    <i class="fa fa-question-circle ml-1" style="font-size: 18px;cursor: pointer"></i>
+                  </span>
+                </div>
+                <button type="file" ngf-select="uploadImage($file, $invalidFiles)" accept="image/*" class="btn"
+                        ngf-max-size="2MB">Choisir une image
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-8 col-sm-8">
+
+            <div class="form-group">
+              <label class="col-form-label ">Mon status <span style="color: red">*</span></label>
+              <select class="form-control" name="status" id="status" ng-model="profilEditor.status"
+                      ng-value="profilEditor.status"
+                      title="Status" required>
+                <option value="0">Je cherche un emploi</option>
+                <option value="1">Je souhaite entretenir mon réseau</option>
+                <option value="2">Je cherche un stage</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Adresse e-mail</label>
+              <input class="form-control" name="email" id="email" ng-model="Candidate.author.data.user_email" disabled/>
+            </div>
+
+            <div class="form-group mt-4">
+              <label class="checkbox">
+                <input type="checkbox" name="newsletter" id="newsletter" ng-model="profilEditor.newsletter">
+                <span class="input-span"></span>Est ce que vous voulez recevoir notre newsletter?
+              </label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="uk-modal-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-blue ml-4" type="submit">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- .end modal -->
+
+<!-- Modal contact -->
+<div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1"
+     role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="ibox text-left modal-content">
+      <div class="ibox-head">
+        <div class="ibox-title">Modifier mes informations</div>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+
+      <div class="ibox-body">
+        <p>
+          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:<br>
+          <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a
+          href="tel:+261349396218">034
+          93 962 18</a>.
+        </p>
+      </div>
+
+      <div class="ibox-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-outline-secondary btn-fix btn-thick btn-air" data-dismiss="modal" type="button">Ok
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- .end modal -->
+
 <div class="row">
   <div class="col-lg-4">
     <div class="card text-center centered mb-4" style="max-width:320px;">
       <div class="card-body">
+        <span class="badge badge-blue badge-circle float-right" uk-toggle="target: #modal-candidate-profil-editor"
+              style="cursor: pointer">
+          <i class="ti-pencil"></i>
+        </span>
+
         <div class="card-avatar mt-3 mb-4">
-          <img class="img-circle" src="[[ Candidate.avatar[0] ]]" alt="image">
+          <img class="img-circle" ng-src="[[ Candidate.avatar ]]" alt="image">
         </div>
         <h4 class="card-title mb-1">[[ Candidate.display_name ]]</h4>
         <div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Candidate.address ]]</div>
-        <p class="mt-4 mb-4">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <p class="mt-4 mb-4"> [[biography]] </p>
         <div class="d-flex align-items-center  mb-5">
           <div class="text-center m-auto">
             <h2 class="text-pink m-0">
@@ -17,14 +186,18 @@
           </div>
         </div>
         <div class="d-flex justify-content-around align-items-center">
-          <button class="btn btn-secondary btn-rounded">
-            <span class="btn-icon"><i class="la la-commenting"></i>Notification</span>
-          </button>
+          <notifications></notifications>
+
         </div>
       </div>
     </div>
   </div>
   <div class="col-lg-8">
+    <div class="ibox-body alert alert-info alert-dismissable fade show">
+      <button class="close" data-dismiss="alert" aria-label="Close"></button>
+      <h4>Bonjour <b>[[Candidate.display_name]]</b></h4>
+      <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
+    </div>
     <div class="mt-4">
       <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
         <li class="nav-item">
@@ -45,18 +218,18 @@
               <div class="row">
                 <div class="col-sm-6">
                   <!-- Information général directive -->
-                  <general-information-candidate
-                    abranchs="asyncTerms('branch_activity')"
-                    regions="asyncTerms('region')"
-                    all-city="asyncTerms('city')"
-                    init="Initialize()"
-                    candidate="Candidate">
+                  <general-information-candidate abranchs="asyncTerms('branch_activity')" regions="asyncTerms('region')"
+                                                 all-city="asyncTerms('city')" init="Initialize()"
+                                                 candidate="Candidate">
                   </general-information-candidate>
                   <change-password></change-password>
                 </div>
                 <div class="col-sm-6">
                   <!-- Alerts directive -->
-                  <alerts on-save="onSaveAlert()" alerts="alerts" alert-loading="alertLoading"></alerts>
+                  <alerts on-save="onSaveAlert()" alerts="alerts"
+                          message="Je souhaite être informé quand une publication comportent les mots suivants:"
+                          alert-loading="alertLoading">
+                  </alerts>
                 </div>
               </div>
             </div>
@@ -66,21 +239,56 @@
           <div class="page-content">
             <div class="ibox-body">
               <div class="row">
-                <div class="col-lg-8">
+                <div class="col-lg-12">
                   <div ng-show="cv.hasCV">
                     <!-- Experience directive -->
-                    <experiences candidate="Candidate" ></experiences>
+                    <experiences candidate="Candidate"></experiences>
                     <!-- Formation directive --->
-                    <trainings candidate="Candidate" ></trainings>
+                    <trainings candidate="Candidate"></trainings>
+
+                    <div class="col-lg-12">
+                      <hr>
+                      <div class="row">
+                        <!-- langues -->
+                        <div class="ibox-body col-lg-6">
+                          <h4>Langues</h4>
+                          <div class="row">
+                            <div class="col-11 d-flex align-items-center">
+                              <ol class="language-list m-0">
+                                <li ng-repeat="language in Candidate.languages">
+                                  <p class="mb-0">[[language.name]]</p>
+                                </li>
+                              </ol>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- .end langues -->
+                        <!-- Permis de conduire -->
+                        <div class="ibox-body col-lg-6">
+                          <h4>Permis de conduire</h4>
+                          <div class="row">
+                            <div class="col-11 d-flex align-items-center">
+                              <ol ng-show="Candidate.driveLicences !== ''" class="drivelicence-list m-0 pl-0">
+                                <li class="badge badge-default mr-2" ng-repeat="licence in Candidate.driveLicences">
+                                  [[licence.label]]
+                                </li>
+                              </ol>
+                              <p ng-show="Candidate.driveLicences === ''">Aucun</p>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- .end Permis de conduire -->
+                      </div>
+
+                    </div>
                   </div>
                   <div ng-show="!cv.hasCV">
                     <p>Nous n'avons trouvé aucun CV.</p>
                     <a ng-href="[[cv.addCVUrl]]" class="btn btn-outline-blue">Ajouter un CV</a>
                   </div>
                 </div>
-                <div class="col-lg-6"></div>
-              </div>
 
+              </div>
             </div>
           </div>
         </div>

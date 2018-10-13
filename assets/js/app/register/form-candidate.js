@@ -120,13 +120,21 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
 
           $rootScope.initDatePicker = function () {
             window.setTimeout(() => {
-              jQuery('.input-daterange').datepicker({
-                format: "dd/mm/yyyy",
-                keyboardNavigation: false,
-                forceParse: false,
+              jQuery('.input-daterange-years').datepicker({
+                format: "yyyy",
+                minViewMode: "years",
                 autoclose: true,
                 language: "fr",
                 clearBtn: true,
+              });
+              jQuery('.input-daterange').datepicker({
+                format: "mm/dd/yyyy",
+                language: "fr",
+                startView: 2,
+                todayBtn: false,
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true
               });
 
               // Trouver un pays dans la liste API
@@ -169,7 +177,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       // url will be /form/interests
       .state('form.interests', {
         url: '/interests',
-        templateUrl: itOptions.partials_url + '/candidate/interests.html',
+        templateUrl: itOptions.partials_url + '/candidate/Interests.html',
         resolve: {
           access: ['$q', '$rootScope', function ($q, $rootScope) {
             if (typeof $rootScope.formData === 'undefined') {
@@ -318,7 +326,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 alertify
                   .okBtn("Oui")
                   .cancelBtn("Plus tard")
-                  .confirm("Votre profil a plus de chances d'être sélectionner si vous mettez une Photo d’identité.",
+                  .confirm("Votre profil a plus de chances d'être sélectionner si vous mettez une Photo d’identité." +
+                    " <br><br> <b>Voulez vous ajouter un photo maintenant?</b>",
                     function (ev) {
                       // Oui
                       ev.preventDefault();
@@ -401,22 +410,16 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
   .service('Services', ['$http', function ($http) {
     return {
       getTaxonomy: function (Taxonomy) {
-        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + Taxonomy, {
-          cache: true
-        })
+        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + Taxonomy, {cache: true})
           .then(resp => {
             return resp.data;
           });
       },
       getJobs: function ($query) {
-        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=job_sought', {
-          cache: true
-        })
+        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=job_sought', {cache: true})
           .then(function (response) {
             const jobs = response.data;
-            return jobs.filter(function (_j) {
-              return _j.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
-            });
+            return jobs.filter(_j =>  _j.name.toLowerCase().indexOf($query.toLowerCase()) != -1 );
           });
       },
       getStatus: function () {
@@ -471,7 +474,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       }
     };
   }])
-  .controller('formController', function ($scope, $rootScope, $state, initScripts, Services, abranchs, languages, jobSougths, Upload) {
+  .controller('formController',[
+    "$scope", "$rootScope", "Services", "abranchs", "languages", "jobSougths", "Upload",
+    function ($scope, $rootScope, Services, abranchs, languages, jobSougths, Upload) {
     let training_id = 0;
     let experience_id = 0;
 
@@ -485,16 +490,17 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
 
     $rootScope.formData.trainings = [{
       id: training_id,
-      start: '08/08/2018',
-      end: '08/13/2018'
+      start: 2018,
+      end: 2018
     }];
+      
     // Ajouter une formation
     $rootScope.addNewTraining = function () {
       training_id += 1;
       $rootScope.formData.trainings.push({
         id: training_id,
-        start: '',
-        end: ''
+        start: 0,
+        end: 0
       });
       $rootScope.initDatePicker();
     };
@@ -606,21 +612,11 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       console.log(value);
     }, true);
 
-  }).run(function ($state, $rootScope) {
+  }]).run(["$state", function ($state) {
     $state.defaultErrorHandler(function (error) {
       // This is a naive example of how to silence the default error handler.
       if (error.detail !== undefined) {
         $state.go(error.detail.redirect);
       }
-
     });
-
-    $rootScope.$on('$stateChangeStart', function (evt, toState, toParams, fromState, fromParams) {
-      //alert("$stateChangeStart " + fromState.name + JSON.stringify(fromParams) + " -> " + toState.name + JSON.stringify(toParams));
-    });
-    /* if ( ! $rootScope.cvForm.$invalid) {
-      return $q.resolve(true);
-    } else {
-      return $q.reject({redirect: 'form.informations'});
-    } */
-  });
+  }]);

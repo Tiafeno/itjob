@@ -1,7 +1,4 @@
-<style type="text/css">
-</style>
-
-<!-- Modal -->
+<!-- Modal information editor-->
 <div id="modal-edit-candidate-overflow" uk-modal>
   <div class="uk-modal-dialog">
     <button class="uk-modal-close-default" type="button" uk-close></button>
@@ -101,21 +98,13 @@
 <div class="profil-box">
     <div class="ibox-body">
       <h5 class="font-strong mb-4">MES INFORMATIONS
-        <span class="badge badge-warning badge-circle ml-3" ng-click="openEditor()" style="cursor: pointer">
+        <span class="badge badge-blue badge-circle ml-3" data-toggle="modal" data-target="#modal-contact-overflow" style="cursor: pointer">
           <i class="ti-pencil"></i>
         </span>
       </h5>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">Salutation:</div>
-        <div class="col-6">[[Candidate.greeting.value|Greet]]</div>
-      </div>
       <div class="row mb-2" ng-show="Candidate.branch_activity.name">
         <div class="col-6 text-muted">Secteur d'activité:</div>
         <div class="col-6">[[Candidate.branch_activity.name]]</div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">Adresse:</div>
-        <div class="col-6">[[Candidate.address]]</div>
       </div>
       <div class="row mb-2">
         <div class="col-6 text-muted">Région:</div>

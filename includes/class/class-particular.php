@@ -8,13 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 abstract class UserParticular {
   public $ID = 0; // User id
-  private $__Candidate; // Object candidate
-  private $__firstName;
-  private $__lastName;
-  private $__phones = [];
+  private $Candidate; // Object candidate
+  private $firstName;
+  private $lastName;
+  private $phones = [];
 
   protected $email;
 
+  public $has_cv = false;
   public $greeting;
   public $birthdayDate;
   public $address;
@@ -26,8 +27,8 @@ abstract class UserParticular {
    * @return bool
    */
   public function hasCV() {
-    $activated = get_field( 'activated', $this->getId() );
-    return (bool) $activated;
+    $activated = get_field( 'itjob_cv_hasCV', $this->getId() );
+    return $this->has_cv = (bool) $activated;
   }
 
   public function getId() {
@@ -38,8 +39,20 @@ abstract class UserParticular {
     $this->ID = $id;
   }
 
+  public function getFirstName() {
+    return $this->firstName;
+  }
+
+  public function getLastName() {
+    return $this->lastName;
+  }
+
+  public function getPhones() {
+    return $this->phones;
+  }
+
   public function get_display_name() {
-    return "{$this->__firstName} {$this->__lastName}";
+    return "{$this->firstName} {$this->lastName}";
   }
 
   public function __construct( $candidate_id = null ) {
@@ -50,12 +63,12 @@ abstract class UserParticular {
     if ( ! is_null( $candidate_id ) ) {
       $this->setId( $candidate_id );
       // Object candidate
-      $this->__Candidate = new Candidate( $candidate_id );
+      $this->Candidate = new Candidate( $candidate_id );
     }
 
     $this->greeting  = get_field( 'itjob_cv_greeting', $this->getId() );
-    $this->__firstName = get_field( 'itjob_cv_firstname', $this->getId() );
-    $this->__lastName  = get_field( 'itjob_cv_lastname', $this->getId() );
+    $this->firstName = get_field( 'itjob_cv_firstname', $this->getId() );
+    $this->lastName  = get_field( 'itjob_cv_lastname', $this->getId() );
 
     $birthdayDate       = get_field( 'itjob_cv_birthdayDate', $this->getId() );
     $this->birthdayDate = date( 'd/m/Y', strtotime( $birthdayDate ) );
@@ -65,13 +78,13 @@ abstract class UserParticular {
     $phones = get_field( 'itjob_cv_phone', $this->getId() );
     if ( $phones ) {
       foreach ( $phones as $phone ):
-        array_push( $this->__phones, $phone['number'] );
+        array_push( $this->phones, $phone['number'] );
       endforeach;
     }
   }
 
   protected function getCellphone() {
-    return $this->__phones;
+    return $this->phones;
   }
 
 }

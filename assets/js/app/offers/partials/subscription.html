@@ -16,13 +16,21 @@
     <div class="form-group">
       <label class="checkbox checkbox-grey checkbox-info">
         <input type="radio" name="rateplan" ng-model="rateplan" value="standard">
-        <span class="input-span"></span><b>Standard</b> (option par defaut) vous selectionnez vous même les candidats pour votre offre</label>
+        <span class="input-span"></span><b>Standard</b> 
+          <span data-container="body" data-toggle="popover" data-trigger="hover" data-placement="right" data-content="Vous selectionnez vous même les candidats pour votre offre">
+            <i class="la la-question-circle" style="font-size:15px"></i>
+          </span>
+      </label>
     </div>
 
     <div class="form-group">
       <label class="checkbox checkbox-grey checkbox-info">
         <input type="radio" name="rateplan" ng-model="rateplan" value="sereine" >
-        <span class="input-span"></span><b>Sereine</b> ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre et vous ne recevrez plus de notification venant de cette offre, une option soumise à un frais supplémentaire  de x Ar payable par MVOLA</label>
+        <span class="input-span"></span><b>Sereine</b> 
+        <span data-container="body" data-toggle="popover" data-trigger="hover" data-placement="right" data-content="ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre et vous ne recevrez plus de notification venant de cette offre, une option soumise à un frais supplémentaire  de x Ar payable par MVOLA">
+          <i class="la la-question-circle" style="font-size:15px"></i>
+        </span>
+      </label>
     </div>
 
   </div>

@@ -27,13 +27,23 @@
         </div>
 
         <div class="col-sm-12">
-          <label class="col-form-label ">Lieu <span style="color: red">*</span></label>
+          <label class="col-form-label ">Ville <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-model="Exp.place" placeholder="Ex: Antananarivo, Madagascar" autocomplete="off" name="place" class="form-control" required>
+              <input ng-model="Exp.city" placeholder="Ex: Antananarivo" autocomplete="off" name="city" class="form-control" required>
             </div>
           </div>
         </div>
+
+        
+        <div class="col-sm-12">
+            <label class="col-form-label ">Pays <span style="color: red">*</span></label>
+            <div class="form-group">
+              <div class="input-group">
+                <input ng-model="Exp.country" placeholder="Ex: Madagascar" autocomplete="off" name="country" class="form-control" required>
+              </div>
+            </div>
+          </div>
 
         <div class="row">
           <div class="form-group col-md-6">
@@ -109,10 +119,11 @@
 
       <div class="uk-modal-footer">
         <div class="row">
-          <div class="col-sm-6 uk-text-left d-flex">
+          <div class="col-sm-4 uk-text-left d-flex">
             <p class="info-status mt-auto mb-auto" ng-show="status">[[status]]</p>
           </div>
-          <div class="col-sm-6 uk-text-right">
+          <div class="col-sm-8 uk-text-right">
+              <button class="btn btn-danger ml-4" ng-show="mode === 1" data-ng-click="onDeleteExperience(Exp.id)">Supprimer</button>
             <button class="btn btn-blue ml-4" type="submit">Enregistrer</button>
           </div>
         </div>
@@ -135,7 +146,7 @@
     </div>
   </div>
   <div class="ibox-body">
-    <ul class="media-list media-list-divider scroller mr-2" data-height="470px">
+    <ul class="media-list media-list-divider scroller mr-2">
 
       <li class="media" ng-repeat="experience in Candidate.experiences">
         <div class="media-body d-flex">
@@ -147,14 +158,14 @@
               [[ experience.exp_company ]]
             </h6>
             <div class="d-flex align-items-center font-13">
-              <span class="text-muted">[[ experience.exp_dateBegin ]] - [[ experience.exp_dateEnd ]]</span>
+              <span class="text-muted">[[ experience.exp_dateBegin ]] - [[ experience.exp_dateEnd == "" ? 'Aujourd\'hui' : experience.exp_dateEnd ]]</span>
             </div>
-            <p class="font-13 text-light mb-1">[[ experience.exp_mission ]]</p>
+            <p class="font-13 text-light mb-1" ng-bind-html="experience.exp_mission"></p>
           </div>
           <div class="text-right" style="width:100px;">
             <!--<span class="badge badge-primary badge-pill mb-2">Open</span>-->
             <div>
-              <small class="text-muted font-12" style="cursor:pointer;" ng-click="editExperience(experience.exp_positionHeld)">
+              <small class="text-muted font-12" style="cursor:pointer;" ng-click="editExperience(experience.id)">
                 <i class="fa fa-edit mr-2"></i>Modifier
               </small>
             </div>
