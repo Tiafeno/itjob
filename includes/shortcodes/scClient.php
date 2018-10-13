@@ -445,8 +445,7 @@ if ( ! class_exists( 'scClient' ) ) :
         } catch ( \Twig_Error_Loader $e ) {
         } catch ( \Twig_Error_Runtime $e ) {
         } catch ( \Twig_Error_Syntax $e ) {
-          echo $e->getRawMessage();
-          die;
+          wp_send_json_error($e->getRawMessage());
         }
         $sender = wp_mail($to, $subject, $content, $headers);
         if ($sender) {
