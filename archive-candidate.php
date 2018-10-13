@@ -4,11 +4,13 @@ get_header();
 wp_enqueue_style( 'offers' );
 ?>
   <div class="uk-section uk-section-transparent">
-    <?php
-    if ( is_active_sidebar( 'cv-header' ) ) {
-      dynamic_sidebar( 'cv-header' );
-    }
-    ?>
+    <div class="widget-header-cv">
+      <?php
+      if ( is_active_sidebar( 'cv-header' ) ) {
+        dynamic_sidebar( 'cv-header' );
+      }
+      ?>
+    </div>
     <div class="uk-container uk-container-medium">
       <div class="widget-top">
         <?php
@@ -17,8 +19,16 @@ wp_enqueue_style( 'offers' );
         }
         ?>
       </div>
+
+<!--      La liste des CV -->
       <div class="row">
         <div class="col-md-8">
+          <!--      Un bouton pour ajouter un CV -->
+          <div class="row">
+            <div class="col-lg-12">
+
+            </div>
+          </div>
           <div class="container-list-posts">
             <h5 class="vc-element-title">LISTE CV</h5>
             <div class="row mb-5 ">

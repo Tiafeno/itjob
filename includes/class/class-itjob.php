@@ -47,8 +47,6 @@ if ( ! class_exists( 'itJob' ) ) {
 
       }, 10, 3 );
 
-      add_action( 'je_postule', [ &$this, 'je_postule_Fn' ] );
-
       // TODO: Envoyer un mail information utilisateur et adminstration (pour s'informer d'un nouveau utilisateur)
       add_action( 'acf/save_post', function ( $post_id ) {
         // Code here
@@ -390,7 +388,7 @@ if ( ! class_exists( 'itJob' ) ) {
         global $itJob;
 
         // Load uikit stylesheet
-        wp_enqueue_style( 'uikit', get_template_directory_uri() . '/assets/css/uikit.min.css', '', '3.0.0rc10' );
+        wp_enqueue_style( 'uikit', get_template_directory_uri() . '/assets/css/uikit.min.css', '', '3.0.0rc19' );
         wp_enqueue_style( 'montserrat', 'https://fonts.googleapis.com/css?family=Montserrat:300,400,600,700' );
 
         // scripts
@@ -525,22 +523,6 @@ if ( ! class_exists( 'itJob' ) ) {
         'bootstrap-select'
       ], $itJob->version, true );
     }
-
-    public function je_postule_Fn() {
-      global $itJob;
-      if ($itJob->services->isClient() === 'company') return;
-      $offer_id = get_the_ID();
-      $href= home_url("/apply/{$offer_id}");
-      $button = "<div class=\"float-right ml-3\">
-                  <a href=\"$href\">
-                    <button class=\"btn btn-blue btn-fix\">
-                      <span class=\"btn-icon\">Je postule </span>
-                    </button>
-                  </a>
-                 </div>";
-      echo $button;
-    }
-
   }
 }
 

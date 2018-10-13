@@ -1,0 +1,49 @@
+{% if offers is not empty %}
+  <div uk-slider="center: false; autoplay: true; autoplay-interval: 2500" class="mt-4">
+    <div class="uk-position-relative uk-visible-toggle uk-light mb-4 container-offers ">
+      <ul class="uk-slider-items uk-grid">
+        {% for offer in offers %}
+          <li class="uk-width-auto">
+            <div class="card ibox">
+              <div class="card-body">
+                <h3 class="card-title uk-card-title mb-4">
+                  <a href="{{ offer.offer_url }}">{{ offer.postPromote|capitalize }}</a>
+                </h3>
+                <div class="">
+                  <h4 class="card-title uk-margin-remove">Mission: </h4>
+                  <p class="text-description mt-2">
+                    {{ offer.mission|striptags[:100] }} {% if offer.mission|striptags|length > 100 %}...{% endif %}
+                  </p>
+                </div>
+                <div class="card-information pt-3">
+                  <div class="card-info">
+                    Date limite: {{ offer.dateLimit }}
+                  </div>
+                  <div class="card-info pt-1">
+                    Référence: {{ offer.reference }}
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    Voir l'offre
+                  </div>
+                  <div>
+                    <a href="{{ offer.offer_url }}" class="view"><i class="la la-plus-circle"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
+      <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slider-item="next"></a>
+
+    </div>
+
+    <ul class="uk-slider-nav uk-dotnav uk-flex-center"></ul>
+  </div>
+{% endif %}

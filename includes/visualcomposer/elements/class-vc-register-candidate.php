@@ -163,7 +163,12 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       }
     }
 
-    // Ajouter un CV
+    /**
+     * Function ajax
+     * Cette function permet d'ajouter un CV pour un utilisateur 'candidate' qui ne possède pas encore.
+     *
+     * @return bool
+     */
     public function update_user_cv() {
       if ( $_SERVER['REQUEST_METHOD'] != 'POST' || ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
         return false;
