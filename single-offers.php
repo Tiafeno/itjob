@@ -53,7 +53,7 @@ wp_enqueue_style( 'themify-icons' );
               </div>
 
               <div class="offer-content d-inline-block mt-4">
-                <h1><?= $offers->postPromote ?></h1>
+                <h1><?= ucfirst($offers->postPromote) ?></h1>
                 <div class="offer-description mt-4">
                   <h5 class="mt-3">Description</h5>
                   <div class="row mt-4">
