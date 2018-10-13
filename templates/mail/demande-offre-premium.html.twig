@@ -700,7 +700,7 @@
                         style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
                         <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: left"><span
                             style="font-size: 18px; line-height: 21px;"><strong><span
-                                style="line-height: 21px; font-size: 18px;">{{ company.title</span></strong></span><span style="font-size: 18px; line-height: 21px;"><strong><span style="line-height: 21px; font-size: 18px;"> }}</span></strong></span>
+                                style="line-height: 21px; font-size: 18px;">{{ company.title }}</span></strong></span>
                         </p></div>
                     </div>
                     <!--[if mso]></td></tr></table><![endif]-->
@@ -765,9 +765,21 @@
                       style="color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;line-height:120%; padding-right: 60px; padding-left: 10px; padding-top: 0px; padding-bottom: 0px;">
                       <div
                         style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Lato', Tahoma, Verdana, Segoe, sans-serif;text-align:left;">
-                        <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: left"><span
-                            style="font-size: 18px; line-height: 21px;"><strong><span
-                                style="line-height: 21px; font-size: 18px;">{% for phone in company.cellphones %} {{ phone }} {% if not loop.last %} - {% endif %} {% endfor %} {% if company.phone is not empty %} - {{ company.phone }} {% endif %}</span></strong></span>
+                        <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: left">
+                          <span
+                            style="font-size: 18px; line-height: 21px;">
+                            <strong>
+                              <span
+                                style="line-height: 21px; font-size: 18px;">
+                                {% for phone in company.cellphones %}
+                                  {{ phone }} {% if not loop.last %} - {% endif %}
+                                {% endfor %}
+                                {% if company.phone is not empty %}
+                                  {{ company.phone }}
+                                {% endif %}
+                              </span>
+                            </strong>
+                          </span>
                         </p></div>
                     </div>
                     <!--[if mso]></td></tr></table><![endif]-->
@@ -950,7 +962,7 @@
                           <td align="left" valign="middle"
                               style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                             <a href="https://www.facebook.com/" title="Facebook" target="_blank">
-                              <img src="images/facebook@2x.png" alt="Facebook" title="Facebook" width="32"
+                              <img src="{{ template_dir_url }}/img/facebook@2x.png" alt="Facebook" title="Facebook" width="32"
                                    style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                             </a>
                             <div style="line-height:5px;font-size:1px">&#160;</div>
@@ -967,7 +979,7 @@
                           <td align="left" valign="middle"
                               style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                             <a href="https://twitter.com/" title="Twitter" target="_blank">
-                              <img src="images/twitter@2x.png" alt="Twitter" title="Twitter" width="32"
+                              <img src="{{ template_dir_url }}/img/twitter@2x.png" alt="Twitter" title="Twitter" width="32"
                                    style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                             </a>
                             <div style="line-height:5px;font-size:1px">&#160;</div>
@@ -984,7 +996,7 @@
                           <td align="left" valign="middle"
                               style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                             <a href="https://plus.google.com/" title="Google+" target="_blank">
-                              <img src="images/googleplus@2x.png" alt="Google+" title="Google+" width="32"
+                              <img src="{{ template_dir_url }}/img/googleplus@2x.png" alt="Google+" title="Google+" width="32"
                                    style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                             </a>
                             <div style="line-height:5px;font-size:1px">&#160;</div>
@@ -1001,7 +1013,7 @@
                           <td align="left" valign="middle"
                               style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
                             <a href="https://www.youtube.com/" title="YouTube" target="_blank">
-                              <img src="images/youtube@2x.png" alt="YouTube" title="YouTube" width="32"
+                              <img src="{{ template_dir_url }}/img/youtube@2x.png" alt="YouTube" title="YouTube" width="32"
                                    style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: none;height: auto;float: none;max-width: 32px !important">
                             </a>
                             <div style="line-height:5px;font-size:1px">&#160;</div>
