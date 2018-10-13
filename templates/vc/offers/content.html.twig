@@ -1,34 +1,3 @@
-<style type="text/css">
-  .load-100 {
-    width: 100%;
-    height: 15px;
-    background-color: rgba(235, 235, 235, 0.26);
-  }
-
-  .load-75 {
-    width: 75%;
-    height: 15px;
-    background-color: rgba(235, 235, 235, 0.26);
-  }
-
-  .load-50 {
-    width: 50%;
-    height: 15px;
-    background-color: rgba(235, 235, 235, 0.26);
-  }
-
-  .load-80 {
-    width: 80%;
-    height: 15px;
-    background-color: rgba(235, 235, 235, 0.26);
-  }
-
-  .load-25 {
-    width: 25%;
-    height: 15px;
-    background-color: rgba(235, 235, 235, 0.26);
-  }
-</style>
 <div class="container-offers uk-padding-remove">
   <h5 class="container-offers-title">{{ title }}</h5>
   <div class="row mb-5 ml-0 mr-0">
@@ -74,6 +43,7 @@
     #}
     {% if offers.length < 4 %}
       <div class="col-md-3 col-sm-6 row-offer">
+
         <div class="modal fade modal-featured-offer" tabindex="-1" role="dialog" aria-labelledby="modalFeaturedOffer" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -93,44 +63,36 @@
             </div>
           </div>
         </div>
+
         <div class="card ibox mb-4">
           <div class="card-body" style="background-color: lightseagreen;">
             <h4 class="card-title mb-4">
               <a
-                {% if added_featured_offer_url is empty %}
-                    href="#modal-featured-offer" data-toggle="modal" data-target=".modal-featured-offer"
+                {% if added_featured_offer_url is empty %} href="#modal-featured-offer" data-toggle="modal" data-target=".modal-featured-offer"
                   {% else %}
                     href="{{ added_featured_offer_url }}"
                 {% endif %}
-
               >
-                Mettez votre offre ici pour plus de visibilité <i class="fa fa-plus-circle"></i>
+                Mettez votre offre ici pour plus de visibilité
               </a>
             </h4>
             <div style="min-height: 86px;">
               <h4 class="card-title uk-margin-remove">
                 <div class="mb-2 d-flex load-25"></div>
               </h4>
-              <div class="mb-1 mt-2 d-flex load-100"></div>
-              <div class="mb-1 d-flex load-75"></div>
-              <div class="mb-2 d-flex load-50"></div>
-            </div>
-            <div class="card-information pt-3">
-              <div class="card-info">
-                <div class="mb-2 d-flex load-80"></div>
+              <div class="mb-1 mt-2 d-flex load-100">
+                <a {% if added_featured_offer_url is empty %} href="#modal-featured-offer" data-toggle="modal" data-target=".modal-featured-offer"
+                  {% else %} href="{{ added_featured_offer_url }}" {% endif %}
+                  style="font-size: 90px;margin: auto;">
+                  <i class="fa fa-plus-square" style="opacity: 0.6;"></i>
+                </a>
               </div>
-              <div class="card-info ">
-                <div class="mt-1 d-flex load-80"></div>
-              </div>
+
             </div>
           </div>
-          <div class="card-footer" style="background-color: darkcyan;">
+          <div class="card-footer" style="background-color: darkcyan; min-height: 47px;">
             <div class="d-flex align-items-center justify-content-between">
-              <div class="d-flex" style="width: 25%; height: 15px; background-color: rgba(235, 235, 235, 0.26);">
-              </div>
-              <div>
-                <i style="font-size: 23px;" class="la la-plus-circle"></i>
-              </div>
+
             </div>
           </div>
         </div>
