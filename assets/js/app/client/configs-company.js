@@ -40,7 +40,6 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
                 let btnUpgrade = jQuery('#account_upgrade_btn');
                 const formData = new FormData();
                 formData.append('action', 'send_request_premium_plan');
-                formData.append('token', itOptions.token);
                 btnUpgrade.text('Chargement en cours ...');
                 $http({
                   url: itOptions.Helper.ajax_url,

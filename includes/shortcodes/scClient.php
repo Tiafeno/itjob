@@ -417,16 +417,17 @@ if ( ! class_exists( 'scClient' ) ) :
      * Function ajax
      * Envoyer un mail à l'administrateur pour une demande de compte premium
      * La valeur du post meta 'itjob_meta_account' de l'entreprise sera 2 si la demande à bien étés envoyer
-     * NB: 0: Standert, 1: Premium et 2: En attente
+     * NB: 0: Standart, 1: Premium et 2: En attente
      */
     public function send_request_premium_plan() {
       global $Engine;
-      $information_message = "Une erreur s'est produite. <br> Pour signialer cette erreur veillez contactez" .
-                             " le service commercial au: 032 45 378 60 - 033 82 591 13 - 034 93 962 18.";
+      $information_message = "Une erreur s'est produite. <br> Pour signialer cette erreur veillez contactez le service " .
+                             "commercial au: 032 45 378 60 - 033 82 591 13 - 034 93 962 18.";
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
-        wp_send_json( false );
+        wp_send_json_error( false );
       }
-      $account = (int)get_post_meta($this->Company->getId(), 'itjob_meta_account', true);
+      $account = get_post_meta($this->Company->getId(), 'itjob_meta_account', true);
+      $account = (int)$account;
       if ($account === 0 || empty($account)) {
         $to = get_field('admin_mail', 'option');
         if (empty($to)) wp_send_json_error("Adresse e-mail de l'administrateur abscent");
@@ -434,18 +435,27 @@ if ( ! class_exists( 'scClient' ) ) :
         $headers = [];
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
         $headers[] = 'From: itjobmada <no-reply@itjobmada.com';
-        $content = $Engine->render('@MAIL/demande-offre-premium.html.twig', [
-          'company' => $this->Company,
-          'template_dir_url' => get_template_directory(),
-          // TODO: Liens vers l'espace administrateur
-          'dashboard_url' => '#dashboard'
-        ]);
+        // TODO: Liens vers l'espace administrateur
+        try {
+          $content = $Engine->render('@MAIL/demande-offre-premium.html.twig', [
+            'company' => $this->Company,
+            'template_dir_url' => get_template_directory(),
+            'dashboard_url' => '#dashboard'
+          ]);
+        } catch ( \Twig_Error_Loader $e ) {
+        } catch ( \Twig_Error_Runtime $e ) {
+        } catch ( \Twig_Error_Syntax $e ) {
+          echo $e->getRawMessage();
+          die;
+        }
         $sender = wp_mail($to, $subject, $content, $headers);
         if ($sender) {
           // Changer la valeur du post meta pour '2' qui signifie rester en attente de validation
           update_post_meta($this->Company->getId(), 'itjob_meta_account', 2);
           wp_send_json_success("Votre demande à bien été envoyer.");
-        } else wp_send_json_error($information_message);
+        } else {
+          wp_send_json_error($information_message);
+        }
       } else {
         wp_send_json_error($information_message);
       }
