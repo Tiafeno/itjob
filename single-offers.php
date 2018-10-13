@@ -2,6 +2,7 @@
 global $offers;
 get_header();
 wp_enqueue_style( 'themify-icons' );
+wp_enqueue_style( 'offers' );
 ?>
   <style type="text/css">
     .offer-top {
