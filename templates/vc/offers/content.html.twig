@@ -1,3 +1,34 @@
+<style type="text/css">
+  .load-100 {
+    width: 100%;
+    height: 15px;
+    background-color: rgba(235, 235, 235, 0.26);
+  }
+
+  .load-75 {
+    width: 75%;
+    height: 15px;
+    background-color: rgba(235, 235, 235, 0.26);
+  }
+
+  .load-50 {
+    width: 50%;
+    height: 15px;
+    background-color: rgba(235, 235, 235, 0.26);
+  }
+
+  .load-80 {
+    width: 80%;
+    height: 15px;
+    background-color: rgba(235, 235, 235, 0.26);
+  }
+
+  .load-25 {
+    width: 25%;
+    height: 15px;
+    background-color: rgba(235, 235, 235, 0.26);
+  }
+</style>
 <div class="container-offers uk-padding-remove">
   <h5 class="container-offers-title">{{ title }}</h5>
   <div class="row mb-5 ml-0 mr-0">
@@ -6,7 +37,7 @@
         <div class="card ibox mb-4">
           <div class="card-body">
             <h4 class="card-title mb-4">
-              <a href="#">{{ offer.postPromote }}</a>
+              <a href="{{ offer.offer_url }}">{{ offer.postPromote }}</a>
             </h4>
             <div class="">
               <h4 class="card-title uk-margin-remove">Mission: </h4>
@@ -29,7 +60,7 @@
                 Voir l'offre
               </div>
               <div>
-                <a href="#" class="view"><i class="la la-plus-circle"></i></a>
+                <a href="{{ offer.offer_url }}" class="view"><i class="la la-plus-circle"></i></a>
               </div>
             </div>
           </div>
@@ -42,7 +73,70 @@
     * Le nombre d'annonce maximum est de 4
     #}
     {% if offers.length < 4 %}
-      <p>Mettez votre offre ici pour plus de visibilité</p>
+
+      <div class="modal fade modal-featured-offer" tabindex="-1" role="dialog" aria-labelledby="modalFeaturedOffer" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Mettez votre offre à la une</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Veuillez contacter le service commercial aux numéros suivants:<br>
+              032 45 378 60 - 033 82 591 13 - 034 93 962 18.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 col-sm-6 row-offer">
+        <div class="card ibox mb-4">
+          <div class="card-body" style="background-color: lightseagreen;">
+            <h4 class="card-title mb-4">
+              <a
+                {% if added_featured_offer_url is empty %}
+                    href="#modal-featured-offer" data-toggle="modal" data-target=".modal-featured-offer"
+                  {% else %}
+                    href="{{ added_featured_offer_url }}"
+                {% endif %}
+
+              >
+                Mettez votre offre ici pour plus de visibilité <i class="fa fa-plus-circle"></i>
+              </a>
+            </h4>
+            <div style="min-height: 86px;">
+              <h4 class="card-title uk-margin-remove">
+                <div class="mb-2 d-flex load-25"></div>
+              </h4>
+              <div class="mb-1 mt-2 d-flex load-100"></div>
+              <div class="mb-1 d-flex load-75"></div>
+              <div class="mb-2 d-flex load-50"></div>
+            </div>
+            <div class="card-information pt-3">
+              <div class="card-info">
+                <div class="mb-2 d-flex load-80"></div>
+              </div>
+              <div class="card-info ">
+                <div class="mt-1 d-flex load-80"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer" style="background-color: darkcyan;">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex" style="width: 25%; height: 15px; background-color: rgba(235, 235, 235, 0.26);">
+              </div>
+              <div>
+                <i style="font-size: 23px;" class="la la-plus-circle"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     {% endif %}
   </div>
 </div>

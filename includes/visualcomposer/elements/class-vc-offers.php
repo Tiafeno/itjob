@@ -355,11 +355,18 @@ if ( ! class_exists( 'vcOffers' ) ):
         'value' => 1,
         'compare' => '='
       ]);
+      $site_url = get_site_url();
+      $added_featured_url = is_user_logged_in() ? null : home_url("connexion/company/?redir={$site_url}/espace-client");
+      if (is_null($added_featured_url)) {
+        $User = wp_get_current_user();
+        $Company = Company::get_company_by($User->ID);
+        $added_featured_url = $Company->is_company() ? null : false;
+      }
       $args = [
         'title'  => $title,
-        'offers' => $offers
+        'offers' => $offers,
+        'added_featured_offer_url' => $added_featured_url
       ];
-
       return ( trim( $position ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
     }
 

@@ -85,6 +85,8 @@ $shortcode = (object) [
 add_action('init', function() {
   global $shortcode;
   $shortcode->scClient = require 'includes/shortcodes/scClient.php';
+  $page_oc_id = \includes\object\jobServices::page_exists('Espace client');
+  add_rewrite_rule( '^espace-client/?', "index.php?page_id={$page_oc_id}" , 'top' );
 });
 
 // Visual composer elements
