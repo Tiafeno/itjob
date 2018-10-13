@@ -169,7 +169,12 @@
                   <h2 class="uk-text-bold">{{ training.training_diploma }}</h2>
                   <h3 class="text-muted">{{ training.training_establishment }}</h3>
                   <p>{{ training.training_city }}, {{ training.training_country }}</p>
-                  <h4 style="font-family: Poppins, sans-serif">{{ training.training_dateBegin }} à {{ training.training_dateEnd }}</h4>
+                  <h4 style="font-family: Poppins, sans-serif">
+                    {{ training.training_dateBegin }}
+                    {% if training.training_dateBegin != training.training_dateEnd %}
+                      à {{ training.training_dateEnd }}
+                    {% endif %}
+                  </h4>
                   {{ training.exp_mission|raw }}
                 </div>
               {% endfor %}
