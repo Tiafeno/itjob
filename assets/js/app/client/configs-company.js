@@ -67,13 +67,22 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       scope: true,
       templateUrl: itOptions.Helper.tpls_partials + '/history-cv.html',
       controller: ["$scope", '$http', function ($scope, $http) {
+        const loadingHistoricalElement = jQuery('#modal-history-cv-overflow').find('.loading-historical');
+        loadingHistoricalElement.text('Aucun CV');
         $scope.Historicals = [];
         (function ($) {
           $('#modal-history-cv-overflow').on('show.bs.modal', function (e) {
+            loadingHistoricalElement.hide().text('Chargement en cours ...').fadeIn();
             $http.get(itOptions.Helper.ajax_url + '?action=get_history_cv_view', {cache: true})
               .then(success => {
                 let resp = success.data;
-                $scope.Historicals = _.clone(resp.data);
+                if (resp.data.length <= 0) {
+                  loadingHistoricalElement.text('Aucun CV');
+                } else {
+                  $scope.Historicals = _.clone(resp.data);
+                  loadingHistoricalElement.hide();
+                }
+
               });
           })
         })(jQuery)
