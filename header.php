@@ -256,7 +256,7 @@
                     $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
                     ?>
                     <li class="dropdown dropdown-user">
-                      <a class="nav-link dropdown-toggle link btn btn-sm btn-blue"  data-toggle="dropdown">
+                      <a class="nav-link dropdown-toggle link btn btn-sm btn-blue" style="color: white" data-toggle="dropdown">
                         <span class="mr-2 text-uppercase p-relative" style="bottom: 3px;">
                           Mon compte
                         </span>
