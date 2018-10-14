@@ -97,7 +97,7 @@ $elementsVC = (object) [
   'vcJePostule'   => require 'includes/visualcomposer/elements/class-vc-jepostule.php',
   'vcSlider'   => require 'includes/visualcomposer/elements/class-slider.php',
   'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
-  'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php5',
+  'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php',
   'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
 ];
 

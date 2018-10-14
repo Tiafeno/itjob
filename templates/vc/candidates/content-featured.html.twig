@@ -1,0 +1,70 @@
+<div class="container-candidate uk-padding-remove">
+  <h5 class="container-candidate-title">{{ title }}</h5>
+  <div class="row mb-5 ml-0 mr-0">
+    {% for candidate in candidates %}
+      <div class="col-md-3 col-sm-6 row-offer">
+        <div class="card ibox mb-4">
+          <div class="card-body">
+            <h4 class="card-title mb-4">
+              <a href="{{ candidate.candidate_url }}">CV7502</a>
+            </h4>
+            <div class="candidate-info mt-2">
+              <div class="mb-1">
+                <p class="mb-0 uk-text-bold">L'emploi recherché:</p>
+                <div>
+                  {% for job in candidate.jobSought %}
+                    {% if not loop.first %}, {% endif %}
+                    {{ job.name }}
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="mb-1"><b>Permis :</b>
+                {% if candidate.driveLicences is not empty %}
+                  {% for driveLicence in candidate.driveLicences %}
+                    {% if not loop.first %}, {% endif %}
+                    {{ driveLicence.name }}
+                  {% endfor %}
+                {% else %}
+                  Aucun
+                {% endif %}
+              </div>
+
+              <div class="mb-1">
+               <p class="mb-0 uk-text-bold">Secteur d'activité :</p>
+               {{ candidate.branch_activity.name }}
+               </div>
+
+              <div class="mb-1"><b>Langues :</b>
+                {% if candidate.languages is not empty %}
+                  {% for language in candidate.languages %}
+                    {% if not loop.first %}, {% endif %}
+                    {{ language.name }}
+                  {% endfor %}
+                {% else %}
+                  Aucun
+                {% endif %}
+              </div>
+            </div>
+            <div class="pt-4">
+              <div class="card-info">
+                CV ajouté le: {{ candidate.dateAdd }}
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                Voir le CV
+              </div>
+              <div>
+                <a href="{{ candidate.candidate_url }}" class="view"><i class="la la-plus-circle"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    
+  </div>
+</div>
