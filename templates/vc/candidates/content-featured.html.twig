@@ -23,7 +23,7 @@
                 {% if candidate.driveLicences is not empty %}
                   {% for driveLicence in candidate.driveLicences %}
                     {% if not loop.first %}, {% endif %}
-                    {{ driveLicence.name }}
+                    {{ driveLicence['label'] }}
                   {% endfor %}
                 {% else %}
                   Aucun
@@ -65,6 +65,6 @@
         </div>
       </div>
     {% endfor %}
-    
+
   </div>
 </div>
