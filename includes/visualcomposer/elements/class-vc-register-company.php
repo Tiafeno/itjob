@@ -314,7 +314,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
         'Helper'    => [
-          'redir' => $redir,
+          'redir' => $redirection,
           'login' => home_url('/connexion/company') . $redirection
         ]
       ] );
