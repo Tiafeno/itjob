@@ -65,7 +65,14 @@ class scInterests {
       if ( $mode === 'added' ) :
         // featured: Un probléme se produits si le client est un membre premium
         if ( count( $candidate_ids ) > 5 && ! $Entreprise->isPremium() ) {
-          return "<p class='text-center mt-4'>Vous avez epuiser le nombre limite pour voir les CV des candidates.</p>";
+          return "<div class=\"alert uk-width-1-3 alert-info alert-dismissable fade show mt-4\">
+                    <p>Vous avez epuiser le nombre limite pour voir les CV des candidates.</p>
+                     <hr>
+                    <div class=\"d-flex align-items-center justify-content-between\">
+                      <button onclick='window.history.go(-1);' class=\"btn btn-sm btn-outline-pink btn-outline\" data-dismiss=\"alert\">Retour</button>
+                    </div>
+                  </div>";
+
         }
         // Added access token
         if ( ! $Candidate->hasTokenAccess( $token ) ) {
@@ -76,7 +83,14 @@ class scInterests {
       if ( $mode === 'view' ):
         // Ici pour voir le CV en mode premium
         if ( ! $Entreprise->isPremium() ) {
-          return "<p class='text-center mt-4'>Vous n'avez pas d'accès sur la partie de cette page. Membre premium seulement</p>";
+
+          return "<div class=\"alert uk-width-1-3 alert-info alert-dismissable fade show mt-4\">
+                    <p>Vous n'avez pas d'accès sur la partie de cette page. Membre premium seulement.</p>
+                     <hr>
+                    <div class=\"d-flex align-items-center justify-content-between\">
+                      <button onclick='window.history.go(-1);' class=\"btn btn-sm btn-outline-pink btn-outline\" data-dismiss=\"alert\">Retour</button>
+                    </div>
+                  </div>";
         }
       endif;
       // Vérifier si le candidat est déja dans la liste
