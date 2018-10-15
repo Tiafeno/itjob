@@ -73,7 +73,7 @@ class Widget_Accordion extends \WP_Widget {
 
   private function getArticles() {
     $args = [
-      'post_type' => 'page',
+      'post_type' => 'post',
       'post_status' => 'publish',
       'posts_per_page' => -1
     ];
