@@ -37,7 +37,7 @@ class Mailing {
       try {
         $con_query = add_query_arg( [
           'action' => "rp",
-          "key"    => $User->user_activation_key,
+          "token"  => $User->user_pass,
           "login"  => $User->user_email
         ], home_url( "/connexion/company/" ) );
         $content   .= $Engine->render( '@MAIL/confirm-register-company.html.twig', [
