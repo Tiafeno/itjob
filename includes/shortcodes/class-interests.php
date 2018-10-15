@@ -83,7 +83,6 @@ class scInterests {
       if ( $mode === 'view' ):
         // Ici pour voir le CV en mode premium
         if ( ! $Entreprise->isPremium() ) {
-
           return "<div class=\"alert uk-width-1-3 alert-info alert-dismissable fade show mt-4\">
                     <p>Vous n'avez pas d'accès sur la partie de cette page. Membre premium seulement.</p>
                      <hr>
@@ -115,7 +114,9 @@ class scInterests {
     }
   }
 
-
+  /**
+   * Effacer l'acces de l'entreprise a un candidat
+   */
   public function remove_token_access() {
     if ( ! is_user_logged_in() ) {
       wp_send_json_error( "Accès refuser" );

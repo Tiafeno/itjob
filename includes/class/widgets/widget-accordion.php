@@ -1,6 +1,8 @@
 <?php
+namespace includes\widgets;
 
-class Widget_Accordion extends WP_Widget {
+use Underscore\Types\Arrays;
+class Widget_Accordion extends \WP_Widget {
   public function __construct() {
     parent::__construct( 'widget_accordion', 'ITJOB > Accordéon',
       [
@@ -11,9 +13,15 @@ class Widget_Accordion extends WP_Widget {
   public function widget( $args, $instance ) {
     global $Engine;
     echo $args['before_widget'];
+    $ids = $instance['page_ids'];
+    $contents = Arrays::each($ids, function ($id) {
+      $post = get_post((int)$id);
+      return $post;
+    });
     try {
       echo $Engine->render( '@WG/accordion.html.twig', [
-        'id' => $this->get_field_id('page_ids')
+        'id' => $this->get_field_id('page_ids'),
+        'contents' => $contents
       ] );
     } catch ( \Twig_Error_Loader $e ) {
     } catch ( \Twig_Error_Runtime $e ) {
@@ -24,8 +32,8 @@ class Widget_Accordion extends WP_Widget {
   }
 
   public function update( $newI, $oldI ) {
-    $instance         = array();
-    $instance['page_ids'] = ( ! empty( $newI['page_ids'] ) ) ? $newI['page_ids'] : '';
+    $instance = array();
+    $instance['page_ids'] = ! empty( $newI['page_ids'] ) ? $newI['page_ids'] : [];
     return $instance;
   }
 
