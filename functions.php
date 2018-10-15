@@ -41,7 +41,6 @@ $it_alerts = [];
 require 'includes/itjob-configs.php';
 require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
-require_once 'includes/class/class-mail.php';
 
 // middlewares
 require 'includes/class/middlewares/OfferHelper.php';
@@ -105,6 +104,7 @@ require 'includes/class/class-wp-city.php';
 require 'includes/class/class-http-request.php';
 require 'includes/class/class-menu-walker.php';
 require 'includes/filters/function-filters.php';
+require 'includes/class/class-mail.php';
 require 'api/itjob-api.php';
 require 'jobs/itjob-cron.php';
 
