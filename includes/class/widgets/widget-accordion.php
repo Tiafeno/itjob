@@ -47,7 +47,11 @@ class Widget_Accordion extends \WP_Widget {
     $page_ids = array_values($page_ids);
     ?>
     <script type="text/javascript">
-      jQuery("#<?= $this->get_field_id('page_ids') ?>").selectpicker();
+      (function($) {
+        $(document).ready(function () {
+          jQuery("#<?= $this->get_field_id('page_ids') ?>").selectpicker();
+        });
+      })(jQuery)
     </script>
     <div class="form-group mt-4">
       <label class="form-control-label">Les posts</label>
