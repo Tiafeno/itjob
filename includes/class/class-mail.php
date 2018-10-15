@@ -25,7 +25,7 @@ class Mailing {
     if ( in_array( 'company', $User->roles ) ) {
       // Création d'un compte entreprise reussi
       $Company = Company::get_company_by( $User->ID );
-      $to      = get_field( 'admin_mail', 'option' );
+      $to      = $User->user_email;
       if ( empty( $to ) ) {
         return "Adresse e-mail de l'administrateur abscent";
       }
@@ -37,7 +37,7 @@ class Mailing {
       try {
         $con_query = add_query_arg( [
           'action' => "rp",
-          "key"    => $User->data->user_activation_key,
+          "key"    => $User->user_activation_key,
           "login"  => $User->user_email
         ], home_url( "/connexion/company/" ) );
         $content   .= $Engine->render( '@MAIL/confirm-register-company.html.twig', [
