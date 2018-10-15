@@ -51,7 +51,7 @@ final class Company implements \iCompany {
           'meta_compare' => '='
         ];
         $pts  = get_posts( $args );
-        $pt   = reset( $pts );
+        $pt   = $pts[0];
 
         return new Company( $pt->ID );
         break;

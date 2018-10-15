@@ -29,7 +29,8 @@
               .then(resp => {
                 let data = resp.data;
                 elButton.html(textButton);
-                if (!data.success) {
+                if ( ! data.success) {
+                  // Either
                   $scope.message.error = data.success;
                   $scope.message.body  = data.msg;
 
@@ -39,8 +40,12 @@
                   }
                   jQuery('#modal-error').modal('toggle')
                 } else {
-                  alertify.confirm("Voulez-vous vraiment voir le CV du candidat au complet?",
-                    () => {
+                  // Success
+                  let exist = _.findIndex(data.access, (access) => access === data.client.token);
+                  const msg = exist === 0 || exist ? "Vous pouvez aussi voir ce CV dans votre espace client. <br>Cliquer sur OK pour voir le CV"
+                    : "Voulez-vous vraiment voir le CV du candidat au complet?";
+                  alertify.confirm(msg,
+                      () => {
                       // redirect to CV
                       window.location.href = data.client.cv_url + "?token=" + data.client.token + "&cvId=" + $scope.cvId;
                     },

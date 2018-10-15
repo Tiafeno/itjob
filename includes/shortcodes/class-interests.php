@@ -145,9 +145,9 @@ class scInterests {
     if ( ! \wp_doing_ajax() ) {
       wp_send_json( [ 'success' => false, 'msg' => false, 'status' => 'ajax' ] );
     }
+    $cvId = (int)Http\Request::getValue( 'cvId' );
     if ( ! \is_user_logged_in() ) {
-      $cvId            = Http\Request::getValue( 'cvId' );
-      $redir           = get_the_permalink( (int) $cvId );
+      $redir           = get_the_permalink( $cvId );
       $singup_page_url = get_the_permalink( (int) REGISTER_COMPANY_PAGE_ID );
       wp_send_json(
         [
@@ -165,8 +165,15 @@ class scInterests {
     $User = wp_get_current_user();
     if ( in_array( 'company', $User->roles ) ) {
       $cv_url = jobServices::page_exists( 'Interest candidate' );
+      // TODO: Vérifier si l'entreprise a déja ajouter le CV dans sa liste
+      // Retourne les clés token des entreprise qui ont postuler
+      $token_access = get_post_meta($cvId, 'access_company_token', true);
+      $tokens = Arrays::each($token_access, function ($tk) {
+        return $tk->getToken();
+      });
       wp_send_json( [
         'success' => true,
+        'access'  => $tokens,
         'client'  => [ 'token' => $User->data->user_pass, 'cv_url' => get_the_permalink( $cv_url ) ]
       ] );
     } else {
