@@ -82,7 +82,7 @@ add_action('i_am_interested_this_candidate', function () {
   if (is_user_logged_in()) {
     $User = wp_get_current_user();
     $Company = \includes\post\Company::get_company_by($User->ID);
-    if ($Company->is_company()) {
+    if ($Company->is_company() && $Company->isPremium()) {
       $page_interest_id = \includes\object\jobServices::page_exists('Interest candidate');
       if ($page_interest_id === 0) {
         echo 'Interests candidate page missing';
