@@ -308,14 +308,15 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       /** @var url $redir */
       $redirHttp = Http\Request::getValue('redir');
-      $redirection = !is_null($redir) ? "?redir={$redir}" : ($redirHttp ? "?redir={$redirHttp}" : '');
+      $redirection_query = !is_null($redir) ? "?redir={$redir}" : ($redirHttp ? "?redir={$redirHttp}" : '');
+      $redirection = !is_null($redir) ? $redir : $redirHttp;
       wp_localize_script( 'form-company', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
         'Helper'    => [
           'redir' => $redirection,
-          'login' => home_url('/connexion/company') . $redirection
+          'login' => home_url('/connexion/company') . $redirection_query
         ]
       ] );
       try {
