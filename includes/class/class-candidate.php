@@ -114,7 +114,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   }
 
   /**
-   * Verifier si le CVest visible dans le site ou pas
+   * Verifier si le CV est visible dans le site ou pas
    */
   public function is_activated() {
     $activation = get_field( 'activated', $this->getId() );

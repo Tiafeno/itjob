@@ -4,8 +4,8 @@
 
 <div id="{{ id }}" class="accordion-blue">
     <ul uk-accordion>
-      {% for content in $contents %}
-      <li class="uk-open">
+      {% for content in contents %}
+      <li class="{% if loop.first %}uk-open{% endif %}">
         <a class="uk-accordion-title" href="#">{{content.post_title}}</a>
         <div class="uk-accordion-content">
           {{content.post_content|raw}}

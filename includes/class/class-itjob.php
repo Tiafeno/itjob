@@ -396,7 +396,7 @@ if ( ! class_exists( 'itJob' ) ) {
         // Register widget
         register_widget( 'Widget_Publicity' );
         register_widget( 'Widget_Shortcode' );
-        register_widget( 'Widget_Accordion' );
+        register_widget( 'includes\widgets\Widget_Accordion' );
         register_widget( 'Widget_Header_Search' );
 
       } );
