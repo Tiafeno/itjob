@@ -473,7 +473,7 @@ if ( ! class_exists( 'scClient' ) ) :
         $Token = $this->User->data->user_pass;
         /** @var array $interest_ids  - Array of int, user id */
         $interest_ids = $this->Company->getInterests();
-        // Todo: Return candidate object
+        // featured: Return candidate object
         foreach ($interest_ids as $interest_id) {
           $candidateInterest = Candidate::get_candidate_by((int)$interest_id);
           $candidateInterest->hasTokenAccess($Token);

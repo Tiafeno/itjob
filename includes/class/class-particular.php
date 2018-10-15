@@ -12,14 +12,14 @@ abstract class UserParticular {
   private $firstName;
   private $lastName;
   private $phones = [];
+  private $address; // string
+  private $birthdayDate; // string
 
+  protected $country; // term
   protected $email;
 
   public $has_cv = false;
   public $greeting;
-  public $birthdayDate;
-  public $address;
-  public $country; // City + Postal code, eg: Antananarivo (101)
   public $region;
   public $dateAdd;
 
@@ -39,6 +39,14 @@ abstract class UserParticular {
     $this->ID = $id;
   }
 
+  public function getAddress() {
+    return [
+      'address' => $this->address,
+      'country' => $this->country,
+      'region' => $this->region
+    ];
+  }
+
   public function getFirstName() {
     return $this->firstName;
   }
@@ -49,10 +57,6 @@ abstract class UserParticular {
 
   public function getPhones() {
     return $this->phones;
-  }
-
-  public function get_display_name() {
-    return "{$this->firstName} {$this->lastName}";
   }
 
   public function __construct( $candidate_id = null ) {
@@ -66,13 +70,13 @@ abstract class UserParticular {
       $this->Candidate = new Candidate( $candidate_id );
     }
 
-    $this->greeting  = get_field( 'itjob_cv_greeting', $this->getId() );
     $this->firstName = get_field( 'itjob_cv_firstname', $this->getId() );
     $this->lastName  = get_field( 'itjob_cv_lastname', $this->getId() );
+    $this->address      = get_field( 'itjob_cv_address', $this->getId() );
 
     $birthdayDate       = get_field( 'itjob_cv_birthdayDate', $this->getId() );
     $this->birthdayDate = date( 'd/m/Y', strtotime( $birthdayDate ) );
-    $this->address      = get_field( 'itjob_cv_address', $this->getId() );
+    $this->greeting  = get_field( 'itjob_cv_greeting', $this->getId() );
     $this->dateAdd      = get_the_date( 'j F, Y', $this->getId() );
     // repeater field
     $phones = get_field( 'itjob_cv_phone', $this->getId() );

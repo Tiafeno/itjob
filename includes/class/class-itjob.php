@@ -290,6 +290,20 @@ if ( ! class_exists( 'itJob' ) ) {
         switch ( $post_object->post_type ) {
           case 'candidate':
             $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
+            // Afficher les CV pour les comptes entreprise premium
+            $current_user = wp_get_current_user();
+            if ($current_user->ID !== 0) {
+              $Company = Post\Company::get_company_by($current_user->ID);
+              // Si le client en ligne est une entreprise on continue...
+              if ($Company->is_company()) {
+                // On recupere le type du compte
+                $account = get_post_meta($Company->getId(), 'itjob_meta_account', true);
+                // Si le compte de l'entreprise est premium
+                if ((int)$account === 1) {
+                  $GLOBALS['company']->__client_premium_access();
+                }
+              }
+            }
             break;
 
           case 'offers':

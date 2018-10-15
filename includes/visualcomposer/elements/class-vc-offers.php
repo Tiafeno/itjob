@@ -386,7 +386,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         ] );*/
       }
 
-      // TODO: Verifier si l'utilicateur est une entreprise
+      // featured: Verifier si l'utilicateur est une entreprise
       // Réfuser l'access s'il n'est pas une entreprise
       if ( ! itjob_current_user_is_company()) {
         return false;
