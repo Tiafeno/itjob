@@ -34,7 +34,6 @@ $theme     = wp_get_theme( 'itjob' );
 $offers    = null;
 $company   = null;
 $candidate = null;
-
 // Variable pour les alerts
 $it_alerts = [];
 
@@ -42,6 +41,7 @@ $it_alerts = [];
 require 'includes/itjob-configs.php';
 require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
+require_once 'includes/class/class-mail.php';
 
 // middlewares
 require 'includes/class/middlewares/OfferHelper.php';
@@ -211,18 +211,6 @@ add_filter( 'body_class', function ( $classes ) {
  * (ajouter un walker)
  */
 add_filter( 'wp_nav_menu_args', function ( $args ) {
-  /**
-   * [term_id] => 219
-   * [name] => REF219M
-   * [slug] =>
-   * [term_group] => 0
-   * [term_taxonomy_id] => 219
-   * [taxonomy] => nav_menu
-   * [description] =>
-   * [parent] => 0
-   * [count] => 6
-   * [filter] => raw
-   */
   $menu = $args['menu'];
   if ( empty( $menu ) ) {
     return $args;
