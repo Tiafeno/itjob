@@ -11,12 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Mailing {
   public function __construct() {
     add_action( 'init', [ &$this, 'onInit' ] );
-    // Uses: do_action() Calls 'user_register' hook when creating a new user giving the user's ID
-    add_action( 'user_register', [ &$this, 'register_user' ], 10, 1 );
+
   }
 
   public function onInit() {
-
+    // Uses: do_action() Calls 'user_register' hook when creating a new user giving the user's ID
+    add_action( 'user_register', [ &$this, 'register_user' ], 10, 1 );
   }
 
   public function register_user( $user_id ) {
@@ -42,7 +42,7 @@ class Mailing {
         ], home_url( "/connexion/company/" ) );
         $content   .= $Engine->render( '@MAIL/confirm-register-company.html.twig', [
           'company'       => $Company,
-          'connexion_url' => esc_url( $con_query ),
+          'connexion_url' => $con_query,
           'home_url'      => home_url("/")
         ] );
       } catch ( \Twig_Error_Loader $e ) {
