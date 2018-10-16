@@ -323,12 +323,12 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       // FEATURED: Ne pas activer le CV
       // En attente de la validation de l'administrateur
       update_field( 'activated', 0, $this->Candidate->getId() );
-
       // Ajouter que l'utilisateur ou le candidate possède un CV
       update_field( 'itjob_cv_hasCV', 1, $this->Candidate->getId() );
+      // Envoyer un email de confirmation
+      do_action('submit_particular_cv', $this->Candidate->getId());
 
       wp_send_json( [ 'success' => true ] );
-
       // TODO: Ajouter une notification pour les formations ajouté (dev)
 
     } // .end update_user_cv
@@ -369,7 +369,10 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
     }
 
 
-    // Ajouter une image à la une ou une image de profil
+    /**
+     * Ajouter une image à la une ou une image de profil
+     * @return bool
+     */
     public function upload_media_avatar() {
       if ( $_SERVER['REQUEST_METHOD'] != 'POST' || ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
         return false;
