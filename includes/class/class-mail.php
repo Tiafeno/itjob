@@ -122,6 +122,9 @@ class Mailing {
     }
   }
 
+  public function submit_candidate_cv( $candidate_id ) {
+
+  }
 }
 
 new Mailing();

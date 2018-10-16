@@ -122,8 +122,9 @@ if ( ! class_exists( 'scClient' ) ) :
           $wp_localize_script_args['Helper']['add_cv'] = get_permalink( (int) $add_cv_id );
           $wp_localize_script_args['client_type'] = 'candidate';
           wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
+          $this->Candidate->isMyCV();
           return $Engine->render( '@SC/client-candidate.html.twig', [
-            'display_name' => $this->Candidate->get_display_name(),
+            'display_name' => $this->Candidate->privateInformations->firstname .' ' . $this->Candidate->privateInformations->lastname,
             'Helper' => [
               'template_url' => get_template_directory_uri(),
             ]

@@ -184,7 +184,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             $scope.candidateEditor.greeting = $scope.Candidate.greeting.value;
             $scope.candidateEditor.branch_activity = $scope.Candidate.branch_activity.term_id;
             $scope.candidateEditor.region = $scope.Candidate.region.term_id;
-            $scope.candidateEditor.country = $scope.Candidate.country.term_id;
+            $scope.candidateEditor.country = $scope.Candidate.privateInformations.address.country.term_id;
             UIkit.modal('#modal-edit-candidate-overflow').show();
           });
         };
@@ -805,8 +805,16 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                   return element;
                 });
                 break;
-              case 'avatar':
-                return !value ? $scope.featuredImage : value[0];
+              case 'privateInformations':
+                // avatar
+                let privateInformations = _.clone(value);
+                privateInformations = _.mapObject(privateInformations, (infoValue, infoKey) => {
+                  if (infoKey === 'avatar') {
+                    return !infoValue ? $scope.featuredImage : infoValue[0];
+                  }
+                  return infoValue
+                });
+                return privateInformations;
                 break;
               default:
                 return value;
@@ -952,7 +960,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
        * Afficher la boite de dialogue pour modifier un candidate
        */
       $scope.onViewModalCandidateProfil = () => {
-        $scope.profilEditor.featuredImage = $scope.Candidate.avatar;
+        $scope.profilEditor.featuredImage = $scope.Candidate.privateInformations.avatar;
         $scope.profilEditor.status = $scope.Candidate.status.value;
         $scope.profilEditor.newsletter = $scope.Candidate.newsletter;
         if (jQuery().validate) {
