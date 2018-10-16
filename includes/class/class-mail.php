@@ -188,7 +188,7 @@ class Mailing {
     try {
       $forgot_password_page_id = jobServices::page_exists('Forgot password');
       $content .= $Engine->render( '@MAIL/forgot-password.html.twig', [
-        'forgot_link' => get_the_permalink($forgot_password_page_id) . "/?key={$User->user_activation_key}&account={$User->ID}&action=forgot_password",
+        'forgot_link' => get_the_permalink($forgot_password_page_id) . "/?key={$User->user_activation_key}&account={$User->ID}&forgot_password=1",
         'home_url' => home_url( "/" )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
@@ -203,7 +203,7 @@ class Mailing {
     } else {
       // Erreur d'envoie
       wp_send_json_error( "Une erreur s'est produits pendant l'envoie de votre code de" .
-                          " récupération. Veuillez réessayer plus tard" );
+                          " récupération. <br> Veuillez réessayer plus tard" );
     }
   }
 }
