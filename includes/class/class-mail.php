@@ -2,6 +2,7 @@
 
 namespace includes\mailing;
 
+use includes\object\jobServices;
 use includes\post\Company;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -37,10 +38,12 @@ class Mailing {
       $headers[] = 'From: ItJobMada <no-reply@itjobmada.com';
       $content   = '';
       try {
+        $oc_id = jobServices::page_exists('Espace client');
         $con_query = add_query_arg( [
           'action' => "rp",
           "token"  => $User->user_pass,
-          "login"  => $User->user_email
+          "login"  => $User->user_email,
+          "redir"  => get_the_permalink($oc_id)
         ], home_url( "/connexion/company/" ) );
         $content   .= $Engine->render( '@MAIL/confirm-register-company.html.twig', [
           'company'       => $Company,
