@@ -16,7 +16,9 @@ class Mailing {
 
   public function onInit() {
     // Uses: do_action() Calls 'user_register' hook when creating a new user giving the user's ID
-    add_action( 'user_register', [ &$this, 'register_user' ], 10, 1 );
+    //add_action( 'user_register', [ &$this, 'register_user' ], 10, 1 );
+    // Featured: Cree une action et appeler cette action apres l'enregistrement
+    add_action('register_user_company', [&$this, 'register_user'], 10, 1);
   }
 
   public function register_user( $user_id ) {
