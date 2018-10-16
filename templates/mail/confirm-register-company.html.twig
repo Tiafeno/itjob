@@ -644,8 +644,13 @@
                       <div
                         style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;">
                         <p style="margin: 0;font-size: 14px;line-height: 17px;text-align: left"><span
-                            style="font-size: 18px; line-height: 21px;"><strong><span
-                                style="line-height: 21px; font-size: 18px;">{{ company.email }}</span></strong></span>
+                            style="font-size: 18px; line-height: 21px;">
+                            <strong>
+                              <a href="mailto:{{ company.email }}"
+                                style="line-height: 21px; font-size: 18px;color: #ffffff !important; text-decoration: none">
+                                {{ company.email }}</a>
+                            </strong>
+                          </span>
                         </p></div>
                     </div>
                     <!--[if mso]></td></tr></table><![endif]-->
