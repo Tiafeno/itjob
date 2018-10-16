@@ -188,7 +188,7 @@ class Mailing {
     try {
       $forgot_password_page_id = jobServices::page_exists('Forgot password');
       $content .= $Engine->render( '@MAIL/forgot-password.html.twig', [
-        'forgot_link' => get_the_permalink($forgot_password_page_id) . "/?key={$User->user_activation_key}&account={$User->ID}&forgot_password=1",
+        'forgot_link' => get_the_permalink($forgot_password_page_id) . "?key={$User->user_activation_key}&account={$User->ID}&forgot_password=1",
         'home_url' => home_url( "/" )
       ] );
     } catch ( \Twig_Error_Loader $e ) {

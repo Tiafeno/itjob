@@ -36,7 +36,7 @@ get_header();
       $(document).ready(function () {
         var admin_ajax = "<?= admin_url( 'admin-ajax.php' ) ?>";
         var forgotForm = $("#forgot-form");
-        var successMessage = $('.alert.success-messsage');
+        var successMessage = $('.alert.success-message');
         var errorMessage = $('.alert.error-message');
         var submitButton = $('.login-content').find('button');
         forgotForm
