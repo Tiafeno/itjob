@@ -58,6 +58,12 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       );
     }
 
+    /**
+     * Rendre le formulaire d'inscription
+     * @param array $attrs
+     *
+     * @return string - Shortcode template
+     */
     public function register_render_html( $attrs ) {
       global $Engine, $itJob;
       // Params extraction
@@ -167,6 +173,11 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       $this->update_acf_field( $post_id, $form );
       wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
       wp_set_post_terms( $post_id, [ (int) $form->city ], 'city' );
+
+      // featured: Envoie une email de confirmation pour le changement de mot de passe
+      $user = get_user_by( 'email', trim($form->email) );
+      do_action('register_user_particular', $user->ID);
+
       wp_send_json( [ 'success' => true, 'msg' => 'Vous avez réussi votre inscription'] );
     }
 

@@ -157,8 +157,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
     $this->newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
     $this->driveLicences  = get_field( 'itjob_cv_driveLicence', $this->getId() );
-
     return true;
+
   }
 
   /**
