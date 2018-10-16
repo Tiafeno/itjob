@@ -38,7 +38,7 @@ get_header();
         var forgotForm = $("#forgot-form");
         var successMessage = $('.alert.success-message');
         var errorMessage = $('.alert.error-message');
-        var submitButton = $('.login-content').find('button');
+        var submitButton = $('.recovery-content').find('button');
         forgotForm
           .validate({
             rules: {
@@ -117,7 +117,7 @@ $forgot_password = Http\Request::getValue( 'forgot_password', 0 );
             </div>
             <div class="text-center d-flex justify-content-center">
               <div class="col-auto">
-                <button class="btn btn-primary btn-block " type="submit">Envoyer</button>
+                <button class="btn btn-primary btn-block" type="submit">Envoyer</button>
               </div>
             </div>
           </form>
