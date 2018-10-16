@@ -30,7 +30,9 @@ get_header();
 <script type="text/javascript">
   (function($) {
     $(document).ready(function () {
-      $("#forgot-form")
+      var admin_ajax = "<?= admin_url( 'admin-ajax.php' ) ?>";
+      var forgotForm = $("#forgot-form");
+      forgotForm
         .validate({
         rules: {
           mail: {
@@ -52,10 +54,21 @@ get_header();
           $(e).closest(".form-group.row").removeClass("has-error")
         },
       });
-      $("#forgot-form")
+
+      forgotForm
         .submit(function( event ) {
-          alert( "En construction" );
           event.preventDefault();
+          var forgotEmail = $('input#forgot_email').val();
+          $.ajax({
+            method: "POST",
+            url: admin_ajax,
+            dataType: "json",
+            data: { email: forgotEmail, action: "forgot_password" }
+          })
+            .done(function( resp ) {
+              console.log(resp);
+            });
+
         });
     })
   })(jQuery);
@@ -72,7 +85,7 @@ get_header();
             Veuillez saisir l'adresse électronique de votre espace personnel
           </p>
           <div class="form-group mb-4">
-            <input class="form-control form-control-line" type="text" name="mail" placeholder="Adresse électronique ou email">
+            <input class="form-control form-control-line" type="text" id="forgot_email" name="mail" placeholder="Adresse électronique ou email">
           </div>
           <div class="text-center d-flex justify-content-center">
             <div class="col-md-5">

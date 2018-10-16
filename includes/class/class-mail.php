@@ -29,6 +29,7 @@ class Mailing {
     add_action( 'register_user_company', [ &$this, 'register_user_company' ], 10, 1 );
     add_action( 'register_user_particular', [ &$this, 'register_user_particular' ], 10, 1 );
     add_action( 'submit_particular_cv', [ &$this, 'submit_particular_cv' ], 10, 1 );
+    add_action( 'forgot_my_password', [ &$this, 'forgot_my_password' ], 10, 1 );
   }
 
   /**
@@ -127,30 +128,37 @@ class Mailing {
     }
   }
 
+  /**
+   * Envoyer un email quand un CV viens d'être ajouter
+   *
+   * @param int $candidate_id - Post candidate id
+   *
+   * @return bool
+   */
   public function submit_particular_cv( $candidate_id ) {
     global $Engine;
     if ( ! is_int( $candidate_id ) ) {
       return false;
     }
-    $Candidate = new Candidate($candidate_id);
+    $Candidate = new Candidate( $candidate_id );
     $Candidate->__client_premium_access();
     $privateInfo = $Candidate->privateInformations;
-    $subject   = "Confirmation de l’enregistrement de votre CV sur ItJobMada";
-    $headers   = [];
-    $headers[] = 'Content-Type: text/html; charset=UTF-8';
-    $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
-    $content   = '';
+    $subject     = "Confirmation de l’enregistrement de votre CV sur ItJobMada";
+    $headers     = [];
+    $headers[]   = 'Content-Type: text/html; charset=UTF-8';
+    $headers[]   = "From: ItJobMada <{$this->no_reply_email}>";
+    $content     = '';
     try {
       $oc_id   = jobServices::page_exists( 'Espace client' );
       $oc_url  = get_the_permalink( $oc_id );
       $content .= $Engine->render( '@MAIL/confirm-added-cv.html.twig', [
-        'user_data' => [
-          'title' => $Candidate->title,
+        'user_data'          => [
+          'title'     => $Candidate->title,
           'full_name' => $privateInfo->firstname . ' ' . $privateInfo->lastname
         ],
-        'oc_url'    => $oc_url,
-        'home_url'  => home_url( "/" ),
-        'archive_offers_url' => get_post_type_archive_link('offers')
+        'oc_url'             => $oc_url,
+        'home_url'           => home_url( "/" ),
+        'archive_offers_url' => get_post_type_archive_link( 'offers' )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
     } catch ( \Twig_Error_Runtime $e ) {
@@ -165,6 +173,37 @@ class Mailing {
     } else {
       // Erreur d'envoie
       return false;
+    }
+  }
+
+  public function forgot_my_password( $email ) {
+    global $Engine;
+    $to   = $email;
+    $User = get_user_by( 'email', $to );
+    $subject   = "Mot de passe oublié? - ItJobMada";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
+    $content   = '';
+    try {
+      $forgot_password_page_id = jobServices::page_exists('Forgot password');
+      $content .= $Engine->render( '@MAIL/forgot-password.html.twig', [
+        'forgot_link' => get_the_permalink($forgot_password_page_id) . "/?key={$User->user_activation_key}&account={$User->ID}&action=forgot_password",
+        'home_url' => home_url( "/" )
+      ] );
+    } catch ( \Twig_Error_Loader $e ) {
+    } catch ( \Twig_Error_Runtime $e ) {
+    } catch ( \Twig_Error_Syntax $e ) {
+      $content .= $e->getRawMessage();
+    }
+    $sender = wp_mail( $to, $subject, $content, $headers );
+    if ( $sender ) {
+      // Mail envoyer avec success
+      wp_send_json_success( "Merci de vérifier que vous avez reçu un e-mail avec un lien de récupération." );
+    } else {
+      // Erreur d'envoie
+      wp_send_json_error( "Une erreur s'est produits pendant l'envoie de votre code de" .
+                          " récupération. Veuillez réessayer plus tard" );
     }
   }
 }
