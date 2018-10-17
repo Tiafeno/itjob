@@ -224,9 +224,9 @@
                     $oc_url = get_the_permalink($oc_id);
                     ?>
                     <li class="dropdown dropdown-user">
-                      <a class="nav-link dropdown-toggle link" data-toggle="dropdown">
+                      <a class="nav-link dropdown-toggle link btn btn-sm btn-blue" style="color: white" data-toggle="dropdown">
                         <span class="mr-2 text-uppercase p-relative" style="bottom: 3px;">
-                          Connexion
+                          Se connecter
                         </span>
                         <i class="ti-user uk-text-large"></i>
                       </a>
@@ -244,7 +244,6 @@
                               <img src="<?= get_template_directory_uri() ?>/img/icons/user-tie-solid.svg" />
                               <span class="text-white">PROFESIONNELS</span>
                             </a>
-
                           </div>
                         </div>
 
@@ -257,7 +256,7 @@
                     $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
                     ?>
                     <li class="dropdown dropdown-user">
-                      <a class="nav-link dropdown-toggle link" data-toggle="dropdown">
+                      <a class="nav-link dropdown-toggle link btn btn-sm btn-blue" style="color: white" data-toggle="dropdown">
                         <span class="mr-2 text-uppercase p-relative" style="bottom: 3px;">
                           Mon compte
                         </span>

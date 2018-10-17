@@ -23,7 +23,7 @@ if ( ! class_exists('jePostule')):
 
     public function jepostule_mapping() {
 
-      // TODO: Crée une page "Je postule"
+      // Featured: Crée une page "Je postule"
       $jePostule =  jobServices::page_exists('Je postule');
       if ( $jePostule !== 0 ) {
         add_rewrite_tag( '%oId%', '([^&]+)' );

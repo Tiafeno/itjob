@@ -103,7 +103,7 @@
 
             <div class="form-group">
               <label class="col-form-label ">Adresse e-mail</label>
-              <input class="form-control" name="email" id="email" ng-model="Candidate.author.data.user_email" disabled/>
+              <input class="form-control" name="email" id="email" ng-model="Candidate.privateInformations.author.data.user_email" disabled/>
             </div>
 
             <div class="form-group mt-4">
@@ -172,10 +172,10 @@
         </span>
 
         <div class="card-avatar mt-3 mb-4">
-          <img class="img-circle" ng-src="[[ Candidate.avatar ]]" alt="image">
+          <img class="img-circle" ng-src="[[ Candidate.privateInformations.avatar ]]" alt="image">
         </div>
-        <h4 class="card-title mb-1">[[ Candidate.display_name ]]</h4>
-        <div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Candidate.address ]]</div>
+        <h4 class="card-title mb-1">[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</h4>
+        <div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Candidate.address.address ]]</div>
         <p class="mt-4 mb-4"> [[biography]] </p>
         <div class="d-flex align-items-center  mb-5">
           <div class="text-center m-auto">
@@ -195,7 +195,7 @@
   <div class="col-lg-8">
     <div class="ibox-body alert alert-info alert-dismissable fade show">
       <button class="close" data-dismiss="alert" aria-label="Close"></button>
-      <h4>Bonjour <b>[[Candidate.display_name]]</b></h4>
+      <h4>Bonjour <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</b></h4>
       <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
     </div>
     <div class="mt-4">

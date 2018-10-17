@@ -36,9 +36,8 @@ if ( ! class_exists( 'itJob' ) ) {
        */
       add_action( 'transition_post_status', function ($new_status, $old_status, $post) {
         // Marquer le candidate possède un CV
-
         if ('publish' === $new_status && 'candidate' === $post->post_type) {
-//            update_field( 'itjob_cv_hasCV', 1, $post->ID );
+        // update_field( 'itjob_cv_hasCV', 1, $post->ID );
           update_field( 'activated', 1, $post->ID );
 
           //update_post_meta($post->ID, 'itjob_cv_hasCV', 1);
@@ -256,9 +255,9 @@ if ( ! class_exists( 'itJob' ) ) {
             $query->query_vars['s'] = '';
           } // .end if - search conditional
           else {
-            // Filtrer les candidates
-            // Afficher seulement les candidates activer
-            if ( $post_type === 'candidate' ):
+            // Filtrer les candidates ou les offers ou les entreprises
+            // Afficher seulement les candidates ou les offres ou les entreprises activer
+            if ( $post_type === 'candidate' || $post_type === 'offers' || $post_type === 'company' ):
               // Meta query
               if ( ! isset( $meta_query ) ) {
                 $meta_query = $query->get( 'meta_query' );
@@ -291,6 +290,20 @@ if ( ! class_exists( 'itJob' ) ) {
         switch ( $post_object->post_type ) {
           case 'candidate':
             $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
+            // Afficher les CV pour les comptes entreprise premium
+            $current_user = wp_get_current_user();
+            if ($current_user->ID !== 0 && ! current_user_can('delete_user')) {
+              $Company = Post\Company::get_company_by($current_user->ID);
+              // Si le client en ligne est une entreprise on continue...
+              if ($Company->is_company()) {
+                // On recupere le type du compte
+                $account = get_post_meta($Company->getId(), 'itjob_meta_account', true);
+                // Si le compte de l'entreprise est premium
+                if ((int)$account === 1) {
+                  $GLOBALS['company']->__client_premium_access();
+                }
+              }
+            }
             break;
 
           case 'offers':
@@ -357,7 +370,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
         // CV
         register_sidebar( array(
-          'name'          => 'Archive CV Top',
+          'name'          => 'Archive Top (Candidate)',
           'id'            => 'archive-cv-top',
           'description'   => 'Afficher des widgets en haut de la page archive',
           'before_widget' => '<div id="%1$s" class="widget mb-4 %2$s">',
@@ -365,7 +378,7 @@ if ( ! class_exists( 'itJob' ) ) {
         ) );
 
         register_sidebar( array(
-          'name'          => 'Archive CV Sidebar',
+          'name'          => 'Archive Sidebar (Candidate)',
           'id'            => 'archive-cv-sidebar',
           'description'   => 'Afficher des widgets en haut de la page archive',
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
@@ -373,7 +386,7 @@ if ( ! class_exists( 'itJob' ) ) {
         ) );
 
         register_sidebar( array(
-          'name'          => 'CV Header',
+          'name'          => 'Content Top (Candidate)',
           'id'            => 'cv-header',
           'description'   => 'Afficher des widgets en mode header',
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
@@ -383,7 +396,7 @@ if ( ! class_exists( 'itJob' ) ) {
         // Register widget
         register_widget( 'Widget_Publicity' );
         register_widget( 'Widget_Shortcode' );
-        register_widget( 'Widget_Accordion' );
+        register_widget( 'includes\widgets\Widget_Accordion' );
         register_widget( 'Widget_Header_Search' );
 
       } );

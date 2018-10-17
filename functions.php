@@ -34,7 +34,6 @@ $theme     = wp_get_theme( 'itjob' );
 $offers    = null;
 $company   = null;
 $candidate = null;
-
 // Variable pour les alerts
 $it_alerts = [];
 
@@ -97,7 +96,7 @@ $elementsVC = (object) [
   'vcJePostule'   => require 'includes/visualcomposer/elements/class-vc-jepostule.php',
   'vcSlider'   => require 'includes/visualcomposer/elements/class-slider.php',
   'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
-  'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php5',
+  'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php',
   'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
 ];
 
@@ -105,6 +104,7 @@ require 'includes/class/class-wp-city.php';
 require 'includes/class/class-http-request.php';
 require 'includes/class/class-menu-walker.php';
 require 'includes/filters/function-filters.php';
+require 'includes/class/class-mail.php';
 require 'api/itjob-api.php';
 require 'jobs/itjob-cron.php';
 
@@ -211,18 +211,6 @@ add_filter( 'body_class', function ( $classes ) {
  * (ajouter un walker)
  */
 add_filter( 'wp_nav_menu_args', function ( $args ) {
-  /**
-   * [term_id] => 219
-   * [name] => REF219M
-   * [slug] =>
-   * [term_group] => 0
-   * [term_taxonomy_id] => 219
-   * [taxonomy] => nav_menu
-   * [description] =>
-   * [parent] => 0
-   * [count] => 6
-   * [filter] => raw
-   */
   $menu = $args['menu'];
   if ( empty( $menu ) ) {
     return $args;

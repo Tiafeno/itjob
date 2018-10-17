@@ -19,6 +19,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
     public function __construct() {
       add_action( 'init', [ $this, 'register_mapping' ] );
       add_filter( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
+      // Ne pas envoyer une notification pour le changement de mot de passe
+      add_filter( 'send_password_change_email', '__return_false' );
 
       if ( ! shortcode_exists('vc_register_company'))
         add_shortcode( 'vc_register_company', [ &$this, 'register_render_html' ] );
@@ -75,6 +77,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       $user_id = wp_insert_user( $args );
       if ( ! is_wp_error( $user_id ) ) {
         $user = new \WP_User( $user_id );
+        // Ajouter une clé d'activation pour rejeter le mot de passe
         get_password_reset_key( $user );
 
         return $value;
@@ -196,9 +199,10 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       }
 
       $userEmail = Http\Request::getValue( 'email', false );
+      if ( ! $userEmail ) wp_send_json_error("Veillez remplir le formulaire correctement");
       $userExist = get_user_by( 'email', $userEmail );
       if ( $userExist ) {
-        wp_send_json( [ 'success' => false, 'msg' => 'L\'adresse e-mail ou l\'utilisateur existe déja' ] );
+        wp_send_json_error( 'L\'adresse e-mail ou l\'utilisateur existe déja');
       }
 
       $form = (object) [
@@ -237,12 +241,21 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       wp_set_post_terms( $post_id, [ (int) $form->branch_activity_id ], 'branch_activity' );
       wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
       wp_set_post_terms( $post_id, [ (int) $form->country ], 'city' );
+
+      // featured: Envoie une email de confirmation pour le changement de mot de passe
+      $user = get_user_by( 'email', trim($form->email) );
+      do_action('register_user_company', $user->ID);
+
       wp_send_json( [ 'success' => true, 'msg' => new Company( $post_id ), 'form' => $form ] );
     }
 
     /**
+     * Ajouter ou mettre à jour les elements ACF pour le post 'company'
+     *
      * @param int $post_id
      * @param \stdClass $form
+     *
+     * @return bool
      */
     private function update_acf_field( $post_id, $form ) {
       update_field( 'itjob_company_address', $form->address, $post_id );
@@ -285,8 +298,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         shortcode_atts(
           array(
             'title' => null,
-            'redir' => null,
-//            'form'  => null
+            'redir' => null
           ),
           $attrs
         )
@@ -308,14 +320,15 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       /** @var url $redir */
       $redirHttp = Http\Request::getValue('redir');
-      $redirection = !is_null($redir) ? "?redir={$redir}" : ($redirHttp ? "?redir={$redirHttp}" : '');
+      $redirection_query = !is_null($redir) ? "?redir={$redir}" : ($redirHttp ? "?redir={$redirHttp}" : '');
+      $redirection = !is_null($redir) ? $redir : $redirHttp;
       wp_localize_script( 'form-company', 'itOptions', [
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
         'Helper'    => [
-          'redir' => $redir,
-          'login' => home_url('/connexion/company') . $redirection
+          'redir' => $redirection,
+          'login' => home_url('/connexion/company') . $redirection_query
         ]
       ] );
       try {

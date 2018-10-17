@@ -94,15 +94,15 @@
         <div class="col-md-8">
           <div class="row">
             <div class="col-lg-12">
-              {% if candidate.avatar %}
-                <img class="img-circle" src="{{ candidate.avatar[0] }}" alt="image" width="100">
+              {% if candidate.privateInformations.avatar %}
+                <img class="img-circle" src="{{ candidate.privateInformations.avatar[0] }}" alt="image" width="100">
               {% endif %}
             </div>
             <div class="col-lg-12">
-              <h1>{{ candidate.display_name }}</h1>
+              <h1>{{ candidate.privateInformations.firstname }} {{ candidate.privateInformations.lastname }}</h1>
               <h2>{{ candidate.branch_activity.name }}</h2>
-              <p class="text-description mb-0 mt-3 uk-text-bold">{{ candidate.address }}</p>
-              <p class="text-description">{{ candidate.country.name }}</p>
+              <p class="text-description mb-0 mt-3 uk-text-bold">{{ candidate.privateInformations.address.address }}</p>
+              <p class="text-description">{{ candidate.privateInformations.address.country.name }}</p>
             </div>
           </div>
         </div>
@@ -110,9 +110,13 @@
         <div class="col-md-4">
           <div class="contact-info text-right">
             <h3><a id="pdf" href="#" class="text-uppercase">Télécharger en PDF</a></h3>
-            <h3 class="d-inline-block"><a href="mailto:{{ candidate.author.data.user_email }}">{{ candidate.author.data.user_email }}</a></h3>
+            <h3 class="d-inline-block">
+              <a href="mailto:{{ candidate.privateInformations.author.data.user_email }}">
+                {{ candidate.privateInformations.author.data.user_email }}
+              </a>
+            </h3>
             <div class="mt-2">
-              {% for phone in candidate.cellphone %}
+              {% for phone in candidate.privateInformations.cellphone %}
                 <h3 class="mt-1" style="font-family: Poppins, sans-serif"><i class="ti-mobile"></i> {{ phone }}</h3>
               {% endfor %}
             </div>
@@ -215,7 +219,7 @@
     </div><!--// bd -->
 
     <div id="ft">
-      <p>{{ candidate.display_name }} &mdash; <a href="mailto:{{ candidate.author.data.user_email }}">{{ candidate.author.data.user_email }}</a></p>
+      <p>{{ candidate.privateInformations.firstname }} {{ candidate.privateInformations.lastname }} &mdash; <a href="mailto:{{ candidate.author.data.user_email }}">{{ candidate.author.data.user_email }}</a></p>
     </div><!--// footer -->
 
   </div><!-- // inner -->

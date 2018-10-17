@@ -63,20 +63,22 @@ if ( ! class_exists( 'jobServices' ) ) :
 
     /**
      * Cette function renvoie les post à la une (post pour status publier dans le site)
-     * Les post désactiver qui ne sont pas publier ne serons pas afficher,
+     * Les posts désactiver qui ne sont pas publier ne serons pas afficher,
      * seul les post publier et activer seront retourner par cette fonction
+     * Voir le fichier class-itjob.php, action: pre_get_posts
      *
      * @param string $class_name
      * @param array $meta_query
+     * @param int $numberposts - La valeur par default est 4
      *
      * @return array
      */
-    public function getFeaturedPost( $class_name, $meta_query = [] ) {
+    public function getFeaturedPost( $class_name, $meta_query = [], $numberposts = 4 ) {
       $featuredContainer = [];
       $this->args        = [
         'post_type'      => $class_name,
         'post_status'    => [ 'publish' ],
-        'posts_per_page' => 4,
+        'posts_per_page' => $numberposts,
         'orderby'        => 'DATE'
       ];
       if ( ! empty( $meta_query ) ) {

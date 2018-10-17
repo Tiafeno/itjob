@@ -19,15 +19,17 @@ if ( ! class_exists( 'scClient' ) ) :
     public $Candidate = null;
 
     public function __construct() {
-      if (is_user_logged_in()) {
+      if ( is_user_logged_in() ) {
         if ( class_exists( 'includes\post\Company' ) && class_exists( 'includes\post\Candidate' ) ) {
           $userTypes  = [ 'company', 'candidate' ];
           $this->User = wp_get_current_user();
-          if ( $this->User->ID !== 0) {
-            $userRole   = $this->User->roles[0];
-            if ( ! in_array( $userRole, $userTypes )) return;
-            $class_name_ucfirst    = ucfirst( $userRole );
-            $class_name    = "includes\\post\\$class_name_ucfirst";
+          if ( $this->User->ID !== 0 ) {
+            $userRole = $this->User->roles[0];
+            if ( ! in_array( $userRole, $userTypes ) ) {
+              return;
+            }
+            $class_name_ucfirst          = ucfirst( $userRole );
+            $class_name                  = "includes\\post\\$class_name_ucfirst";
             $this->{$class_name_ucfirst} = call_user_func( [ $class_name, "get_{$userRole}_by" ], $this->User->ID );
           }
         }
@@ -45,7 +47,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_send_request_premium_plan', [ &$this, 'send_request_premium_plan' ] );
         add_action( 'wp_ajax_get_history_cv_view', [ &$this, 'get_history_cv_view' ] );
       }
-
+      add_action( 'wp_ajax_nopriv_forgot_password', [ &$this, 'forgot_password' ] );
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
     }
 
@@ -53,6 +55,7 @@ if ( ! class_exists( 'scClient' ) ) :
       global $Engine, $itJob;
       if ( ! is_user_logged_in() ) {
         $customer_area_url = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : get_permalink();
+
         return do_shortcode( '[itjob_login role="candidate" redir="' . $customer_area_url . '"]', true );
       }
       extract(
@@ -97,34 +100,37 @@ if ( ! class_exists( 'scClient' ) ) :
           'Helper' => [
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
             'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
-            'img_url' => get_template_directory_uri() . '/img',
+            'img_url'       => get_template_directory_uri() . '/img',
           ]
         ];
-        define('OC_URL', get_template_directory_uri() . '/assets/js/app/client');
+        define( 'OC_URL', get_template_directory_uri() . '/assets/js/app/client' );
         // Load company template
         if ( in_array( 'company', $client_roles, true ) ) {
-          wp_enqueue_script('app-company', OC_URL . '/configs-company.js', ['espace-client'], $itJob->version, true);
+          wp_enqueue_script( 'app-company', OC_URL . '/configs-company.js', [ 'espace-client' ], $itJob->version, true );
           $wp_localize_script_args['Helper']['add_offer_url'] = get_permalink( (int) ADD_OFFER_PAGE );
-          $wp_localize_script_args['client_type'] = 'company';
-          $wp_localize_script_args['token'] = $client->user_pass;
-          wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
+          $wp_localize_script_args['client_type']             = 'company';
+          $wp_localize_script_args['token']                   = $client->user_pass;
+          wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args );
+
           return $Engine->render( '@SC/client-company.html.twig', [
             'Helper' => [
               'template_url' => get_template_directory_uri()
             ]
           ] );
         }
-        
+
         if ( in_array( 'candidate', $client_roles, true ) ) {
           // Load candidate template
-          wp_enqueue_script('app-candidate', OC_URL . '/configs-candidate.js', ['espace-client'], $itJob->version, true);
-          $add_cv_id = \includes\object\jobServices::page_exists('Ajouter un CV');
+          wp_enqueue_script( 'app-candidate', OC_URL . '/configs-candidate.js', [ 'espace-client' ], $itJob->version, true );
+          $add_cv_id                                   = \includes\object\jobServices::page_exists( 'Ajouter un CV' );
           $wp_localize_script_args['Helper']['add_cv'] = get_permalink( (int) $add_cv_id );
-          $wp_localize_script_args['client_type'] = 'candidate';
-          wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args);
+          $wp_localize_script_args['client_type']      = 'candidate';
+          wp_localize_script( 'espace-client', 'itOptions', $wp_localize_script_args );
+          $this->Candidate->isMyCV();
+
           return $Engine->render( '@SC/client-candidate.html.twig', [
-            'display_name' => $this->Candidate->get_display_name(),
-            'Helper' => [
+            'display_name' => $this->Candidate->privateInformations->firstname . ' ' . $this->Candidate->privateInformations->lastname,
+            'Helper'       => [
               'template_url' => get_template_directory_uri(),
             ]
           ] );
@@ -144,7 +150,7 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( false );
       }
       $post_id = Http\Request::getValue( 'post_id', null );
-      $post_id = (int)$post_id;
+      $post_id = (int) $post_id;
       if ( is_null( $post_id ) ) {
         wp_send_json( false );
       }
@@ -159,10 +165,10 @@ if ( ! class_exists( 'scClient' ) ) :
         'otherinformation' => Http\Request::getValue( 'otherInformation' ),
         'abranch'          => Http\Request::getValue( 'branch_activity' ),
       ];
-      wp_update_post([
-        'ID' => $post_id,
+      wp_update_post( [
+        'ID'         => $post_id,
         'post_title' => $form->post
-      ]);
+      ] );
       foreach ( $form as $key => $value ) {
         update_field( "itjob_offer_{$key}", $value, $post_id );
       }
@@ -177,14 +183,14 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( false );
       }
       $candidate_id = Http\Request::getValue( 'candidate_id', null );
-      $company_id = Http\Request::getValue( 'company_id', null );
-      $terms = [
+      $company_id   = Http\Request::getValue( 'company_id', null );
+      $terms        = [
         'branch_activity' => Http\Request::getValue( 'branch_activity' ),
         'region'          => Http\Request::getValue( 'region' ),
         'city'            => Http\Request::getValue( 'country' ),
       ];
       if ( ! empty( $company_id ) ) {
-        $form  = [
+        $form = [
           //'address'  => Http\Request::getValue( 'address' ),
           'greeting' => Http\Request::getValue( 'greeting', null ),
           'name'     => Http\Request::getValue( 'name' ),
@@ -192,20 +198,22 @@ if ( ! class_exists( 'scClient' ) ) :
           'nif'      => Http\Request::getValue( 'nif', null )
         ];
         foreach ( $form as $key => $value ) {
-          if ( ! is_null($value))
+          if ( ! is_null( $value ) ) {
             update_field( "itjob_company_{$key}", $value, $company_id );
+          }
         }
       } else {
-        $input  = [
+        $input = [
           //'address'  => Http\Request::getValue( 'address' ),
           'greeting' => Http\Request::getValue( 'greeting' ),
         ];
         foreach ( $input as $key => $value ) {
-          if ($value)
+          if ( $value ) {
             update_field( "itjob_cv_{$key}", $value, $candidate_id );
+          }
         }
       }
-      $post_id = is_null($candidate_id) ? $company_id : $candidate_id;
+      $post_id = is_null( $candidate_id ) ? $company_id : $candidate_id;
       foreach ( $terms as $key => $value ) {
         $isError = wp_set_post_terms( $post_id, [ (int) $value ], $key );
         if ( is_wp_error( $isError ) ) {
@@ -222,6 +230,30 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
+     * Fonction ajax - nopriv only
+     * Envoie un email pour recuperer le mot de passe
+     *
+     */
+    public function forgot_password() {
+      if ( is_user_logged_in() ) {
+        wp_send_json_error( "Vous ne pouvez pas effectuer cette action" );
+      }
+      $email = Http\Request::getValue( 'email' );
+      if ( ! $email || ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+        wp_send_json_error( "Paramétre non valide" );
+      }
+      $user = get_user_by('email', $email);
+      if ( ! $user ) {
+        wp_send_json_error( "Votre recherche ne donne aucun résultat. Veuillez réessayer avec d’autres adresse email." );
+      }
+      $reset_key = get_password_reset_key( $user );
+      if ( is_wp_error( $reset_key ) ) {
+        wp_send_json_error($reset_key->get_error_message());
+      }
+      do_action( 'forgot_my_password', $email, $reset_key );
+    }
+
+    /**
      * Modifier le mot de passe de l'utilisateur
      * @route admin-ajax.php?action=update-user-password
      */
@@ -229,14 +261,17 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         wp_send_json( false );
       }
-      $oldPwd = Http\Request::getValue('oldpwd');
-      $pwd = Http\Request::getValue("pwd");
-      if (wp_check_password( $oldPwd, $this->User->data->user_pass, $this->User->ID) ) :
+      $oldPwd = Http\Request::getValue( 'oldpwd' );
+      $pwd    = Http\Request::getValue( "pwd" );
+      if ( wp_check_password( $oldPwd, $this->User->data->user_pass, $this->User->ID ) ) :
         wp_set_password( $pwd, $this->User->ID );
-        wp_send_json(['success' => true]);
+        wp_send_json( [ 'success' => true ] );
       else:
-        wp_send_json(['success' => false, 'msg' => 'Une erreur s\est produit,
-        Il est probable que l\'ancien mot de passe n\'est pas correct']);
+        wp_send_json( [
+          'success' => false,
+          'msg'     => 'Une erreur s\est produit,
+        Il est probable que l\'ancien mot de passe n\'est pas correct'
+        ] );
       endif;
 
     }
@@ -249,11 +284,11 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         wp_send_json( false );
       }
-      $status = Http\Request::getValue('status');
-      $newsletter = Http\Request::getValue('newsletter');
-      update_field('itjob_cv_status', $status, $this->Candidate->getId());
-      update_field('itjob_cv_newsletter', $newsletter, $this->Candidate->getId());
-      wp_send_json(['success' => true]);
+      $status     = Http\Request::getValue( 'status' );
+      $newsletter = Http\Request::getValue( 'newsletter' );
+      update_field( 'itjob_cv_status', $status, $this->Candidate->getId() );
+      update_field( 'itjob_cv_newsletter', $newsletter, $this->Candidate->getId() );
+      wp_send_json( [ 'success' => true ] );
     }
 
     /**
@@ -308,11 +343,11 @@ if ( ! class_exists( 'scClient' ) ) :
     public function update_alert_filter() {
       global $itJob;
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
-        wp_send_json( ['success' => false] );
+        wp_send_json( [ 'success' => false ] );
       }
-      $alerts = Http\Request::getValue('alerts');
-      $alerts = \json_decode($alerts);
-      if ($itJob->services->isClient() === 'company') {
+      $alerts = Http\Request::getValue( 'alerts' );
+      $alerts = \json_decode( $alerts );
+      if ( $itJob->services->isClient() === 'company' ) {
         // Company
         $alerts = array_map( function ( $std ) {
           return $std->text;
@@ -320,7 +355,7 @@ if ( ! class_exists( 'scClient' ) ) :
         update_field( 'itjob_company_alerts', implode( ',', $alerts ), $this->Company->getId() );
         wp_send_json( [ 'success' => true ] );
       } else {
-        $notification = get_field('itjob_cv_notifEmploi', $this->Candidate->getId());
+        $notification = get_field( 'itjob_cv_notifEmploi', $this->Candidate->getId() );
         // Candidate
         $alerts = array_map( function ( $std ) {
           return $std->text;
@@ -344,10 +379,11 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( false );
       }
       $new_experiences = [];
-      $experiences = Http\Request::getValue('experiences', null);
-      if (is_null($experiences) || empty($experiences))
-        wp_send_json(['success' => false]);
-      $experiences = json_decode($experiences);
+      $experiences     = Http\Request::getValue( 'experiences', null );
+      if ( is_null( $experiences ) || empty( $experiences ) ) {
+        wp_send_json( [ 'success' => false ] );
+      }
+      $experiences = json_decode( $experiences );
       foreach ( $experiences as $experience ) {
         $new_experiences[] = [
           'exp_dateBegin'    => $experience->exp_dateBegin,
@@ -360,8 +396,8 @@ if ( ! class_exists( 'scClient' ) ) :
         ];
       }
       update_field( 'itjob_cv_experiences', $new_experiences, $this->Candidate->getId() );
-      $experiences = get_field('itjob_cv_experiences', $this->Candidate->getId());
-      wp_send_json(['success' => true, 'experiences' => $experiences]);
+      $experiences = get_field( 'itjob_cv_experiences', $this->Candidate->getId() );
+      wp_send_json( [ 'success' => true, 'experiences' => $experiences ] );
     }
 
     /**
@@ -373,41 +409,42 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( false );
       }
       $new_trainings = [];
-      $trainings = Http\Request::getValue('trainings', null);
-      if (is_null($trainings) || empty($trainings))
-        wp_send_json(['success' => false]);
-      $trainings = json_decode($trainings);
+      $trainings     = Http\Request::getValue( 'trainings', null );
+      if ( is_null( $trainings ) || empty( $trainings ) ) {
+        wp_send_json( [ 'success' => false ] );
+      }
+      $trainings = json_decode( $trainings );
       foreach ( $trainings as $training ) {
         $new_trainings[] = [
-          'training_dateBegin'    => $training->training_dateBegin,
-          'training_dateEnd'      => $training->training_dateEnd,
-          'training_diploma'      => $training->training_diploma,
-          'training_city'         => $training->training_city,
-          'training_country'      => $training->training_country,
-          'training_establishment'      => $training->training_establishment
+          'training_dateBegin'     => $training->training_dateBegin,
+          'training_dateEnd'       => $training->training_dateEnd,
+          'training_diploma'       => $training->training_diploma,
+          'training_city'          => $training->training_city,
+          'training_country'       => $training->training_country,
+          'training_establishment' => $training->training_establishment
         ];
       }
       update_field( 'itjob_cv_trainings', $new_trainings, $this->Candidate->getId() );
-      $trainings = get_field('itjob_cv_trainings', $this->Candidate->getId());
-      wp_send_json(['success' => true, 'trainings' => $trainings]);
+      $trainings = get_field( 'itjob_cv_trainings', $this->Candidate->getId() );
+      wp_send_json( [ 'success' => true, 'trainings' => $trainings ] );
     }
 
     /**
      * Retourne les candidates qui ont postuler
      */
     public function get_postuled_candidate() {
-      $offer_id = Http\Request::getValue('oId');
-      $offer_id = (int)$offer_id;
+      $offer_id           = Http\Request::getValue( 'oId' );
+      $offer_id           = (int) $offer_id;
       $postuledCandidates = [];
-      $Offer = new Offers($offer_id);
-      if ($Offer->is_offer() && $Offer->count_candidat_apply >= 1) {
+      $Offer              = new Offers( $offer_id );
+      if ( $Offer->is_offer() && $Offer->count_candidat_apply >= 1 ) {
         $candidate_ids = $Offer->candidat_apply;
-        foreach ($candidate_ids as $key => $candidate_id) {
-          array_push($postuledCandidates, Candidate::get_candidate_by($candidate_id));
+        foreach ( $candidate_ids as $key => $candidate_id ) {
+          array_push( $postuledCandidates, Candidate::get_candidate_by( $candidate_id ) );
         }
-        wp_send_json($postuledCandidates);
+        wp_send_json( $postuledCandidates );
       } else {
-        wp_send_json(false);
+        wp_send_json( false );
       }
 
       die;
@@ -426,37 +463,39 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
         wp_send_json_error( false );
       }
-      $account = get_post_meta($this->Company->getId(), 'itjob_meta_account', true);
-      $account = (int)$account;
-      if ($account === 0 || empty($account)) {
-        $to = get_field('admin_mail', 'option');
-        if (empty($to)) wp_send_json_error("Adresse e-mail de l'administrateur abscent");
-        $subject = "Demande de compte premium";
-        $headers = [];
+      $account = get_post_meta( $this->Company->getId(), 'itjob_meta_account', true );
+      $account = (int) $account;
+      if ( $account === 0 || empty( $account ) ) {
+        $to = get_field( 'admin_mail', 'option' );
+        if ( empty( $to ) ) {
+          wp_send_json_error( "Adresse e-mail de l'administrateur abscent" );
+        }
+        $subject   = "Demande de compte premium";
+        $headers   = [];
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
         $headers[] = 'From: itjobmada <no-reply@itjobmada.com';
         // TODO: Liens vers l'espace administrateur
         try {
-          $content = $Engine->render('@MAIL/demande-offre-premium.html.twig', [
-            'company' => $this->Company,
+          $content = $Engine->render( '@MAIL/demande-offre-premium.html.twig', [
+            'company'          => $this->Company,
             'template_dir_url' => get_template_directory(),
-            'dashboard_url' => '#dashboard'
-          ]);
+            'dashboard_url'    => '#dashboard'
+          ] );
         } catch ( \Twig_Error_Loader $e ) {
         } catch ( \Twig_Error_Runtime $e ) {
         } catch ( \Twig_Error_Syntax $e ) {
-          wp_send_json_error($e->getRawMessage());
+          wp_send_json_error( $e->getRawMessage() );
         }
-        $sender = wp_mail($to, $subject, $content, $headers);
-        if ($sender) {
+        $sender = wp_mail( $to, $subject, $content, $headers );
+        if ( $sender ) {
           // Changer la valeur du post meta pour '2' qui signifie rester en attente de validation
-          update_post_meta($this->Company->getId(), 'itjob_meta_account', 2);
-          wp_send_json_success("Votre demande à bien été envoyer.");
+          update_post_meta( $this->Company->getId(), 'itjob_meta_account', 2 );
+          wp_send_json_success( "Votre demande à bien été envoyer." );
         } else {
-          wp_send_json_error($information_message);
+          wp_send_json_error( $information_message );
         }
       } else {
-        wp_send_json_error($information_message);
+        wp_send_json_error( $information_message );
       }
     }
 
@@ -468,20 +507,20 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
         wp_send_json_error( "Accès refuser" );
       }
-      if ($this->Company instanceof Company) {
+      if ( $this->Company instanceof Company ) {
         $Candidates = [];
-        $Token = $this->User->data->user_pass;
-        /** @var array $interest_ids  - Array of int, user id */
+        $Token      = $this->User->data->user_pass;
+        /** @var array $interest_ids - Array of int, user id */
         $interest_ids = $this->Company->getInterests();
-        // Todo: Return candidate object
-        foreach ($interest_ids as $interest_id) {
-          $candidateInterest = Candidate::get_candidate_by((int)$interest_id);
-          $candidateInterest->hasTokenAccess($Token);
-          array_push($Candidates, $candidateInterest);
+        // featured: Return candidate object
+        foreach ( $interest_ids as $interest_id ) {
+          $candidateInterest = Candidate::get_candidate_by( (int) $interest_id );
+          $candidateInterest->hasTokenAccess( $Token );
+          array_push( $Candidates, $candidateInterest );
         }
-        wp_send_json_success($Candidates);
+        wp_send_json_success( $Candidates );
       } else {
-        wp_send_json_error("La classe n'est pas definie pour l'object entreprise. Signialer cette erreur à l'administrateur");
+        wp_send_json_error( "La classe n'est pas definie pour l'object entreprise. Signialer cette erreur à l'administrateur" );
       }
     }
 
@@ -497,27 +536,27 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $User = wp_get_current_user();
       if ( $itJob->services->isClient() === 'company' ) {
-        $alert = get_field( 'itjob_company_alerts', $this->Company->getId() );
-        $interest_page_id = jobServices::page_exists('Interest candidate');
+        $alert            = get_field( 'itjob_company_alerts', $this->Company->getId() );
+        $interest_page_id = jobServices::page_exists( 'Interest candidate' );
         wp_send_json( [
-          'iClient' => Company::get_company_by( $User->ID ),
-          'Offers'  => $this->__get_company_offers(),
-          'Alerts'  => explode( ',', $alert ),
+          'iClient'   => Company::get_company_by( $User->ID ),
+          'Offers'    => $this->__get_company_offers(),
+          'Alerts'    => explode( ',', $alert ),
           'post_type' => 'company',
-          'Helper' => [
-            'interest_page_uri' => get_the_permalink($interest_page_id)
+          'Helper'    => [
+            'interest_page_uri' => get_the_permalink( $interest_page_id )
           ]
         ] );
       } else {
         // candidate
 
         $notification = get_field( 'itjob_cv_notifEmploi', $this->Candidate->getId() );
-        $Candidate = Candidate::get_candidate_by( $User->ID );
+        $Candidate    = Candidate::get_candidate_by( $User->ID );
         $Candidate->isMyCV();
         $alerts = explode( ',', $notification['job_sought'] );
         wp_send_json( [
-          'iClient' => $Candidate,
-          'Alerts'  => $alerts,
+          'iClient'   => $Candidate,
+          'Alerts'    => $alerts,
           'post_type' => 'candidate'
         ] );
       }

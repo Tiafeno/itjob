@@ -51,7 +51,7 @@ final class Company implements \iCompany {
           'meta_compare' => '='
         ];
         $pts  = get_posts( $args );
-        $pt   = reset( $pts );
+        $pt   = $pts[0];
 
         return new Company( $pt->ID );
         break;
@@ -114,11 +114,20 @@ final class Company implements \iCompany {
 
   /**
    * Recuperer les identifiants ou les CV que l'entreprise s'interest
-   * @return array|mixed|null
+   * @return array|mixed
    */
   public function getInterests() {
     $ids = get_field('itjob_company_interests', $this->ID);
     return $this->interests = empty($ids) || !$ids ? [] : $ids;
+  }
+
+  /**
+   * Vérifier si l'entreprise est un compte premium
+   */
+  public function isPremium() {
+    if (!is_user_logged_in()) return false;
+    $account = get_post_meta($this->getId(), 'itjob_meta_account', true);
+    return (int)$account === 1 ? true : false;
   }
 
   /**
