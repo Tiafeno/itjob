@@ -300,7 +300,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 $account = get_post_meta($Company->getId(), 'itjob_meta_account', true);
                 // Si le compte de l'entreprise est premium
                 if ((int)$account === 1) {
-                  $GLOBALS['company']->__client_premium_access();
+                  $GLOBALS['candidate']->__client_premium_access();
                 }
               }
             }

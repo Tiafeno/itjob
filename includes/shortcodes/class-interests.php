@@ -91,6 +91,7 @@ class scInterests {
                     </div>
                   </div>";
         }
+        $Candidate->__client_premium_access();
       endif;
       // Vérifier si le candidat est déja dans la liste
       $candidate_id = $Candidate->getAuthor()->data->ID;
