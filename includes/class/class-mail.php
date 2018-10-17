@@ -29,7 +29,7 @@ class Mailing {
     add_action( 'register_user_company', [ &$this, 'register_user_company' ], 10, 1 );
     add_action( 'register_user_particular', [ &$this, 'register_user_particular' ], 10, 1 );
     add_action( 'submit_particular_cv', [ &$this, 'submit_particular_cv' ], 10, 1 );
-    add_action( 'forgot_my_password', [ &$this, 'forgot_my_password' ], 10, 1 );
+    add_action( 'forgot_my_password', [ &$this, 'forgot_my_password' ], 10, 2 );
   }
 
   /**
@@ -100,9 +100,10 @@ class Mailing {
       $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
       $content   = '';
       try {
+        $reset_key = get_password_reset_key( $User );
         $con_query = add_query_arg( [
-          'action' => "rp",
-          "token"  => $User->user_pass,
+          'action' => "validation",
+          "key"    => $reset_key,
           "login"  => $User->user_email,
           "redir"  => $this->espace_client
         ], home_url( "/connexion/candidate/" ) );
@@ -176,7 +177,7 @@ class Mailing {
     }
   }
 
-  public function forgot_my_password( $email ) {
+  public function forgot_my_password( $email, $key ) {
     global $Engine;
     $to   = $email;
     $User = get_user_by( 'email', $to );
@@ -188,7 +189,7 @@ class Mailing {
     try {
       $forgot_password_page_id = jobServices::page_exists('Forgot password');
       $content .= $Engine->render( '@MAIL/forgot-password.html.twig', [
-        'forgot_link' => get_the_permalink($forgot_password_page_id) . "?key={$User->user_activation_key}&account={$User->ID}&forgot_password=1",
+        'forgot_link' => get_the_permalink($forgot_password_page_id) . "?key={$key}&account={$User->user_login}&action=resetpass",
         'home_url' => home_url( "/" )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
@@ -199,11 +200,18 @@ class Mailing {
     $sender = wp_mail( $to, $subject, $content, $headers );
     if ( $sender ) {
       // Mail envoyer avec success
-      wp_send_json_success( "Merci de vérifier que vous avez reçu un e-mail avec un lien de récupération." );
+      wp_send_json_success( [
+        "msg" => "Merci de vérifier que vous avez reçu un e-mail avec un lien de récupération.",
+        'key' => $key
+      ] );
     } else {
       // Erreur d'envoie
-      wp_send_json_error( "Une erreur s'est produits pendant l'envoie de votre code de" .
-                          " récupération. <br> Veuillez réessayer plus tard" );
+      wp_send_json_error( [
+        "msg" => "Le message n’a pas pu être envoyé. " .
+                 "Cause possible : votre hébergeur a peut-être désactivé la fonction mail().",
+        "key" => $key,
+        "login" => $User->user_login
+      ] );
     }
   }
 }

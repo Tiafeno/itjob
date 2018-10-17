@@ -246,9 +246,11 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! $user ) {
         wp_send_json_error( "Votre recherche ne donne aucun résultat. Veuillez réessayer avec d’autres adresse email." );
       }
-      get_password_reset_key( $user );
-
-      do_action( 'forgot_my_password', $email );
+      $reset_key = get_password_reset_key( $user );
+      if ( is_wp_error( $reset_key ) ) {
+        wp_send_json_error($reset_key->get_error_message());
+      }
+      do_action( 'forgot_my_password', $email, $reset_key );
     }
 
     /**
