@@ -182,3 +182,7 @@ ul.it-home-menu li.current-menu-item > a {
   background: #004787;
   padding: 20px;
 }
+.accordion-blue .uk-accordion-title:focus,
+.accordion-blue .uk-accordion-title:hover {
+  color: #ffffff;
+}
