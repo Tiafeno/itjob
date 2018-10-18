@@ -162,10 +162,15 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
 
       $User    = wp_get_current_user();
-      $Company = Company::get_company_by( $User->ID );
-      if ( ! $Company->is_company() ) {
-        wp_send_json( [ 'success' => false, 'msg' => 'Utilisateur n\'est pas une entreprise', 'user' => $Company ] );
+      if (in_array('company', $User->roles)) {
+        $Company = Company::get_company_by( $User->ID );
+        if ( ! $Company->is_company() ) {
+          wp_send_json( [ 'success' => false, 'msg' => 'Utilisateur n\'est pas une entreprise', 'user' => $Company ] );
+        }
+      } else {
+        wp_send_json(['success' => false, 'msg' => "Utilisateur n'est pas une entreprise"]);
       }
+
 
       $form = (object) [
         'post'            => Http\Request::getValue( 'post' ),
