@@ -12,6 +12,8 @@
         controller: ['$scope', '$http', function ($scope, $http) {
           const elButton = jQuery('#ask-cv');
           const textButton = elButton.html();
+          $scope.singup = '';
+          $scope.login = '';
           $scope.message = { title: 'Impossible d\'ajouter le cv', body: '', error: true };
           $scope.i_am_interested_this_candidate = () => {
             let askForm = new FormData();
@@ -34,7 +36,7 @@
                   $scope.message.error = data.success;
                   $scope.message.body  = data.msg;
 
-                  if (data.status === 'logged') {
+                  if (data.status === 'user' || data.status === 'logged') {
                     $scope.login = data.data.loginUrl;
                     $scope.singup = data.data.singupUrl;
                   }

@@ -162,10 +162,10 @@ class scInterests {
       wp_send_json( [ 'success' => false, 'msg' => false, 'status' => 'ajax' ] );
     }
     $cvId = (int)Http\Request::getValue( 'cvId' );
+    $redir           = get_the_permalink( $cvId );
+    $singup_page_url = get_the_permalink( (int) REGISTER_COMPANY_PAGE_ID );
     if ( ! \is_user_logged_in() ) {
-      $redir           = get_the_permalink( $cvId );
-      $singup_page_url = get_the_permalink( (int) REGISTER_COMPANY_PAGE_ID );
-      wp_send_json(
+            wp_send_json(
         [
           'success' => false,
           'msg'     => 'Mme/Mr pour pouvoir sélectionner ce candidat vous devez vous inscrire, cela est gratuit, ' .
@@ -196,7 +196,11 @@ class scInterests {
       wp_send_json( [
         'success' => false,
         'msg'     => 'Vous ne pouvez sélectionner de candidat avec votre compte',
-        'status'  => 'user'
+        'status'  => 'user',
+        'data'    => [
+          'loginUrl'  => home_url( "/connexion/company?redir={$redir}" ),
+          'singupUrl' => $singup_page_url
+        ]
       ] );
     }
   }
