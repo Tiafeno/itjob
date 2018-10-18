@@ -14,21 +14,17 @@
  *   copies or substantial portions of the Software.
  */
 
-const CLIENT_ID = "kaleFli5PJb3o2kCstBKDMkU09m3ak2FcvcJHqcG";
-const CLIENT_SECRET = "MiSw1PAHwg9bRiVr99KsZyYGrJr57nua7JXR2vdD";
-
-const AUTHORIZATION_ENDPOINT = "http://localhost/managna/oauth/authorize";
-const TOKEN_ENDPOINT = "http://localhost/managna/oauth/token";
-const REDIRECT_URI = "http://localhost/managna/";
-
-
-
 define( '__SITENAME__', 'itJob' );
 define( '__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj' );
 define( 'TWIG_TEMPLATE_PATH', get_template_directory() . '/templates' );
 if ( ! defined('VENDOR_URL'))
   define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
 $theme     = wp_get_theme( 'itjob' );
+
+
+const AUTHORIZATION_ENDPOINT = "http://localhost/managna/oauth/authorize";
+const TOKEN_ENDPOINT = "http://localhost/managna/oauth/token";
+
 
 // Utiliser ces variables apres la fonction: the_post()
 $offers    = null;
@@ -110,24 +106,6 @@ require 'jobs/itjob-cron.php';
 
 // Autoload composer libraries
 require 'composer/vendor/autoload.php';
-
-//if (isset($_GET['OAuth'])) {
-//  $client = new OAuth2\Client(CLIENT_ID, CLIENT_SECRET);
-//  if (!isset($_GET['code']))
-//  {
-//    $auth_url = $client->getAuthenticationUrl(AUTHORIZATION_ENDPOINT, REDIRECT_URI);
-//    header('Location: ' . $auth_url);
-//    die('Redirect');
-//  }
-//  else
-//  {
-//    $params = array('code' => $_GET['code'], 'redirect_uri' => REDIRECT_URI);
-//    $response = $client->getAccessToken(TOKEN_ENDPOINT, 'authorization_code', $params);
-//    echo "<pre>";
-//    print_r($response);
-//  }
-//}
-
 
 try {
   $loader = new Twig_Loader_Filesystem();
