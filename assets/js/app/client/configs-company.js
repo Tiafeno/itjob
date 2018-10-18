@@ -81,7 +81,6 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
                   $scope.Historicals = _.clone(resp.data);
                   loadingHistoricalElement.hide();
                 }
-
               });
           })
         })(jQuery)

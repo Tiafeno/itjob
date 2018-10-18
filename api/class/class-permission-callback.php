@@ -7,6 +7,6 @@ class permissionCallback {
    * This is our callback function that embeds our resource in a WP_REST_Response
    */
   public function private_data_permission_check($data) {
-    return current_user_can('delete_users');
+    return is_admin() && current_user_can('delete_users');
   }
 }

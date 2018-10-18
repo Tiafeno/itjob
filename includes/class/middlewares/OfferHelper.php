@@ -8,16 +8,15 @@
 
 trait OfferHelper {
 
-  /** @var WP_User $author - Contient les informations de l'entreprise */
+  /** @var WP_User $author - Contient les informations de l'utilisateur */
   public $author;
 
-  /** @var object $company - Contient les informations de l'auteur de l'offre  */
+  /** @var object $company - Contient les informations de l'entreprise  */
   public $company;
 
   public $my_offer = false;
   public $count_candidat_apply = 0;
   public $candidat_apply = [];
-
 
   public function isMyOffer($offer_id) {
     if ( ! is_user_logged_in() || ! is_int($offer_id)) return false;
@@ -34,6 +33,10 @@ trait OfferHelper {
         }
       }
     } else return false;
+  }
+
+  public function __admin_access(){
+
   }
 
 }
