@@ -162,7 +162,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
 
       $User    = wp_get_current_user();
-      $Company = Company::get_company_by(  $User->ID );
+      $Company = Company::get_company_by( $User->ID );
       if ( ! $Company->is_company() ) {
         wp_send_json( [ 'success' => false, 'msg' => 'Utilisateur n\'est pas une entreprise', 'user' => $Company ] );
       }
@@ -178,7 +178,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         'mission'         => Http\Request::getValue( 'mission' ),
         'profil'          => Http\Request::getValue( 'profil' ),
         'other'           => Http\Request::getValue( 'other' ),
-        'country'         => Http\Request::getValue('country'),
+        'country'         => Http\Request::getValue( 'country' ),
         'company_id'      => $Company->ID
       ];
       // Ajouter l'offre dans la base de donnée
@@ -207,16 +207,16 @@ if ( ! class_exists( 'vcOffers' ) ):
      * La deuxième (2) étape de formulaire d'ajout
      */
     public function update_offer_rateplan() {
-      $offer_id = Http\Request::getValue('offerId');
-      $rateplan = Http\Request::getValue('rateplan', false);
-      if ($offer_id && $rateplan) {
-        $Offer = new Offers((int)$offer_id);
-        if ($Offer->is_offer()) {
-          update_field('itjob_offer_rateplan', $rateplan, $Offer->ID);
-          wp_send_json(['success' => true]);
+      $offer_id = Http\Request::getValue( 'offerId' );
+      $rateplan = Http\Request::getValue( 'rateplan', false );
+      if ( $offer_id && $rateplan ) {
+        $Offer = new Offers( (int) $offer_id );
+        if ( $Offer->is_offer() ) {
+          update_field( 'itjob_offer_rateplan', $rateplan, $Offer->ID );
+          wp_send_json( [ 'success' => true ] );
         }
       }
-      wp_send_json(['success' => false, 'msg' => "Il est possible que cette erreur es dû à l’ID de l'offre"]);
+      wp_send_json( [ 'success' => false, 'msg' => "Il est possible que cette erreur es dû à l’ID de l'offre" ] );
     }
 
     /**
@@ -241,7 +241,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       update_field( 'itjob_offer_company', $form->company_id, $post_id );
 
       // Ne pas activer l'offre, En attente de validation de l'administrateur
-      update_field('activated', 0, $post_id);
+      update_field( 'activated', 0, $post_id );
     }
 
     // This is "itjob_offer_abranch" field
@@ -260,19 +260,21 @@ if ( ! class_exists( 'vcOffers' ) ):
 
     /**
      * Mettre à jour le titre de l'annonce si on change la valeur du champ ACF 'itjob_offer_post'
+     *
      * @param $title
      * @param $post_id
      *
      * @return string
      */
     public function update_offer_title( $title, $post_id ) {
-      $isUpdate = wp_update_post([
-        'ID' => $post_id,
+      $isUpdate = wp_update_post( [
+        'ID'         => $post_id,
         'post_title' => $title
-      ], true);
-      if (is_wp_error($isUpdate)) {
+      ], true );
+      if ( is_wp_error( $isUpdate ) ) {
         return $isUpdate->get_error_message();
       }
+
       return $title;
     }
 
@@ -307,8 +309,8 @@ if ( ! class_exists( 'vcOffers' ) ):
         /** @var STRING $orderby */
         /** @var STRING $order */
         return $Engine->render( '@VC/offers/offers.html.twig', [
-          'title'  => $title,
-          'offers' => $itJob->services->getRecentlyPost('offers', 4, [
+          'title'             => $title,
+          'offers'            => $itJob->services->getRecentlyPost( 'offers', 4, [
             // Afficher seulement les offres activé
             [
               'key'     => 'activated',
@@ -316,8 +318,8 @@ if ( ! class_exists( 'vcOffers' ) ):
               'value'   => 1,
               'type'    => 'NUMERIC'
             ]
-          ]),
-          'archive_offer_url' => get_post_type_archive_link('offers')
+          ] ),
+          'archive_offer_url' => get_post_type_archive_link( 'offers' )
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
@@ -350,23 +352,19 @@ if ( ! class_exists( 'vcOffers' ) ):
       /** @var string $position */
       /** @var string $title */
       // Recuperer dans le service les offres publier et à la une
-      $offers = $itJob->services->getFeaturedPost('offers', [
-        'key' => 'itjob_offer_featured',
-        'value' => 1,
+      $offers             = $itJob->services->getFeaturedPost( 'offers', [
+        'key'     => 'itjob_offer_featured',
+        'value'   => 1,
         'compare' => '='
-      ]);
-      $site_url = get_site_url();
-      $added_featured_url = is_user_logged_in() ? null : home_url("connexion/company/?redir={$site_url}/espace-client");
-      if (is_null($added_featured_url)) {
-        $User = wp_get_current_user();
-        $Company = Company::get_company_by($User->ID);
-        $added_featured_url = $Company->is_company() ? null : false;
-      }
+      ] );
+      $site_url           = get_site_url();
+      $added_featured_url = is_user_logged_in() ? null : home_url( "connexion/company/?redir={$site_url}/espace-client" );
       $args = [
-        'title'  => $title,
-        'offers' => $offers,
+        'title'                    => $title,
+        'offers'                   => $offers,
         'added_featured_offer_url' => $added_featured_url
       ];
+
       return ( trim( $position ) === 'sidebar' ) ? $this->getPositionSidebar( $args ) : $this->getPositionContent( $args );
     }
 
@@ -374,13 +372,17 @@ if ( ! class_exists( 'vcOffers' ) ):
      * Shortcode - Crée une formulaire d'ajout d'offre
      *
      * @param  array $attrs
+     *
      * @return bool|string
      */
     public function vc_added_offer_render( $attrs ) {
       global $Engine, $itJob;
       if ( ! is_user_logged_in() ) {
         // FEATURE: Proposer l'utilisateur à s'inscrire en tands que sociéte pour ajouter une offre
-        return vcRegisterCompany::getInstance()->register_render_html(['title' => 'FORMULAIRE ENTREPRISE', 'redir' => get_the_permalink()]);
+        return vcRegisterCompany::getInstance()->register_render_html( [
+          'title' => 'FORMULAIRE ENTREPRISE',
+          'redir' => get_the_permalink()
+        ] );
         /*return $Engine->render( '@ERROR/403.html.twig', [
           'template_url' => get_template_directory_uri()
         ] );*/
@@ -388,7 +390,7 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       // featured: Verifier si l'utilicateur est une entreprise
       // Réfuser l'access s'il n'est pas une entreprise
-      if ( ! itjob_current_user_is_company()) {
+      if ( ! itjob_current_user_is_company() ) {
         return false;
       }
 
@@ -405,11 +407,12 @@ if ( ! class_exists( 'vcOffers' ) ):
         , EXTR_OVERWRITE );
 
       try {
-        if ( ! defined('VENDOR_URL'))
+        if ( ! defined( 'VENDOR_URL' ) ) {
           define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
+        }
         wp_enqueue_style( 'sweetalert' );
         wp_enqueue_style( 'alertify' );
-        wp_enqueue_style( 'b-datepicker-3');
+        wp_enqueue_style( 'b-datepicker-3' );
         wp_enqueue_style( 'themify-icons' );
         wp_enqueue_style( 'froala' );
         wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
@@ -426,19 +429,19 @@ if ( ! class_exists( 'vcOffers' ) ):
             'froala',
           ], $itJob->version, true );
 
-        $redirection = Http\Request::getValue('redir');
+        $redirection = Http\Request::getValue( 'redir' );
         /** @var url $redir */
-        $redir = $redirection ? $redirection : (is_null($redir) ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : $redir);
+        $redir = $redirection ? $redirection : ( is_null( $redir ) ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : $redir );
         wp_localize_script( 'offers', 'itOptions', [
           'ajax_url'     => admin_url( 'admin-ajax.php' ),
           'partials_url' => get_template_directory_uri() . '/assets/js/app/offers/partials',
           'template_url' => get_template_directory_uri(),
-          'urlHelper' => [
+          'urlHelper'    => [
             'redir' => $redir
           ]
         ] );
 
-        do_action('get_notice');
+        do_action( 'get_notice' );
 
         /** @var STRING $title - Titre de l'element VC */
         return $Engine->render( '@VC/offers/form-offer.html.twig', [
