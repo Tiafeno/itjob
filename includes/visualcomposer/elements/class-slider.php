@@ -56,7 +56,7 @@ if ( ! class_exists( 'vcSlider' ) ):
       extract(
         shortcode_atts(
           array(
-            'title'     => null,
+            'title'     => "à la une",
             'post_type' => 'offers'
           ),
           $attrs
@@ -79,6 +79,18 @@ if ( ! class_exists( 'vcSlider' ) ):
             'offers' => $offers
           ]);
 
+          break;
+        case 'candidate':
+          $candidates = $itJob->services->getFeaturedPost( 'candidate', [
+            'key'     => 'itjob_cv_featured',
+            'value'   => 1,
+            'compare' => '='
+          ] );
+          /** @var STRING $title - Titre de l'element VC */
+          $args = array_merge($args, [
+            'title'  => $title,
+            'candidates' => $candidates
+          ]);
           break;
       }
 
