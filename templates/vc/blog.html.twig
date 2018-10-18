@@ -1,0 +1,56 @@
+<div class="page-content fade-in-up">
+  <div class="flexbox-b mb-5">
+    <span class="mr-4 static-badge badge-pink"><i class="ti-layout-grid3"></i></span>
+    <div>
+      <h4 class="font-strong">{{ title }}</h4>
+    </div>
+  </div>
+  <div class="row mb-5">
+    {% for content in contents %}
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="rel">
+            <img class="card-img-top" src="{{ content.thumbnail }}" alt="image" />
+            <div class="fab fab-bottom card-overlay-fab">
+              <button class="btn btn-primary btn-icon-only btn-circle btn-air" data-toggle="button"><i class="ti-share-alt fab-icon"></i><i class="la la-close fab-icon-active"></i></button>
+              <ul class="fab-menu">
+                <li>
+                  <a class="btn btn-soc-facebook btn-icon-only btn-circle btn-air" href="javascript:;"><i class="fa fa-facebook"></i></a>
+                </li>
+                <li>
+                  <a class="btn btn-soc-twitter btn-icon-only btn-circle btn-air" href="javascript:;"><i class="fa fa-twitter"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title mb-2">
+              <a href="{{ content.permalink }}" class="text-primary">{{ content.title }}</a>
+            </h4>
+            <div class="text-muted mb-3">{{ content.date }}</div>
+            <p class="text-light">{{ content.content|raw }}</p>
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="text-primary"></div>
+              <div>
+                <span class="text-muted">
+                  <a href="{{ content.permalink }}" title="Voir l'article"><i class="ti-new-window mr-2" style="font-size:21px"></i></a>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if contents.length <= 3 %}
+    <div>
+      <div class="d-flex align-items-center">
+        <a class="m-auto" href="{{ archive_link }}">
+          <button class="btn btn-sm btn-blue btn-fix">
+            <span class="btn-icon">Voir plus d'artilces <i class="la la-plus"></i></span>
+          </button>
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>

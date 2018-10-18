@@ -17,13 +17,14 @@
 define( '__SITENAME__', 'itJob' );
 define( '__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj' );
 define( 'TWIG_TEMPLATE_PATH', get_template_directory() . '/templates' );
-if ( ! defined('VENDOR_URL'))
+if ( ! defined( 'VENDOR_URL' ) ) {
   define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
-$theme     = wp_get_theme( 'itjob' );
+}
+$theme = wp_get_theme( 'itjob' );
 
 
 const AUTHORIZATION_ENDPOINT = "http://localhost/managna/oauth/authorize";
-const TOKEN_ENDPOINT = "http://localhost/managna/oauth/token";
+const TOKEN_ENDPOINT         = "http://localhost/managna/oauth/token";
 
 
 // Utiliser ces variables apres la fonction: the_post()
@@ -72,28 +73,29 @@ $itJob = (object) [
 
 // shortcodes
 $shortcode = (object) [
-  'scImport' => require 'includes/shortcodes/class-import-csv.php',
-  'scLogin'  => require 'includes/shortcodes/class-login.php',
-  'scInterests'  => require 'includes/shortcodes/class-interests.php'
+  'scImport'    => require 'includes/shortcodes/class-import-csv.php',
+  'scLogin'     => require 'includes/shortcodes/class-login.php',
+  'scInterests' => require 'includes/shortcodes/class-interests.php'
 ];
 
-add_action('init', function() {
+add_action( 'init', function () {
   global $shortcode;
   $shortcode->scClient = require 'includes/shortcodes/scClient.php';
-  $page_oc_id = \includes\object\jobServices::page_exists('Espace client');
-  add_rewrite_rule( '^espace-client/?', "index.php?page_id={$page_oc_id}" , 'top' );
-});
+  $page_oc_id          = \includes\object\jobServices::page_exists( 'Espace client' );
+  add_rewrite_rule( '^espace-client/?', "index.php?page_id={$page_oc_id}", 'top' );
+} );
 
 // Visual composer elements
 $elementsVC = (object) [
-  'vcSearch'   => require 'includes/visualcomposer/elements/class-vc-search.php',
-  'vcOffers'   => require 'includes/visualcomposer/elements/class-vc-offers.php',
-  'vcCandidate'   => require 'includes/visualcomposer/elements/class-vc-candidate.php',
-  'vcJePostule'   => require 'includes/visualcomposer/elements/class-vc-jepostule.php',
-  'vcSlider'   => require 'includes/visualcomposer/elements/class-slider.php',
-  'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
+  'vcSearch'             => require 'includes/visualcomposer/elements/class-vc-search.php',
+  'vcOffers'             => require 'includes/visualcomposer/elements/class-vc-offers.php',
+  'vcBlog'               => require 'includes/visualcomposer/elements/class-vc-blog.php',
+  'vcCandidate'          => require 'includes/visualcomposer/elements/class-vc-candidate.php',
+  'vcJePostule'          => require 'includes/visualcomposer/elements/class-vc-jepostule.php',
+  'vcSlider'             => require 'includes/visualcomposer/elements/class-slider.php',
+  'vcRegisterCompany'    => require 'includes/visualcomposer/elements/class-vc-register-company.php',
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php',
-  'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
+  'vcRegisterCandidate'  => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
 ];
 
 require 'includes/class/class-wp-city.php';
@@ -144,11 +146,11 @@ add_action( 'after_setup_theme', function () {
     'flex-width' => true,
   ) );
 
-  /*
+
 	 add_image_size('sidebar-thumb', 120, 120, true);
 	 add_image_size('homepage-thumb', 220, 180);
 	 add_image_size('singlepost-thumb', 590, 9999);
-	 */
+
 
   /**
    * This function will not resize your existing featured images.
