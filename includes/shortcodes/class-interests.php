@@ -122,7 +122,7 @@ class scInterests {
     if ( ! is_user_logged_in() ) {
       wp_send_json_error( "Accès refuser" );
     }
-    if ( is_admin() && current_user_can( 'delete_user' ) ) {
+    if ( is_admin() && current_user_can( 'delete_users' ) ) {
       $token        = Http\Request::getValue( 'token' );
       $candidate_id = (int) Http\Request::getValue( 'candidate_id' );
       $company_id   = (int) Http\Request::getValue( 'company_id' );
