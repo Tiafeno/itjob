@@ -74,6 +74,10 @@ final class Candidate extends UserParticular implements \iCandidate {
 
       // get Terms
       $this->fieldTax();
+
+      // Cette methode appel une fonction qui ajoute une propriété (has_cv) de type boolean
+      // qui constitue à verifier si le candidate posséde un CV ou autrement.
+      $this->hasCV();
     }
   }
 
@@ -219,9 +223,6 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->privateInformations->author = $this->author;
     $this->privateInformations->avatar = $this->avatar;
 
-    // Cette methode appel une fonction qui ajoute une propriété (has_cv) de type boolean
-    // qui constitue à verifier si le candidate posséde un CV ou autrement.
-    $this->hasCV();
   }
 
   /**

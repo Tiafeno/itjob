@@ -43,7 +43,7 @@ abstract class UserParticular {
     return [
       'address' => $this->address,
       'country' => $this->country,
-      'region' => $this->region
+      'region'  => $this->region
     ];
   }
 
@@ -72,11 +72,11 @@ abstract class UserParticular {
 
     $this->firstName = get_field( 'itjob_cv_firstname', $this->getId() );
     $this->lastName  = get_field( 'itjob_cv_lastname', $this->getId() );
-    $this->address      = get_field( 'itjob_cv_address', $this->getId() );
+    $this->address   = get_field( 'itjob_cv_address', $this->getId() );
 
     $birthdayDate       = get_field( 'itjob_cv_birthdayDate', $this->getId() );
     $this->birthdayDate = date( 'd/m/Y', strtotime( $birthdayDate ) );
-    $this->greeting  = get_field( 'itjob_cv_greeting', $this->getId() );
+    $this->greeting     = get_field( 'itjob_cv_greeting', $this->getId() );
     $this->dateAdd      = get_the_date( 'j F, Y', $this->getId() );
     // repeater field
     $phones = get_field( 'itjob_cv_phone', $this->getId() );
