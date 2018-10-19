@@ -127,7 +127,7 @@ if ( ! class_exists( 'vcBlog' ) ):
       foreach ( $blog_posts as $blog ) {
         setup_postdata( $blog );
         array_push( $blogs, [
-          'thumbnail' => get_the_post_thumbnail_url($blog),
+          'thumbnail' => get_the_post_thumbnail_url($blog, 'medium'),
           'title'     => get_the_title($blog),
           'date'      => get_the_date("d M Y", $blog),
           'content'   => apply_filters('the_content', $blog->post_content),
