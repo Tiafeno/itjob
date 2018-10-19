@@ -9,10 +9,10 @@
 trait OfferHelper {
 
   /** @var WP_User $author - Contient les informations de l'entreprise */
-  public $author;
+  protected $author;
 
   /** @var object $company - Contient les informations de l'auteur de l'offre  */
-  public $company;
+  protected $company;
 
   public $my_offer = false;
   public $count_candidat_apply = 0;
@@ -34,6 +34,14 @@ trait OfferHelper {
         }
       }
     } else return false;
+  }
+
+  public function getAuthor() {
+    return $this->author;
+  }
+
+  public function getCompany() {
+    return $this->company;
   }
 
 }
