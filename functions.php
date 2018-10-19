@@ -108,7 +108,6 @@ $itHelper = (object) [
   'Mailing' => require 'includes/class/class-mail.php'
 ];
 
-
 require 'api/itjob-api.php';
 require 'jobs/itjob-cron.php';
 
