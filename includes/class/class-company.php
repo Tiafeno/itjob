@@ -28,6 +28,7 @@ final class Company implements \iCompany {
   public $nif;
   public $stat;
   public $phone;
+  public $alerts;
   public $newsletter = false;
   public $notification = false;
   // Cette variable contient l'information sur le type du compte
@@ -106,7 +107,7 @@ final class Company implements \iCompany {
 
       // Récuperer le secteur d'activité
       $abranch               = wp_get_post_terms( $this->ID, 'branch_activity' );
-      $this->branch_activity = reset( $abranch );
+      $this->branch_activity = !is_array ($abranch) || !empty($abranch) ? $abranch[0] : null;
 
       $this->init();
     }
@@ -176,9 +177,12 @@ final class Company implements \iCompany {
       }
     }
 
+    // Recuperer les alerts de cette entreprise
+    $alerts = get_field('itjob_company_alerts', $this->ID);
+    $this->alerts = !$alerts || !empty($alerts) ? explode(',', $alerts) : [];
+
     return true;
   }
-
 
   /**
    * @param int $paged

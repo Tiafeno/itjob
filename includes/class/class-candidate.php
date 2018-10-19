@@ -202,9 +202,12 @@ final class Candidate extends UserParticular implements \iCandidate {
     $User = wp_get_current_user();
     if ( $User->user_email === $this->email || is_user_admin() ) {
       // Récuperer les notifications du client
+      // Notification pour les offres
       $this->getJobNotif();
+      // Notification pour les formations
       $this->getTrainingNotif();
-      // Les informations
+
+      // Les informations du candidate
       $this->getInformations();
     }
   }
@@ -292,7 +295,6 @@ final class Candidate extends UserParticular implements \iCandidate {
           break;
         }
       }
-
       return false;
     } else {
       return false;
@@ -318,12 +320,18 @@ final class Candidate extends UserParticular implements \iCandidate {
     // Récuperer les emplois recherché
     $jobSoughts      = wp_get_post_terms( $this->getId(), 'job_sought', [ "fields" => "all" ] );
     $this->jobSought = $this->getActivateField( $jobSoughts );
-
+    // Les tags sont ajouter par 'administrateur
     $this->tags            = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
+    // Le secteur d'activite du candidate
     $this->branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "all" ] );
     $this->branch_activity = ! is_array( $this->branch_activity ) || ! empty( $this->branch_activity ) ? $this->branch_activity[0] : null;
   }
 
+  /**
+   * Cette fonction permet de recuperer les terms qui sont activer
+   * @param array $terms - Array of term
+   * @return array
+   */
   private function getActivateField( $terms ) {
     $validTerms = [];
     if ( ! is_wp_error( $terms ) ):
