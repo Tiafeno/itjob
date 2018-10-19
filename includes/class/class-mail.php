@@ -308,8 +308,8 @@ class Mailing {
 
       } // .each company
 
-      // Envoyer les emails
-      print_r($see_alerts);
+      // TODO: Envoyer les emails
+      // print_r($see_alerts);
     }
   }
 
