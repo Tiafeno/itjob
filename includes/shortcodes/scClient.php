@@ -509,7 +509,7 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       if ( $this->Company instanceof Company ) {
         $Candidates = [];
-        $Token      = $this->User->data->user_pass;
+        $Token      = $this->User->user_pass;
         /** @var array $interest_ids - Array of int, user id */
         $interest_ids = $this->Company->getInterests();
         // featured: Return candidate object

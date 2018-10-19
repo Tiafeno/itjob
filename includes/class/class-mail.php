@@ -177,6 +177,69 @@ class Mailing {
     }
   }
 
+  /**
+   * Cree une notification
+   * 
+   * @param int $user_id - L'identification du client
+   * @return bool|mixed
+   */
+  public function notif_admin_new_user( $user_id ) {
+    global $Engine;
+    $error = true;
+    if ( ! is_int($user_id)) return false;
+    // $admin_emails - Contient les adresses email de l'admin et les moderateurs
+    $admin_emails = [];
+    $User = get_user_by('ID', $user_id);
+    if (in_array('company', $User->roles)) {
+      // L'utilisateur est une entreprise
+      $subject   = "Inscription d'une nouvelle entreprise - ItJobMada";
+      $error = false;
+    }
+    if (in_array('candidate', $User->roles)) {
+      // L'utilisateur est un candidat
+      $subject   = "Inscription d'un nouveau candidat - ItJobMada";
+      $error = false;
+    }
+    if ($error) return false;
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
+    $content   = '';
+
+    //TODO: Envoyer le mail a l'administrateur ici...
+    
+  
+  }
+
+  /**
+   * Notifier les entreprises si le candidate correspont a ce qu'ils recherchent
+   * @param int $candidate_id
+   * @return bool
+   */
+  public function alert_for_new_candidate( $candidate_id ) {
+    if ( ! is_int($candidate_id)) return false;
+    $Candidate = new Candidate($candidate_id);
+    $alert_company_lists = [];
+    if ( ! is_null($Candidate->branch_activity)) {
+      $args = [
+        "post_type" => "company",
+        "post_status" => "publish",
+        "posts_per_page" => -1,
+        "tax_query" => [
+          [
+            'taxonomy'=> 'branch_activity',
+            'field' => 'term_id',
+            'terms' => $Candidate->branch_activity->term_id
+          ]
+        ]
+      ];
+      $allCompany = get_posts($args);
+      foreach ($allCompany as $company) {
+        
+      }
+    }
+  }
+
   public function forgot_my_password( $email, $key ) {
     global $Engine;
     $to   = $email;
@@ -216,4 +279,4 @@ class Mailing {
   }
 }
 
-new Mailing();
+return new Mailing();

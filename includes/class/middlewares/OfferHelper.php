@@ -18,7 +18,6 @@ trait OfferHelper {
   public $count_candidat_apply = 0;
   public $candidat_apply = [];
 
-
   public function isMyOffer($offer_id) {
     if ( ! is_user_logged_in() || ! is_int($offer_id)) return false;
     $User = wp_get_current_user();

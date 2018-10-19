@@ -98,11 +98,17 @@ $elementsVC = (object) [
   'vcRegisterCandidate'  => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
 ];
 
+
 require 'includes/class/class-wp-city.php';
 require 'includes/class/class-http-request.php';
 require 'includes/class/class-menu-walker.php';
 require 'includes/filters/function-filters.php';
-require 'includes/class/class-mail.php';
+
+$itHelper = (object) [
+  'Mailing' => require 'includes/class/class-mail.php'
+];
+
+
 require 'api/itjob-api.php';
 require 'jobs/itjob-cron.php';
 

@@ -170,6 +170,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
      * @return bool
      */
     public function update_user_cv() {
+      global $itHelper;
+      
       if ( $_SERVER['REQUEST_METHOD'] != 'POST' || ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
         return false;
       }
@@ -327,6 +329,9 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       update_field( 'itjob_cv_hasCV', 1, $this->Candidate->getId() );
       // Envoyer un email de confirmation
       do_action('submit_particular_cv', $this->Candidate->getId());
+
+      // Alerter les entreprises
+      $itHelper->Mailing->alert_for_new_candidate($this->Candidate->getId());
 
       wp_send_json( [ 'success' => true ] );
       // TODO: Ajouter une notification pour les formations ajouté (dev)
