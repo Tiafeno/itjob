@@ -313,6 +313,11 @@ class Mailing {
     }
   }
 
+  public function alert_for_new_offer($offer_id) {
+
+  }
+
+
   public function forgot_my_password( $email, $key ) {
     global $Engine;
     $to        = $email;
