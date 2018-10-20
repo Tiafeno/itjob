@@ -82,7 +82,14 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
       {_id: 2, slug: 'user', label: 'Utilisateurs'},
     ];
     self.typeOfContent = [
-      {_id: 1, slug: 'city', label: "Ville"}
+      {_id: 1, slug: 'city', label: "Ville"},
+
+      {_id: 2, slug: 'user_candidate', label: "Demandeur emploi"},
+      {_id: 3, slug: 'user_candidate_experience', label: "Demandeur emploi - Experience"},
+      {_id: 6, slug: 'user_candidate_cv', label: "Demandeur emploi - CV"},
+      {_id: 6, slug: 'user_candidate_information', label: "Demandeur emploi - Information utilisateur"},
+      {_id: 4, slug: 'user_candidate_formation', label: "Demandeur emploi - Formation"},
+      {_id: 5, slug: 'user_company', label: "Entreprise"},
     ];
     self.getColumns = (typeofFileId) => {
       if (typeofFileId === 1) {
