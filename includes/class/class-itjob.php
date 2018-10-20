@@ -25,9 +25,12 @@ if ( ! class_exists( 'itJob' ) ) {
        * Cette evenement ce declanche quand l'administrateur publie une offre
        * @param int $ID
        */
-      add_action('publish_offers', function ($ID) {
+      add_action('acf/save_post', function ($post_id) {
+        $post_type = get_post_type($post_id);
+        $post_status = get_post_status($post_id);
+        if ($post_type !== 'offers' || $post_status !== 'publish') return;
         // Activer l'offre
-        update_field('activated', 1, $ID);
+        update_field('activated', 1, $post_id);
       }, 10, 1);
 
       // Activer le CV
@@ -47,8 +50,6 @@ if ( ! class_exists( 'itJob' ) ) {
           $class = new \ReflectionClass( "includes\\post\\$class_name" );
           $class->remove();
         }
-
-
       } );
 
       add_action( 'user_register', function ( $user_id ) {

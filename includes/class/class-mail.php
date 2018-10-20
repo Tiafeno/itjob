@@ -38,7 +38,6 @@ class Mailing {
       $post_type = get_post_type($post_id);
       $post_status = get_post_status($post_id);
       if ($post_type !== 'candidate' || $post_status !== 'publish') return;
-      update_field('activated', 1, $post_id);
       $self->alert_for_new_candidate($post_id);
     }, 10, 1);
   }
