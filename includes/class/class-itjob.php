@@ -30,23 +30,7 @@ if ( ! class_exists( 'itJob' ) ) {
         update_field('activated', 1, $ID);
       }, 10, 1);
 
-      /**
        * Activer le CV.
-       * Cette evenement ce declanche quand l'administrateur publie le CV
-       * @param int $ID
-       */
-      add_action( 'transition_post_status', function ($new_status, $old_status, $post) {
-        // Marquer le candidate possède un CV
-        if ('publish' === $new_status && 'candidate' === $post->post_type) {
-        // update_field( 'itjob_cv_hasCV', 1, $post->ID );
-          update_field( 'activated', 1, $post->ID );
-
-          //update_post_meta($post->ID, 'itjob_cv_hasCV', 1);
-          //update_post_meta($post->ID, 'activated', 1);
-        }
-
-      }, 10, 3 );
-
       // TODO: Envoyer un mail information utilisateur et adminstration (pour s'informer d'un nouveau utilisateur)
       add_action( 'acf/save_post', function ( $post_id ) {
         // Code here

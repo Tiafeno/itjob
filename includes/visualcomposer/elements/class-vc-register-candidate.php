@@ -331,7 +331,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       do_action('submit_particular_cv', $this->Candidate->getId());
 
       // Alerter les entreprises
-      $itHelper->Mailing->alert_for_new_candidate($this->Candidate->getId());
+     // $itHelper->Mailing->alert_for_new_candidate($this->Candidate->getId());
 
       wp_send_json( [ 'success' => true ] );
       // TODO: Ajouter une notification pour les formations ajouté (dev)

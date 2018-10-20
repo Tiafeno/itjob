@@ -17,10 +17,10 @@ class Mailing {
 
   public function __construct() {
     add_action( 'init', [ &$this, 'onInit' ] );
-
   }
 
   public function onInit() {
+    $self = $this;
     $oc_id               = jobServices::page_exists( 'Espace client' );
     $this->espace_client = get_the_permalink( $oc_id );
 
@@ -31,6 +31,16 @@ class Mailing {
     add_action( 'register_user_particular', [ &$this, 'register_user_particular' ], 10, 1 );
     add_action( 'submit_particular_cv', [ &$this, 'submit_particular_cv' ], 10, 1 );
     add_action( 'forgot_my_password', [ &$this, 'forgot_my_password' ], 10, 2 );
+
+    // Activer le CV
+    // Envoyer une alert pour les entreprises
+    add_action('acf/save_post', function( $post_id ) use ($self) {
+      $post_type = get_post_type($post_id);
+      $post_status = get_post_status($post_id);
+      if ($post_type !== 'candidate' || $post_status !== 'publish') return;
+      update_field('activated', 1, $post_id);
+      $self->alert_for_new_candidate($post_id);
+    }, 10, 1);
   }
 
   /**
@@ -330,48 +340,8 @@ class Mailing {
         $company       = new Company( $pts->ID );
         $company_alert = get_field( 'itjob_company_alerts', $company->getId() );
         $alerts        = explode( ',', $company_alert );
-        $alert_matches = [];
-        foreach ( $alerts as $alert ) {
-          // Si on trouve une espace dans l'alert, on crée un tableau
-          if ( strpos( trim( $alert ), ' ' ) ) {
-            $alert = explode( ' ', $alert );
-          }
-          $pattern = '/';
-          // TODO: Il est préférable que le champ d'alert ne contient pas d'espace
-          if ( is_array( $alert ) ) {
-            Arrays::each( $alert, function ( $el, $index ) use ( &$pattern, $alert ) {
-              $el      = strtolower( $el );
-              $pattern .= "({$el})";
-              if ( count( $alert ) - 1 !== $index ) {
-                $pattern .= "*";
-              }
-
-              return $el;
-            } );
-          } else {
-            $alert   = strtolower( $alert );
-            $pattern .= "({$alert})";
-          }
-          $pattern .= '/';
-          $matches = [];
-          preg_match( $pattern, $emploi_rechercher_candidate, $matches, PREG_OFFSET_CAPTURE );
-          if ( $matches ) {
-            $matches = Arrays::filter( $matches, function ( $matche ) {
-              return ! empty( $matche[0] );
-            } );
-            if ( ! empty( $matches ) ) {
-              $alert = is_array( $alert ) ? implode( ' ', $alert ) : $alert;
-            }
-            $alert_matches[] = (object) [
-              'job_soughts' => $emploi_rechercher_candidate,
-              'pattern'     => $pattern,
-              'alert'       => $alert,
-              'matches'     => $matches
-            ];
-          }
-
-        } // .each alerts
-
+        // Recherche les alerts
+        $alert_matches = $this->matches_alerts_content($alerts, $emploi_rechercher_candidate);
         $see_alerts[] = (object) [
           'company' => [
             'ID'    => $company->getId(),
@@ -383,8 +353,72 @@ class Mailing {
       } // .each company
 
       // TODO: Envoyer les emails
+      if ( ! empty($see_alerts)) {
+        foreach ($see_alerts as $see) {
+          $to = $see->company['email'];
+          $keys = Arrays::each($see->alerts, function($alert) {
+            return $alert->alert;
+          });
+          $keys = implode(',', $keys);
+          $subject = "Alerts: " . $keys . " - ItJobMada";
+
+          // à suivre ...
+        }
+      }
 
     }
+  }
+
+  /**
+   * Réchercher les alerts dans un contenue '$content'
+   *
+   * @param array $alerts
+   * @param string $content
+   *
+   * @return array
+   */
+  protected function matches_alerts_content($alerts, $content) {
+    $alert_matches = [];
+    foreach ( $alerts as $alert ) {
+      // Si on trouve une espace dans l'alert, on crée un tableau
+      if ( strpos( trim( $alert ), ' ' ) ) {
+        $alert = explode( ' ', $alert );
+      }
+      $pattern = '/';
+      // TODO: Il est préférable que le champ d'alert ne contient pas d'espace
+      if ( is_array( $alert ) ) {
+        Arrays::each( $alert, function ( $el, $index ) use ( &$pattern, $alert ) {
+          $el      = strtolower( $el );
+          $pattern .= "({$el})";
+          if ( count( $alert ) - 1 !== $index ) {
+            $pattern .= "*";
+          }
+
+          return $el;
+        } );
+      } else {
+        $alert   = strtolower( $alert );
+        $pattern .= "({$alert})";
+      }
+      $pattern .= '/';
+      $matches = [];
+      preg_match( $pattern, $content, $matches, PREG_OFFSET_CAPTURE );
+      if ( $matches ) {
+        $matches = Arrays::filter( $matches, function ( $matche ) {
+          return ! empty( $matche[0] );
+        } );
+        if ( ! empty( $matches ) ) {
+          $alert = is_array( $alert ) ? implode( ' ', $alert ) : $alert;
+        }
+        $alert_matches[] = (object) [
+          'job_soughts' => $content,
+          'pattern'     => $pattern,
+          'alert'       => $alert,
+          'matches'     => $matches
+        ];
+      }
+    } // .each alerts
+    return $alert_matches;
   }
 
   public function alert_for_new_offer( $offer_id ) {

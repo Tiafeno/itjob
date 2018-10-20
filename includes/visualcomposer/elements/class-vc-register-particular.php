@@ -178,9 +178,17 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       $user = get_user_by( 'email', trim($form->email) );
       do_action('register_user_particular', $user->ID);
 
+      // Ne pas activer le CV de l'utilisateur
+      update_field('activated', 0, $post_id);
+
       wp_send_json( [ 'success' => true, 'msg' => 'Vous avez réussi votre inscription'] );
     }
 
+    /**
+     * Mettre à jours les champs ACF
+     * @param $post_id
+     * @param $form
+     */
     private function update_acf_field( $post_id, $form ) {
       foreach ( get_object_vars( $form ) as $key => $value ) {
         update_field( "itjob_cv_" . $key, $value, $post_id );
@@ -220,6 +228,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         "last_name"    => $userLastName,
         "role"         => $post_type
       ];
+      // Hook user_register fire ...
       $user_id       = wp_insert_user( $args );
       if ( ! is_wp_error( $user_id ) ) {
         $user = new \WP_User( $user_id );
@@ -231,6 +240,10 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       }
     }
 
+    /**
+     * Récuperer un objet WP_City
+     * @return array
+     */
     public function get_city() {
       $taxonomy          = 'city';
       $allCity           = [];
