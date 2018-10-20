@@ -54,7 +54,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               importService
                 .sendform(form)
                 .then(resp => {
-
                   parser.resume();
                 })
 

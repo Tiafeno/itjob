@@ -27,7 +27,7 @@ if ( ! class_exists( 'scImport' ) ) :
           $this->add_term( $content_type );
           break;
       }
-      wp_send_json_success("En construction");
+      wp_send_json_success("En construction ...");
     }
 
     protected function add_term( $taxonomy ) {
@@ -52,7 +52,7 @@ if ( ! class_exists( 'scImport' ) ) :
           wp_send_json_success("({$parent_term['term_id']}) {$child_term['term_id']}");
           break;
       }
-      wp_send_json_success("En construction");
+      wp_send_json_success("En construction ...");
     }
 
     // TODO: Réfuser l'accès au public
