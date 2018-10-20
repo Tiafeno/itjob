@@ -81,10 +81,16 @@
     <div class="row mb-4">
       <div class="col-md-6 form-group">
         <label class="form-control-label">Code postal ou nom d'une ville</label>
-        <select class="form-control input-mode country" name="country" ng-model="particularForm.country" title="Tapez le nom d'un ville" required>
+        <select class="form-control input-mode country"
+                ng-disabled="!particularForm.region"
+                name="country"
+                ng-model="particularForm.country"
+                title="Tapez le nom d'un ville"
+                required>
           <option></option>
           <option value="{{city.term_id}}" ng-repeat="city in formulaire.allCity">({{city.postal_code}}) {{city.name}}</option>
         </select>
+        <span ng-show="!particularForm.region" class="text-muted small">Séléctionnez une region avant d'ajouter une ville</span>
       </div>
     </div>
 

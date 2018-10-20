@@ -166,6 +166,10 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
             });
           })
       };
+
+      $scope.$watch('particularForm', value => {
+        console.log(value);
+      }, true);
       //  JQLite
       var jqSelects = jQuery("select.form-control.find");
       jQuery.each(jqSelects, function (index, element) {
