@@ -99,7 +99,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               },
               pwd: {
                 required: "Ce champ est obligatoire",
-                pwdpattern: "Votre mot de passe doit comporter un minimum de 8 caractères, " +
+                pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, " +
                   "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
               },
               confpwd: {
