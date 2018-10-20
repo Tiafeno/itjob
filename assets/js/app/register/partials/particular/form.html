@@ -90,7 +90,7 @@
           <option></option>
           <option value="{{city.term_id}}" ng-repeat="city in formulaire.allCity">({{city.postal_code}}) {{city.name}}</option>
         </select>
-        <span ng-show="!particularForm.region" class="text-muted small">Séléctionnez une region avant d'ajouter une ville</span>
+        <span ng-if="!particularForm.region" class="text-muted small">Séléctionnez une region avant d'ajouter une ville</span>
       </div>
     </div>
 
