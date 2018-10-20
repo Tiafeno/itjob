@@ -55,19 +55,6 @@
       </div>
     </div>
 
-
-    <div class="row mb-1">
-      <div class="col-md-8 form-group">
-        <label class="form-control-label">Adresse</label>
-        <input class="form-control" type="text" name="address" ng-model="particularForm.address" autocomplete="off"
-               placeholder="" required>
-        <div ng-messages="pcForm.address.$error" ng-show="pcForm.address.$invalid && pcForm.address.$touched"
-             class="alert alert-pink" role="alert">
-          <div ng-message="required">Veuillez saisir une adresse.</div>
-        </div>
-      </div>
-    </div>
-
     <div class="row mb-4">
       <div class="col-md-6 form-group">
         <label class="form-control-label">Région</label>
@@ -94,6 +81,17 @@
       </div>
     </div>
 
+    <div class="row mb-1">
+      <div class="col-md-8 form-group">
+        <label class="form-control-label">Adresse</label>
+        <input class="form-control" type="text" name="address" ng-model="particularForm.address" autocomplete="off"
+               placeholder="" required>
+        <div ng-messages="pcForm.address.$error" ng-show="pcForm.address.$invalid && pcForm.address.$touched"
+             class="alert alert-pink" role="alert">
+          <div ng-message="required">Veuillez saisir une adresse.</div>
+        </div>
+      </div>
+    </div>
 
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Numéros de téléphone</label>
