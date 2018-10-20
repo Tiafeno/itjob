@@ -73,7 +73,7 @@
         <label class="form-control-label">Région</label>
         <select class="form-control find" name="region" ng-model="particularForm.region" title="Région" required>
           <option></option>
-          <option ng-repeat="rg in $ctrl.region" value="{{rg.term_id}}">{{rg.name}}</option>
+          <option ng-repeat="rg in formulaire.region" value="{{rg.term_id}}">{{rg.name}}</option>
         </select>
       </div>
     </div>
@@ -83,7 +83,7 @@
         <label class="form-control-label">Code postal ou nom d'une ville</label>
         <select class="form-control input-mode country" name="country" ng-model="particularForm.country" title="Tapez le nom d'un ville" required>
           <option></option>
-          <option value="{{city.term_id}}" ng-repeat="city in $ctrl.allCity">({{city.postal_code}}) {{city.name}}</option>
+          <option value="{{city.term_id}}" ng-repeat="city in formulaire.allCity">({{city.postal_code}}) {{city.name}}</option>
         </select>
       </div>
     </div>

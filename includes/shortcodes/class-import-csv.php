@@ -35,6 +35,7 @@ if ( ! class_exists( 'scImport' ) ) :
         wp_send_json_error( "Accès refuser" );
       }
       switch ( $taxonomy ) {
+        // Ajouter la ville d'une code postal
         case 'city':
           $row         = Http\Request::getValue( 'column' );
           $row         = json_decode( $row );
