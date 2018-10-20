@@ -30,12 +30,13 @@ if ( ! class_exists( 'itJob' ) ) {
         update_field('activated', 1, $ID);
       }, 10, 1);
 
-       * Activer le CV.
-      // TODO: Envoyer un mail information utilisateur et adminstration (pour s'informer d'un nouveau utilisateur)
-      add_action( 'acf/save_post', function ( $post_id ) {
-        // Code here
-
-      }, 20 );
+      // Activer le CV
+      add_action('acf/save_post', function ( $post_id ) {
+        $post_type = get_post_type($post_id);
+        $post_status = get_post_status($post_id);
+        if ($post_type !== 'candidate' || $post_status !== 'publish') return;
+        update_field('activated', 1, $post_id);
+      }, 10, 1);
 
       /** Effacer les elements acf avant d'effacer l'article */
       add_action( 'before_delete_post', function ( $postId ) {
@@ -49,18 +50,6 @@ if ( ! class_exists( 'itJob' ) ) {
 
 
       } );
-
-      /**
-       * When there’s no previous status (this means these hooks are always run whenever "save_post" runs).
-       * @Hook: new_post (https://codex.wordpress.org/Post_Status_Transitions)
-       *
-       * @param int $post_ID Post ID.
-       * @param WP_Post $post Post object.
-       * @param bool $update Whether this is an existing post being updated or not.
-       */
-      add_action( 'save_post', function ( $post_id, $post, $update ) {
-
-      }, 10, 3 );
 
       add_action( 'user_register', function ( $user_id ) {
         global $itHelper;
@@ -88,11 +77,6 @@ if ( ! class_exists( 'itJob' ) ) {
         $itHelper->Mailing->notif_admin_new_user($user_id);
        
       }, 10, 1 );
-
-
-      add_action( 'wp_loaded', function () {
-
-      }, 20 );
 
       // @doc https://wordpress.stackexchange.com/questions/7518/is-there-a-hook-for-when-you-switch-themes
       add_action('after_switch_theme', function ($new_theme) {
