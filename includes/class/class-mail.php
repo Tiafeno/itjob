@@ -306,15 +306,11 @@ class Mailing {
    * @return bool
    */
   public function alert_for_new_candidate( $candidate_id ) {
+    global $Engine;
     if ( ! is_int( $candidate_id ) ) {
       return false;
     }
-    try {
-      $Candidate = new Candidate( $candidate_id );
-    } catch ( \WP_Error $e ) {
-      echo $e->getMessage();
-    }
-
+    $Candidate = new Candidate( $candidate_id );
     if ( ! is_null( $Candidate->branch_activity ) ) {
       $args                        = [
         "post_type"      => "company",
@@ -341,31 +337,56 @@ class Mailing {
         $alerts        = explode( ',', $company_alert );
         // Recherche les alerts
         $alert_matches = $this->matches_alerts_content($alerts, $emploi_rechercher_candidate);
-        $see_alerts[] = (object) [
-          'company' => [
-            'ID'    => $company->getId(),
-            'email' => $company->author->user_email
-          ],
-          'alerts'  => $alert_matches
-        ];
+        if ( ! empty($alert_matches))
+          $see_alerts[] = (object) [
+            'company' => [
+              'ID'    => $company->getId(),
+              'email' => $company->author->user_email
+            ],
+            'alerts'  => $alert_matches
+          ];
 
       } // .each company
 
-      // TODO: Envoyer les emails
+      // featured: Envoyer les emails
       if ( ! empty($see_alerts)) {
         foreach ($see_alerts as $see) {
           $to = $see->company['email'];
           $keys = Arrays::each($see->alerts, function($alert) {
             return $alert->alert;
           });
-          $keys = implode(',', $keys);
-          $subject = "Alerts: " . $keys . " - ItJobMada";
-
-          // à suivre ...
+          $keys = implode(', ', $keys);
+          $subject = "Votre alerte - ItJobMada";
+          $headers   = [];
+          $headers[] = 'Content-Type: text/html; charset=UTF-8';
+          $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
+          $content = '';
+          try {
+            $custom_logo_id = get_theme_mod( 'custom_logo' );
+            $logo = wp_get_attachment_image_src( $custom_logo_id , 'full' );
+            $content .= $Engine->render( '@MAIL/forgot-password.html.twig', [
+              'candidate' => $Candidate,
+              'alerts'    => $keys,
+              'logo'      => esc_url($logo[0]),
+              'home_url'  => home_url( "/" )
+            ] );
+          } catch ( \Twig_Error_Loader $e ) {
+          } catch ( \Twig_Error_Runtime $e ) {
+          } catch ( \Twig_Error_Syntax $e ) {
+            $content .= $e->getRawMessage();
+          }
+          $sender = wp_mail( $to, $subject, $content, $headers );
+          if ( $sender ) {
+            // Mail envoyer avec success
+            return true;
+          } else {
+            // Erreur d'envoie
+            return false;
+          }
         }
-      }
 
-    }
+      }
+    } // .end branch activity condition
   }
 
   /**

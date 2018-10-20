@@ -87,7 +87,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         <p class="mb-1 uk-text-bold">Emploi recherché:</p>
                         <?php
                         foreach ($candidate->jobSought as $job):
-                          echo sprintf('<span class="badge badge-blue mr-2 mt-1">%s</span>', $job->name);
+                          echo sprintf('<span class="badge badge-blue mr-2 mt-1">%s</span>', ucfirst($job->name));
                         endforeach;
                         ?>
                       </div>
