@@ -27,9 +27,14 @@ if ( ! class_exists( 'scImport' ) ) :
           $this->add_term( $content_type );
           break;
       }
-      wp_send_json_success("En construction ...");
+      wp_send_json_success( "En construction ..." );
     }
 
+    /**
+     * Ajouter des terms dans une taxonomie
+     *
+     * @param string $taxonomy
+     */
     protected function add_term( $taxonomy ) {
       if ( ! is_user_logged_in() ) {
         wp_send_json_error( "Accès refuser" );
@@ -45,17 +50,16 @@ if ( ! class_exists( 'scImport' ) ) :
           if ( 0 == $parent_term || is_null( $parent_term ) ) {
             $parent_term = wp_insert_term( $parent, $taxonomy, [ 'slug' => $parent ] );
           }
-          $child_term = term_exists($child, $taxonomy, $parent_term['term_id']);
-          if (0 == $child_term || is_null($child_term)) {
-            $child_term = wp_insert_term($child, $taxonomy, ['parent' => $parent_term['term_id']]);
+          $child_term = term_exists( $child, $taxonomy, $parent_term['term_id'] );
+          if ( 0 == $child_term || is_null( $child_term ) ) {
+            $child_term = wp_insert_term( $child, $taxonomy, [ 'parent' => $parent_term['term_id'] ] );
           }
-          wp_send_json_success("({$parent_term['term_id']}) {$child_term['term_id']}");
+          wp_send_json_success( "({$parent_term['term_id']}) {$child_term['term_id']}" );
           break;
       }
-      wp_send_json_success("En construction ...");
+      wp_send_json_success( "En construction ..." );
     }
 
-    // TODO: Réfuser l'accès au public
     public function sc_render_html( $atts, $content = "" ) {
       global $Engine, $itJob;
       extract(
@@ -66,6 +70,9 @@ if ( ! class_exists( 'scImport' ) ) :
           $atts
         )
       );
+      if ( ! is_user_logged_in() && ! current_user_can( 'delete_users' ) ) {
+        // Access refuser au public
+      }
 
       wp_enqueue_script( 'import-csv', get_template_directory_uri() . '/assets/js/app/import/importcsv.js', [
         'angular',
