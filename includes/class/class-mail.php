@@ -5,6 +5,7 @@ namespace includes\mailing;
 use includes\object\jobServices;
 use includes\post\Candidate;
 use includes\post\Company;
+use includes\post\Offers;
 use Underscore\Types\Arrays;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -20,7 +21,6 @@ class Mailing {
   }
 
   public function onInit() {
-    $self = $this;
     $oc_id               = jobServices::page_exists( 'Espace client' );
     $this->espace_client = get_the_permalink( $oc_id );
 
@@ -34,12 +34,18 @@ class Mailing {
 
     // Activer le CV
     // Envoyer une alert pour les entreprises
-    add_action('acf/save_post', function( $post_id ) use ($self) {
-      $post_type = get_post_type($post_id);
-      $post_status = get_post_status($post_id);
-      if ($post_type !== 'candidate' || $post_status !== 'publish') return;
-      $self->alert_for_new_candidate($post_id);
-    }, 10, 1);
+    add_action( 'acf/save_post', function ( $post_id ) {
+      $post_type   = get_post_type( $post_id );
+      $post_status = get_post_status( $post_id );
+
+      if ( $post_type === 'candidate' || $post_status === 'publish' ) {
+        $this->alert_for_new_candidate( $post_id );
+      }
+
+      if ( $post_type === 'offers' || $post_status === 'publish' ) {
+        $this->alert_for_new_offer( $post_id );
+      }
+    }, 10, 1 );
   }
 
   /**
@@ -198,10 +204,11 @@ class Mailing {
     // Les address email des administrateurs qui recoivent les notifications
     // La valeur de cette option est un tableau
     $admin_notification_emails = get_option( 'admin_notification_emails', null );
-    $admin_email = get_option( 'admin_email', [] );
+    $admin_email               = get_option( 'admin_email', [] );
     if ( is_null( $admin_notification_emails ) ) {
       return $admin_email;
     }
+
     return is_array( $admin_notification_emails ) ? $admin_notification_emails : $admin_email;
   }
 
@@ -216,7 +223,7 @@ class Mailing {
     global $Engine;
     $error    = true;
     $template = null;
-    $logo = null;
+    $logo     = null;
     if ( ! is_int( $user_id ) ) {
       return false;
     }
@@ -227,10 +234,10 @@ class Mailing {
       return false;
     }
     $custom_logo_id = get_theme_mod( 'custom_logo' );
-    $logo = wp_get_attachment_image_src( $custom_logo_id , 'full' );
-    $to   = ! is_array( $admin_emails ) ? $admin_emails : implode( ',', $admin_emails );
-    $User = get_user_by( 'ID', $user_id );
-    $args = [
+    $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+    $to             = ! is_array( $admin_emails ) ? $admin_emails : implode( ',', $admin_emails );
+    $User           = get_user_by( 'ID', $user_id );
+    $args           = [
       'logo_url' => esc_url( $logo[0] )
     ];
     if ( in_array( 'company', $User->roles ) ) {
@@ -281,21 +288,116 @@ class Mailing {
       $sender = wp_mail( $to, $subject, $content, $headers );
       if ( $sender ) {
         // Mail envoyer avec success
-        return  [
-          "msg" => "Merci de vérifier que vous avez reçu un e-mail avec un lien de récupération.",
+        return [
+          "msg"     => "Merci de vérifier que vous avez reçu un e-mail avec un lien de récupération.",
           "success" => true
         ];
       } else {
         // Erreur d'envoie
         return [
-          "msg"   => "Le message n’a pas pu être envoyé. " .
-                     "Cause possible : votre hébergeur a peut-être désactivé la fonction mail().",
+          "msg"     => "Le message n’a pas pu être envoyé. " .
+                       "Cause possible : votre hébergeur a peut-être désactivé la fonction mail().",
           "success" => false
         ];
       }
     } else {
       return false;
     }
+  }
+
+  /**
+   * Notifier les candidates qui ont des alerts correspondant
+   *
+   * @param $offer_id
+   */
+  public function alert_for_new_offer( $offer_id ) {
+    global $Engine;
+    if ( ! is_int( $offer_id ) ) {
+      return false;
+    }
+    $Offer         = new Offers( $offer_id );
+    $args          = [
+      "post_type"      => "candidate",
+      "post_status"    => "publish",
+      "posts_per_page" => - 1,
+      'meta_query'     => [
+        [
+          'key'     => 'itjob_cv_notifEmploi_notification',
+          'value'   => 1,
+          'compare' => '='
+        ],
+        [
+          'key'     => 'itjob_cv_notifEmploi_branch_activity',
+          'value'   => $Offer->branch_activity->term_id,
+          'compare' => '='
+        ]
+      ]
+    ];
+    $postCandidate = get_posts( $args );
+    $rechercher    = strip_tags( $Offer->postPromote );
+    $rechercher    .= ' ' . strip_tags( $Offer->mission );
+    $rechercher    .= ' ' . strip_tags( $Offer->profil );
+    $rechercher    .= ' ' . strip_tags( $Offer->otherInformation );
+    $rechercher    = strtolower( $rechercher );
+    $see_alerts    = [];
+    foreach ( $postCandidate as $pts ) {
+      $Candidate = new Candidate( $pts->ID );
+      $Candidate->__client_premium_access();
+      $candidate_alerts = $Candidate->jobNotif['job_sought'];
+      $alerts           = explode( ',', $candidate_alerts );
+      $alerts           = Arrays::filter( $alerts, function ( $alert ) {
+        return empty( $value );
+      } );
+      $alert_matches    = $this->matches_alerts_content( $alerts, $rechercher );
+      if ( ! empty( $alert_matches ) ) {
+        $see_alerts[] = (object) [
+          'candidate' => [
+            'ID'    => $Candidate->getId(),
+            'email' => $Candidate->privateInformations->author->user_email
+          ],
+          'alerts'    => $alert_matches
+        ];
+      }
+    }
+
+    if ( ! empty( $see_alerts ) ) {
+      foreach ( $see_alerts as $see ) {
+        $to        = $see->candidate['email'];
+        $keys      = Arrays::each( $see->alerts, function ( $alert ) {
+          return $alert->alert;
+        } );
+        $keys      = implode( ', ', $keys );
+        $subject   = "Votre alerte - ItJobMada";
+        $headers   = [];
+        $headers[] = 'Content-Type: text/html; charset=UTF-8';
+        $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
+        $content   = '';
+        try {
+          $custom_logo_id = get_theme_mod( 'custom_logo' );
+          $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+          $content        .= $Engine->render( '@MAIL/notification-offer-to-candidate.html.twig', [
+            'offer'    => $Offer,
+            'alerts'   => $keys,
+            'logo'     => esc_url( $logo[0] ),
+            'home_url' => home_url( "/" )
+          ] );
+        } catch ( \Twig_Error_Loader $e ) {
+        } catch ( \Twig_Error_Runtime $e ) {
+        } catch ( \Twig_Error_Syntax $e ) {
+          $content .= $e->getRawMessage();
+        }
+        $sender = wp_mail( $to, $subject, $content, $headers );
+        if ( $sender ) {
+          // Mail envoyer avec success
+          return true;
+        } else {
+          // Erreur d'envoie
+          return false;
+        }
+      }
+
+    }
+
   }
 
   /**
@@ -335,9 +437,12 @@ class Mailing {
         $company       = new Company( $pts->ID );
         $company_alert = get_field( 'itjob_company_alerts', $company->getId() );
         $alerts        = explode( ',', $company_alert );
+        $alerts        = Arrays::filter( $alerts, function ( $alert ) {
+          return empty( $value );
+        } );
         // Recherche les alerts
-        $alert_matches = $this->matches_alerts_content($alerts, $emploi_rechercher_candidate);
-        if ( ! empty($alert_matches))
+        $alert_matches = $this->matches_alerts_content( $alerts, $emploi_rechercher_candidate );
+        if ( ! empty( $alert_matches ) ) {
           $see_alerts[] = (object) [
             'company' => [
               'ID'    => $company->getId(),
@@ -345,29 +450,30 @@ class Mailing {
             ],
             'alerts'  => $alert_matches
           ];
+        }
 
       } // .each company
 
       // featured: Envoyer les emails
-      if ( ! empty($see_alerts)) {
-        foreach ($see_alerts as $see) {
-          $to = $see->company['email'];
-          $keys = Arrays::each($see->alerts, function($alert) {
+      if ( ! empty( $see_alerts ) ) {
+        foreach ( $see_alerts as $see ) {
+          $to        = $see->company['email'];
+          $keys      = Arrays::each( $see->alerts, function ( $alert ) {
             return $alert->alert;
-          });
-          $keys = implode(', ', $keys);
-          $subject = "Votre alerte - ItJobMada";
+          } );
+          $keys      = implode( ', ', $keys );
+          $subject   = "Votre alerte - ItJobMada";
           $headers   = [];
           $headers[] = 'Content-Type: text/html; charset=UTF-8';
           $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
-          $content = '';
+          $content   = '';
           try {
             $custom_logo_id = get_theme_mod( 'custom_logo' );
-            $logo = wp_get_attachment_image_src( $custom_logo_id , 'full' );
-            $content .= $Engine->render( '@MAIL/forgot-password.html.twig', [
+            $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+            $content        .= $Engine->render( '@MAIL/notification-candidate-to-company.html.twig', [
               'candidate' => $Candidate,
               'alerts'    => $keys,
-              'logo'      => esc_url($logo[0]),
+              'logo'      => esc_url( $logo[0] ),
               'home_url'  => home_url( "/" )
             ] );
           } catch ( \Twig_Error_Loader $e ) {
@@ -397,7 +503,7 @@ class Mailing {
    *
    * @return array
    */
-  protected function matches_alerts_content($alerts, $content) {
+  protected function matches_alerts_content( $alerts, $content ) {
     $alert_matches = [];
     foreach ( $alerts as $alert ) {
       // Si on trouve une espace dans l'alert, on crée un tableau
@@ -438,11 +544,8 @@ class Mailing {
         ];
       }
     } // .each alerts
+
     return $alert_matches;
-  }
-
-  public function alert_for_new_offer( $offer_id ) {
-
   }
 
 
