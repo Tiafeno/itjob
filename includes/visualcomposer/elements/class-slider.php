@@ -81,6 +81,7 @@ if ( ! class_exists( 'vcSlider' ) ):
 
           break;
         case 'candidate':
+          wp_enqueue_style( 'candidate' );
           $candidates = $itJob->services->getFeaturedPost( 'candidate', [
             'key'     => 'itjob_cv_featured',
             'value'   => 1,
