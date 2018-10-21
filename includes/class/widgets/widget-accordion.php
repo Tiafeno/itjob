@@ -13,6 +13,8 @@ class Widget_Accordion extends \WP_Widget {
   public function widget( $args, $instance ) {
     global $Engine;
     echo $args['before_widget'];
+    // Ne pas afficher l'accordion si aucune pag n'est séléctionner
+    if ( ! isset($instance['page_ids'])) return;
     $ids = $instance['page_ids'];
     $contents = Arrays::each($ids, function ($id) {
       $post = get_post((int)$id);
