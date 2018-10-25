@@ -1,6 +1,7 @@
 <?php
 require_once 'class/class-permission-callback.php';
 require_once 'class/class-api-candidate.php';
+require_once 'class/class-api-company.php';
 
 /**
  * WP_REST_Server::READABLE = ‘GET’
@@ -36,6 +37,17 @@ add_action( 'rest_api_init', function () {
         ),
       ),
     )
+  ]);
+
+  register_rest_route('it-api', '/company/', [
+    array(
+      'methods'             => WP_REST_Server::READABLE,
+      'callback'            => [ new apiCompany(), 'get_companys' ],
+      'permission_callback' => [ new permissionCallback(), 'private_data_permission_check' ],
+      'args'                => [
+
+      ]
+    ),
   ]);
 
   register_rest_route('it-api', '/candidate/', [
