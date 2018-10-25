@@ -25,6 +25,14 @@ add_action( 'rest_api_init', function () {
       ),
     ),
     array(
+      'methods'             => WP_REST_Server::READABLE,
+      'callback'            => [ new apiCandidate(), 'get_candidates' ],
+      'permission_callback' => [ new permissionCallback(), 'private_data_permission_check' ],
+      'args'                => [
+
+      ]
+    ),
+    array(
       'methods'             => WP_REST_Server::EDITABLE,
       'callback'            => [ new apiCandidate(), 'update_candidate' ],
       'permission_callback' => [ new permissionCallback(), 'private_data_permission_check' ],

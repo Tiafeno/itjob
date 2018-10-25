@@ -22,11 +22,6 @@ if ( ! defined( 'VENDOR_URL' ) ) {
 }
 $theme = wp_get_theme( 'itjob' );
 
-
-const AUTHORIZATION_ENDPOINT = "http://localhost/managna/oauth/authorize";
-const TOKEN_ENDPOINT         = "http://localhost/managna/oauth/token";
-
-
 // Utiliser ces variables apres la fonction: the_post()
 $offers    = null;
 $company   = null;
