@@ -38,7 +38,7 @@ add_action( 'rest_api_init', function () {
     )
   ]);
 
-  register_rest_route('it-api', '/candidat/', [
+  register_rest_route('it-api', '/candidate/', [
     array(
       'methods'             => WP_REST_Server::READABLE,
       'callback'            => [ new apiCandidate(), 'get_candidates' ],
