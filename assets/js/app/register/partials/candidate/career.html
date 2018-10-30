@@ -60,7 +60,7 @@
     <div class="col-sm-6">
       <div class="drivelicence" ng-repeat="driveLicence in driveLicences">
         <label class="checkbox checkbox-grey checkbox-ebony">
-          <input type="checkbox" ng-change="addDriveLicence(driveLicence.slug, driveLicence.label)"
+          <input type="checkbox"
            ng-model="formData.driveLicence[driveLicence.slug]">
           <span class="input-span"></span>
           {{driveLicence.label}}
@@ -69,7 +69,7 @@
       <!-- Aucun permis -->
       <div class="drivelicence">
         <label class="checkbox checkbox-grey checkbox-ebony">
-          <input type="checkbox" class="">
+          <input type="checkbox" ng-model="driveL" class="">
           <span class="input-span"></span>
           Aucun
         </label>

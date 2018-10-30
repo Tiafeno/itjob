@@ -46,7 +46,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
               });
             }
           }],
-          driveLicences: function ($q) {
+          driveLicences: ['$q', function ($q) {
             // Permis de conduire (Schema)
             const licences = [
               {
@@ -73,12 +73,13 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 _id: 4,
                 label: "D",
                 slug: "d"
-              },
+              }
             ];
             return $q.resolve(licences);
-          }
+          }]
         },
         controller: function ($rootScope, $scope, $http, driveLicences) {
+          $scope.driveL = false;
           // Effacer une nouvelle formation
           $scope.removeTraining = id => {
             // Ne pas effacer le premier champ de formation
@@ -117,6 +118,15 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             $rootScope.initDatePicker();
             $rootScope.driveLicences = _.clone(driveLicences);
           };
+
+          // Effacer tout les champs input des permis.
+          $scope.$watch('driveL', data => {
+            if (data) {
+              if (!_.isEmpty($rootScope.formData.driveLicence)) {
+                $rootScope.formData.driveLicence = [];
+              }
+            }
+          });
 
           $rootScope.initDatePicker = function () {
             window.setTimeout(() => {
@@ -169,8 +179,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 source: country.ttAdapter()
               });
             }, 600);
-
-
           }
         }
       })
