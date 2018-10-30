@@ -222,6 +222,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->privateInformations->firstname = $this->getFirstName();
     $this->privateInformations->lastname  = $this->getLastName();
     $this->privateInformations->address   = $this->getAddress();
+    $this->privateInformations->birthday_date   = $this->getBirthday();
 
     $this->privateInformations->author = $this->author;
     $this->privateInformations->avatar = $this->avatar;

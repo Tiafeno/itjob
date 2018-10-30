@@ -47,6 +47,10 @@ abstract class UserParticular {
     ];
   }
 
+  public function getBirthday(){
+    return $this->birthdayDate;
+  }
+
   public function getFirstName() {
     return $this->firstName;
   }
