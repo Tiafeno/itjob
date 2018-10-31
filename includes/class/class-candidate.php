@@ -240,6 +240,10 @@ final class Candidate extends UserParticular implements \iCandidate {
     return true;
   }
 
+  public function __get_access() {
+    return $this->__client_premium_access();
+  }
+
   /**
    * Mettre à jours les token des entreprises dans une post meta
    * @return array|bool|mixed

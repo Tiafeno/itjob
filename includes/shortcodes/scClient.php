@@ -51,6 +51,9 @@ if ( ! class_exists( 'scClient' ) ) :
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
     }
 
+    /**
+     * Afficher l'espace client
+     */
     public function sc_render_html( $attrs, $content = '' ) {
       global $Engine, $itJob;
       if ( ! is_user_logged_in() ) {
