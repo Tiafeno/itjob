@@ -31,6 +31,8 @@ class Mailing {
     add_action( 'register_user_particular', [ &$this, 'register_user_particular' ], 10, 1 );
     add_action( 'submit_particular_cv', [ &$this, 'submit_particular_cv' ], 10, 1 );
     add_action( 'forgot_my_password', [ &$this, 'forgot_my_password' ], 10, 2 );
+    add_action( 'alert_for_postuled_offer', [ &$this, 'alert_for_postuled_offer' ], 10, 1 );
+    add_action( 'alert_when_company_interest', [ &$this, 'alert_when_company_interest' ], 10, 1 );
 
     // Activer le CV
     // Envoyer une alert pour les entreprises
@@ -306,9 +308,25 @@ class Mailing {
   }
 
   /**
+   * Notifier l'administrateur si un candidat à postuler à un offre
+   * @param int $offer_id
+   */
+  public function alert_for_postuled_offer( $offer_id ) {
+    if ( ! is_user_logged_in() ) {
+      return false;
+    }
+  }
+
+  public function alert_when_company_interest( $candidat_id ) {
+    if ( ! is_user_logged_in() ) {
+      return false;
+    }
+  }
+
+  /**
    * Notifier les candidates qui ont des alerts correspondant
    *
-   * @param $offer_id
+   * @param int $offer_id
    */
   public function alert_for_new_offer( $offer_id ) {
     global $Engine;
@@ -396,7 +414,7 @@ class Mailing {
         }
       }
 
-    }
+    } else return true;
 
   }
 
@@ -491,7 +509,7 @@ class Mailing {
           }
         }
 
-      }
+      } else return true;
     } // .end branch activity condition
   }
 
