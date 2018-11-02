@@ -52,7 +52,6 @@ if ( ! class_exists( 'jePostule' ) ) :
               $apply[] = $User->ID;
               update_field( 'itjob_users_apply', $apply, $pId );
             } else {
-
               do_action( 'add_notice', 'Vous avez déjà postuler sur cette offre', 'warning' );
 
               return true;

@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Mailing {
   public $espace_client;
   private $no_reply_email = "no-reply@itjobmada.com>";
+  private $no_reply_notification_email = "no-reply-notification@itjobmada.com";
+  private $dashboard_url = "http://oc-itjob.falicrea.com";
 
   public function __construct() {
     add_action( 'init', [ &$this, 'onInit' ] );
@@ -312,13 +314,100 @@ class Mailing {
    * @param int $offer_id
    */
   public function alert_for_postuled_offer( $offer_id ) {
+    global $Engine;
+    if ( ! is_user_logged_in() || !is_int($offer_id) ) {
+      return false;
+    }
+
+    $User = wp_get_current_user();
+    $current_candidate = Candidate::get_candidate_by($User->ID);
+    $current_candidate->__get_access();
+    $offer = new Offers($offer_id);
+    // @var array $admin_emails - Contient les adresses email de l'admin et les moderateurs
+    $admin_emails = $this->getModeratorEmail();
+    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
+    if ( ! $admin_emails ) {
+      return false;
+    }
+    $to = implode(',', $admin_emails);
+    $subject   = 'Un candidat « ' . $current_candidate->title . ' » a postule pour un offre - ItJobMada';
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = '';
+    try {
+      $custom_logo_id = get_theme_mod( 'custom_logo' );
+      $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+      $content        .= $Engine->render( '@MAIL/admin/notification-admin-for-postuled-offer.html.twig', [
+        'candidate_name'  => $current_candidate->title,
+        'offer_name'      => $offer->postPromote,
+        'logo'            => esc_url( $logo[0] ),
+        'dashboard_url'   => $this->dashboard_url
+      ] );
+    } catch ( \Twig_Error_Loader $e ) {
+    } catch ( \Twig_Error_Runtime $e ) {
+    } catch ( \Twig_Error_Syntax $e ) {
+      $content .= $e->getRawMessage();
+    }
+    $sender = wp_mail( $to, $subject, $content, $headers );
+    if ( $sender ) {
+      // Mail envoyer avec success
+      return true;
+    } else {
+      // Erreur d'envoie
+      return false;
+    }
+    
+  }
+
+  /**
+   * Envoyer un mail a l'administrateur pour l'informer qu'une entreprise s'interesse
+   * a un candidat.
+   */
+  public function alert_when_company_interest( $candidat_id) {
+    global $Engine;
     if ( ! is_user_logged_in() ) {
       return false;
     }
-  }
-
-  public function alert_when_company_interest( $candidat_id ) {
-    if ( ! is_user_logged_in() ) {
+    
+    $User = wp_get_current_user();
+    $current_company = Company::get_company_by($User->ID);
+    // @var array $admin_emails - Contient les adresses email de l'admin et les moderateurs
+    $admin_emails = $this->getModeratorEmail();
+    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
+    if ( ! $admin_emails ) {
+      return false;
+    }
+    $to = implode(',', $admin_emails);
+    $subject   = 'L\’Entreprise « ' . $current_company->title . ' » est intéressée par un candidat - ItJobMada';
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = '';
+    try {
+      $Candidat = new Candidate($candidat_id);
+      $Candidat->__get_access();
+      
+      $custom_logo_id = get_theme_mod( 'custom_logo' );
+      $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+      $content        .= $Engine->render( '@MAIL/admin/notification-admin-for-company-interest.html.twig', [
+        'company_name'       => $current_company->title,
+        'candidat_firstname' => $Candidat->privateInformations->firstname,
+        'candidat_reference' => $Candidat->title,
+        'logo'               => esc_url( $logo[0] ),
+        'dashboard_url'      => $this->dashboard_url
+      ] );
+    } catch ( \Twig_Error_Loader $e ) {
+    } catch ( \Twig_Error_Runtime $e ) {
+    } catch ( \Twig_Error_Syntax $e ) {
+      $content .= $e->getRawMessage();
+    }
+    $sender = wp_mail( $to, $subject, $content, $headers );
+    if ( $sender ) {
+      // Mail envoyer avec success
+      return true;
+    } else {
+      // Erreur d'envoie
       return false;
     }
   }
@@ -393,7 +482,7 @@ class Mailing {
         try {
           $custom_logo_id = get_theme_mod( 'custom_logo' );
           $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-          $content        .= $Engine->render( '@MAIL/notification-offer-to-candidate.html.twig', [
+          $content        .= $Engine->render( '@MAIL/notification-offer-for-candidate.html.twig', [
             'offer'    => $Offer,
             'alerts'   => $keys,
             'logo'     => esc_url( $logo[0] ),

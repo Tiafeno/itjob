@@ -94,12 +94,15 @@ class scInterests {
         $Candidate->__client_premium_access();
       endif;
       // Vérifier si le candidat est déja dans la liste
+      // Si oui, envoyer un email de notification a l'administrateur
       $candidate_id = $Candidate->getAuthor()->data->ID;
       if ( ! in_array( $candidate_id, $candidate_ids ) ) {
         // Mettre à jours la liste des candidats ajouter par l'entreprise
         // Cette liste sera mise à jours pour les entreprise premium ou standart
         array_push( $candidate_ids, $candidate_id );
         update_field( 'itjob_company_interests', $candidate_ids, $Entreprise->getId() );
+        // Envoyer un mail a l'administrateur
+        do_action('alert_when_company_interest', $candidate_id);
       }
     } else {
       return "<p class='text-center mt-4'>La clé est non valide</p>";
