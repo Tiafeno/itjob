@@ -120,7 +120,7 @@ final class Company implements \iCompany {
    */
   public function getInterests() {
     $itModel = new itModel();
-    $interests = $itModel->get_interests();
+    $interests = $itModel->get_interests($this->ID);
     $interests = array_map(function ($interest) { return $interest->id_candidat; }, $interests);
     return $this->interests = empty($interests) || !$interests ? [] : $interests;
   }

@@ -46,70 +46,32 @@ class scInterests {
         $attrs
       )
     );
+    $ErrorMessage = "<p class='text-center mt-4'>Un erreur s'est produite</p>";
     $User         = wp_get_current_user();
+    if ($User->ID === 0 || ! in_array('company', $User->roles)) return $ErrorMessage;
     $Entreprise   = Company::get_company_by( $User->ID );
     $candidate_id = (int) Http\Request::getValue( 'cvId' );
-    $mode         = Http\Request::getValue( 'mode', 'added' );
-    if ( ! $candidate_id || $User->ID === 0 ) {
-      return "Une erreur s'est produite";
+    if ( ! $candidate_id ) {
+      return $ErrorMessage;
     }
-    if ( $candidate_id ) {
-      $Candidate = new Candidate( $candidate_id );
-      // Une systéme pour limiter la visualisation des CV
-      // Verifier si le compte de l'entreprise est sereine ou standart
-      if ( ! $Candidate->is_candidate() || ! $Entreprise->is_company() ) {
-        return "<p class='text-center mt-4'>Un erreur s'est produite</p>";
-      }
-
-      $candidate_ids = $Entreprise->getInterests();
-      $candidate_ids = $candidate_ids ? $candidate_ids : [];
-
-      // Le mode ajouter est le mode par default
-      if ( $mode === 'added' ) :
-        // featured: Un probléme se produits si le client est un membre premium
-        if ( count( $candidate_ids ) > 5 && ! $Entreprise->isPremium() ) {
-          return "<div class=\"alert uk-width-1-3 alert-info alert-dismissable fade show mt-4\">
-                    <p>Vous avez epuiser le nombre limite pour voir les CV des candidates.</p>
-                     <hr>
-                    <div class=\"d-flex align-items-center justify-content-between\">
-                      <button onclick='window.history.go(-1);' class=\"btn btn-sm btn-outline-pink btn-outline\" data-dismiss=\"alert\">Retour</button>
-                    </div>
-                  </div>";
-
-        }
-        // Added access token
-        if ( ! $Candidate->hasTokenAccess( $token ) ) {
-          $Candidate->updateAccessToken();
-        }
-      endif;
-
-      if ( $mode === 'view' ):
-        // Ici pour voir le CV en mode premium
-        if ( ! $Entreprise->isPremium() ) {
-          return "<div class=\"alert uk-width-1-3 alert-info alert-dismissable fade show mt-4\">
-                    <p>Vous n'avez pas d'accès sur la partie de cette page. Membre premium seulement.</p>
-                     <hr>
-                    <div class=\"d-flex align-items-center justify-content-between\">
-                      <button onclick='window.history.go(-1);' class=\"btn btn-sm btn-outline-pink btn-outline\" data-dismiss=\"alert\">Retour</button>
-                    </div>
-                  </div>";
-        }
-        $Candidate->__client_premium_access();
-      endif;
-      // Vérifier si le candidat est déja dans la liste
-      // Si oui, envoyer un email de notification a l'administrateur
-      $candidate_id = $Candidate->getAuthor()->data->ID;
-      if ( ! in_array( $candidate_id, $candidate_ids ) ) {
-        // Mettre à jours la liste des candidats ajouter par l'entreprise
-        // Cette liste sera mise à jours pour les entreprise premium ou standart
-        array_push( $candidate_ids, $candidate_id );
-        update_field( 'interest_valid_cv', $candidate_ids, $Entreprise->getId() );
-        // Envoyer un mail a l'administrateur
-        do_action( 'alert_when_company_interest', $candidate_id );
-      }
-    } else {
-      return "<p class='text-center mt-4'>La clé est non valide</p>";
+    $Candidate = new Candidate( $candidate_id );
+    // Une systéme pour limiter la visualisation des CV
+    // Verifier si le compte de l'entreprise est sereine ou standart
+    if ( ! $Candidate->is_candidate() || ! $Entreprise->is_company() ) {
+      return $ErrorMessage;
     }
+
+    // Verifier si l'entreprise a l'access au informations du candidat
+    $itModel = new itModel();
+    if ( ! $itModel->interest_access($candidate_id, $Entreprise->getId()) ||
+    $itModel->limit_interest_access($Entreprise->getId()) ) {
+      return "<p class='text-center mt-4'>Vous n'avez pas d'acces.</p>";
+    }
+
+    $candidate_ids = $Entreprise->getInterests();
+    $candidate_ids = $candidate_ids ? $candidate_ids : [];
+
+    $Candidate->__client_premium_access();
     try {
       return $Engine->render( '@SC/cv-candidate.html.twig', [
         'candidate' => $Candidate,
@@ -155,6 +117,7 @@ class scInterests {
       $itModel = new itModel();
       if ( ! $itModel->exist_interest( $cv_id, $offer_id ) ) {
         $response = $itModel->added_interest( $cv_id, $offer_id );
+        // Envoyer un mail a l'administrateur
         do_action( 'alert_when_company_interest', $cv_id );
         wp_send_json_success( $response );
       } else {
