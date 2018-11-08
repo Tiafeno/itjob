@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
+use includes\model\itModel;
 use includes\object as Obj;
 
 final class Company implements \iCompany {
@@ -118,8 +119,10 @@ final class Company implements \iCompany {
    * @return array|mixed
    */
   public function getInterests() {
-    $ids = get_field('itjob_company_interests', $this->ID);
-    return $this->interests = empty($ids) || !$ids ? [] : $ids;
+    $itModel = new itModel();
+    $interests = $itModel->get_interests();
+    $interests = array_map(function ($interest) { return $interest->id_candidat; }, $interests);
+    return $this->interests = empty($interests) || !$interests ? [] : $interests;
   }
 
   /**

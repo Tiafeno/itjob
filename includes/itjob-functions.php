@@ -84,25 +84,25 @@ add_action('i_am_interested_this_candidate', function () {
   global $itJob, $post;
 
   // featured: Pour une entreprise premium on affiche un lien pour voir le CV au complete
-  if (is_user_logged_in()) {
-    $User = wp_get_current_user();
-    if (in_array('company', $User->roles)) {
-      $Company = \includes\post\Company::get_company_by($User->ID);
-      if ($Company->is_company() && $Company->isPremium()) {
-        $page_interest_id = \includes\object\jobServices::page_exists('Interest candidate');
-        if ($page_interest_id === 0) {
-          echo 'Interests candidate page missing';
-          return;
-        }
-        $link = get_the_permalink((int)$page_interest_id) . '?mode=view&token=' .  $User->data->user_pass . '&cvId=' . $post->ID;
-        $button = '<a href="' . $link . '" class="btn btn-outline-blue btn-fix">';
-        $button .= '<span class="btn-icon"><i class="la la-credit-card"></i> Voir les informations du candidat</span>';
-        $button .= '</a>';
-        echo $button;
-        return;
-      }
-    }
-  }
+//  if (is_user_logged_in()) {
+//    $User = wp_get_current_user();
+//    if (in_array('company', $User->roles)) {
+//      $Company = \includes\post\Company::get_company_by($User->ID);
+//      if ($Company->is_company() && $Company->isPremium()) {
+//        $page_interest_id = \includes\object\jobServices::page_exists('Interest candidate');
+//        if ($page_interest_id === 0) {
+//          echo 'Interests candidate page missing';
+//          return;
+//        }
+//        $link = get_the_permalink((int)$page_interest_id) . '?mode=view&token=' .  $User->data->user_pass . '&cvId=' . $post->ID;
+//        $button = '<a href="' . $link . '" class="btn btn-outline-blue btn-fix">';
+//        $button .= '<span class="btn-icon"><i class="la la-credit-card"></i> Voir les informations du candidat</span>';
+//        $button .= '</a>';
+//        echo $button;
+//        return;
+//      }
+//    }
+//  }
   wp_enqueue_style('alertify');
   wp_enqueue_script('interests', get_template_directory_uri().'/assets/js/app/interests/interests.js', ['angular', 'alertify'], $itJob->version, true);
   wp_localize_script('interests', 'itOptions', [

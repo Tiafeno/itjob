@@ -33,6 +33,7 @@ $it_alerts = [];
 require 'includes/itjob-configs.php';
 require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
+require 'includes/class/class-model.php';
 
 // middlewares
 require 'includes/class/middlewares/OfferHelper.php';

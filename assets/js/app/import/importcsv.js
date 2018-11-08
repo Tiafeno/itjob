@@ -45,18 +45,17 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               const column = results.data;
               parser.pause();
               const form = new FormData();
+              const fileContent = _.findWhere($scope.fileContents, {_id: $scope.formData.fileContent});
               form.append('action', 'import_csv');
               form.append('entry_type', $scope.formData.entryType);
               form.append('order', $scope.columns);
-              form.append('content_type', _.findWhere($scope.fileContents,
-                (content) => content._id === parseInt($scope.formData.fileContent)).slug);
+              form.append('content_type', fileContent.slug);
               form.append('column', JSON.stringify(column[0]));
               importService
                 .sendform(form)
                 .then(resp => {
                   parser.resume();
                 })
-
             }
           };
           $scope.errorFn = (err, file) => {
@@ -78,18 +77,49 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
   .service('importService', ['$http', function ($http) {
     var self = this;
     self.typeOfEntry = [
-      {_id: 1, slug: 'taxonomy', label: 'Terms'},
-      {_id: 2, slug: 'user', label: 'Utilisateurs'},
+      {
+        _id: 1,
+        slug: 'taxonomy',
+        label: 'Terms'
+      },
+      {
+        _id: 2,
+        slug: 'user',
+        label: 'Utilisateurs'
+      },
     ];
-    self.typeOfContent = [
-      {_id: 1, slug: 'city', label: "Ville"},
 
-      {_id: 2, slug: 'user_candidate', label: "Demandeur emploi"},
-      {_id: 3, slug: 'user_candidate_experience', label: "Demandeur emploi - Experience"},
-      {_id: 6, slug: 'user_candidate_cv', label: "Demandeur emploi - CV"},
-      {_id: 6, slug: 'user_candidate_information', label: "Demandeur emploi - Information utilisateur"},
-      {_id: 4, slug: 'user_candidate_formation', label: "Demandeur emploi - Formation"},
-      {_id: 5, slug: 'user_company', label: "Entreprise"},
+    self.typeOfContent = [
+      {
+        _id: 1,
+        slug: 'city',
+        label: "Ville"
+      },
+      {
+        _id: 2,
+        slug: 'user',
+        label: "Tout les utilisateurs"
+      },
+      {
+        _id: 3,
+        slug: 'user_candidate_experience',
+        label: "Demandeur emploi - Experience"
+      },
+      {
+        _id: 6,
+        slug: 'user_candidate_cv',
+        label: "Demandeur emploi - CV"
+      },
+      {
+        _id: 6,
+        slug: 'user_candidate_information',
+        label: "Demandeur emploi - Information utilisateur"
+      },
+      {
+        _id: 4,
+        slug: 'user_candidate_formation',
+        label: "Demandeur emploi - Formation"
+      },
     ];
     self.getColumns = (typeofFileId) => {
       if (typeofFileId === 1) {
@@ -100,7 +130,9 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
       return $http({
         url: importOptions.ajax_url,
         method: "POST",
-        headers: {'Content-Type': undefined},
+        headers: {
+          'Content-Type': undefined
+        },
         data: formData
       });
     };

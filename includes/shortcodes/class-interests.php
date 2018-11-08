@@ -7,10 +7,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Http;
+use includes\model\itModel;
 use includes\object\jobServices;
 use includes\post\Candidate;
 use includes\post\Company;
-use Underscore\Types\Arrays;
+use includes\post\Offers;
 
 class scInterests {
   public function __construct() {
@@ -20,6 +21,9 @@ class scInterests {
     // ajax
     add_action( 'wp_ajax_get_ask_cv', [ &$this, 'get_ask_cv' ] );
     add_action( 'wp_ajax_nopriv_get_ask_cv', [ &$this, 'get_ask_cv' ] );
+
+    add_action( 'wp_ajax_get_current_user_offers', [ &$this, 'get_current_user_offers' ] );
+    add_action( 'wp_ajax_nopriv_get_current_user_offers', [ &$this, 'get_current_user_offers' ] );
 
     add_action( 'wp_ajax_remove_token_access', [ &$this, 'remove_token_access' ] );
   }
@@ -45,12 +49,11 @@ class scInterests {
     $User         = wp_get_current_user();
     $Entreprise   = Company::get_company_by( $User->ID );
     $candidate_id = (int) Http\Request::getValue( 'cvId' );
-    $token        = Http\Request::getValue( 'token' );
     $mode         = Http\Request::getValue( 'mode', 'added' );
-    if ( ! $token || ! $candidate_id || $User->ID === 0 ) {
+    if ( ! $candidate_id || $User->ID === 0 ) {
       return "Une erreur s'est produite";
     }
-    if ( trim( $token ) === $User->data->user_pass && $candidate_id ) {
+    if ( $candidate_id ) {
       $Candidate = new Candidate( $candidate_id );
       // Une systéme pour limiter la visualisation des CV
       // Verifier si le compte de l'entreprise est sereine ou standart
@@ -100,9 +103,9 @@ class scInterests {
         // Mettre à jours la liste des candidats ajouter par l'entreprise
         // Cette liste sera mise à jours pour les entreprise premium ou standart
         array_push( $candidate_ids, $candidate_id );
-        update_field( 'itjob_company_interests', $candidate_ids, $Entreprise->getId() );
+        update_field( 'interest_valid_cv', $candidate_ids, $Entreprise->getId() );
         // Envoyer un mail a l'administrateur
-        do_action('alert_when_company_interest', $candidate_id);
+        do_action( 'alert_when_company_interest', $candidate_id );
       }
     } else {
       return "<p class='text-center mt-4'>La clé est non valide</p>";
@@ -119,93 +122,117 @@ class scInterests {
   }
 
   /**
-   * Effacer l'acces de l'entreprise a un candidat
-   */
-  public function remove_token_access() {
-    if ( ! is_user_logged_in() ) {
-      wp_send_json_error( "Accès refuser" );
-    }
-    if ( is_admin() && current_user_can( 'delete_users' ) ) {
-      $token        = Http\Request::getValue( 'token' );
-      $candidate_id = (int) Http\Request::getValue( 'candidate_id' );
-      $company_id   = (int) Http\Request::getValue( 'company_id' );
-      if ( $token && $candidate_id ) {
-        $Company = new Company( $company_id );
-        // Récuperer les tokens qui ont access au informations privée du candidat.
-        // La valeur retourner est un tableau d'objet Token (class-token.php)
-        $company_access_token = get_post_meta( $candidate_id, 'access_company_token', true );
-
-        // Mettre à jours la liste des token qui ont access a ce candidat
-        if ( ! is_array( $company_access_token ) || empty( $company_access_token ) ) {
-          wp_send_json_success( "Il existe aucun token dans le CV" );
-        }
-        $company_access_token = Arrays::filter( $company_access_token, function ( $Token ) use ( $token ) {
-          /** @var Token $Token */
-          return $Token->getToken() !== $token;
-        } );
-        update_post_meta( $candidate_id, 'access_company_token', $company_access_token );
-
-        // Supprimer l'id du candidat dans la liste des candidats interesé de l'entreprise
-        $candidate_ids = $Company->getInterests();
-        $candidate_ids = Arrays::filter( $candidate_ids, function ( $id ) use ( $candidate_id ) {
-          return $id !== $candidate_id;
-        } );
-        update_field( 'itjob_company_interests', $candidate_ids, $Company->getId() );
-        wp_send_json_success( [ "Le token à bien etes supprimer avec succès", $candidate_ids ] );
-      }
-    }
-  }
-
-  /**
+   * Function ajax
    * Cette function permet de recuperer les informations sur l'utilisateur s'il peut s'interesser sur le candidate.
    * Si l'utilisateur connecter est une entreprise, un lien vers la page de visualisation du CV sera disponible.
    */
   public function get_ask_cv() {
     if ( ! \wp_doing_ajax() ) {
-      wp_send_json( [ 'success' => false, 'msg' => false, 'status' => 'ajax' ] );
+      wp_send_json_error( "Une erreur s'est produite" );
     }
-    $cvId = (int)Http\Request::getValue( 'cvId' );
-    $redir           = get_the_permalink( $cvId );
+    $cv_id    = (int) Http\Request::getValue( 'cv_id' );
+    $offer_id = (int) Http\Request::getValue( 'offer_id', 0 );
+    if ( ! $offer_id ) {
+      wp_send_json_error( 'Une erreur s\'est produite' );
+    }
+    $redir           = get_the_permalink( $cv_id );
     $singup_page_url = get_the_permalink( (int) REGISTER_COMPANY_PAGE_ID );
     if ( ! \is_user_logged_in() ) {
-            wp_send_json(
+      wp_send_json_error(
         [
-          'success' => false,
-          'msg'     => 'Mme/Mr pour pouvoir sélectionner ce candidat vous devez vous inscrire, cela est gratuit, ' .
-                       'en cliquant sur le bouton «s’inscrire » sinon si vous êtes déjà inscrit ' .
-                       'cliquez sur le bouton « connexion »',
-          'status'  => 'logged',
-          'data'    => [
-            'loginUrl'  => home_url( "/connexion/company?redir={$redir}" ),
-            'singupUrl' => $singup_page_url
+          'msg'    => 'Mme/Mr pour pouvoir sélectionner ce candidat vous devez vous inscrire, cela est gratuit, ' .
+                      'en cliquant sur le bouton «s’inscrire » sinon si vous êtes déjà inscrit ' .
+                      'cliquez sur le bouton « connexion »',
+          'status' => 'logged',
+          'helper'   => [
+            'login'  => home_url( "/connexion/company?redir={$redir}" ),
+            'singup' => $singup_page_url
           ]
         ] );
     }
     $User = wp_get_current_user();
     if ( in_array( 'company', $User->roles ) ) {
-      $cv_url = jobServices::page_exists( 'Interest candidate' );
-      // TODO: Vérifier si l'entreprise a déja ajouter le CV dans sa liste
-      // Retourne les clés token des entreprise qui ont postuler
-      $token_access = get_post_meta($cvId, 'access_company_token', true);
-      $tokens = Arrays::each($token_access, function ($tk) {
-        return $tk->getToken();
-      });
-      wp_send_json( [
-        'success' => true,
-        'access'  => $tokens,
-        'client'  => [ 'token' => $User->data->user_pass, 'cv_url' => get_the_permalink( $cv_url ) ]
-      ] );
+      $itModel = new itModel();
+      if ( ! $itModel->exist_interest( $cv_id, $offer_id ) ) {
+        $response = $itModel->added_interest( $cv_id, $offer_id );
+        do_action( 'alert_when_company_interest', $cv_id );
+        wp_send_json_success( $response );
+      } else {
+        wp_send_json_error( [
+          'msg'    => "Vous avez déja ajouter ce candidat dans votre liste",
+          'status' => 'exist'
+        ] );
+      }
+
     } else {
-      wp_send_json( [
-        'success' => false,
-        'msg'     => 'Vous ne pouvez sélectionner de candidat avec votre compte',
-        'status'  => 'user',
-        'data'    => [
-          'loginUrl'  => home_url( "/connexion/company?redir={$redir}" ),
-          'singupUrl' => $singup_page_url
+      wp_send_json_error( [
+        'msg'    => 'Vous ne pouvez sélectionner de candidat avec votre compte',
+        'status' => 'access',
+        'data'   => [
+          'login'  => home_url( "/connexion/company?redir={$redir}" ),
+          'singup' => $singup_page_url
         ]
       ] );
     }
+  }
+
+  /**
+   * Function ajax
+   * Récuperer les offres d'une entreprise
+   *
+   * @param null|int $user_id
+   *
+   * @return array|bool
+   */
+  public function get_current_user_offers( $user_id = null ) {
+    if ( ! \wp_doing_ajax() || ! is_user_logged_in() ) {
+      $singup_page_url = get_the_permalink( (int) REGISTER_COMPANY_PAGE_ID );
+      wp_send_json_error( [
+        'msg'    => 'Mme/Mr pour pouvoir sélectionner ce candidat vous devez vous inscrire, cela est gratuit, ' .
+                    'en cliquant sur le bouton «s’inscrire » sinon si vous êtes déjà inscrit ' .
+                    'cliquez sur le bouton « connexion »',
+        'status' => 'logged',
+        'helper' => [
+          'login'  => home_url( "/connexion/company" ),
+          'singup' => $singup_page_url
+        ]
+      ] );
+    }
+    if ( is_null( $user_id ) ) {
+      $User = wp_get_current_user();
+      if ( ! in_array( 'company', $User->roles ) ) {
+        wp_send_json_error( [
+          'msg'    => 'Vous ne pouvez pas sélectionner de candidat avec votre compte',
+          'status' => 'access'
+        ] );
+      }
+      $Company = Company::get_company_by( $User->ID );
+    } else {
+      $Company = new Company( (int) $user_id );
+    }
+
+    $args   = [
+      'post_type'   => 'offers',
+      'post_status' => 'publish',
+      'meta_query'  => [
+        'key'     => 'itjob_offer_company',
+        'value'   => $Company->getId(),
+        'compare' => '=',
+        'type'    => 'NUMERIC'
+      ]
+    ];
+    $offers = get_posts( $args );
+    if (empty($offers)) {
+      wp_send_json_error([
+        'msg' => 'Vous n\'avez pas encore publier d\'offre. Veillez publier une offre avant de continuer',
+        'status' => 'access'
+      ]);
+    }
+    $offers = array_map( function ( $offer ) {
+      return new Offers( $offer->ID );
+    }, $offers );
+
+    wp_send_json_success( $offers );
   }
 }
 

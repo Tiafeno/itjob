@@ -26,8 +26,10 @@ if ( ! class_exists( 'scImport' ) ) :
         case 'taxonomy':
           $this->add_term( $content_type );
           break;
+        case 'user':
+          $this->add_user($content_type);
+          break;
       }
-      wp_send_json_success( "En construction ..." );
     }
 
     /**
@@ -58,6 +60,35 @@ if ( ! class_exists( 'scImport' ) ) :
           break;
       }
       wp_send_json_success( "En construction ..." );
+    }
+
+    // TODO: Ajouter les utilisateurs du site itjobmada
+    protected function add_user( $content_type ) {
+      if ( ! is_user_logged_in() ) {
+        return false;
+      }
+      switch ($content_type) {
+        case 'user':
+          $lines = Http\Request::getValue('column');
+          $lines = json_decode($lines);
+          $rows = [
+            'id_user'     => $lines[0],
+            'name'        => $lines[1],
+            'seoname'     => $lines[2],
+            'email'       => $lines[3],
+            'password'    => $lines[4],
+            'change_pwd'  => $lines[5],
+            'description' => $lines[6],
+            'status'      => $lines[7],
+            'id_role'     => $lines[8],
+            'created'     => $lines[9],
+            'last_login'  => $lines[10],
+            'subscriber'  => $lines[11]
+          ];
+          wp_send_json_success($rows);
+          break;
+      }
+
     }
 
     public function sc_render_html( $atts, $content = "" ) {
