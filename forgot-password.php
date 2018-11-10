@@ -171,27 +171,24 @@ get_header();
               unhighlight: function (e) {
                 $(e).closest(".form-group.row").removeClass("has-error")
               },
-            });
+              submitHandler: function (form) {
+                errorMessage.hide();
+                successMessage.hide();
+                var forgotEmail = $('input#forgot_email').val();
+                submitButton.text('Chargement en cours ...');
+                $.ajax({
+                  method: "POST",
+                  url: admin_ajax,
+                  dataType: "json",
+                  data: {email: forgotEmail, action: "forgot_password"}
+                })
+                  .done(function (resp) {
+                    var element = resp.success ? successMessage : errorMessage;
+                    element.html(resp.data).show();
+                    submitButton.text('Envoyer');
+                  });
 
-          forgotForm
-            .submit(function (event) {
-              event.preventDefault();
-              errorMessage.hide();
-              successMessage.hide();
-              var forgotEmail = $('input#forgot_email').val();
-              submitButton.text('Chargement en cours ...');
-              $.ajax({
-                method: "POST",
-                url: admin_ajax,
-                dataType: "json",
-                data: {email: forgotEmail, action: "forgot_password"}
-              })
-                .done(function (resp) {
-                  var element = resp.success ? successMessage : errorMessage;
-                  element.html(resp.data).show();
-                  submitButton.text('Envoyer');
-                });
-
+              }
             });
         }
 
