@@ -188,7 +188,7 @@ get_header();
               })
                 .done(function (resp) {
                   var element = resp.success ? successMessage : errorMessage;
-                  element.html(resp.data.msg).show();
+                  element.html(resp.data).show();
                   submitButton.text('Envoyer');
                 });
 

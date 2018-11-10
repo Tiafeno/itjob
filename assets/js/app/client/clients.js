@@ -764,10 +764,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               self.updateTraining(Trainings);
               $scope.mode = null;
             }, () => {
-              alertify.erreur("Une erreur s'est produite pendant la suppression.")
+              alertify.erreur("Une erreur s'est produite pendant la suppression.");
               $scope.mode = null;
             });
-        }
+        };
 
         /**
          * Envoyer le formulaire pour mettre a jour les formations\
