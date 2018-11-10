@@ -15,7 +15,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
           $scope.entryTypes = _.clone(importService.typeOfEntry);
           $scope.fileContents = _.clone(importService.typeOfContent);
           $scope.onSubmitImport = (isValid) => {
-            if (!isValid) return false;
+            if (!isValid ||
+              _.isEmpty($scope.formData.entryType) ||
+              _.isEmpty($scope.formData.fileContent))
+                return false;
+
             $scope.chargement = true;
             const inputCSV = jQuery('input#files');
             if (!inputCSV[0].files.length) {
@@ -25,11 +29,12 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
             inputCSV.parse({
               config: {
                 delimiter: ';',
-                preview: 0,
+                preview: 4,
                 step: $scope.stepFn,
                 encoding: "UTF-8",
                 complete: $scope.completeFn,
                 error: $scope.errorFn,
+                //header: true,
                 download: false
               },
               before: (file, inputElement) => {
@@ -88,7 +93,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: 'Utilisateurs'
       },
     ];
-
     self.typeOfContent = [
       {
         _id: 1,
@@ -106,20 +110,25 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Demandeur emploi - Experience"
       },
       {
-        _id: 6,
+        _id: 4,
         slug: 'user_candidate_cv',
         label: "Demandeur emploi - CV"
       },
       {
-        _id: 6,
+        _id: 5,
         slug: 'user_candidate_information',
         label: "Demandeur emploi - Information utilisateur"
       },
       {
-        _id: 4,
+        _id: 6,
         slug: 'user_candidate_formation',
         label: "Demandeur emploi - Formation"
       },
+      {
+        _id: 7,
+        slug: 'user_company',
+        label: 'Entreprise'
+      }
     ];
     self.getColumns = (typeofFileId) => {
       if (typeofFileId === 1) {

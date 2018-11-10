@@ -13,8 +13,21 @@
         <div class="form-group mb-2 row">
           <div class="col-sm-12">
             <label class="col-form-label">Poste à pourvoir <span style="color: red">*</span></label>
-            <input class="form-control" name="postpromote" ng-model="offerEditor.postPromote" type="text" placeholder="Poste à pourvoir"
+            <input ng-disabled="true" class="form-control" name="postpromote" ng-model="offerEditor.postPromote" type="text" placeholder="Poste à pourvoir"
               required>
+          </div>
+        </div>
+
+        <div class="form-group mb-2 row ">
+          <div class="col-sm-12">
+            <label class="col-form-label ">Date limite de candidature <span style="color: red">*</span></label>
+            <div class="form-group">
+              <div class="input-group date">
+                <span class="input-group-addon bg-white"><i class="fa fa-calendar"></i></span>
+                <input ng-model="offerEditor.dateLimit" autocomplete="off" name="datelimit" class="form-control"
+                       required>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -22,7 +35,7 @@
           <div class="col-sm-12">
             <label class="col-form-label ">Type de contrat <span style="color: red">*</span></label>
             <div class="form-group">
-              <select class="form-control" name="contrattype" ng-model="offerEditor.contractType" title="Type de contrat"
+              <select ng-disabled="true" class="form-control" name="contrattype" ng-model="offerEditor.contractType" title="Type de contrat"
                 required>
                 <option value="cdd">CDD</option>
                 <option value="cdi">CDI</option>
@@ -36,7 +49,7 @@
             <label class="col-form-label ">Secteur d'activité <span style="color: red">*</span>
               [[offerEditor.branch_activity]]</label>
             <div class="form-group">
-              <select class="form-control" name="branch_activity" ng-model="offerEditor.branch_activity" title="Secteur d'activité"
+              <select ng-disabled="true" class="form-control" name="branch_activity" ng-model="offerEditor.branch_activity" title="Secteur d'activité"
                 required>
                 <option ng-repeat="ab in branchActivity" ng-value="ab.term_id">[[ab.name]]</option>
               </select>
@@ -47,7 +60,7 @@
         <div class="form-group mb-2 row">
           <div class="col-sm-12">
             <label class=" col-form-label">Salaire net proposé </label>
-            <input class="form-control" name="proposedsallary" ng-value="0" ng-model="offerEditor.proposedSalary" type="number"
+            <input ng-disabled="true" class="form-control" name="proposedsallary" ng-value="0" ng-model="offerEditor.proposedSalary" type="number"
               placeholder="Salaire net proposé">
           </div>
         </div>
@@ -56,7 +69,7 @@
           <div class="col-sm-12">
             <label class="col-form-label ">Region <span style="color: red">*</span></label>
             <div class="form-group">
-              <select class="form-control" name="region" ng-model="offerEditor.region" title="Region" required>
+              <select ng-disabled="true" class="form-control" name="region" ng-model="offerEditor.region" title="Region" required>
                 <option ng-repeat="rg in Regions" ng-value="rg.term_id">[[rg.name]]</option>
               </select>
             </div>
@@ -67,7 +80,7 @@
           <div class="col-sm-12">
             <label class="col-form-label">Code postal ou nom d'une ville </label>
             <div class="form-group">
-              <select class="form-control input-mode country" name="country" ng-model="offerEditor.country" required>
+              <select ng-disabled="true" class="form-control input-mode country" name="country" ng-model="offerEditor.country" required>
                 <option value="[[city.term_id]]" ng-value="offerEditor.country" ng-repeat="city in Citys">([[city.postal_code]])
                   [[city.name]]</option>
               </select>
@@ -75,38 +88,24 @@
           </div>
         </div>
 
-        <div class="form-group mb-2 row ">
-          <div class="col-sm-12">
-            <label class="col-form-label ">Date limite de candidature <span style="color: red">*</span></label>
-            <div class="form-group">
-              <div class="input-group date">
-                <span class="input-group-addon bg-white"><i class="fa fa-calendar"></i></span>
-                <input ng-model="offerEditor.dateLimit" autocomplete="off" name="datelimit" class="form-control"
-                  required>
-              </div>
-            </div>
-
+        <div class="form-group mt-5">
+          <div class="form-label uk-text-bold">Mission</div>
+          <div class="mt-2">
+            <p ng-bind-html="offerEditor.mission"></p>
           </div>
         </div>
 
-        <div class="form-group">
-          <div class="form-label ">Mission <span style="color: red">*</span></div>
+        <div class="form-group mt-5">
+          <div class="form-label uk-text-bold">Profil recherché </div>
           <div class="mt-2">
-            <textarea froala="froalaOptions" name="mission" ng-model="offerEditor.mission" required></textarea>
+            <p ng-bind-html="offerEditor.profil"></p>
           </div>
         </div>
 
-        <div class="form-group">
-          <div class="form-label ">Profil recherché <span style="color: red">*</span></div>
+        <div class="form-group mt-5" ng-if="offerEditor.otherInformation">
+          <div class="form-label uk-text-bold">Autres informations </div>
           <div class="mt-2">
-            <textarea froala="froalaOptions" name="profil" ng-model="offerEditor.profil" required></textarea>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <div class="form-label ">Autres informations <span style="color: red"></span></div>
-          <div class="mt-2">
-            <textarea froala="froalaOptions" name="otherinformation" ng-model="offerEditor.otherInformation"></textarea>
+            <p ng-bind-html="offerEditor.otherInformation"></p>
           </div>
         </div>
 
@@ -187,7 +186,6 @@
   </div>
 </div>
 <!--                  Dialog end -->
-
 
 <div class="flexbox mb-4">
   <div class="flexbox">

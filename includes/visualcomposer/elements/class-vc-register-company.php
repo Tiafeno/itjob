@@ -61,9 +61,10 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       $post      = get_post( $post_id );
       $userEmail = &$value;
+      // Verifier si l'utilisateur existe déja; Si oui, retourner la valeur
       // (WP_User|false) WP_User object on success, false on failure.
       $userExist = get_user_by( 'email', $userEmail );
-      if ( true == $userExist ) {
+      if ( $userExist ) {
         return $value;
       }
       $args    = [

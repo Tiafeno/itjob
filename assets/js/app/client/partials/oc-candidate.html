@@ -165,6 +165,11 @@
 <div class="row">
   <div class="col-lg-4">
     <div class="card text-center centered mb-4" style="max-width:320px;">
+      <div class="ibox-body alert alert-info alert-dismissable fade show">
+        <!--<button class="close" data-dismiss="alert" aria-label="Close"></button>-->
+        <h4>Bonjour <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</b></h4>
+        <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
+      </div>
       <div class="card-body">
         <span class="badge badge-blue badge-circle float-right" uk-toggle="target: #modal-candidate-profil-editor"
               style="cursor: pointer">
@@ -193,11 +198,7 @@
     </div>
   </div>
   <div class="col-lg-8">
-    <div class="ibox-body alert alert-info alert-dismissable fade show">
-      <button class="close" data-dismiss="alert" aria-label="Close"></button>
-      <h4>Bonjour <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</b></h4>
-      <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
-    </div>
+
     <div class="mt-4">
       <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
         <li class="nav-item">

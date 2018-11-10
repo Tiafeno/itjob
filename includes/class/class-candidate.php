@@ -273,10 +273,10 @@ final class Candidate extends UserParticular implements \iCandidate
     $this->softwares = $this->getActivateField($softwares);
     // Get region
     $this->region = wp_get_post_terms($this->getId(), 'region', ["fields" => "all"]);
-    $this->region = $this->region[0];
+    $this->region = isset($this->region[0]) ? $this->region[0] : '';
     // Get region
     $this->country = wp_get_post_terms($this->getId(), 'city', ["fields" => "all"]);
-    $this->country = $this->country[0];
+    $this->country = isset($this->country[0]) ? $this->country[0] : '';
     // Récuperer les emplois recherché
     $jobSoughts = wp_get_post_terms($this->getId(), 'job_sought', ["fields" => "all"]);
     $this->jobSought = $this->getActivateField($jobSoughts);

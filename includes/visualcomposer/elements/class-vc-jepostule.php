@@ -40,15 +40,15 @@ if ( ! class_exists( 'jePostule' ) ) :
 
           if ( is_wp_error( $attachment_id ) ) {
             // There was an error uploading the image.
-            do_action( 'add_notice', 'Une erreur s\'est produit', 'danger' );
+            do_action( 'add_notice', 'Une erreur s\'est produite', 'danger' );
           } else {
             // The image was uploaded successfully!
-            $apply = get_field( 'itjob_offer_users', $pId );
+            $apply = get_field( 'itjob_users_apply', $pId );
             if ( ! is_array( $apply ) ) {
               $apply = [];
             }
             // Verifier l'utilisateur s'il a déja postuler
-            if ( in_array( $User->ID, $apply ) ) {
+            if ( ! in_array( $User->ID, $apply ) ) {
               $apply[] = $User->ID;
               update_field( 'itjob_users_apply', $apply, $pId );
             } else {

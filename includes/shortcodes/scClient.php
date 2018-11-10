@@ -253,6 +253,7 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( is_wp_error( $reset_key ) ) {
         wp_send_json_error($reset_key->get_error_message());
       }
+      // Envoyer un email à l'utilisateur
       do_action( 'forgot_my_password', $email, $reset_key );
     }
 
