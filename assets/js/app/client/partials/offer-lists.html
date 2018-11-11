@@ -9,7 +9,10 @@
 
     <div class="uk-modal-body" uk-overflow-auto>
       <form name="editOfferForm" novalidate>
-
+        <p>
+          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:
+          032 45 378 60 - 033 82 591 13 - 034 93 962 18.
+        </p>
         <div class="form-group mb-2 row">
           <div class="col-sm-12">
             <label class="col-form-label">Poste à pourvoir <span style="color: red">*</span></label>
@@ -121,7 +124,7 @@
   </div>
 </div>
 
-<div id="modal-view-candidat" class="modal fade" uk-modal>
+<div id="modal-view-candidat__" class="modal fade" uk-modal>
   <div class="modal-dialog" role="document">
     <div class="ibox text-left modal-content">
       <div class="ibox-head">
@@ -158,6 +161,94 @@
 
     </div>
 
+  </div>
+</div>
+
+<div id="modal-view-candidat" class="uk-modal-full" uk-modal>
+  <div class="uk-modal-dialog">
+    <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+    <div class="">
+      <div uk-height-viewport>
+        <div class="uk-padding-large">
+          <div>
+            <h4>Recrute dans l'immédiat une assistante Qualité</h4>
+            <div>Offre ajoutéé le : 23 septembre, 2018</div>
+          </div>
+          <div uk-grid>
+            <div class="uk-width-1-2@m uk-width-1-1">
+              <div class="ibox mt-5">
+                <h5 class="pl-4">Les candidates</h5>
+                <div class="ibox-body pt-0">
+                  <ul class="media-list media-list-divider mr-2 scroller" data-height="580px">
+                    <li class="media align-items-center">
+                      <div class="media-body d-flex align-items-center">
+                        <div class="flex-1">
+                          <div class="media-heading">Lynn Weaver</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
+                        <button class="btn btn-sm btn-outline-primary">Ajoute à ma liste </button>
+                      </div>
+                    </li>
+                    <li class="media align-items-center">
+                      <div class="media-body d-flex align-items-center">
+                        <div class="flex-1">
+                          <div class="media-heading">Lynn Weaver</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
+                        <button class="btn btn-sm btn-primary">Voir l'information</button>
+                      </div>
+                    </li>
+                    <li class="media align-items-center">
+                      <div class="media-body d-flex align-items-center">
+                        <div class="flex-1">
+                          <div class="media-heading">Lynn Weaver</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
+                        <button class="btn btn-sm btn-outline-primary">Ajoute à ma liste </button>
+                      </div>
+                    </li>
+                    <li class="media align-items-center">
+                      <div class="media-body d-flex align-items-center">
+                        <div class="flex-1">
+                          <div class="media-heading">Lynn Weaver</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
+                        <button class="btn btn-sm btn-outline-primary">Ajoute à ma liste </button>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="uk-width-1-2@m uk-width-1-1">
+              <div class="ibox mt-5">
+                <h5 class="pl-4">Les candidates interesser</h5>
+                <div class="ibox-body">
+                  <ul class="media-list media-list-divider mr-2 scroller" data-height="580px">
+                    <li class="media align-items-center">
+                      <div class="media-body d-flex align-items-center">
+                        <div class="flex-1">
+                          <div class="media-heading">Connor Perez <span class="badge badge-info">Postuler</span></div>
+                          <small class="text-muted">Lorem Ipsum is simply dummy</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary  ml-2">Ajoute à ma liste </button>
+                      </div>
+                    </li>
+                    <li class="media align-items-center">
+                      <div class="media-body d-flex align-items-center">
+                        <div class="flex-1">
+                          <div class="media-heading">Becky Brooks</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
+                        <button class="btn btn-sm btn-outline-primary ">Ajoute à ma liste</button>
+                      </div>
+                    </li>
+                    <li class="media align-items-center">
+                      <div class="media-body d-flex align-items-center">
+                        <div class="flex-1">
+                          <div class="media-heading">Bob Gonzalez</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
+                        <button class="btn btn-sm btn-outline-primary">Ajoute à ma liste</button>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -233,13 +324,17 @@
             [[offer.activated ? 'OUI' : 'NON']]
           </span>
         </td>
-        <td><span style="cursor: pointer" ng-click="viewApply(offer.ID)">[[ offer.count_candidat_apply ]]</span></td>
+        <td>
+          <span style="cursor: pointer" >[[ offer.candidat_apply.length ]]
+            <span ng-click="viewApply(offer.ID)" ng-if="offer.candidat_apply.length > 0" class="badge-success badge ml-2">Voir</span>
+          </span>
+        </td>
         <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
 
         <td>[[ offer.contractType[ 'label' ] ]]</td>
         <td>[[ offer.branch_activity.name ]]</td>
         <td><span class="badge badge-info badge-pill">[[ offer.reference ]]</span></td>
-        <td><span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
+        <td><span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID, $event)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
       </tr>
     </tbody>
 

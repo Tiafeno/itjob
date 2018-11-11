@@ -63,8 +63,7 @@ class scInterests {
 
     // Verifier si l'entreprise a l'access au informations du candidat
     $itModel = new itModel();
-    if ( ! $itModel->interest_access($candidate_id, $Entreprise->getId()) ||
-    $itModel->limit_interest_access($Entreprise->getId()) ) {
+    if ( ! $itModel->interest_access($Candidate->getId(), $Entreprise->getId()) ) {
       return "<p class='text-center mt-4'>Vous n'avez pas d'acces.</p>";
     }
 
@@ -112,9 +111,33 @@ class scInterests {
           ]
         ] );
     }
+
+    // FEATURED: Vérifier si le candidat a déja postuler pour cette offre
+    $ids = get_field('itjob_users_apply', $offer_id);
+    // Content array of user id
+    $apply = array_map(function($id) { return (int)$id; }, $ids);
+    if (is_array($apply) && !empty($apply)) {
+      $Candidate = new Candidate($cv_id);
+      $author = $Candidate->getAuthor();
+      if (in_array($author->ID, $apply)) {
+        wp_send_json_error( [
+          'msg'    => "Le candidat a déja postuler pour cette offre",
+          'status' => 'exist'
+        ] );
+      }
+    }
+
+    $itModel = new itModel();
     $User = wp_get_current_user();
     if ( in_array( 'company', $User->roles ) ) {
-      $itModel = new itModel();
+      $Company = Company::get_company_by($User->ID);
+      // Si le candidat a déja étes valider sur une autre offre de même entreprise
+      // On ajoute et on active automatiquement l'affichage du CV
+      if ($itModel->interest_access($cv_id, $Company->getId())) {
+        $results = $itModel->added_interest($cv_id, $offer_id, $Company->getId(), 1);
+        wp_send_json_success($results);
+      }
+
       if ( ! $itModel->exist_interest( $cv_id, $offer_id ) ) {
         $response = $itModel->added_interest( $cv_id, $offer_id );
         // Envoyer un mail a l'administrateur
@@ -161,7 +184,7 @@ class scInterests {
         ]
       ] );
     }
-    if ( is_null( $user_id ) ) {
+    if ( is_null( $user_id ) || empty($user_id)) {
       $User = wp_get_current_user();
       if ( ! in_array( 'company', $User->roles ) ) {
         wp_send_json_error( [
@@ -177,12 +200,9 @@ class scInterests {
     $args   = [
       'post_type'   => 'offers',
       'post_status' => 'publish',
-      'meta_query'  => [
-        'key'     => 'itjob_offer_company',
-        'value'   => $Company->getId(),
-        'compare' => '=',
-        'type'    => 'NUMERIC'
-      ]
+      'meta_key'    => 'itjob_offer_company',
+      'meta_value'  => $Company->getId(),
+      'meta_compare'=> '='
     ];
     $offers = get_posts( $args );
     if (empty($offers)) {
@@ -194,7 +214,6 @@ class scInterests {
     $offers = array_map( function ( $offer ) {
       return new Offers( $offer->ID );
     }, $offers );
-
     wp_send_json_success( $offers );
   }
 }

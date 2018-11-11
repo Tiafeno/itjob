@@ -3,6 +3,7 @@
 namespace includes\shortcode;
 
 use Http;
+use includes\model\itModel;
 use includes\object\jobServices;
 use includes\post\Candidate;
 use includes\post\Company;
@@ -440,18 +441,24 @@ if ( ! class_exists( 'scClient' ) ) :
       $offer_id           = Http\Request::getValue( 'oId' );
       $offer_id           = (int) $offer_id;
       $postuledCandidates = [];
-      $Offer              = new Offers( $offer_id );
-      if ( $Offer->is_offer() && $Offer->count_candidat_apply >= 1 ) {
-        $candidate_ids = $Offer->candidat_apply;
-        foreach ( $candidate_ids as $key => $candidate_id ) {
-          array_push( $postuledCandidates, Candidate::get_candidate_by( $candidate_id ) );
+      // FEATURED: Récuperer aussi les candidats qui ont postuler
+      $user_ids = get_field('itjob_users_apply', $offer_id);
+      if ($user_ids) {
+        foreach ($user_ids as $user_id) {
+          $Candidate = Candidate::get_candidate_by((int)$user_id);
+          array_push($postuledCandidates, $Candidate);
         }
-        wp_send_json( $postuledCandidates );
-      } else {
-        wp_send_json( false );
       }
+      // Récuperer les candidats qui interesse l'entreprise
+      $itModel = new itModel();
+      $interests = $itModel->get_offer_interests($offer_id);
+      if ( $interests ) {
+        foreach ( $interests as $interest ) {
+          array_push( $postuledCandidates, new Candidate( (int)$interest->id_candidat ) );
+        }
 
-      die;
+      }
+      wp_send_json( $postuledCandidates );
     }
 
     /**
@@ -512,14 +519,15 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json_error( "Accès refuser" );
       }
       if ( $this->Company instanceof Company ) {
+        $itModel = new itModel();
         $Candidates = [];
-        $Token      = $this->User->user_pass;
         /** @var array $interest_ids - Array of int, user id */
-        $interest_ids = $this->Company->getInterests();
+        $interests = $itModel->get_interests($this->Company->getId());
+        $candidat_ids = array_map(function ($interest) { return $interest->id_candidat; }, $interests);
+        $candidat_ids = array_unique($candidat_ids);
         // featured: Return candidate object
-        foreach ( $interest_ids as $interest_id ) {
-          $candidateInterest = Candidate::get_candidate_by( (int) $interest_id );
-          $candidateInterest->hasTokenAccess( $Token );
+        foreach ( $candidat_ids as $candidat_id ) {
+          $candidateInterest = new Candidate($candidat_id);
           array_push( $Candidates, $candidateInterest );
         }
         wp_send_json_success( $Candidates );
@@ -581,7 +589,9 @@ if ( ! class_exists( 'scClient' ) ) :
         'meta_compare'   => '='
       ] );
       foreach ( $offers as $offer ) {
-        array_push( $resolve, new Offers( $offer->ID ) );
+        $_offer = new Offers( $offer->ID );
+        $_offer->__get_access();
+        array_push( $resolve, $_offer);
       }
 
       return $resolve;

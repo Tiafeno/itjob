@@ -96,10 +96,8 @@
                   jQuery('#modal-error').modal('toggle');
                 } else {
                   // Success
-                  let exist = _.findIndex(data.access, (access) => access === data.client.token);
-                  const msg = exist === 0 || exist ? "Vous pouvez aussi voir ce CV dans votre espace client. <br>Cliquer sur OK pour voir le CV"
-                    : "Voulez-vous vraiment voir le CV du candidat au complet?";
-                  alertify.alert(msg, () => {
+                  alertify.alert("CV ajouter avec succès. Pour voir la liste des CV ajoutes: " +
+                    "<br>Allez dans votre espace client ensuite dans <b>Historique des CV</b>", () => {
 
                   });
                 }

@@ -212,11 +212,11 @@ $forgot_password = Http\Request::getValue( 'forgot_password', 0 );
               Veuillez saisir votre adresse de messagerie.
               Un lien permettant de créer un nouveau mot de passe vous sera envoyé par e-mail.
             </p>
-
+<!--            Error message -->
             <div class="alert alert-pink alert-dismissable fade show alert-outline error-message" style="display:none">
               ...
             </div>
-
+<!--            Success message -->
             <div class="alert alert-info alert-dismissable fade show alert-outline success-message"
                  style="display:none">
               ...

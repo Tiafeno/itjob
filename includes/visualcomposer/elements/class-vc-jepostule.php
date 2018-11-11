@@ -9,6 +9,7 @@ if ( ! class_exists( 'WPBakeryShortCode' ) ) {
   new \WP_Error( 'WPBakery', 'WPBakery plugins missing!' );
 }
 use Http;
+use includes\model\itModel;
 use includes\object\jobServices;
 use includes\post\Candidate;
 use includes\post\Offers;
@@ -29,6 +30,17 @@ if ( ! class_exists( 'jePostule' ) ) :
         if ( trim( $action ) === 'send_apply' ) {
           $pId  = (int) Http\Request::getValue( 'post_id', 0 );
           $User = wp_get_current_user();
+
+          // TODO: Vérifier si l'entreprise s'est déja interesser pour ce candidat
+          if (is_array('candidate', $User->roles)) {
+            $Candidate = Candidate::get_candidate_by($User->ID);
+            $itModel = new itModel();
+            if ($itModel->exist_interest($Candidate->getId(), $pId)) {
+              do_action( 'add_notice', "L'entreprise s'interesse déja à votre CV pour cette offre", 'info' );
+              return true;
+            }
+          }
+
           require_once( ABSPATH . 'wp-admin/includes/image.php' );
           require_once( ABSPATH . 'wp-admin/includes/file.php' );
           require_once( ABSPATH . 'wp-admin/includes/media.php' );
@@ -39,10 +51,10 @@ if ( ! class_exists( 'jePostule' ) ) :
           $attachment_id = media_handle_upload( 'motivation', $pId );
 
           if ( is_wp_error( $attachment_id ) ) {
-            // There was an error uploading the image.
+            // There was an error uploading the file.
             do_action( 'add_notice', 'Une erreur s\'est produite', 'danger' );
           } else {
-            // The image was uploaded successfully!
+            // The file was uploaded successfully!
             $apply = get_field( 'itjob_users_apply', $pId );
             if ( ! is_array( $apply ) ) {
               $apply = [];
@@ -50,6 +62,8 @@ if ( ! class_exists( 'jePostule' ) ) :
             // Verifier l'utilisateur s'il a déja postuler
             if ( ! in_array( $User->ID, $apply ) ) {
               $apply[] = $User->ID;
+              // Ajouter l'utilisateur dans le champ des utilisateurs qui ont postulé
+              // @var $pId - Offre ID
               update_field( 'itjob_users_apply', $apply, $pId );
             } else {
               do_action( 'add_notice', 'Vous avez déjà postuler sur cette offre', 'warning' );
@@ -58,16 +72,17 @@ if ( ! class_exists( 'jePostule' ) ) :
             }
 
             unset( $apply );
-
+            // Récuperer les offres que le candidat a déja postulé
             $Candidate   = \includes\post\Candidate::get_candidate_by( $User->ID );
             $offer_apply = get_field( 'itjob_cv_offer_apply', $Candidate->getId() );
             if ( ! is_array( $offer_apply ) ) {
               $offer_apply = [];
             }
-
+            // On verifie si l'offre est déja dans sa liste
             if ( in_array( $pId, $offer_apply ) ) {
               return true;
             }
+            // Ajouter l'offre dans le champ pour les offres postulé par le candidat
             $offer_apply[] = $pId;
             update_field( 'itjob_cv_offer_apply', $offer_apply, $Candidate->getId() );
             do_action( 'alert_for_postuled_offer', $pId );

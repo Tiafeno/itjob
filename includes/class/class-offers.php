@@ -93,9 +93,9 @@ final class Offers implements \iOffer {
     $this->author      = Obj\jobServices::getUserData( $output->post_author );
     $this->datePublication = get_the_date( 'j F, Y', $output );
     if ( $this->is_offer() ) {
+      $this->id_offer = &$this->ID;
       $this->post_url = get_the_permalink($this->ID);
       $this->acfElements()->getOfferTaxonomy();
-      $this->isMyOffer($this->ID);
     }
 
     return $this;
@@ -111,6 +111,11 @@ final class Offers implements \iOffer {
 
   public function is_publish() {
     return $this->offer_status === 'publish' ? 1 : 0;
+  }
+
+  public function __get_access() {
+    if (!is_user_logged_in()) return;
+    $this->getPrivateInformations();
   }
 
   /**

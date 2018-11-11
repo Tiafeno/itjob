@@ -33,7 +33,6 @@ $it_alerts = [];
 require 'includes/itjob-configs.php';
 require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
-require 'includes/class/class-model.php';
 
 // Importation dependancy
 require 'includes/class/import/class-import-user.php';
@@ -42,6 +41,11 @@ require 'includes/class/import/class-import-user.php';
 require 'includes/class/middlewares/OfferHelper.php';
 require 'includes/class/middlewares/Auth.php';
 require 'includes/class/middlewares/Register.php';
+require 'includes/class/middlewares/ModelInterest.php';
+require 'includes/class/middlewares/ModelCVLists.php';
+
+// Model
+require 'includes/class/class-model.php';
 
 // widgets
 require 'includes/class/widgets/widget-publicity.php';

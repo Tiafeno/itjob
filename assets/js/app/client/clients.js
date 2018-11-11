@@ -362,11 +362,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
          * Ouvrire une boite de dialoge pour modifier une offre
          * @param {int} offerId
          */
-        $scope.openEditor = (offerId) => {
+        $scope.openEditor = (offerId, $event) => {
           let offer = _.findWhere($scope.Offers, {
             ID: parseInt(offerId)
           });
-
+          $scope.$parent.preloaderToogle();
           $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
             $scope.Regions = _.clone(data[0]);
             $scope.branchActivity = _.clone(data[1]);
@@ -379,6 +379,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               return val;
             });
             if (!_.isEmpty(offer) || !_.isNull($scope.offerEditor)) {
+              $scope.$parent.preloaderToogle();
               UIkit.modal('#modal-edit-offer-overflow').show();
             }
           });
@@ -419,7 +420,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.viewApply = (offer_id) => {
           $scope.loadingCandidats = true;
           let offer = _.find($scope.Offers, (item) => item.ID === offer_id);
-          if (!offer.my_offer || offer.count_candidat_apply <= 0) return;
+          if (offer.candidat_apply.length <= 0) return;
 
           UIkit.modal('#modal-view-candidat').show();
           $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {
@@ -870,6 +871,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.alertLoading = false;
       $scope.alerts = [];
       $scope.Helper = {};
+      $scope.preloader = false;
       // Contient l'image par default de l'OC
       $scope.featuredImage = '';
       // La valeur reste `false` si la photo de profil n'est pas toucher
@@ -884,6 +886,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.Company = {};
       $scope.offerLists = [];
       $scope.countOffer = 0;
+
+      $scope.preloaderToogle = () => {
+        $scope.preloader = !$scope.preloader;
+      };
 
       /**
        * Récuperer les données sur le client
