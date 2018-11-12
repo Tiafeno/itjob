@@ -62,16 +62,18 @@ class scInterests {
     }
 
     // Verifier si l'entreprise a l'access au informations du candidat
+    // FEATURED: Verifier si le CV est dans la liste de l'entreprise
     $itModel = new itModel();
-    if ( ! $itModel->interest_access($Candidate->getId(), $Entreprise->getId()) ) {
-      return "<p class='text-center mt-4'>Vous n'avez pas d'acces.</p>";
+    if ( ! $itModel->interest_access($Candidate->getId(), $Entreprise->getId()) ||
+        ! $itModel->list_exist($Entreprise->getId(), $Candidate->getId())) {
+      do_action('add_notice', "<p class='text-center font-15 text-warning'>Accès non autoriser.</p>", 'default', false);
+      do_action('get_notice');
+      return ;
     }
-
-    $candidate_ids = $Entreprise->getInterests();
-    $candidate_ids = $candidate_ids ? $candidate_ids : [];
 
     $Candidate->__client_premium_access();
     try {
+      do_action('get_notice');
       return $Engine->render( '@SC/cv-candidate.html.twig', [
         'candidate' => $Candidate,
       ] );

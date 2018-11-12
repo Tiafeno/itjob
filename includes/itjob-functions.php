@@ -48,12 +48,13 @@ function itjob_current_user_is_particular() {
 }
 
 // Ajouter une notification
-add_action('add_notice', 'itjob_add_notice', 10, 2);
-function itjob_add_notice($msg, $type = "info") {
+add_action('add_notice', 'itjob_add_notice', 10, 3);
+function itjob_add_notice($msg, $type = "info", $close = true) {
   global $it_alerts;
   $it_alerts[] = [
     'message' => $msg,
-    'type'    => $type
+    'type'    => $type,
+    'close'   => $close
   ];
 }
 
@@ -72,7 +73,8 @@ function itjob_get_notice() {
     foreach ($it_alerts as $alert) {
       $alert = (object)$alert;
       $notice .= "<div class=\"alert alert-{$alert->type} alert-dismissable fade show uk-width-1-2 uk-margin-auto mt-5\">";
-      $notice .= "<button class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"></button>";
+      if ($alert->close)
+        $notice .= "<button class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"></button>";
       $notice .= $alert->message;
       $notice .= "</div>";
     }

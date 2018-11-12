@@ -123,89 +123,35 @@
 
   </div>
 </div>
-
-<div id="modal-view-candidat__" class="modal fade" uk-modal>
-  <div class="modal-dialog" role="document">
-    <div class="ibox text-left modal-content">
-      <div class="ibox-head">
-        <div class="ibox-title">Les candidates</div>
-        <button class="uk-modal-close-default" type="button" data-dismiss="modal" aria-label="Close" uk-close>
-        </button>
-      </div>
-
-      <div class="ibox-body">
-        <div ng-show="loadingCandidats">
-          <div class="d-block mt-5 mb-5">
-            <div class="row">
-              <div class="col-md-6 m-auto">
-                <div class="text-center">
-                  <p>Chargement en cours ...</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <ul ng-show="!loadingCandidats" class="media-list media-list-divider mr-2 scroller" data-height="580px">
-          <li class="media align-items-center" ng-repeat="postuled in postuledCandidats">
-            <div class="media-body d-flex align-items-center">
-              <div class="flex-1">
-                <div class="media-heading">[[ postuled.title ]]</div>
-                <small class="text-muted text-info">[[ postuled.branch_activity.name ]]</small>
-              </div>
-              <a target="_blank" ng-href="[[ postuled.candidate_url ]]" class="btn btn-sm btn-outline-secondary btn-rounded">Voir
-                le CV</a>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-    </div>
-
-  </div>
-</div>
-
+<!-- Modal View Candidat -->
 <div id="modal-view-candidat" class="uk-modal-full" uk-modal>
   <div class="uk-modal-dialog">
     <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
     <div class="">
       <div uk-height-viewport>
+        <div class="preloader-backdrop" ng-if="loadingCandidats">
+          <div class="page-preloader">Chargement</div>
+        </div>
         <div class="uk-padding-large">
           <div>
-            <h4>Recrute dans l'immédiat une assistante Qualité</h4>
-            <div>Offre ajoutéé le : 23 septembre, 2018</div>
+            <h4>[[offerView.postPromote]]</h4>
+            <div>Offre ajoutéé le : [[offerView.datePublication]]</div>
           </div>
           <div uk-grid>
             <div class="uk-width-1-2@m uk-width-1-1">
               <div class="ibox mt-5">
-                <h5 class="pl-4">Les candidates</h5>
-                <div class="ibox-body pt-0">
+                <h5 class="pl-4">Le(s) candidate(s)</h5>
+                <div class="ibox-body">
                   <ul class="media-list media-list-divider mr-2 scroller" data-height="580px">
-                    <li class="media align-items-center">
+                    <li class="media align-items-center" ng-repeat="interest in interestCandidats">
                       <div class="media-body d-flex align-items-center">
                         <div class="flex-1">
-                          <div class="media-heading">Lynn Weaver</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
-                        <button class="btn btn-sm btn-outline-primary">Ajoute à ma liste </button>
-                      </div>
-                    </li>
-                    <li class="media align-items-center">
-                      <div class="media-body d-flex align-items-center">
-                        <div class="flex-1">
-                          <div class="media-heading">Lynn Weaver</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
-                        <button class="btn btn-sm btn-primary">Voir l'information</button>
-                      </div>
-                    </li>
-                    <li class="media align-items-center">
-                      <div class="media-body d-flex align-items-center">
-                        <div class="flex-1">
-                          <div class="media-heading">Lynn Weaver</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
-                        <button class="btn btn-sm btn-outline-primary">Ajoute à ma liste </button>
-                      </div>
-                    </li>
-                    <li class="media align-items-center">
-                      <div class="media-body d-flex align-items-center">
-                        <div class="flex-1">
-                          <div class="media-heading">Lynn Weaver</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
-                        <button class="btn btn-sm btn-outline-primary">Ajoute à ma liste </button>
+                          <div class="media-heading">
+                            [[interest.candidate.title]] <span class="badge badge-info" ng-if="interest.postuled">Postuler</span>
+                          </div>
+                          <small class="text-muted">[[interest.candidate.branch_activity.name]]</small>
+                        </div>
+                        <a class="btn btn-sm btn-outline-info" target="_blank" ng-href="[[interest.candidate.candidate_url]]">Voir le CV </a>
                       </div>
                     </li>
                   </ul>
@@ -214,30 +160,20 @@
             </div>
             <div class="uk-width-1-2@m uk-width-1-1">
               <div class="ibox mt-5">
-                <h5 class="pl-4">Les candidates interesser</h5>
+                <h5 class="pl-4">Le(s) candidate(s) intéressé</h5>
+
                 <div class="ibox-body">
                   <ul class="media-list media-list-divider mr-2 scroller" data-height="580px">
-                    <li class="media align-items-center">
+                    <li class="media align-items-center" ng-repeat="interest in interestCandidats | filter: {status: 1}">
                       <div class="media-body d-flex align-items-center">
                         <div class="flex-1">
-                          <div class="media-heading">Connor Perez <span class="badge badge-info">Postuler</span></div>
-                          <small class="text-muted">Lorem Ipsum is simply dummy</small>
+                          <div class="media-heading">
+                            [[interest.candidate.title]] <span ng-if="interest.postuled" class="badge badge-info">Postuler</span>
+                          </div>
+                          <small class="text-muted">[[interest.candidate.branch_activity.name]]</small>
                         </div>
-                        <button class="btn btn-sm btn-outline-primary  ml-2">Ajoute à ma liste </button>
-                      </div>
-                    </li>
-                    <li class="media align-items-center">
-                      <div class="media-body d-flex align-items-center">
-                        <div class="flex-1">
-                          <div class="media-heading">Becky Brooks</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
-                        <button class="btn btn-sm btn-outline-primary ">Ajoute à ma liste</button>
-                      </div>
-                    </li>
-                    <li class="media align-items-center">
-                      <div class="media-body d-flex align-items-center">
-                        <div class="flex-1">
-                          <div class="media-heading">Bob Gonzalez</div><small class="text-muted">Lorem Ipsum is simply dummy</small></div>
-                        <button class="btn btn-sm btn-outline-primary">Ajoute à ma liste</button>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="!interest.inList" data-ng-click="addList(interest.candidate.ID, $event)">Ajoute à ma liste </button>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.inList" data-ng-click="viewLists()">Voir la liste</button>
                       </div>
                     </li>
                   </ul>
@@ -251,8 +187,7 @@
     </div>
   </div>
 </div>
-
-<!--                    Dialog begin -->
+<!-- Dialog begin -->
 <div class="modal fade" id="featured-dialog" aria-labelledby="featured-dialog" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="ibox text-left modal-content">
@@ -276,8 +211,7 @@
 
   </div>
 </div>
-<!--                  Dialog end -->
-
+<!-- .end Modal -->
 <div class="flexbox mb-4">
   <div class="flexbox">
     <div class="input-group-icon input-group-icon-left mr-3">

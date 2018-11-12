@@ -311,6 +311,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/offer-lists.html',
       scope: {
+        candidateLists: '=listsCandidate',
         Entreprise: '=company',
         Offers: '=offers',
         regions: '&',
@@ -355,6 +356,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       },
       controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
         $scope.offerEditor = {};
+        $scope.offerView = {};
         $scope.loadingCandidats = false;
         $scope.postuledCandidats = [];
 
@@ -420,17 +422,64 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.viewApply = (offer_id) => {
           $scope.loadingCandidats = true;
           let offer = _.find($scope.Offers, (item) => item.ID === offer_id);
-          if (offer.candidat_apply.length <= 0) return;
-
+          if (_.isUndefined(offer) || offer.candidat_apply.length <= 0) return;
+          $scope.offerView = _.clone(offer);
           UIkit.modal('#modal-view-candidat').show();
           $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {
             cache: false
           })
             .then(resp => {
-              $scope.postuledCandidats = resp.data;
+              $scope.interestCandidats = _.map(resp.data, data => {
+                if (_.find($scope.candidateLists, (candidat_id) => candidat_id === data.candidate.ID)) {
+                  data.inList = true;
+                } else {
+                  data.inList = false;
+                }
+                return data;
+              });
               $scope.loadingCandidats = false;
             });
         };
+
+        $scope.viewLists = () => {
+          UIkit.modal('#modal-cv-lists-view').show();
+        };
+
+        /**
+         * Ajouter un candidat dans la liste de l'entreprise
+         * @param {int} id_candidate
+         */
+        $scope.addList = (id_candidate, $event) => {
+          if (!_.isNumber(id_candidate)) return;
+          var el = $event.currentTarget;
+          angular.element(el).text("Patienter ...");
+          $http.get(`${itOptions.Helper.ajax_url}?action=add_cv_list&id_candidate=${id_candidate}`, {
+            cache: false
+          })
+            .then(resp => {
+              var query = resp.data;
+              if (query.success) {
+                $http.get(`${itOptions.Helper.ajax_url}?action=get_candidat_interest_lists`, {
+                  cache: false
+                }).then(response => {
+                  var query = response.data;
+                  $scope.candidateLists = _.clone(query.data);
+                  $scope.interestCandidats = _.map($scope.interestCandidats, data => {
+                    if (_.find($scope.candidateLists, (candidat_id) => candidat_id === data.candidate.ID)) {
+                      data.inList = true;
+                    } else {
+                      data.inList = false;
+                    }
+                    return data;
+                  });
+                  angular.element(el).text("Voir la liste");
+                });
+              } else {
+
+              }
+            });
+        };
+
       }]
     };
   }])
@@ -868,7 +917,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       const self = this;
       // Contient les valeurs d'introduction
       $scope.profilEditor = {};
-      $scope.alertLoading = false;
+      $scope.alertLoading = false; // Directive alert
       $scope.alerts = [];
       $scope.Helper = {};
       $scope.preloader = false;
@@ -883,9 +932,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.Candidate = {};
       $scope.biography = "";
       // Company
-      $scope.Company = {};
-      $scope.offerLists = [];
-      $scope.countOffer = 0;
+      $scope.Company = {}; // Contient l'information de l'utilisateur
+      $scope.offerLists = []; // Contient les offres de l'entreprise
+      $scope.candidateLists = []; // Contient la list des candidates interesser par l'entreprise
 
       $scope.preloaderToogle = () => {
         $scope.preloader = !$scope.preloader;
@@ -900,6 +949,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.Company = _.clone(Client.iClient);
           $scope.Helper = _.clone(Client.Helper);
           $scope.offerLists = _.clone(Client.Offers);
+          $scope.candidateLists = _.clone(Client.ListsCandidate);
         } else {
           // Candidat
           // Crée une image par default

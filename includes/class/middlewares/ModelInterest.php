@@ -26,7 +26,7 @@ trait ModelInterest {
       return false;
     }
     $table  = $wpdb->prefix . 'cv_request';
-    $data   = [ 'id_candidat' => $id_candidat, 'id_offer' => $id_offer ];
+    $data   = [ 'id_candidate' => $id_candidat, 'id_offer' => $id_offer ];
     $format = [ '%d', '%d', '%d' ];
     // Annuler si l'entreprise à déja ajouter le candidat à cette offre
     if ( $this->exist_interest( $id_candidat, $id_offer ) ) {
@@ -90,7 +90,7 @@ trait ModelInterest {
       return null;
     }
     $table   = $wpdb->prefix . 'cv_request';
-    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $table WHERE id_candidat = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
+    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $table WHERE id_candidate = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
     $rows    = $wpdb->get_var( $prepare );
 
     return $rows;
@@ -113,7 +113,7 @@ trait ModelInterest {
       return null;
     }
     $table   = $wpdb->prefix . 'cv_request';
-    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $table WHERE id_candidat = %d AND id_company = %d AND status = 1",
+    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $table WHERE id_candidate = %d AND id_company = %d AND status = 1",
       (int) $id_candidat, (int) $id_company );
     $rows    = $wpdb->get_var( $prepare );
 

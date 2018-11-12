@@ -47,6 +47,9 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_update_trainings', [ &$this, 'update_trainings' ] );
         add_action( 'wp_ajax_send_request_premium_plan', [ &$this, 'send_request_premium_plan' ] );
         add_action( 'wp_ajax_get_history_cv_view', [ &$this, 'get_history_cv_view' ] );
+        add_action( 'wp_ajax_get_company_lists', [ &$this, 'get_company_lists' ] );
+        add_action( 'wp_ajax_add_cv_list', [ &$this, 'add_cv_list' ] );
+        add_action( 'wp_ajax_get_candidat_interest_lists', [ &$this, 'get_candidat_interest_lists' ] );
       }
       add_action( 'wp_ajax_nopriv_forgot_password', [ &$this, 'forgot_password' ] );
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
@@ -446,7 +449,12 @@ if ( ! class_exists( 'scClient' ) ) :
       if ($user_ids) {
         foreach ($user_ids as $user_id) {
           $Candidate = Candidate::get_candidate_by((int)$user_id);
-          array_push($postuledCandidates, $Candidate);
+          array_push($postuledCandidates,
+            [
+              'status' => 1,
+              'postuled' => 1,
+              'candidate' => $Candidate
+            ]);
         }
       }
       // Récuperer les candidats qui interesse l'entreprise
@@ -454,11 +462,63 @@ if ( ! class_exists( 'scClient' ) ) :
       $interests = $itModel->get_offer_interests($offer_id);
       if ( $interests ) {
         foreach ( $interests as $interest ) {
-          array_push( $postuledCandidates, new Candidate( (int)$interest->id_candidat ) );
+          $Candidate = new Candidate( (int)$interest->id_candidate );
+          array_push( $postuledCandidates,
+            [
+             'status' => (int)$interest->status,
+             'postuled' => 0,
+             'candidate' => $Candidate
+            ]);
         }
 
       }
       wp_send_json( $postuledCandidates );
+    }
+
+    /**
+     * Function ajax
+     * Récuperer la liste des CV d'entreprise
+     */
+    public function get_company_lists() {
+      if (!is_user_logged_in()) wp_send_json_error('Désolé, Votre session a expiré');
+      $User = wp_get_current_user();
+      if ($User->ID) {
+        $itModel = new itModel();
+        $Candidate = [];
+        $lists = $itModel->get_lists();
+        foreach ($lists as $list) {
+          $privateCandidate = new Candidate((int)$list->id_candidate);
+          $privateCandidate->__get_access();
+          array_push($Candidate, $privateCandidate);
+        }
+        wp_send_json_success($Candidate);
+      } else {
+        wp_send_json_error("Une erreur s'est produite");
+      }
+    }
+
+    /**
+     * Function ajax
+     * Ajouter un CV dans la liste de l'entreprise
+     */
+    public function add_cv_list() {
+      if (!is_user_logged_in()) wp_send_json_error('Désolé, Votre session a expiré');
+      $id_candidat = Http\Request::getValue('id_candidate');
+
+      // FEATURED: Verifier si l'entreprise n'a pas atteint le nombre limite de CV
+      $itModel = new itModel();
+      if ($itModel->check_list_limit()) {
+        // Nombre limite atteinte
+        wp_send_json_error("Vous avez atteint le nombre de limite de CV dans votre liste");
+      }
+      if ($id_candidat) {
+        $id_candidat = (int)$id_candidat;
+        $response = $itModel->add_list($id_candidat);
+        if ($response) {
+          wp_send_json_success($response);
+        }
+      }
+      wp_send_json_error("Paramètre invalide");
     }
 
     /**
@@ -523,7 +583,7 @@ if ( ! class_exists( 'scClient' ) ) :
         $Candidates = [];
         /** @var array $interest_ids - Array of int, user id */
         $interests = $itModel->get_interests($this->Company->getId());
-        $candidat_ids = array_map(function ($interest) { return $interest->id_candidat; }, $interests);
+        $candidat_ids = array_map(function ($interest) { return $interest->id_candidate; }, $interests);
         $candidat_ids = array_unique($candidat_ids);
         // featured: Return candidate object
         foreach ( $candidat_ids as $candidat_id ) {
@@ -538,6 +598,18 @@ if ( ! class_exists( 'scClient' ) ) :
 
     /**
      * Function ajax
+     * @return array|bool|null|object
+     */
+    public function get_candidat_interest_lists() {
+      $itModel = new itModel();
+      $listsCandidate = $itModel->get_lists();
+      if (is_null($listsCandidate) || !$listsCandidate || empty($listsCandidate)) wp_send_json_success([]);
+      $listsCandidate = array_map(function ($list) { return (int)$list->id_candidate; }, $listsCandidate);
+      wp_send_json_success($listsCandidate);
+    }
+
+    /**
+     * Function ajax
      * Récuperer les information nécessaire pour l'espace client
      * @route admin-ajax.php?action=client_area
      */
@@ -546,14 +618,18 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! is_user_logged_in() ) {
         wp_send_json( false );
       }
+      $itModel = new itModel();
       $User = wp_get_current_user();
       if ( $itJob->services->isClient() === 'company' ) {
         $alert            = get_field( 'itjob_company_alerts', $this->Company->getId() );
         $interest_page_id = jobServices::page_exists( 'Interest candidate' );
+        $listsCandidate = $itModel->get_lists();
+        $listsCandidate = array_map(function ($list) { return (int)$list->id_candidate; }, $listsCandidate);
         wp_send_json( [
           'iClient'   => Company::get_company_by( $User->ID ),
           'Offers'    => $this->__get_company_offers(),
           'Alerts'    => explode( ',', $alert ),
+          'ListsCandidate' => $listsCandidate,
           'post_type' => 'company',
           'Helper'    => [
             'interest_page_uri' => get_the_permalink( $interest_page_id )
@@ -561,7 +637,6 @@ if ( ! class_exists( 'scClient' ) ) :
         ] );
       } else {
         // candidate
-
         $notification = get_field( 'itjob_cv_notifEmploi', $this->Candidate->getId() );
         $Candidate    = Candidate::get_candidate_by( $User->ID );
         $Candidate->isMyCV();

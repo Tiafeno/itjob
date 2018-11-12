@@ -88,3 +88,36 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       }]
     }
   }])
+.directive('cvLists', [function () {
+  return {
+    restrict: 'E',
+    templateUrl: itOptions.Helper.tpls_partials + '/cv-lists.html',
+    scope: true,
+    controller: ['$scope', '$http', function ($scope, $http) {
+      $scope.preload = true;
+      $scope.listsCandidate = [];
+      UIkit.util.on('#modal-cv-lists-view', 'show', function (e) {
+        e.preventDefault();
+        $http({
+          url: `${itOptions.Helper.ajax_url}?action=get_company_lists`,
+          method: "GET",
+        }).then(resp => {
+          let query = resp.data;
+          if (query.success) {
+            var user_token = $scope.Company.author.data.user_pass;
+            $scope.listsCandidate = _.map(query.data, (data) => {
+              data.interestLink = `${$scope.Helper.interest_page_uri}?token=${user_token}&cvId=${data.ID}`;
+              return data;
+            });
+          }
+          $scope.preload = false;
+        }, function (error) {
+          UIkit.modal('#modal-cv-lists-view').hide();
+        })
+
+
+      });
+
+    }]
+  }
+}])
