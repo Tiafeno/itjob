@@ -250,8 +250,6 @@ if ( ! class_exists( 'itJob' ) ) {
                   ];
                   $query->set( 'meta_query', $meta_query );
                   $query->meta_query = new \WP_Meta_Query( $meta_query );
-
-
                 }
 
                 // Meta query
