@@ -116,7 +116,6 @@ if ( ! class_exists( 'itJob' ) ) {
       // @link: https://codex.wordpress.org/Plugin_API/Action_Reference/pre_get_posts
       add_action( 'pre_get_posts', function ( &$query ) {
         if ( ! is_admin() && $query->is_main_query() ) {
-          $Types = [ 'offers', 'candidate', 'company' ];
           // Afficher les posts pour status 'en attente' et 'publier'
           $query->set( 'post_status', [ 'publish' ] );
           $post_type = $query->get( 'post_type' );

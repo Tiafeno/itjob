@@ -1,5 +1,18 @@
-<h5 class="mb-3">Recherche emplois</h5>
+<style type="text/css">
+  form[name="search-offers"] {
+    background-color: rgba(255, 255, 255, 1);
+    padding: 2rem 2rem 1rem;
+  }
+</style>
 <form name="search-offers" action="{{ home_url }}" method="get" class="mr-4 mb-4">
+  <div class="flexbox-b mb-4">
+    <span class="mr-2 static-badge badge-blue"><i class="ti-search"></i></span>
+    <div>
+      <h5>Recherche emplois</h5>
+      <div class="text-light">{{ search_count }} résultats trouvés dans {{ activity_count }} secteur d'activité</div>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-md-3 no-pd">
       <div class="form-group">
