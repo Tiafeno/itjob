@@ -139,6 +139,8 @@ if ( ! class_exists( 'vcSearch' ) ):
     private function vc_search_offers_tpls( $args ) {
       global $Engine;
       try {
+        $search_query = Http\Request::getValue( 's' );
+        $args         = array_merge( $args, [ 's' => $search_query ] );
         return $Engine->render( '@VC/search/search-offers.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {
