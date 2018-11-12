@@ -216,6 +216,44 @@ if ( ! class_exists( 'itJob' ) ) {
                   ];
                 }
 
+                if ( ! empty( $s ) ) {
+                  if ( ! isset( $meta_query ) ) {
+                    $meta_query = $query->get( 'meta_query' );
+                  }
+                  // Feature: Recherché aussi dans le profil recherché et mission
+                  $meta_query[] = [
+                    'relation' => 'OR',
+                    [
+                      'key'     => 'itjob_cv_experiences_0_exp_mission',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ],
+                    [
+                      'key'     => 'itjob_cv_trainings_0_training_establishment',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ],
+                    [
+                      'key'     => 'itjob_cv_experiences_0_exp_positionHeld',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ],
+                    [
+                      'key'     => 'itjob_cv_experiences_0_exp_company',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ]
+                  ];
+                  $query->set( 'meta_query', $meta_query );
+                  $query->meta_query = new \WP_Meta_Query( $meta_query );
+
+
+                }
+
                 // Meta query
                 if ( ! isset( $meta_query ) ) {
                   $meta_query = $query->get( 'meta_query' );
@@ -264,6 +302,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 $query->set( 'meta_query', $meta_query );
                 $query->meta_query = new \WP_Meta_Query( $meta_query );
               endif;
+
             endif;
           }
         }

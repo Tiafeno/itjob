@@ -10,7 +10,7 @@ if ( ! class_exists( 'vcSearch' ) ):
       add_action( 'wp_enqueue_scripts', function () {
         global $itJob;
         //wp_enqueue_script('multi-select', get_template_directory_uri() . "/assets/vendors/multiselect/js/jquery.multi-select.js", ['jquery'], $itJob->version);
-        wp_enqueue_script( 'select-2', get_template_directory_uri() . "/assets/vendors/select2/dist/js/select2.full.min.js", [ 'jquery' ], $itJob->version );
+        wp_enqueue_script( 'select-2', VENDOR_URL . "/select2/dist/js/select2.full.min.js", [ 'jquery' ], $itJob->version );
       } );
     }
 
@@ -125,6 +125,13 @@ if ( ! class_exists( 'vcSearch' ) ):
       }
     }
 
+    /**
+     * Compter les nombre de secteur d'activité dans le resultat de recherche
+     *
+     * @param $posts
+     *
+     * @return int
+     */
     private function activity_results( $posts ) {
       $results = 0;
       if ( empty( $posts ) ) {
