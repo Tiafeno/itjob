@@ -113,11 +113,17 @@ class scInterests {
           ]
         ] );
     }
+    $itModel = new itModel();
 
     // FEATURED: Vérifier si le candidat a déja postuler pour cette offre
-    $ids = get_field('itjob_users_apply', $offer_id);
+    $interests = $itModel->get_offer_interests( $offer_id );
+    if ( ! $interests ) {
+      wp_send_json_error( "Impossible de verifier le candidat s'il est dans la liste ou pas" );
+    }
     // Content array of user id
-    $apply = array_map(function($id) { return (int)$id; }, $ids);
+    $apply = array_map( function ( $interest ) {
+      return (int) $interest->id_candidate;
+    }, $interests);
     if (is_array($apply) && !empty($apply)) {
       $Candidate = new Candidate($cv_id);
       $author = $Candidate->getAuthor();
@@ -129,16 +135,9 @@ class scInterests {
       }
     }
 
-    $itModel = new itModel();
     $User = wp_get_current_user();
     if ( in_array( 'company', $User->roles ) ) {
       $Company = Company::get_company_by($User->ID);
-      // Si le candidat a déja étes valider sur une autre offre de même entreprise
-      // On ajoute et on active automatiquement l'affichage du CV
-      if ($itModel->interest_access($cv_id, $Company->getId())) {
-        $results = $itModel->added_interest($cv_id, $offer_id, $Company->getId(), 1);
-        wp_send_json_success($results);
-      }
 
       if ( ! $itModel->exist_interest( $cv_id, $offer_id ) ) {
         $response = $itModel->added_interest( $cv_id, $offer_id );
@@ -146,6 +145,15 @@ class scInterests {
         do_action( 'alert_when_company_interest', $cv_id );
         wp_send_json_success( $response );
       } else {
+
+        // Si le candidat a déja étes valider sur une autre offre de même entreprise
+        // On ajoute et on active automatiquement l'affichage du CV
+        if ( $itModel->interest_access( $cv_id, $Company->getId() ) ) {
+          $results = $itModel->added_interest( $cv_id, $offer_id, $Company->getId(), 1 );
+          do_action( 'alert_when_company_interest', $cv_id );
+          wp_send_json_success( $results );
+        }
+
         wp_send_json_error( [
           'msg'    => "Vous avez déja ajouter ce candidat dans votre liste",
           'status' => 'exist'

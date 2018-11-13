@@ -88,14 +88,14 @@ if ( ! class_exists( 'itJob' ) ) {
         global $wpdb;
 
         // Cree une table pour les entreprise intereser par des candidats
-        $cv_request = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_request (`id_request` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , 
-                        `id_company` BIGINT(20) NOT NULL DEFAULT 0 , `id_candidate` BIGINT(20) NOT NULL DEFAULT 0 , `status` BOOLEAN NOT NULL DEFAULT FALSE , 
+        $cv_request = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_request (`id_request` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
+`id_candidate` BIGINT(20) NOT NULL DEFAULT 0, `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , `status` BOOLEAN NOT NULL DEFAULT FALSE , 
                          PRIMARY KEY (`id_request`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_request );
 
         // Crée une table pour ajouter les CV dans la liste des entreprise
         // Pour les entreprise de membre standar, la liste se limite à 5 CV
-        $cv_lists = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_lists (`id_lists` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0 , 
+        $cv_lists = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_lists (`id_lists` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
                       `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
                       PRIMARY KEY (`id_lists`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_lists );

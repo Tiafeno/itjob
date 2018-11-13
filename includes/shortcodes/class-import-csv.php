@@ -16,9 +16,9 @@ if ( ! class_exists( 'scImport' ) ) :
       add_shortcode( 'itjob_import_csv', [ $this, 'sc_render_html' ] );
       add_action( 'wp_ajax_import_csv', [ &$this, 'import_csv' ] );
 
-      add_action('init', function () {
+      add_action( 'init', function () {
 
-      });
+      } );
     }
 
     public function import_csv() {
@@ -67,7 +67,7 @@ if ( ! class_exists( 'scImport' ) ) :
       wp_send_json_success( "En construction ..." );
     }
 
-    // TODO: Ajouter les utilisateurs du site itjobmada
+    // FEATURED: Ajouter les utilisateurs du site itjobmada
     protected function add_user( $content_type ) {
       if ( ! is_user_logged_in() ) {
         return false;
@@ -237,72 +237,81 @@ if ( ! class_exists( 'scImport' ) ) :
             'cellphones'   => $lines[9],
             'email'        => $lines[10],
             'job_sought'   => $lines[11],
-            'newsletter'   => (int)$lines[12],
-            'notification' => (int)$lines[13],
+            'newsletter'   => (int) $lines[12],
+            'notification' => (int) $lines[13],
             'alert'        => $lines[14],
             'create'       => $lines[15]
           ];
 
-          $rows = array_map( function ( $row ) {
+          $rows        = array_map( function ( $row ) {
             return trim( $row );
           }, $rows );
           $rows_object = (object) $rows;
-          $User = $this->get_user_by_old_userid($rows_object->id_user);
-          if ($User) {
-            $Company = Company::get_company_by($User->ID);
-            if (function_exists('update_field')) {
-              update_field('itjob_company_address', $rows_object->address, $Company->getId());
-              update_field('itjob_company_nif', $rows_object->nif, $Company->getId());
-              update_field('itjob_company_stat', $rows_object->stat, $Company->getId());
-              update_field('itjob_company_name', $rows_object->first_name . ' ' . $rows_object->last_name, $Company->getId());
-              update_field('itjob_company_newsletter', $rows_object->newsletter, $Company->getId());
-              update_field('itjob_company_notification', $rows_object->notification, $Company->getId());
-              update_field('itjob_company_phone', $rows_object->phone, $Company->getId());
-              update_field('itjob_company_alerts', !$rows_object->alert ? '' : $rows_object->alert, $Company->getId());
-              update_field('itjob_company_greeting', $rows_object->greeting, $Company->getId());
+          $User        = $this->get_user_by_old_userid( $rows_object->id_user );
+          if ( $User ) {
+            $Company = Company::get_company_by( $User->ID );
+            if ( function_exists( 'update_field' ) ) {
+              update_field( 'itjob_company_address', $rows_object->address, $Company->getId() );
+              update_field( 'itjob_company_nif', $rows_object->nif, $Company->getId() );
+              update_field( 'itjob_company_stat', $rows_object->stat, $Company->getId() );
+              update_field( 'itjob_company_name', $rows_object->first_name . ' ' . $rows_object->last_name, $Company->getId() );
+              update_field( 'itjob_company_newsletter', $rows_object->newsletter, $Company->getId() );
+              update_field( 'itjob_company_notification', $rows_object->notification, $Company->getId() );
+              update_field( 'itjob_company_phone', $rows_object->phone, $Company->getId() );
+              update_field( 'itjob_company_alerts', ! $rows_object->alert ? '' : $rows_object->alert, $Company->getId() );
+              update_field( 'itjob_company_greeting', $rows_object->greeting, $Company->getId() );
 
-              $values = [];
-              $cellphones = explode(';', $rows_object->cellphones);
-              foreach ($cellphones as $phone)
-                $values[] = ['number' => $phone];
+              $values     = [];
+              $cellphones = explode( ';', $rows_object->cellphones );
+              foreach ( $cellphones as $phone ) {
+                $values[] = [ 'number' => $phone ];
+              }
               update_field( 'itjob_company_cellphone', $values, $Company->getId() );
             }
+            // Enregistrer la date de creation original & la secteur d'activité
+            update_post_meta( $Company->getId(), '__create', $rows_object->create );
+            update_post_meta( $Company->getId(), '__job_sought', $rows_object->job_sought );
 
-            update_post_meta($Company->getId(), '__create', $rows_object->create);
-            update_post_meta($Company->getId(), '__job_sought', $rows_object->job_sought);
-
-            wp_send_json_success(['msg' => "L'entreprise est ajouter avec succès", 'data' => $Company]);
+            wp_send_json_success( [ 'msg' => "L'entreprise est ajouter avec succès", 'data' => $Company ] );
           } else {
-            wp_send_json_error("L'utilisateur n'existe pas, ID: {$rows_object->id_user}");
+            wp_send_json_error( "L'utilisateur n'existe pas, ID: {$rows_object->id_user}" );
           }
           break;
 
-          // demandeur emploi
+        // demandeur emploi
         case 'user_candidate_information':
           $rows = [
-            'id_user' => (int)$lines[0],
-            'audition' => (int)$lines[1],
-            'find_job' => (int)$lines[2],
-            'greeting' => $lines[3],
-            'first_name' => $lines[4],
-            'last_name' => $lines[5],
-            'email' => $lines[6],
-            'address' => $lines[7],
-            'region' => $lines[8],
-
+            'id_user'               => (int) $lines[0],
+            'audition'              => (int) $lines[1],
+            'find_job'              => (int) $lines[2],
+            'greeting'              => $lines[3],
+            'first_name'            => $lines[4],
+            'last_name'             => $lines[5],
+            'email'                 => $lines[6],
+            'address'               => $lines[7],
+            'region'                => $lines[8],
+            'phone'                 => $lines[9],
+            'birthday_date'         => $lines[10],
+            'notification_job'      => (int) $lines[11],
+            'notification_training' => (int) $lines[12],
+            'activated'             => (int) $lines[13],
+            'newsletter'            => (int) $lines[14]
           ];
           break;
       }
     }
 
 
-    private function get_user_by_old_userid($old_user_id) {
-      if ( ! is_numeric($old_user_id)) return false;
+    private function get_user_by_old_userid( $old_user_id ) {
+      if ( ! is_numeric( $old_user_id ) ) {
+        return false;
+      }
       $user_query = new \WP_User_Query( array( 'meta_key' => '__id_user', 'meta_value' => $old_user_id ) );
       // Get the results
       $authors = $user_query->get_results();
-      if (!empty($authors)) {
-        $User  = $authors[0];
+      if ( ! empty( $authors ) ) {
+        $User = $authors[0];
+
         return $User;
       } else {
         return false;

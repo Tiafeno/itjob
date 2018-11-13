@@ -444,20 +444,7 @@ if ( ! class_exists( 'scClient' ) ) :
       $offer_id           = Http\Request::getValue( 'oId' );
       $offer_id           = (int) $offer_id;
       $postuledCandidates = [];
-      // FEATURED: Récuperer aussi les candidats qui ont postuler
-      $user_ids = get_field('itjob_users_apply', $offer_id);
-      if ($user_ids) {
-        foreach ($user_ids as $user_id) {
-          $Candidate = Candidate::get_candidate_by((int)$user_id);
-          array_push($postuledCandidates,
-            [
-              'status' => 1,
-              'postuled' => 1,
-              'candidate' => $Candidate
-            ]);
-        }
-      }
-      // Récuperer les candidats qui interesse l'entreprise
+      // Récuperer les candidats qui ont postuler et interesser par l'entreprise
       $itModel = new itModel();
       $interests = $itModel->get_offer_interests($offer_id);
       if ( $interests ) {
@@ -465,12 +452,11 @@ if ( ! class_exists( 'scClient' ) ) :
           $Candidate = new Candidate( (int)$interest->id_candidate );
           array_push( $postuledCandidates,
             [
-             'status' => (int)$interest->status,
-             'postuled' => 0,
-             'candidate' => $Candidate
+              'status'    => (int)$interest->status,
+              'type'      => $interest->type,
+              'candidate' => $Candidate
             ]);
         }
-
       }
       wp_send_json( $postuledCandidates );
     }

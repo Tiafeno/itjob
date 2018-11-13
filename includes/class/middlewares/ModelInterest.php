@@ -26,29 +26,30 @@ trait ModelInterest {
       return false;
     }
     $table  = $wpdb->prefix . 'cv_request';
-    $data   = [ 'id_candidate' => $id_candidat, 'id_offer' => $id_offer ];
-    $format = [ '%d', '%d', '%d' ];
+
+    // Ajouter une requete pré-activé
+    $status = $status ? 1 : 0;
+    $format = [ '%d', '%d', '%d', '%s', '%d' ];
     // Annuler si l'entreprise à déja ajouter le candidat à cette offre
     if ( $this->exist_interest( $id_candidat, $id_offer ) ) {
       return false;
     }
 
-    // Ajouter une requete pré-activé
-    if ( $status ) {
-      $format = array_merge( $format, [ '%d' ] );
-      $data   = array_merge( $data, [ 'status' => 1 ] );
-    }
-
-    if ( ! is_null( $id_company ) || ! empty( $id_company ) ) {
-      $data = array_merge( $data, [ 'id_company' => $id_company ] );
-    } else {
+    if ( is_null( $id_company ) || empty( $id_company ) ) {
       $User = wp_get_current_user();
       if ( ! in_array( 'company', $User->roles ) ) {
         return false;
       }
-      $Company = Company::get_company_by( $User->ID );
-      $data    = array_merge( $data, [ 'id_company' => $Company->getId() ] );
+      $Company    = Company::get_company_by( $User->ID );
+      $id_company = $Company->getId();
     }
+    $data    = [
+      'id_candidate' => $id_candidat,
+      'id_offer'     => $id_offer,
+      'status'       => $status,
+      'type'         => "interested",
+      'id_company'   => $id_company
+    ];
     $results = $wpdb->insert( $table, $data, $format );
 
     return $results;
@@ -112,8 +113,7 @@ trait ModelInterest {
     if ( ! $id_company || ! $id_candidat ) {
       return null;
     }
-    $table   = $wpdb->prefix . 'cv_request';
-    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $table WHERE id_candidate = %d AND id_company = %d AND status = 1",
+    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $this->requestTable WHERE id_candidate = %d AND id_company = %d AND status = 1",
       (int) $id_candidat, (int) $id_company );
     $rows    = $wpdb->get_var( $prepare );
 

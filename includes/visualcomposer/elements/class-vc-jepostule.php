@@ -12,6 +12,7 @@ use Http;
 use includes\model\itModel;
 use includes\object\jobServices;
 use includes\post\Candidate;
+use includes\post\Company;
 use includes\post\Offers;
 
 if ( ! class_exists( 'jePostule' ) ) :
@@ -28,15 +29,22 @@ if ( ! class_exists( 'jePostule' ) ) :
       add_action( 'send_apply_offer', function () {
         $action = Http\Request::getValue( 'action' );
         if ( trim( $action ) === 'send_apply' ) {
-          $pId  = (int) Http\Request::getValue( 'post_id', 0 );
-          $User = wp_get_current_user();
+          $pId      = (int) Http\Request::getValue( 'post_id', 0 );
+          $id_offer = &$pId;
+          $User     = wp_get_current_user();
+          if ( ! $User->ID ) {
+            do_action( "add_notice", 'Une erreur s\'est produite', 'danger' );
 
-          // TODO: Vérifier si l'entreprise s'est déja interesser pour ce candidat
-          if (is_array('candidate', $User->roles)) {
+            return false;
+          }
+
+          $itModel = new itModel();
+
+          // FEATURED: Vérifier si l'entreprise s'est déja interesser pour ce candidat
+          if ( in_array( 'candidate', $User->roles ) ) {
             $Candidate = Candidate::get_candidate_by($User->ID);
-            $itModel = new itModel();
-            if ($itModel->exist_interest($Candidate->getId(), $pId)) {
-              do_action( 'add_notice', "L'entreprise s'interesse déja à votre CV pour cette offre", 'info' );
+            if ( $itModel->exist_interest( $Candidate->getId(), $id_offer ) ) {
+              do_action( 'add_notice', "L'entreprise s'interesse déjà à votre CV pour cette offre. Veuillez patienter", 'info' );
               return true;
             }
           }
@@ -48,42 +56,36 @@ if ( ! class_exists( 'jePostule' ) ) :
           // Let WordPress handle the upload.
           // Remember, 'file' is the name of our file input in our form above.
           // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
-          $attachment_id = media_handle_upload( 'motivation', $pId );
+          $attachment_id = media_handle_upload( 'motivation', $id_offer );
 
           if ( is_wp_error( $attachment_id ) ) {
             // There was an error uploading the file.
             do_action( 'add_notice', 'Une erreur s\'est produite', 'danger' );
           } else {
             // The file was uploaded successfully!
-            $apply = get_field( 'itjob_users_apply', $pId );
-            if ( ! is_array( $apply ) ) {
-              $apply = [];
-            }
-            // Verifier l'utilisateur s'il a déja postuler
-            if ( ! in_array( $User->ID, $apply ) ) {
-              $apply[] = $User->ID;
-              // Ajouter l'utilisateur dans le champ des utilisateurs qui ont postulé
-              // @var $pId - Offre ID
-              update_field( 'itjob_users_apply', $apply, $pId );
-            } else {
-              do_action( 'add_notice', 'Vous avez déjà postuler sur cette offre', 'warning' );
 
-              return true;
-            }
+            // Enregistrer la requete dans la base de donnée
+            $Offer        = new Offers( $id_offer );
+            $offer_author = $Offer->getAuthor();
+            $Company      = Company::get_company_by( $offer_author->ID );
+            $Candidate    = \includes\post\Candidate::get_candidate_by( $User->ID );
+            $result       = $itModel->added_interest( $Candidate->getId(), $id_offer, $Company->getId() );
+            if ( ! $result ) {
+              do_action( 'add_notice', 'Une erreur s\'est produite pendant la requete. Veuillez réessayer plus tard', 'warning' );
 
-            unset( $apply );
+              return false;
+            }
             // Récuperer les offres que le candidat a déja postulé
-            $Candidate   = \includes\post\Candidate::get_candidate_by( $User->ID );
             $offer_apply = get_field( 'itjob_cv_offer_apply', $Candidate->getId() );
             if ( ! is_array( $offer_apply ) ) {
               $offer_apply = [];
             }
             // On verifie si l'offre est déja dans sa liste
-            if ( in_array( $pId, $offer_apply ) ) {
+            if ( in_array( $id_offer, $offer_apply ) ) {
               return true;
             }
             // Ajouter l'offre dans le champ pour les offres postulé par le candidat
-            $offer_apply[] = $pId;
+            $offer_apply[] = $id_offer;
             update_field( 'itjob_cv_offer_apply', $offer_apply, $Candidate->getId() );
             do_action( 'alert_for_postuled_offer', $pId );
             do_action( 'add_notice', 'Votre candidature à bien êtes soumis', 'info' );
