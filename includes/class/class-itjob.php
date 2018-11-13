@@ -90,6 +90,7 @@ if ( ! class_exists( 'itJob' ) ) {
         // Cree une table pour les entreprise intereser par des candidats
         $cv_request = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_request (`id_request` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
 `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , `status` BOOLEAN NOT NULL DEFAULT FALSE , 
+`id_attachment` BIGINT(20) NOT NULL DEFAULT 0,
                          PRIMARY KEY (`id_request`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_request );
 

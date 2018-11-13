@@ -68,8 +68,8 @@ if ( ! class_exists( 'jePostule' ) ) :
             $Offer        = new Offers( $id_offer );
             $offer_author = $Offer->getAuthor();
             $Company      = Company::get_company_by( $offer_author->ID );
-            $Candidate    = \includes\post\Candidate::get_candidate_by( $User->ID );
-            $result       = $itModel->added_interest( $Candidate->getId(), $id_offer, $Company->getId() );
+            $Candidate    = Candidate::get_candidate_by( $User->ID );
+            $result       = $itModel->added_interest( $Candidate->getId(), $id_offer, $Company->getId(), 0, 'apply', $attachment_id );
             if ( ! $result ) {
               do_action( 'add_notice', 'Une erreur s\'est produite pendant la requete. Veuillez réessayer plus tard', 'warning' );
 
@@ -187,9 +187,10 @@ if ( ! class_exists( 'jePostule' ) ) :
       if ( $itJob->services->isClient() === 'company' ) {
         return;
       }
-      $offer_id = get_the_ID();
-      $href     = home_url( "/apply/{$offer_id}" );
-      $button   = "<div class=\"float-right ml-3\">
+      $offer_id  = get_the_ID();
+      $offer_url = get_the_permalink( $offer_id );
+      $href      = home_url( "/apply/{$offer_id}?redir={$offer_url}" );
+      $button    = "<div class=\"float-right ml-3\">
                   <a href=\"$href\">
                     <button class=\"btn btn-blue btn-fix\">
                       <span class=\"btn-icon\">Je postule </span>

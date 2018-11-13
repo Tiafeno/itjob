@@ -20,7 +20,7 @@ trait ModelInterest {
    *
    * @return bool|int
    */
-  public function added_interest( $id_candidat, $id_offer, $id_company = null, $status = 0 ) {
+  public function added_interest( $id_candidat, $id_offer, $id_company = null, $status = 0, $type = 'interested', $id_attachment = 0 ) {
     global $wpdb;
     if ( ! is_user_logged_in() ) {
       return false;
@@ -29,7 +29,7 @@ trait ModelInterest {
 
     // Ajouter une requete pré-activé
     $status = $status ? 1 : 0;
-    $format = [ '%d', '%d', '%d', '%s', '%d' ];
+    $format = [ '%d', '%d', '%d', '%s', '%d', '%d' ];
     // Annuler si l'entreprise à déja ajouter le candidat à cette offre
     if ( $this->exist_interest( $id_candidat, $id_offer ) ) {
       return false;
@@ -44,11 +44,12 @@ trait ModelInterest {
       $id_company = $Company->getId();
     }
     $data    = [
-      'id_candidate' => $id_candidat,
-      'id_offer'     => $id_offer,
-      'status'       => $status,
-      'type'         => "interested",
-      'id_company'   => $id_company
+      'id_candidate'  => $id_candidat,
+      'id_offer'      => $id_offer,
+      'status'        => $status,
+      'type'          => $type,
+      'id_company'    => $id_company,
+      'id_attachment' => $id_attachment
     ];
     $results = $wpdb->insert( $table, $data, $format );
 

@@ -45,6 +45,9 @@ final class Company implements \iCompany {
     switch ( $handler ):
       case 'user_id':
         $User = get_user_by( 'ID', (int) $value );
+        if ( ! $User->ID ) {
+          return false;
+        }
         $args = [
           'post_status'  => [ 'pending', 'publish' ],
           'post_type'    => 'company',
