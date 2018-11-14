@@ -87,15 +87,18 @@ final class Offers implements \iOffer {
 
     $this->datePublication = get_the_date( 'j F, Y', $output );
     if ( $this->is_offer() ) {
-      // La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
-      // Retourne post entreprise...
-      $post_company   = get_field( "itjob_offer_company", $this->ID );
-      $company_email  = get_field( 'itjob_company_email', $post_company->ID );
-      $post_user      = get_user_by( 'email', trim($company_email) );
-      $this->author   = Obj\jobServices::getUserData( $post_user->ID );
       $this->id_offer = &$this->ID;
       $this->post_url = get_the_permalink( $this->ID );
       $this->acfElements()->getOfferTaxonomy();
+
+      // La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
+      // Retourne post entreprise...
+      $post_company   = get_field( "itjob_offer_company", $this->ID );
+      if (!$post_company) return;
+      $company_email  = get_field( 'itjob_company_email', $post_company->ID );
+      $post_user      = get_user_by( 'email', trim($company_email) );
+      $this->author   = Obj\jobServices::getUserData( $post_user->ID );
+
     }
 
     return $this;
