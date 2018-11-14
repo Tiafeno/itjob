@@ -1,59 +1,42 @@
-<!-- Modal list cv -->
-<div id="modal-cv-lists-view" class="uk-modal-full" uk-modal>
-  <div class="uk-modal-dialog">
-    <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
-    <div class="">
-      <div uk-height-viewport>
-        <div class="preloader-backdrop" ng-if="preload">
-          <div class="page-preloader">Chargement</div>
-        </div>
-        <div class="uk-padding-large">
-          <div class="ml-4">
-            <h4>Ma liste</h4>
-            <div ng-if="listsCandidate.length > 0">Vous avez [[listsCandidate.length]] CV dans votre liste</div>
-          </div>
-          <div uk-grid>
-            <div class="uk-width-1-2@m uk-width-1-1">
-              <div class="ibox mt-5">
-                <h5 class="pl-4">Les candidates</h5>
-                <div class="ibox-body pt-0">
-                  <ul class="media-list media-list-divider mr-2 scroller" data-height="580px">
-                    <li class="media align-items-center" ng-repeat="list in listsCandidate">
-                      <div class="media-body d-flex align-items-center">
-                        <div class="flex-1">
-                          <div class="media-heading">[[list.privateInformations.firstname]] [[list.privateInformations.lastname]]</div>
-                          <small class="text-muted">[[list.branch_activity.name]]</small>
-                        </div>
-                        <a ng-href="[[list.interestLink]]" target="_blank" class="btn btn-sm btn-primary">Voir les informations</a>
-                      </div>
-                    </li>
-                    <li class="media align-items-center" ng-if="listsCandidate.length <= 0">
-                      <p>Vous n'avez pas encore ajouter de CV dans votre liste</p>
-                    </li>
-                  </ul>
+<div class="mt-2">
+  <div uk-grid>
+    <div class="uk-width-1-1">
+      <div>
+        <div class="ibox-body pt-2">
+          <div class="crad-deck" >
+            <div class="card text-left mb-4">
+              <div class="card-body">
+
+                <button class="btn btn-outline-blue btn-sm btn-fix mb-4" data-ng-click="onReturn()">
+                  <span class="btn-icon"><i class="fa fa-angle-left"></i>Retour</span>
+                </button>
+
+                <h4 class="card-title mb-1">[[ Candidate.privateInformations.firstname ]] [[ Candidate.privateInformations.lastname ]]</h4>
+                <div class="text-muted">[[ Candidate.branch_activity.name ]]</div>
+                <p class="mt-4 mb-2">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+
+                <div class="justify-content-around font-18">
+                  <p class="d-inline">
+                    <a class="btn btn-secondary" target="_blank" ng-href="[[ Attachment.guid ]]"><i class="fa fa-download"></i> Télécharger la lettre de motivation</a>
+                  </p>
+                  <a class="btn btn-outline-success" target="_blank" ng-href="[[ interestLink ]]">Voir le CV</a>
                 </div>
               </div>
             </div>
-            <div class="uk-width-1-2@m uk-width-1-1">
-              <div class="ibox mt-5">
-                <div class="ibox-body alert alert-primary">
-                  <h5 class="">Découvrez l'offre premium</h5>
-                  <p>Pour pouvoir visionner et télécharger plus de CV et de trouver les bons candidats, plus rapidement sans limite</p>
-                  <button  class="btn btn-info uk-modal-close uk-close-large" type="button" >Améliorer mon compte</button>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
-
+    </div>
+    <div class="uk-width-1-1">
+      <div class="ibox mt-4">
+        <div class="ibox-body alert alert-primary">
+          <h5 class="">Découvrez l'offre premium</h5>
+          <p>Pour pouvoir visionner et télécharger plus de CV et de trouver les bons candidats, plus rapidement sans
+            limite</p>
+          <button class="btn btn-info uk-modal-close uk-close-large" type="button">Améliorer mon compte</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-
-<!-- .end modal -->
-
-
-<button class="btn btn-secondary ml-2" uk-toggle href="#modal-cv-lists-view" >
-  <span class="btn-icon"><i class="fa fa-address-book"></i>Ma liste</span>
-</button>

@@ -312,6 +312,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       templateUrl: itOptions.Helper.tpls_partials + '/offer-lists.html',
       scope: {
         candidateLists: '=listsCandidate',
+        options: '&',
         Entreprise: '=company',
         Offers: '=offers',
         regions: '&',
@@ -359,6 +360,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.offerView = {};
         $scope.loadingCandidats = false;
         $scope.postuledCandidats = [];
+        $scope.mode = "";
+        $scope.idCandidate = 0;
 
         /**
          * Ouvrire une boite de dialoge pour modifier une offre
@@ -415,11 +418,20 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             });
         };
 
+        $scope.toggleMode = () => {
+          $scope.mode = $scope.mode === 'view' ? 'manage' : 'view';
+        };
+
+        $scope.onGetOptions = () => {
+          return $scope.options();
+        };
+
         /**
          * Afficher les candidates qui ont postulee
          * @param {int} offer_id
          */
         $scope.viewApply = (offer_id) => {
+          $scope.mode = 'manage';
           $scope.loadingCandidats = true;
           let offer = _.find($scope.Offers, (item) => item.ID === offer_id);
           if (_.isUndefined(offer) || offer.candidat_apply.length <= 0) return;
@@ -441,8 +453,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             });
         };
 
-        $scope.viewLists = () => {
-          UIkit.modal('#modal-cv-lists-view').show();
+        $scope.viewCandidateInformation = (idCandidate) => {
+          $scope.idCandidate = parseInt(idCandidate);
+          $scope.mode = 'view';
         };
 
         /**
@@ -1037,6 +1050,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               alertify.success('Enregistrer avec succès')
             }
           });
+      };
+
+      $scope.getOptions = () => {
+        return {Helper: $scope.Helper};
       };
 
       /**

@@ -149,7 +149,7 @@ class scInterests {
         // Si le candidat a déja étes valider sur une autre offre de même entreprise
         // On ajoute et on active automatiquement l'affichage du CV
         if ( $itModel->interest_access( $cv_id, $Company->getId() ) ) {
-          $results = $itModel->added_interest( $cv_id, $offer_id, $Company->getId(), 1 );
+          $results = $itModel->added_interest( $cv_id, $offer_id, $Company->getId(), 'validated' );
           do_action( 'alert_when_company_interest', $cv_id );
           wp_send_json_success( $results );
         }

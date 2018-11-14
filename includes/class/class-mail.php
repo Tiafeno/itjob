@@ -199,7 +199,7 @@ class Mailing {
 
   /**
    * Récuperer les adresses email de l'administrateur
-   * @return array - Array of email string or empty content
+   * @return array|string - Array of email string or empty content
    */
   protected function getModeratorEmail() {
     if ( ! is_user_logged_in() ) {
@@ -207,9 +207,9 @@ class Mailing {
     }
     // Les address email des administrateurs qui recoivent les notifications
     // La valeur de cette option est un tableau
-    $admin_notification_emails = get_option( 'admin_notification_emails', null );
-    $admin_email               = get_option( 'admin_email', [] );
-    if ( is_null( $admin_notification_emails ) ) {
+    $admin_notification_emails = get_field( 'admin_editor_user', 'option' ); // Return array of user (WP_User)
+    $admin_email               = get_field( 'admin_email', 'option' ); // return string (mail)
+    if ( empty( $admin_notification_emails ) ) {
       return $admin_email;
     }
 
@@ -237,9 +237,9 @@ class Mailing {
     if ( ! $admin_emails ) {
       return false;
     }
+    $to             = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-    $to             = ! is_array( $admin_emails ) ? $admin_emails : implode( ',', $admin_emails );
     $User           = get_user_by( 'ID', $user_id );
     $args           = [
       'logo_url' => esc_url( $logo[0] )
@@ -311,25 +311,29 @@ class Mailing {
 
   /**
    * Notifier l'administrateur si un candidat à postuler à un offre
+   *
    * @param int $offer_id
    */
   public function alert_for_postuled_offer( $offer_id ) {
     global $Engine;
-    if ( ! is_user_logged_in() || !is_int($offer_id) ) {
+    if ( ! is_user_logged_in() || ! is_int( $offer_id ) ) {
       return false;
     }
 
     $User = wp_get_current_user();
-    $current_candidate = Candidate::get_candidate_by($User->ID);
+    if ( ! $User->ID ) {
+      return;
+    }
+    $current_candidate = Candidate::get_candidate_by( $User->ID );
     $current_candidate->__get_access();
-    $offer = new Offers($offer_id);
+    $offer = new Offers( $offer_id );
     // @var array $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $admin_emails = $this->getModeratorEmail();
     $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
     if ( ! $admin_emails ) {
       return false;
     }
-    $to = implode(',', $admin_emails);
+    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
     $subject   = 'Un candidat « ' . $current_candidate->title . ' » a postule pour un offre - ItJobMada';
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
@@ -339,10 +343,10 @@ class Mailing {
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/admin/notification-admin-for-postuled-offer.html.twig', [
-        'candidate_name'  => $current_candidate->title,
-        'offer_name'      => $offer->postPromote,
-        'logo'            => esc_url( $logo[0] ),
-        'dashboard_url'   => $this->dashboard_url
+        'candidate_name' => $current_candidate->title,
+        'offer_name'     => $offer->postPromote,
+        'logo'           => esc_url( $logo[0] ),
+        'dashboard_url'  => $this->dashboard_url
       ] );
     } catch ( \Twig_Error_Loader $e ) {
     } catch ( \Twig_Error_Runtime $e ) {
@@ -357,37 +361,37 @@ class Mailing {
       // Erreur d'envoie
       return false;
     }
-    
+
   }
 
   /**
    * Envoyer un mail a l'administrateur pour l'informer qu'une entreprise s'interesse
    * a un candidat.
    */
-  public function alert_when_company_interest( $candidat_id) {
+  public function alert_when_company_interest( $candidat_id ) {
     global $Engine;
     if ( ! is_user_logged_in() ) {
       return false;
     }
-    
-    $User = wp_get_current_user();
-    $current_company = Company::get_company_by($User->ID);
+
+    $User            = wp_get_current_user();
+    $current_company = Company::get_company_by( $User->ID );
     // @var array $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $admin_emails = $this->getModeratorEmail();
     $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
     if ( ! $admin_emails ) {
       return false;
     }
-    $to = implode(',', $admin_emails);
+    $to             = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
     $subject   = 'L\’Entreprise « ' . $current_company->title . ' » est intéressée par un candidat - ItJobMada';
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = '';
     try {
-      $Candidat = new Candidate($candidat_id);
+      $Candidat = new Candidate( $candidat_id );
       $Candidat->__get_access();
-      
+
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/admin/notification-admin-for-company-interest.html.twig', [
@@ -503,7 +507,9 @@ class Mailing {
         }
       }
 
-    } else return true;
+    } else {
+      return true;
+    }
 
   }
 
@@ -598,7 +604,9 @@ class Mailing {
           }
         }
 
-      } else return true;
+      } else {
+        return true;
+      }
     } // .end branch activity condition
   }
 

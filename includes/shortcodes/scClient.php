@@ -50,6 +50,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_get_company_lists', [ &$this, 'get_company_lists' ] );
         add_action( 'wp_ajax_add_cv_list', [ &$this, 'add_cv_list' ] );
         add_action( 'wp_ajax_get_candidat_interest_lists', [ &$this, 'get_candidat_interest_lists' ] );
+        add_action( 'wp_ajax_collect_favorite_candidates', [ &$this, 'collect_favorite_candidates' ] );
       }
       add_action( 'wp_ajax_nopriv_forgot_password', [ &$this, 'forgot_password' ] );
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
@@ -452,7 +453,7 @@ if ( ! class_exists( 'scClient' ) ) :
           $Candidate = new Candidate( (int)$interest->id_candidate );
           array_push( $postuledCandidates,
             [
-              'status'    => (int)$interest->status,
+              'status'    => $interest->status,
               'type'      => $interest->type,
               'candidate' => $Candidate
             ]);
@@ -481,6 +482,38 @@ if ( ! class_exists( 'scClient' ) ) :
       } else {
         wp_send_json_error("Une erreur s'est produite");
       }
+    }
+
+    /**
+     * Function ajax
+     */
+    public function collect_favorite_candidates() {
+      if (!is_user_logged_in()) wp_send_json_error('Désolé, Votre session a expiré');
+      $id_candidate = (int)Http\Request::getValue('id');
+      $id_offer = (int)Http\Request::getValue('id_offer');
+      if ($id_offer && $id_candidate) {
+        $User = wp_get_current_user();
+        if (!$User->ID || !in_array('company', $User->roles)) wp_send_json_error("Une erreur s'est produite");
+        $Company = Company::get_company_by($User->ID);
+        $Model = new itModel();
+        if ($Model->list_exist($Company->getId(), $id_candidate)) {
+          $request_interest = $Model->exist_interest($id_candidate, $id_offer);
+          if ($request_interest):
+            $interest = $Model->collect_interest_candidate($id_candidate, $id_offer);
+            $interest = array_map(function ($data) {
+              $data->attachment = get_post((int)$data->id_attachment);
+              $data->candidate = new Candidate((int)$data->id_candidate);
+              $data->candidate->__get_access();
+              unset($data->id_candidate, $data->id_attachment);
+              return $data;
+            }, $interest );
+
+            wp_send_json_success($interest[0]);
+          endif;
+        }
+        wp_send_json_error("Accès non autoriser");
+      }
+      wp_send_json_error("Bad request");
     }
 
     /**

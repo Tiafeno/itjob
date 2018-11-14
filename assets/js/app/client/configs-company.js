@@ -88,36 +88,60 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       }]
     }
   }])
-.directive('cvLists', [function () {
-  return {
-    restrict: 'E',
-    templateUrl: itOptions.Helper.tpls_partials + '/cv-lists.html',
-    scope: true,
-    controller: ['$scope', '$http', function ($scope, $http) {
-      $scope.preload = true;
-      $scope.listsCandidate = [];
-      UIkit.util.on('#modal-cv-lists-view', 'show', function (e) {
-        e.preventDefault();
-        $http({
-          url: `${itOptions.Helper.ajax_url}?action=get_company_lists`,
-          method: "GET",
-        }).then(resp => {
-          let query = resp.data;
-          if (query.success) {
-            var user_token = $scope.Company.author.data.user_pass;
-            $scope.listsCandidate = _.map(query.data, (data) => {
-              data.interestLink = `${$scope.Helper.interest_page_uri}?token=${user_token}&cvId=${data.ID}`;
-              return data;
-            });
+  .directive('cvLists', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/cv-lists.html',
+      scope: {
+        Company: '=company',
+        Offer: '=offer',
+        idCandidate: '=idCandidate',
+        toggleMode: '&onToggleMode',
+        Options: '&onOptions'
+      },
+      controller: ['$scope', '$http', function ($scope, $http) {
+        $scope.Candidate = {};
+        $scope.Attachment = {};
+        $scope.interestLink = '';
+        this.$onInit = () => {
+          $scope.Options = $scope.Options();
+        };
+        const self = this;
+
+        self.collectInformation = () => {
+          $scope.$parent.loadingCandidats = true;
+          $http({
+            url: `${itOptions.Helper.ajax_url}?action=collect_favorite_candidates&id=${$scope.idCandidate}&id_offer=${$scope.Offer.ID}`,
+            method: "GET",
+          }).then(resp => {
+            let query = resp.data;
+            if (query.success) {
+              const informations = query.data;
+              $scope.Candidate = _.clone(informations.candidate);
+              $scope.Attachment = _.clone(informations.attachment);
+              var user_token = $scope.Company.author.data.user_pass;
+              $scope.interestLink = `${$scope.Options.Helper.interest_page_uri}?token=${user_token}&cvId=${$scope.Candidate.ID}`;
+
+              $scope.$parent.loadingCandidats = false;
+            } else {
+              $scope.toggleMode();
+            }
+
+          }, function (error) {
+            $scope.toggleMode();
+          })
+        };
+
+        $scope.onReturn = () => {
+          $scope.toggleMode();
+        };
+
+        $scope.$watch('idCandidate', (id) => {
+          console.log(id);
+          if (id) {
+            self.collectInformation();
           }
-          $scope.preload = false;
-        }, function (error) {
-          UIkit.modal('#modal-cv-lists-view').hide();
-        })
-
-
-      });
-
-    }]
-  }
-}])
+        });
+      }]
+    }
+  }])

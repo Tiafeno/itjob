@@ -47,7 +47,6 @@
           <!--<div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Company.address ]]</div>-->
           <div class="d-flex justify-content-around align-items-center">
             <notifications></notifications>
-            <cv-lists company="Company"></cv-lists>
             <history-cv></history-cv>
           </div>
         </div>
@@ -115,6 +114,7 @@
                          company="Company"
                          abranchs="asyncTerms('branch_activity')"
                          regions="asyncTerms('region')"
+                         options="getOptions()"
                          all-city="asyncTerms('city')">
             </offer-lists>
 

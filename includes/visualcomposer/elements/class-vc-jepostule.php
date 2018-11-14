@@ -69,7 +69,7 @@ if ( ! class_exists( 'jePostule' ) ) :
             $offer_author = $Offer->getAuthor();
             $Company      = Company::get_company_by( $offer_author->ID );
             $Candidate    = Candidate::get_candidate_by( $User->ID );
-            $result       = $itModel->added_interest( $Candidate->getId(), $id_offer, $Company->getId(), 0, 'apply', $attachment_id );
+            $result       = $itModel->added_interest( $Candidate->getId(), $id_offer, $Company->getId(), 'pending', 'apply', $attachment_id );
             if ( ! $result ) {
               do_action( 'add_notice', 'Une erreur s\'est produite pendant la requete. Veuillez réessayer plus tard', 'warning' );
 

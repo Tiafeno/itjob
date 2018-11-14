@@ -17,10 +17,10 @@ trait OfferHelper {
     $interests = $itModel->get_offer_interests( $this->id_offer );
     foreach ( $interests as $interest ) {
       $this->candidat_apply[] = [
-        'status'       => (int) $interest->status,
-        'type'         => $interest->type,
-        'id_candidate' => (int) $interest->id_candidate,
-        'id_request'   => (int) $interest->id_request
+        'status'        => $interest->status,
+        'type'          => $interest->type,
+        'id_candidate'  => (int) $interest->id_candidate,
+        'id_cv_request' => (int) $interest->id_cv_request
       ];
     }
   }

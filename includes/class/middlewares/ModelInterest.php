@@ -20,16 +20,18 @@ trait ModelInterest {
    *
    * @return bool|int
    */
-  public function added_interest( $id_candidat, $id_offer, $id_company = null, $status = 0, $type = 'interested', $id_attachment = 0 ) {
+  public function added_interest( $id_candidat, $id_offer, $id_company = null, $status = 'pending', $type = 'interested', $id_attachment = 0 ) {
     global $wpdb;
     if ( ! is_user_logged_in() ) {
       return false;
     }
     $table  = $wpdb->prefix . 'cv_request';
 
-    // Ajouter une requete pré-activé
-    $status = $status ? 1 : 0;
-    $format = [ '%d', '%d', '%d', '%s', '%d', '%d' ];
+    /**
+     * pending, validated and reject
+     */
+    $status = $status === 'pending' ? 'pending' : 'validated';
+    $format = [ '%d', '%d', '%s', '%s', '%d', '%d' ];
     // Annuler si l'entreprise à déja ajouter le candidat à cette offre
     if ( $this->exist_interest( $id_candidat, $id_offer ) ) {
       return false;
@@ -64,13 +66,13 @@ trait ModelInterest {
    *
    * @return bool|int
    */
-  public function update_interest_status( $id_request, $status = 0 ) {
+  public function update_interest_status( $id_request, $status = 'pending' ) {
     global $wpdb;
     if ( ! is_user_logged_in() || ! is_int( $id_request ) ) {
       return false;
     }
     $table   = $wpdb->prefix . 'cv_request';
-    $results = $wpdb->update( $table, [ 'status' => $status ], [ 'id_request' => $id_request ], [ '%d' ], [ '%d' ] );
+    $results = $wpdb->update( $table, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%d' ], [ '%d' ] );
 
     return $results;
   }
@@ -98,6 +100,20 @@ trait ModelInterest {
     return $rows;
   }
 
+  public function collect_interest_candidate( $id_candidat = 0, $id_offer = 0 ) {
+    global $wpdb;
+    if ( ! is_user_logged_in() ) {
+      return false;
+    }
+    if ( ! $id_offer || ! $id_candidat ) {
+      return null;
+    }
+    $prepare = $wpdb->prepare( "SELECT * FROM $this->requestTable WHERE id_candidate = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
+    $rows    = $wpdb->get_results( $prepare );
+
+    return $rows;
+  }
+
   /**
    * Cette fonction verifie si l'entreprise a l'acces a cette candidat
    *
@@ -114,8 +130,8 @@ trait ModelInterest {
     if ( ! $id_company || ! $id_candidat ) {
       return null;
     }
-    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $this->requestTable WHERE id_candidate = %d AND id_company = %d AND status = 1",
-      (int) $id_candidat, (int) $id_company );
+    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $this->requestTable WHERE id_candidate = %d AND id_company = %d AND status = %s",
+      (int) $id_candidat, (int) $id_company, 'validated' );
     $rows    = $wpdb->get_var( $prepare );
 
     return $rows ? true : false;
