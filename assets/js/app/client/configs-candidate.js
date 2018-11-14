@@ -18,3 +18,32 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
     })
     .otherwise({redirectTo: '/oc-candidate'});
 }])
+.directive('candidacy', [function () {
+  return {
+    restrict: 'E',
+    templateUrl: itOptions.Helper.tpls_partials + '/candidacy.html',
+    scope: true,
+    link: function (scope, element, attr) {},
+    controller: ['$scope', '$http', function ($scope, $http) {
+      const self = this;
+      $scope.Candidatures = [];
+      $scope.relaunchCandidature = (id_offer, $event) => {
+        // envoyer une notification à l'entreprise pour vérifier la candidature
+      };
+      self.Initialize = () => {
+        $http.get(`${itOptions.Helper.ajax_url}?action=get_candidacy`, {
+          cache: false
+        })
+          .then(resp => {
+            const query = resp.data;
+            if (query.success) {
+              $scope.Candidatures = _.clone(query.data);
+            } else {
+              $scope.error = query.data;
+            }
+          });
+      };
+      self.Initialize();
+    }]
+  }
+}])

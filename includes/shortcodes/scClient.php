@@ -51,6 +51,8 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_add_cv_list', [ &$this, 'add_cv_list' ] );
         add_action( 'wp_ajax_get_candidat_interest_lists', [ &$this, 'get_candidat_interest_lists' ] );
         add_action( 'wp_ajax_collect_favorite_candidates', [ &$this, 'collect_favorite_candidates' ] );
+        add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
+        add_action( 'wp_ajax_get_candidacy', [ &$this, 'get_candidacy' ] );
       }
       add_action( 'wp_ajax_nopriv_forgot_password', [ &$this, 'forgot_password' ] );
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
@@ -490,6 +492,31 @@ if ( ! class_exists( 'scClient' ) ) :
     /**
      * Function ajax
      */
+    public function get_candidacy() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+      $User = wp_get_current_user();
+      if ( in_array( 'candidate', $User->roles ) ) {
+        $Candidate         = Candidate::get_candidate_by( $User->ID );
+        $Model             = new itModel();
+        $candidate_request = $Model->collect_candidate_request($Candidate->getId());
+        $requests          = &$candidate_request;
+        $requests          = array_map( function ( $request ) {
+          // Ajouter une object offre
+          $request->offer = new Offers((int)$request->id_offer);
+          unset($request->id_offer);
+          return $request;
+        }, $requests );
+        wp_send_json_success($requests);
+      } else {
+        wp_send_json_error("Vous n'étes pas un candidat");
+      }
+    }
+
+    /**
+     * Function ajax
+     */
     public function collect_favorite_candidates() {
       if ( ! is_user_logged_in() ) {
         wp_send_json_error( 'Désolé, Votre session a expiré' );
@@ -532,8 +559,8 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! is_user_logged_in() ) {
         wp_send_json_error( 'Désolé, Votre session a expiré' );
       }
-      $id_candidate = (int)Http\Request::getValue( 'id_candidate' );
-      $id_request   = (int)Http\Request::getValue( 'id_request' );
+      $id_candidate = (int) Http\Request::getValue( 'id_candidate' );
+      $id_request   = (int) Http\Request::getValue( 'id_request' );
 
       // FEATURED: Verifier si l'entreprise n'a pas atteint le nombre limite de CV
       $itModel = new itModel();
@@ -547,6 +574,26 @@ if ( ! class_exists( 'scClient' ) ) :
         $change_status = $itModel->update_interest_status( $id_request, 'validated' );
         if ( $response && $change_status ) {
           wp_send_json_success( "Le candidat a bien étés valider avec succès." );
+        }
+      }
+      wp_send_json_error( "Paramètre invalide" );
+    }
+
+    /**
+     * Function ajax
+     * Ajouter un CV dans la liste de l'entreprise
+     */
+    public function reject_cv() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+      $id_candidate = (int) Http\Request::getValue( 'id_candidate' );
+      $id_request   = (int) Http\Request::getValue( 'id_request' );
+      $itModel      = new itModel();
+      if ( $id_candidate ) {
+        $change_status = $itModel->update_interest_status( $id_request, 'reject' );
+        if ( $change_status ) {
+          wp_send_json_success( "Status mise à jour avec succès." );
         }
       }
       wp_send_json_error( "Paramètre invalide" );

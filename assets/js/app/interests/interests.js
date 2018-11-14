@@ -7,8 +7,7 @@
         scope: {
           cvId: '@'
         },
-        link: function (scope, element, attrs) {
-        },
+        link: function (scope, element, attrs) {},
         controller: ['$scope', '$http', function ($scope, $http) {
           const elButton = jQuery('#ask-cv');
           const textButton = elButton.html();
@@ -16,26 +15,30 @@
           $scope.offers = [];
           $scope.singup = '';
           $scope.login = '';
-          $scope.message = {title: 'Impossible d\'ajouter le cv', body: '', error: true};
+          $scope.message = {
+            title: 'Impossible d\'ajouter le cv',
+            body: '',
+            error: true
+          };
           $scope.i_am_interested_this_candidate = () => {
             elButton.text('Chargement en cours ...');
             let offerForm = new FormData();
             offerForm.append('action', 'get_current_user_offers');
             $http({
-              url: itOptions.Helper.ajax_url,
-              method: "POST",
-              headers: {
-                'Content-Type': undefined
-              },
-              data: offerForm
-            })
+                url: itOptions.Helper.ajax_url,
+                method: "POST",
+                headers: {
+                  'Content-Type': undefined
+                },
+                data: offerForm
+              })
               .then(response => {
                 let query = response.data;
                 if (query.success) {
                   jQuery('#modal-offer-interest').modal('toggle');
                   $scope.offers = _.clone(query.data);
                 } else {
-                 // User is not logged in
+                  // User is not logged in
                   let resp = query.data;
                   switch (resp.status) {
                     case 'access':
@@ -69,13 +72,13 @@
             askForm.append('offer_id', offer_id);
             jQuery('#modal-offer-interest').modal('hide');
             $http({
-              url: itOptions.Helper.ajax_url,
-              method: "POST",
-              headers: {
-                'Content-Type': undefined
-              },
-              data: askForm
-            })
+                url: itOptions.Helper.ajax_url,
+                method: "POST",
+                headers: {
+                  'Content-Type': undefined
+                },
+                data: askForm
+              })
               .then(resp => {
                 let query = resp.data;
                 elButton.html(textButton);
@@ -96,10 +99,10 @@
                   jQuery('#modal-error').modal('toggle');
                 } else {
                   // Success
-                  alertify.alert("CV ajouter avec succès. Pour voir la liste des CV ajoutes: " +
-                    "<br>Allez dans votre espace client ensuite dans <b>Historique des CV</b>", () => {
+                  alertify.alert("CV sélectionner avec succès. Pour gérer les candidats: " +
+                    "<br>Allez dans votre espace client ensuite dans <b>Mes offres</b>", () => {
 
-                  });
+                    });
                 }
               })
           };

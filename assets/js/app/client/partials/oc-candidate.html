@@ -147,7 +147,7 @@
 
       <div class="ibox-body">
         <p>
-          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:<br>
+          Pour toutes modifications; Veuillez contacter le service commercial aux numéros suivants:<br>
           <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a
           href="tel:+261349396218">034
           93 962 18</a>.
@@ -190,7 +190,7 @@
         <div class="d-flex align-items-center  mb-5">
           <div class="text-center m-auto">
             <h2 class="text-pink m-0">
-              [[ Candidate.postuled ? Candidate.postuled : 0 ]]
+              [[ Candidate.postuled ? Candidate.postuled.length : 0 ]]
             </h2>
             <div class="text-muted text-uppercase">Candidatures envoyés</div>
           </div>
@@ -214,6 +214,11 @@
         <li class="nav-item">
           <a class="nav-link" data-target="#cv" data-toggle="tab">
             Mon CV
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-target="#candidacy" data-toggle="tab">
+            Candidature(s)
           </a>
         </li>
       </ul>
@@ -295,6 +300,13 @@
                 </div>
 
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="candidacy">
+          <div class="page-content">
+            <div class="ibox-body">
+              <candidacy></candidacy>
             </div>
           </div>
         </div>

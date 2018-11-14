@@ -72,7 +72,7 @@ trait ModelInterest {
       return false;
     }
     $results = $wpdb->update( $this->requestTable, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%s' ], [ '%d' ] );
-    return $results;
+    return $results !== false;
   }
 
   /**
@@ -107,6 +107,24 @@ trait ModelInterest {
       return null;
     }
     $prepare = $wpdb->prepare( "SELECT * FROM $this->requestTable WHERE id_candidate = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
+    $rows    = $wpdb->get_results( $prepare );
+
+    return $rows;
+  }
+
+  /**
+   * Récuperer les offres qu'un candidat à envoyer ces candidatures
+   * @param int $id_candidate
+   * @param string $status
+   *
+   * @return array|bool|null|object
+   */
+  public function collect_candidate_request($id_candidate = 0, $status = 'apply') {
+    global $wpdb;
+    if (!is_user_logged_in() || !$id_candidate) {
+      return false;
+    }
+    $prepare = $wpdb->prepare( "SELECT * FROM $this->requestTable WHERE id_candidate = %d", (int) $id_candidate );
     $rows    = $wpdb->get_results( $prepare );
 
     return $rows;

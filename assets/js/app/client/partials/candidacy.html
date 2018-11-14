@@ -1,0 +1,34 @@
+<div class="table-responsive row">
+  <table class="table table-bordered table-hover" id="products-table">
+
+    <thead class="thead-default thead-lg">
+    <tr>
+      <th>ID</th>
+      <th>Status</th>
+      <th>Poste à promouvoir</th>
+      <th>Type de contrat</th>
+      <th>Secteur d'activité</th>
+      <th>Réference</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr ng-repeat="candidature in Candidatures">
+
+      <td>[[candidature.offer.ID]]</td>
+      <td>
+          <span class="badge badge-pill" ng-class="{'badge-blue' : candidature.status == 'validated', 'badge-danger' : candidature.status == 'reject'}">
+            [[ candidature.status]]
+          </span>
+      </td>
+      <td><a href="[[candidature.offer.post_url]]" title="[[candidature.offer.postPromote]]">[[ candidature.offer.postPromote ]]</a></td>
+      <td>[[ candidature.offer.contractType[ 'label' ] ]]</td>
+      <td>[[ candidature.offer.branch_activity.name ]]</td>
+      <td><span class="badge badge-info badge-pill">[[ candidature.offer.reference ]]</span></td>
+      <td><span class="text-light mr-3 font-16" ng-click="relaunchCandidature(candidature.offer.ID, $event)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
+    </tr>
+    </tbody>
+
+  </table>
+</div>

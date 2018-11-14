@@ -88,6 +88,212 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       }]
     }
   }])
+  .directive('offerLists', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/offer-lists.html',
+      scope: {
+        candidateLists: '=listsCandidate',
+        options: '&',
+        Entreprise: '=company',
+        Offers: '=offers',
+        regions: '&',
+        allCity: '&',
+        abranchs: '&',
+        init: '&init'
+      },
+      link: function (scope, element, attrs) {
+        scope.fireData = false;
+        scope.Helper = itOptions.Helper;
+        scope.collectDatatable = () => {
+          if (scope.fireData) return;
+          const table = jQuery('#products-table').DataTable({
+            pageLength: 10,
+            fixedHeader: false,
+            responsive: false,
+            "sDom": 'rtip',
+            language: {
+              url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+            }
+          });
+          jQuery('#key-search').on('keyup', () => {
+            table.search(this.value).draw();
+          });
+          scope.fireData = true;
+        };
+        angular.element(document).ready(function () {
+          // Load datatable on focus search input
+          jQuery('#key-search').focus(function () {
+            scope.collectDatatable();
+          });
+          window.setTimeout(() => {
+            scope.collectDatatable();
+          }, 1200);
+          jQuery('.input-group.date').datepicker({
+            format: "mm/dd/yyyy",
+            language: "fr",
+            startView: 2,
+            todayBtn: false,
+            keyboardNavigation: true,
+            forceParse: false,
+            autoclose: true
+          });
+        });
+      },
+      controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
+        let self = this;
+        $scope.offerEditor = {};
+        $scope.offerView = {};
+        $scope.loadingCandidats = false;
+        $scope.postuledCandidats = [];
+        $scope.mode = "";
+        $scope.error = "";
+        $scope.idCandidate = 0;
+        // Ouvrire une boite de dialoge pour modifier une offre
+        $scope.openEditor = (offerId, $event) => {
+          let offer = _.findWhere($scope.Offers, {
+            ID: parseInt(offerId)
+          });
+          $scope.$parent.preloaderToogle();
+          $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
+            $scope.Regions = _.clone(data[0]);
+            $scope.branchActivity = _.clone(data[1]);
+            $scope.Citys = _.clone(data[2]);
+            $scope.offerEditor = _.mapObject(offer, (val, key) => {
+              if (typeof val.term_id !== 'undefined') return val.term_id;
+              if (typeof val.label !== 'undefined') return val.value;
+              if (typeof val.post_title !== 'undefined') return val.ID;
+              if (key === 'proposedSalary') return parseInt(val);
+              return val;
+            });
+            if (!_.isEmpty(offer) || !_.isNull($scope.offerEditor)) {
+              $scope.$parent.preloaderToogle();
+              UIkit.modal('#modal-edit-offer-overflow').show();
+            }
+          });
+        };
+        // Modifier une offre
+        $scope.editOffer = (offerId) => {
+          let offerForm = new FormData();
+          let formObject = Object.keys($scope.offerEditor);
+          offerForm.append('action', 'update_offer');
+          offerForm.append('post_id', parseInt(offerId));
+          formObject.forEach(function (property) {
+            let propertyValue = Reflect.get($scope.offerEditor, property);
+            offerForm.set(property, propertyValue);
+          });
+          clientFactory
+            .sendPostForm(offerForm)
+            .then(resp => {
+              let data = resp.data;
+              if (data.success) {
+                // Mettre à jours la liste des offres
+                $scope.Offers = _.clone(data.offers);
+                UIkit.modal('#modal-edit-offer-overflow').hide();
+                alertify.success("L'offre a été mise à jour avec succès");
+              } else {
+                alertify.error("Une erreur s'est produite pendant l'enregistrement");
+              }
+            });
+        };
+        // Changer le mode de view dans la boite de dialogue
+        $scope.toggleMode = () => {
+          $scope.mode = $scope.mode === 'view' ? 'manage' : 'view';
+        };
+        $scope.onGetOptions = () => {
+          return $scope.options();
+        };
+        $scope.collectFilterResults = (methode) => {
+          return methode === 'filter_selected_candidate' ? _.filter($scope.interestCandidats, (item) => $scope.filterSelectedCandidates(item))
+            : _.filter($scope.interestCandidats, (item) => $scope.filterPostuledCandidates(item));
+        };
+        // Filtrer les candidats qui sont selectionner et qui sont valider pour postuler
+        $scope.filterSelectedCandidates = (item) => {
+          return item.type === "apply" && item.status === 'validated' || item.type === 'interested';
+        };
+        // Filtre les candidats qui ont postuler mais qui ne sont pas encore validé
+        $scope.filterPostuledCandidates = (item) => {
+          return item.type === 'apply' && item.status !== 'validated';
+        };
+        // Afficher les candidates qui ont postule
+        $scope.viewApply = (offer_id) => {
+          $scope.mode = 'manage';
+          $scope.loadingCandidats = true;
+          let offer = _.find($scope.Offers, (item) => item.ID === offer_id);
+          if (_.isUndefined(offer) || offer.candidat_apply.length <= 0) return;
+          $scope.offerView = _.clone(offer);
+          UIkit.modal('#modal-view-candidat').show();
+          self.refreshInterestCandidate(offer);
+        };
+        // Actualiser la liste des candidats dans la gestion des candidats
+        self.refreshInterestCandidate = () => {
+          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + $scope.offerView.ID, {
+            cache: false
+          })
+            .then(resp => {
+              $scope.interestCandidats = _.map(resp.data, data => {
+                if (_.find($scope.candidateLists, (candidat_id) => candidat_id === data.candidate.ID)) {
+                  data.inList = true;
+                } else {
+                  data.inList = false;
+                }
+                return data;
+              });
+              $scope.loadingCandidats = false;
+            });
+        };
+        $scope.viewCandidateInformation = (idCandidate) => {
+          $scope.idCandidate = parseInt(idCandidate);
+          $scope.mode = 'view';
+        };
+        // Ajouter un candidat dans la liste de l'entreprise
+        $scope.addList = (id_candidate, $event) => {
+          $scope.error = '';
+          if (!_.isNumber(id_candidate)) return;
+          var el = $event.currentTarget;
+          angular.element(el).text("Patienter ...");
+          const request = _.find($scope.interestCandidats, (it) => it.candidate.ID === id_candidate);
+          $http.get(`${itOptions.Helper.ajax_url}?action=add_cv_list&id_candidate=${request.candidate.ID}&id_request=${request.id_request}`, {
+            cache: false
+          })
+            .then(resp => {
+              var query = resp.data;
+              if (query.success) {
+                $http.get(`${itOptions.Helper.ajax_url}?action=get_candidat_interest_lists`, {
+                  cache: false
+                }).then(response => {
+                  var query = response.data;
+                  $scope.candidateLists = _.clone(query.data);
+                  self.refreshInterestCandidate();
+                });
+              } else {
+                $scope.error = query.data;
+              }
+            });
+        };
+        // Retirer un candidat sur l'offre
+        $scope.rejectCandidate = (id_candidate, $event) => {
+          $scope.error = '';
+          if (!_.isNumber(id_candidate)) return;
+          var el = $event.currentTarget;
+          angular.element(el).text("Patienter ...");
+          const request = _.find($scope.interestCandidats, (it) => it.candidate.ID === id_candidate);
+          $http.get(`${itOptions.Helper.ajax_url}?action=reject_cv&id_candidate=${request.candidate.ID}&id_request=${request.id_request}`, {
+            cache: false
+          })
+            .then(resp => {
+              var query = resp.data;
+              if (query.success) {
+                self.refreshInterestCandidate();
+              } else {
+                $scope.error = query.data;
+              }
+            });
+        };
+
+      }]
+    };
+  }])
   .directive('cvConsult', [function () {
     return {
       restrict: 'E',

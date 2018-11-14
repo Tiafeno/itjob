@@ -8,8 +8,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
     return {
       getCity: function () {
         return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {
-          cache: true
-        })
+            cache: true
+          })
           .then(function (resp) {
             return resp.data;
           });
@@ -37,9 +37,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   }])
   .filter('Greet', [function () {
     const Greeting = [{
-      greeting: 'mrs',
-      label: 'Madame'
-    },
+        greeting: 'mrs',
+        label: 'Madame'
+      },
       {
         greeting: 'mr',
         label: 'Monsieur'
@@ -54,9 +54,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   }])
   .filter('Status', [function () {
     const postStatus = [{
-      slug: 'publish',
-      label: 'Vérifier'
-    },
+        slug: 'publish',
+        label: 'Vérifier'
+      },
       {
         slug: 'pending',
         label: 'En attente'
@@ -100,7 +100,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               pwd: {
                 required: "Ce champ est obligatoire",
                 pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, " +
-                "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
+                  "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
               },
               confpwd: {
                 required: "Ce champ est obligatoire",
@@ -114,13 +114,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               Fm.append('pwd', scope.password.pwd);
               // Submit form validate
               $http({
-                url: itOptions.Helper.ajax_url,
-                method: "POST",
-                headers: {
-                  'Content-Type': undefined
-                },
-                data: Fm
-              })
+                  url: itOptions.Helper.ajax_url,
+                  method: "POST",
+                  headers: {
+                    'Content-Type': undefined
+                  },
+                  data: Fm
+                })
                 .then(resp => {
                   let data = resp.data;
                   // Update password success
@@ -232,8 +232,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         abranchs: '&',
         init: '&init'
       },
-      link: function (scope, element, attrs) {
-      },
+      link: function (scope, element, attrs) {},
       controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
         $scope.status = false;
         $scope.userEditor = {};
@@ -305,210 +304,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
 
       }]
     }
-  }])
-  .directive('offerLists', [function () {
-    return {
-      restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/offer-lists.html',
-      scope: {
-        candidateLists: '=listsCandidate',
-        options: '&',
-        Entreprise: '=company',
-        Offers: '=offers',
-        regions: '&',
-        allCity: '&',
-        abranchs: '&',
-        init: '&init'
-      },
-      link: function (scope, element, attrs) {
-        scope.focusFire = false;
-        scope.Helper = itOptions.Helper;
-        angular.element(document).ready(function () {
-          // Load datatable on focus search input
-          jQuery('#key-search').focus(function () {
-            if (scope.focusFire) return;
-            const table = jQuery('#products-table').DataTable({
-              pageLength: 10,
-              fixedHeader: false,
-              responsive: false,
-              "sDom": 'rtip',
-              language: {
-                url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
-              }
-            });
-            jQuery('#key-search').on('keyup', () => {
-              table.search(this.value).draw();
-            });
-            scope.focusFire = true;
-          });
-
-          jQuery('.input-group.date').datepicker({
-            format: "mm/dd/yyyy",
-            language: "fr",
-            startView: 2,
-            todayBtn: false,
-            keyboardNavigation: true,
-            forceParse: false,
-            autoclose: true
-          });
-          console.log("Load datatable");
-
-        });
-      },
-      controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
-        let self = this;
-        $scope.offerEditor = {};
-        $scope.offerView = {};
-        $scope.loadingCandidats = false;
-        $scope.postuledCandidats = [];
-        $scope.mode = "";
-        $scope.idCandidate = 0;
-
-        /**
-         * Ouvrire une boite de dialoge pour modifier une offre
-         * @param {int} offerId
-         */
-        $scope.openEditor = (offerId, $event) => {
-          let offer = _.findWhere($scope.Offers, {
-            ID: parseInt(offerId)
-          });
-          $scope.$parent.preloaderToogle();
-          $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
-            $scope.Regions = _.clone(data[0]);
-            $scope.branchActivity = _.clone(data[1]);
-            $scope.Citys = _.clone(data[2]);
-            $scope.offerEditor = _.mapObject(offer, (val, key) => {
-              if (typeof val.term_id !== 'undefined') return val.term_id;
-              if (typeof val.label !== 'undefined') return val.value;
-              if (typeof val.post_title !== 'undefined') return val.ID;
-              if (key === 'proposedSalary') return parseInt(val);
-              return val;
-            });
-            if (!_.isEmpty(offer) || !_.isNull($scope.offerEditor)) {
-              $scope.$parent.preloaderToogle();
-              UIkit.modal('#modal-edit-offer-overflow').show();
-            }
-          });
-        };
-
-        /**
-         * Modifier une offre
-         * @param {int} offerId
-         */
-        $scope.editOffer = (offerId) => {
-          let offerForm = new FormData();
-          let formObject = Object.keys($scope.offerEditor);
-          offerForm.append('action', 'update_offer');
-          offerForm.append('post_id', parseInt(offerId));
-          formObject.forEach(function (property) {
-            let propertyValue = Reflect.get($scope.offerEditor, property);
-            offerForm.set(property, propertyValue);
-          });
-          clientFactory
-            .sendPostForm(offerForm)
-            .then(resp => {
-              let data = resp.data;
-              if (data.success) {
-                // Mettre à jours la liste des offres
-                $scope.Offers = _.clone(data.offers);
-                UIkit.modal('#modal-edit-offer-overflow').hide();
-                alertify.success("L'offre a été mise à jour avec succès");
-              } else {
-                alertify.error("Une erreur s'est produite pendant l'enregistrement");
-              }
-            });
-        };
-
-        $scope.toggleMode = () => {
-          $scope.mode = $scope.mode === 'view' ? 'manage' : 'view';
-        };
-
-
-        $scope.onGetOptions = () => {
-          return $scope.options();
-        };
-
-        $scope.collectFilterResults = (methode) => {
-          return methode === 'filter_selected_candidate' ? _.filter($scope.interestCandidats, (item) => $scope.filterSelectedCandidates(item))
-            : _.filter($scope.interestCandidats, (item) => $scope.filterPostuledCandidates(item));
-        };
-
-        // Filtrer les candidats qui sont selectionner et qui sont valider pour postuler
-        $scope.filterSelectedCandidates = (item) => {
-          return item.type === "apply" && item.status === 'validated' || item.type === 'interested';
-        };
-
-        // Filtre les candidats qui ont postuler mais qui ne sont pas encore validé
-        $scope.filterPostuledCandidates = (item) => {
-          return item.type === 'apply' && item.status !== 'validated';
-        };
-
-        /**
-         * Afficher les candidates qui ont postulee
-         * @param {int} offer_id
-         */
-        $scope.viewApply = (offer_id) => {
-          $scope.mode = 'manage';
-          $scope.loadingCandidats = true;
-          let offer = _.find($scope.Offers, (item) => item.ID === offer_id);
-          if (_.isUndefined(offer) || offer.candidat_apply.length <= 0) return;
-          $scope.offerView = _.clone(offer);
-          UIkit.modal('#modal-view-candidat').show();
-          self.refreshInterestCandidate(offer);
-        };
-
-        self.refreshInterestCandidate = () => {
-          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + $scope.offerView.ID, {
-            cache: false
-          })
-            .then(resp => {
-              $scope.interestCandidats = _.map(resp.data, data => {
-                if (_.find($scope.candidateLists, (candidat_id) => candidat_id === data.candidate.ID)) {
-                  data.inList = true;
-                } else {
-                  data.inList = false;
-                }
-                return data;
-              });
-              $scope.loadingCandidats = false;
-            });
-        };
-
-        $scope.viewCandidateInformation = (idCandidate) => {
-          $scope.idCandidate = parseInt(idCandidate);
-          $scope.mode = 'view';
-        };
-
-        /**
-         * Ajouter un candidat dans la liste de l'entreprise
-         * @param {int} id_candidate
-         */
-        $scope.addList = (id_candidate, $event) => {
-          if (!_.isNumber(id_candidate)) return;
-          var el = $event.currentTarget;
-          angular.element(el).text("Patienter ...");
-          const request = _.findWhere($scope.interestCandidats, (it) => it.candidate.ID === id_candidate);
-          $http.get(`${itOptions.Helper.ajax_url}?action=add_cv_list&id_candidate=${request.candidate.ID}&id_request=${request.id_request}`, {
-            cache: false
-          })
-            .then(resp => {
-              var query = resp.data;
-              if (query.success) {
-                $http.get(`${itOptions.Helper.ajax_url}?action=get_candidat_interest_lists`, {
-                  cache: false
-                }).then(response => {
-                  var query = response.data;
-                  $scope.candidateLists = _.clone(query.data);
-                  self.refreshInterestCandidate();
-                });
-              } else {
-
-              }
-            });
-        };
-
-      }]
-    };
   }])
   .directive('alerts', [function () {
     return {
@@ -592,11 +387,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.onDeleteExperience = (experienceId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-            labels: {
-              ok: 'Supprimer',
-              cancel: 'Annuler'
-            }
-          })
+              labels: {
+                ok: 'Supprimer',
+                cancel: 'Annuler'
+              }
+            })
             .then(function () {
               let Experiences = _.reject($scope.Candidate.experiences, (experience) => experience.id === parseInt(experienceId));
               self.updateExperience(Experiences)
@@ -718,13 +513,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           subForm.append('experiences', JSON.stringify(Experiences));
           $scope.status = "Enregistrement en cours...";
           $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -733,9 +528,14 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                   return exp;
                 });
                 $scope.mode = null;
-                deferred.resolve({success: true});
+                deferred.resolve({
+                  success: true
+                });
               } else {
-                deferred.reject({success: false, msg: "Une erreur s'est produite."})
+                deferred.reject({
+                  success: false,
+                  msg: "Une erreur s'est produite."
+                })
               }
             });
           return deferred.promise;
@@ -764,11 +564,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.status = '';
         });
 
-        $scope.$watch('Exp', experience => {
-        });
+        $scope.$watch('Exp', experience => {});
 
-        $scope.$watch('newExperienceForm', experience => {
-        });
+        $scope.$watch('newExperienceForm', experience => {});
       }]
     }
   }])
@@ -790,8 +588,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         // Cette variable contient les nouvelles informations a modifier ou ajouter
         $scope.Train = {};
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
-        this.$onInit = () => {
-        };
+        this.$onInit = () => {};
 
         /**
          * Ajouter une nouvelle formation
@@ -831,11 +628,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.onDeleteTraining = (trainingId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-            labels: {
-              ok: 'Supprimer',
-              cancel: 'Annuler'
-            }
-          })
+              labels: {
+                ok: 'Supprimer',
+                cancel: 'Annuler'
+              }
+            })
             .then(function () {
               let Trainings = _.reject($scope.Candidate.trainings, (training) => training.id === parseInt(trainingId));
               self.updateTraining(Trainings);
@@ -869,7 +666,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               });
               break;
             default:
-              console.log("Une erreur s'est produite dans le formulaire");
+              console.warn("Une erreur s'est produite dans le formulaire");
               return false;
               break;
           }
@@ -886,13 +683,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           subForm.append('action', 'update_trainings');
           subForm.append('trainings', JSON.stringify(trainings));
           $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -1047,13 +844,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         form.append('action', 'update_alert_filter');
         form.append('alerts', JSON.stringify($scope.alerts));
         $http({
-          method: 'POST',
-          url: itOptions.Helper.ajax_url,
-          headers: {
-            'Content-Type': undefined
-          },
-          data: form
-        })
+            method: 'POST',
+            url: itOptions.Helper.ajax_url,
+            headers: {
+              'Content-Type': undefined
+            },
+            data: form
+          })
           .then(response => {
             // Handle success
             let data = response.data;
@@ -1067,7 +864,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       };
 
       $scope.getOptions = () => {
-        return {Helper: $scope.Helper};
+        return {
+          Helper: $scope.Helper
+        };
       };
 
       /**
@@ -1205,13 +1004,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
        */
       $scope.onSaveCandidateProfil = (formData) => {
         $http({
-          url: itOptions.Helper.ajax_url,
-          method: "POST",
-          headers: {
-            'Content-Type': undefined
-          },
-          data: formData
-        })
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: formData
+          })
           .then(resp => {
             let data = resp.data;
             if (!data.success) return;
