@@ -356,6 +356,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         });
       },
       controller: ['$scope', '$http', '$q', 'clientFactory', function ($scope, $http, $q, clientFactory) {
+        let self = this;
         $scope.offerEditor = {};
         $scope.offerView = {};
         $scope.loadingCandidats = false;
@@ -422,8 +423,24 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.mode = $scope.mode === 'view' ? 'manage' : 'view';
         };
 
+
         $scope.onGetOptions = () => {
           return $scope.options();
+        };
+
+        $scope.collectFilterResults = (methode) => {
+          return methode === 'filter_selected_candidate' ? _.filter($scope.interestCandidats, (item) => $scope.filterSelectedCandidates(item))
+            : _.filter($scope.interestCandidats, (item) => $scope.filterPostuledCandidates(item));
+        };
+
+        // Filtrer les candidats qui sont selectionner et qui sont valider pour postuler
+        $scope.filterSelectedCandidates = (item) => {
+          return item.type === "apply" && item.status === 'validated' || item.type === 'interested';
+        };
+
+        // Filtre les candidats qui ont postuler mais qui ne sont pas encore validé
+        $scope.filterPostuledCandidates = (item) => {
+          return item.type === 'apply' && item.status !== 'validated';
         };
 
         /**
@@ -437,7 +454,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           if (_.isUndefined(offer) || offer.candidat_apply.length <= 0) return;
           $scope.offerView = _.clone(offer);
           UIkit.modal('#modal-view-candidat').show();
-          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + offer.ID, {
+          self.refreshInterestCandidate(offer);
+        };
+
+        self.refreshInterestCandidate = () => {
+          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + $scope.offerView.ID, {
             cache: false
           })
             .then(resp => {
@@ -466,7 +487,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           if (!_.isNumber(id_candidate)) return;
           var el = $event.currentTarget;
           angular.element(el).text("Patienter ...");
-          $http.get(`${itOptions.Helper.ajax_url}?action=add_cv_list&id_candidate=${id_candidate}`, {
+          const request = _.findWhere($scope.interestCandidats, (it) => it.candidate.ID === id_candidate);
+          $http.get(`${itOptions.Helper.ajax_url}?action=add_cv_list&id_candidate=${request.candidate.ID}&id_request=${request.id_request}`, {
             cache: false
           })
             .then(resp => {
@@ -477,15 +499,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 }).then(response => {
                   var query = response.data;
                   $scope.candidateLists = _.clone(query.data);
-                  $scope.interestCandidats = _.map($scope.interestCandidats, data => {
-                    if (_.find($scope.candidateLists, (candidat_id) => candidat_id === data.candidate.ID)) {
-                      data.inList = true;
-                    } else {
-                      data.inList = false;
-                    }
-                    return data;
-                  });
-                  angular.element(el).text("Voir la liste");
+                  self.refreshInterestCandidate();
                 });
               } else {
 

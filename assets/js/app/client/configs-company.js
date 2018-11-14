@@ -88,10 +88,10 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       }]
     }
   }])
-  .directive('cvLists', [function () {
+  .directive('cvConsult', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/cv-lists.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/cv-consult.html',
       scope: {
         Company: '=company',
         Offer: '=offer',
@@ -100,6 +100,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         Options: '&onOptions'
       },
       controller: ['$scope', '$http', function ($scope, $http) {
+        $scope.loading = true;
         $scope.Candidate = {};
         $scope.Attachment = {};
         $scope.interestLink = '';
@@ -109,7 +110,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         const self = this;
 
         self.collectInformation = () => {
-          $scope.$parent.loadingCandidats = true;
+          $scope.loading = true;
           $http({
             url: `${itOptions.Helper.ajax_url}?action=collect_favorite_candidates&id=${$scope.idCandidate}&id_offer=${$scope.Offer.ID}`,
             method: "GET",
@@ -117,12 +118,11 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
             let query = resp.data;
             if (query.success) {
               const informations = query.data;
+              const user_token = $scope.Company.author.data.user_pass;
               $scope.Candidate = _.clone(informations.candidate);
               $scope.Attachment = _.clone(informations.attachment);
-              var user_token = $scope.Company.author.data.user_pass;
               $scope.interestLink = `${$scope.Options.Helper.interest_page_uri}?token=${user_token}&cvId=${$scope.Candidate.ID}`;
-
-              $scope.$parent.loadingCandidats = false;
+              $scope.loading = false;
             } else {
               $scope.toggleMode();
             }

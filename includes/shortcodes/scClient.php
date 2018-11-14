@@ -250,13 +250,13 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! $email || ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
         wp_send_json_error( "Paramétre non valide" );
       }
-      $user = get_user_by('email', $email);
+      $user = get_user_by( 'email', $email );
       if ( ! $user ) {
         wp_send_json_error( "Votre recherche ne donne aucun résultat. Veuillez réessayer avec d’autres adresse email." );
       }
       $reset_key = get_password_reset_key( $user );
       if ( is_wp_error( $reset_key ) ) {
-        wp_send_json_error($reset_key->get_error_message());
+        wp_send_json_error( $reset_key->get_error_message() );
       }
       // Envoyer un email à l'utilisateur
       do_action( 'forgot_my_password', $email, $reset_key );
@@ -446,17 +446,18 @@ if ( ! class_exists( 'scClient' ) ) :
       $offer_id           = (int) $offer_id;
       $postuledCandidates = [];
       // Récuperer les candidats qui ont postuler et interesser par l'entreprise
-      $itModel = new itModel();
-      $interests = $itModel->get_offer_interests($offer_id);
+      $itModel   = new itModel();
+      $interests = $itModel->get_offer_interests( $offer_id );
       if ( $interests ) {
         foreach ( $interests as $interest ) {
-          $Candidate = new Candidate( (int)$interest->id_candidate );
+          $Candidate = new Candidate( (int) $interest->id_candidate );
           array_push( $postuledCandidates,
             [
-              'status'    => $interest->status,
-              'type'      => $interest->type,
-              'candidate' => $Candidate
-            ]);
+              'status'     => $interest->status,
+              'type'       => $interest->type,
+              'id_request' => (int) $interest->id_cv_request,
+              'candidate'  => $Candidate
+            ] );
         }
       }
       wp_send_json( $postuledCandidates );
@@ -467,20 +468,22 @@ if ( ! class_exists( 'scClient' ) ) :
      * Récuperer la liste des CV d'entreprise
      */
     public function get_company_lists() {
-      if (!is_user_logged_in()) wp_send_json_error('Désolé, Votre session a expiré');
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
       $User = wp_get_current_user();
-      if ($User->ID) {
-        $itModel = new itModel();
+      if ( $User->ID ) {
+        $itModel   = new itModel();
         $Candidate = [];
-        $lists = $itModel->get_lists();
-        foreach ($lists as $list) {
-          $privateCandidate = new Candidate((int)$list->id_candidate);
+        $lists     = $itModel->get_lists();
+        foreach ( $lists as $list ) {
+          $privateCandidate = new Candidate( (int) $list->id_candidate );
           $privateCandidate->__get_access();
-          array_push($Candidate, $privateCandidate);
+          array_push( $Candidate, $privateCandidate );
         }
-        wp_send_json_success($Candidate);
+        wp_send_json_success( $Candidate );
       } else {
-        wp_send_json_error("Une erreur s'est produite");
+        wp_send_json_error( "Une erreur s'est produite" );
       }
     }
 
@@ -488,32 +491,37 @@ if ( ! class_exists( 'scClient' ) ) :
      * Function ajax
      */
     public function collect_favorite_candidates() {
-      if (!is_user_logged_in()) wp_send_json_error('Désolé, Votre session a expiré');
-      $id_candidate = (int)Http\Request::getValue('id');
-      $id_offer = (int)Http\Request::getValue('id_offer');
-      if ($id_offer && $id_candidate) {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+      $id_candidate = (int) Http\Request::getValue( 'id' );
+      $id_offer     = (int) Http\Request::getValue( 'id_offer' );
+      if ( $id_offer && $id_candidate ) {
         $User = wp_get_current_user();
-        if (!$User->ID || !in_array('company', $User->roles)) wp_send_json_error("Une erreur s'est produite");
-        $Company = Company::get_company_by($User->ID);
-        $Model = new itModel();
-        if ($Model->list_exist($Company->getId(), $id_candidate)) {
-          $request_interest = $Model->exist_interest($id_candidate, $id_offer);
-          if ($request_interest):
-            $interest = $Model->collect_interest_candidate($id_candidate, $id_offer);
-            $interest = array_map(function ($data) {
-              $data->attachment = get_post((int)$data->id_attachment);
-              $data->candidate = new Candidate((int)$data->id_candidate);
+        if ( ! $User->ID || ! in_array( 'company', $User->roles ) ) {
+          wp_send_json_error( "Une erreur s'est produite" );
+        }
+        $Company = Company::get_company_by( $User->ID );
+        $Model   = new itModel();
+        if ( $Model->list_exist( $Company->getId(), $id_candidate ) ) {
+          $request_interest = $Model->exist_interest( $id_candidate, $id_offer );
+          if ( $request_interest ):
+            $interest = $Model->collect_interest_candidate( $id_candidate, $id_offer );
+            $interest = array_map( function ( $data ) {
+              $data->attachment = get_post( (int) $data->id_attachment );
+              $data->candidate  = new Candidate( (int) $data->id_candidate );
               $data->candidate->__get_access();
-              unset($data->id_candidate, $data->id_attachment);
+              unset( $data->id_candidate, $data->id_attachment );
+
               return $data;
             }, $interest );
 
-            wp_send_json_success($interest[0]);
+            wp_send_json_success( $interest[0] );
           endif;
         }
-        wp_send_json_error("Accès non autoriser");
+        wp_send_json_error( "Accès non autoriser" );
       }
-      wp_send_json_error("Bad request");
+      wp_send_json_error( "Bad request" );
     }
 
     /**
@@ -521,23 +529,27 @@ if ( ! class_exists( 'scClient' ) ) :
      * Ajouter un CV dans la liste de l'entreprise
      */
     public function add_cv_list() {
-      if (!is_user_logged_in()) wp_send_json_error('Désolé, Votre session a expiré');
-      $id_candidat = Http\Request::getValue('id_candidate');
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+      $id_candidate = (int)Http\Request::getValue( 'id_candidate' );
+      $id_request   = (int)Http\Request::getValue( 'id_request' );
 
       // FEATURED: Verifier si l'entreprise n'a pas atteint le nombre limite de CV
       $itModel = new itModel();
-      if ($itModel->check_list_limit()) {
+      if ( $itModel->check_list_limit() ) {
         // Nombre limite atteinte
-        wp_send_json_error("Vous avez atteint le nombre de limite de CV dans votre liste");
+        wp_send_json_error( "Vous avez atteint le nombre de limite de CV dans votre liste" );
       }
-      if ($id_candidat) {
-        $id_candidat = (int)$id_candidat;
-        $response = $itModel->add_list($id_candidat);
-        if ($response) {
-          wp_send_json_success($response);
+      if ( $id_candidate ) {
+        $id_candidate  = (int) $id_candidate;
+        $response      = $itModel->add_list( $id_candidate );
+        $change_status = $itModel->update_interest_status( $id_request, 'validated' );
+        if ( $response && $change_status ) {
+          wp_send_json_success( "Le candidat a bien étés valider avec succès." );
         }
       }
-      wp_send_json_error("Paramètre invalide");
+      wp_send_json_error( "Paramètre invalide" );
     }
 
     /**
@@ -598,15 +610,17 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json_error( "Accès refuser" );
       }
       if ( $this->Company instanceof Company ) {
-        $itModel = new itModel();
+        $itModel    = new itModel();
         $Candidates = [];
         /** @var array $interest_ids - Array of int, user id */
-        $interests = $itModel->get_interests($this->Company->getId());
-        $candidat_ids = array_map(function ($interest) { return $interest->id_candidate; }, $interests);
-        $candidat_ids = array_unique($candidat_ids);
+        $interests    = $itModel->get_interests( $this->Company->getId() );
+        $candidat_ids = array_map( function ( $interest ) {
+          return $interest->id_candidate;
+        }, $interests );
+        $candidat_ids = array_unique( $candidat_ids );
         // featured: Return candidate object
         foreach ( $candidat_ids as $candidat_id ) {
-          $candidateInterest = new Candidate($candidat_id);
+          $candidateInterest = new Candidate( $candidat_id );
           array_push( $Candidates, $candidateInterest );
         }
         wp_send_json_success( $Candidates );
@@ -620,11 +634,15 @@ if ( ! class_exists( 'scClient' ) ) :
      * @return array|bool|null|object
      */
     public function get_candidat_interest_lists() {
-      $itModel = new itModel();
+      $itModel        = new itModel();
       $listsCandidate = $itModel->get_lists();
-      if (is_null($listsCandidate) || !$listsCandidate || empty($listsCandidate)) wp_send_json_success([]);
-      $listsCandidate = array_map(function ($list) { return (int)$list->id_candidate; }, $listsCandidate);
-      wp_send_json_success($listsCandidate);
+      if ( is_null( $listsCandidate ) || ! $listsCandidate || empty( $listsCandidate ) ) {
+        wp_send_json_success( [] );
+      }
+      $listsCandidate = array_map( function ( $list ) {
+        return (int) $list->id_candidate;
+      }, $listsCandidate );
+      wp_send_json_success( $listsCandidate );
     }
 
     /**
@@ -638,19 +656,21 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( false );
       }
       $itModel = new itModel();
-      $User = wp_get_current_user();
+      $User    = wp_get_current_user();
       if ( $itJob->services->isClient() === 'company' ) {
         $alert            = get_field( 'itjob_company_alerts', $this->Company->getId() );
         $interest_page_id = jobServices::page_exists( 'Interest candidate' );
-        $listsCandidate = $itModel->get_lists();
-        $listsCandidate = array_map(function ($list) { return (int)$list->id_candidate; }, $listsCandidate);
+        $listsCandidate   = $itModel->get_lists();
+        $listsCandidate   = array_map( function ( $list ) {
+          return (int) $list->id_candidate;
+        }, $listsCandidate );
         wp_send_json( [
-          'iClient'   => Company::get_company_by( $User->ID ),
-          'Offers'    => $this->__get_company_offers(),
-          'Alerts'    => explode( ',', $alert ),
+          'iClient'        => Company::get_company_by( $User->ID ),
+          'Offers'         => $this->__get_company_offers(),
+          'Alerts'         => explode( ',', $alert ),
           'ListsCandidate' => $listsCandidate,
-          'post_type' => 'company',
-          'Helper'    => [
+          'post_type'      => 'company',
+          'Helper'         => [
             'interest_page_uri' => get_the_permalink( $interest_page_id )
           ]
         ] );
@@ -685,7 +705,7 @@ if ( ! class_exists( 'scClient' ) ) :
       foreach ( $offers as $offer ) {
         $_offer = new Offers( $offer->ID );
         $_offer->__get_access();
-        array_push( $resolve, $_offer);
+        array_push( $resolve, $_offer );
       }
 
       return $resolve;

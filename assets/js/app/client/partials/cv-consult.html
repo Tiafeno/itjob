@@ -7,6 +7,10 @@
             <div class="card text-left mb-4">
               <div class="card-body">
 
+                <div class="preloader-backdrop" ng-if="loading">
+                  <div class="page-preloader">Chargement</div>
+                </div>
+
                 <button class="btn btn-outline-blue btn-sm btn-fix mb-4" data-ng-click="onReturn()">
                   <span class="btn-icon"><i class="fa fa-angle-left"></i>Retour</span>
                 </button>

@@ -83,7 +83,7 @@ trait ModelCVLists {
    * @param int $id_candidat
    * @param null|int $id_company
    *
-   * @return bool|false|int|null|void
+   * @return bool|false|int|null
    */
   public function add_list($id_candidat, $id_company = null) {
     global $wpdb;

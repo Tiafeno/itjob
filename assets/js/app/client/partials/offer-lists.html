@@ -141,10 +141,10 @@
           <div uk-grid>
             <div class="uk-width-1-1@m uk-width-1-1 manage-cv" ng-if="mode === 'manage'">
               <div class="mt-5">
-                <h5>Le(s) candidate(s)</h5>
+                <h5>Les candidats ayant été sélectionnés</h5>
                 <div class="ibox-body">
                   <ul class="media-list media-list-divider mr-2 scroller" data-height="580px">
-                    <li class="media align-items-center" ng-repeat="interest in interestCandidats">
+                    <li class="media align-items-center" ng-repeat="interest in interestCandidats | filter: filterSelectedCandidates">
                       <div class="media-body d-flex align-items-center">
                         <div class="flex-1">
                           <div class="media-heading">
@@ -159,9 +159,41 @@
 
                         </div>
                         <button class="btn btn-sm btn-outline-primary ml-2" ng-if="!interest.inList && interest.status === 'validated'" data-ng-click="addList(interest.candidate.ID, $event)">Ajoute au favoris</button>
-                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.inList" data-ng-click="viewCandidateInformation(interest.candidate.ID, offerView.ID)">Voir les informations</button>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.inList" data-ng-click="viewCandidateInformation(interest.candidate.ID, offerView.ID)">Consulter</button>
                       </div>
                     </li>
+                    <li class="media align-items-center" ng-if="collectFilterResults('filter_selected_candidate').length <= 0">Néant</li>
+                  </ul>
+                </div>
+              </div>
+
+
+              <hr>
+
+
+              <div class="mt-5">
+                <h5>Les candidats ayant postulés</h5>
+                <div class="ibox-body">
+                  <ul class="media-list media-list-divider mr-2 scroller" data-height="580px">
+                    <li class="media align-items-center" ng-repeat="interest in interestCandidats | filter: filterPostuledCandidates">
+                      <div class="media-body d-flex align-items-center">
+                        <div class="flex-1">
+                          <div class="media-heading">
+                            <a class="" target="_blank" ng-href="[[interest.candidate.candidate_url]]">[[interest.candidate.title]] </a>
+                            <span class="badge badge-default ml-2" ng-if="interest.status === 'pending'">En attente de confirmation</span>
+                            <span class="badge badge-success ml-2" ng-if="interest.status === 'validated'">Confirmer</span>
+                          </div>
+                          <small class="text-muted">[[interest.candidate.branch_activity.name]]</small>
+                          <div class="mt-2">
+                            <span class="badge badge-default" ng-if="interest.type === 'apply'">Postuler</span>
+                          </div>
+
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary ml-2" data-ng-click="addList(interest.candidate.ID, $event)">Sélectionner</button>
+                        <button class="btn btn-sm btn-outline-danger ml-2" data-ng-click="rejectCandidate(interest.candidate.ID)">Rejecter le candidat</button>
+                      </div>
+                    </li>
+                    <li class="media align-items-center" ng-if="collectFilterResults('filter_postuled_candidate').length <= 0">Néant</li>
                   </ul>
                 </div>
               </div>
@@ -177,7 +209,7 @@
 
             <!-- Les informations du candidat (Lettre de motivation & CV complete)-->
             <div class="uk-width-1-1@m uk-width-1-1 view-cv" ng-if="mode === 'view'">
-              <cv-lists company="Entreprise" id-candidate="idCandidate" offer="offerView" on-options="onGetOptions()" on-toggle-mode="toggleMode()"></cv-lists>
+              <cv-consult company="Entreprise" id-candidate="idCandidate" offer="offerView" on-options="onGetOptions()" on-toggle-mode="toggleMode()"></cv-consult>
             </div>
 
           </div>

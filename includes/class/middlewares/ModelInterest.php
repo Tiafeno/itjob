@@ -71,9 +71,7 @@ trait ModelInterest {
     if ( ! is_user_logged_in() || ! is_int( $id_request ) ) {
       return false;
     }
-    $table   = $wpdb->prefix . 'cv_request';
-    $results = $wpdb->update( $table, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%d' ], [ '%d' ] );
-
+    $results = $wpdb->update( $this->requestTable, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%s' ], [ '%d' ] );
     return $results;
   }
 
