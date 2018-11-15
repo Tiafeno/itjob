@@ -661,11 +661,13 @@ if ( ! class_exists( 'scClient' ) ) :
         $Candidates = [];
         /** @var array $interest_ids - Array of int, user id */
         $interests    = $itModel->get_interests( $this->Company->getId() );
+        // Récuperer seulement les identifiants des candidats
         $candidat_ids = array_map( function ( $interest ) {
           return $interest->id_candidate;
         }, $interests );
+        // Fusionner les foublons
         $candidat_ids = array_unique( $candidat_ids );
-        // featured: Return candidate object
+        // Retourner des object candidats
         foreach ( $candidat_ids as $candidat_id ) {
           $candidateInterest = new Candidate( $candidat_id );
           array_push( $Candidates, $candidateInterest );
@@ -718,7 +720,8 @@ if ( ! class_exists( 'scClient' ) ) :
           'ListsCandidate' => $listsCandidate,
           'post_type'      => 'company',
           'Helper'         => [
-            'interest_page_uri' => get_the_permalink( $interest_page_id )
+            'interest_page_uri' => get_the_permalink( $interest_page_id ),
+            'archive_candidate_link' => get_post_type_archive_link('candidate')
           ]
         ] );
       } else {
@@ -730,7 +733,10 @@ if ( ! class_exists( 'scClient' ) ) :
         wp_send_json( [
           'iClient'   => $Candidate,
           'Alerts'    => $alerts,
-          'post_type' => 'candidate'
+          'post_type' => 'candidate',
+          'Helper'    => [
+            'archive_offer_link' => get_post_type_archive_link('offers')
+          ]
         ] );
       }
     }

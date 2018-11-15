@@ -1,23 +1,113 @@
-APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolateProvider, $routeProvider) {
-  $interpolateProvider.startSymbol('[[').endSymbol(']]');
-  $routeProvider
-    .when('/oc-company', {
-      templateUrl: itOptions.Helper.tpls_partials + '/oc-company.html',
-      controller: 'clientCtrl',
-      resolve: {
-        Client: ['$http', '$q', function ($http, $q) {
-          let access = $q.defer();
-          $http.get(itOptions.Helper.ajax_url + '?action=client_area', {cache: false})
-            .then(resp => {
-              let data = resp.data;
-              access.resolve(data);
+APPOC
+  .config(['$interpolateProvider', '$routeProvider', function ($interpolateProvider, $routeProvider) {
+    $interpolateProvider.startSymbol('[[').endSymbol(']]');
+    $routeProvider
+      .when('/oc-company', {
+        templateUrl: itOptions.Helper.tpls_partials + '/oc-company.html',
+        controller: 'clientCtrl',
+        resolve: {
+          Client: ['$http', '$q', function ($http, $q) {
+            let access = $q.defer();
+            $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
+              cache: false
+            })
+              .then(resp => {
+                let data = resp.data;
+                access.resolve(data);
+              });
+            return access.promise;
+          }]
+        }
+      })
+      .otherwise({
+        redirectTo: '/oc-company'
+      });
+  }])
+  .directive('generalInformationCompany', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/general-information-company.html',
+      scope: {
+        Entreprise: '=company',
+        regions: '&',
+        allCity: '&',
+        abranchs: '&',
+        init: '&init'
+      },
+      link: function (scope, element, attrs) {
+      },
+      controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
+        $scope.status = false;
+        $scope.userEditor = {};
+
+        /**
+         * Ouvrir l'editeur d'information utilisateur
+         */
+        $scope.openEditor = () => {
+          $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
+            $scope.Regions = _.clone(data[0]);
+            $scope.branchActivity = _.clone(data[1]);
+            $scope.Citys = _.clone(data[2]);
+            const incInput = ['address', 'name', 'stat', 'nif'];
+            const incTerm = ['branch_activity', 'region', 'country'];
+            incInput.forEach((InputValue) => {
+              if ($scope.Entreprise.hasOwnProperty(InputValue)) {
+                $scope.userEditor[InputValue] = _.clone($scope.Entreprise[InputValue]);
+              }
             });
-          return access.promise;
-        }]
-      }
-    })
-    .otherwise({redirectTo: '/oc-company'});
-}])
+            incTerm.forEach(TermValue => {
+              if ($scope.Entreprise.hasOwnProperty(TermValue)) {
+                if (typeof $scope.Entreprise[TermValue].term_id !== 'undefined') {
+                  $scope.userEditor[TermValue] = $scope.Entreprise[TermValue].term_id;
+                } else {
+                  $scope.userEditor[TermValue] = '';
+                }
+              }
+            });
+            if (!_.isEmpty($scope.userEditor)) {
+              $scope.userEditor.greeting = $scope.Entreprise.greeting.value;
+              UIkit.modal('#modal-edit-user-overflow').show();
+            }
+          });
+        };
+
+        /**
+         * Mettre à jours les informations de l'utilisateur
+         */
+        $scope.updateUser = () => {
+          $scope.status = "Enregistrement en cours ...";
+          let userForm = new FormData();
+          let formObject = Object.keys($scope.userEditor);
+          userForm.append('action', 'update_profil');
+          userForm.append('company_id', parseInt($scope.Entreprise.ID));
+          formObject.forEach(function (property) {
+            let propertyValue = Reflect.get($scope.userEditor, property);
+            userForm.set(property, propertyValue);
+          });
+          clientFactory
+            .sendPostForm(userForm)
+            .then(resp => {
+              let dat = resp.data;
+              if (dat.success) {
+                $scope.status = 'Votre information a bien été enregistrer avec succès';
+                UIkit.modal('#modal-edit-user-overflow').hide();
+                $route.reload();
+              } else {
+                $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
+              }
+            });
+        };
+
+        // Event on modal dialog close or hide
+        UIkit.util.on('#modal-edit-user-overflow', 'hide', function (e) {
+          e.preventDefault();
+          e.target.blur();
+          $scope.status = false;
+        });
+
+      }]
+    }
+  }])
   .directive('planPremium', [function () {
     return {
       restrict: 'E',
@@ -44,7 +134,9 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
                 $http({
                   url: itOptions.Helper.ajax_url,
                   method: "POST",
-                  headers: {'Content-Type': undefined},
+                  headers: {
+                    'Content-Type': undefined
+                  },
                   data: formData
                 })
                   .then(resp => {
@@ -52,7 +144,8 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
                     btnUpgrade.text("Votre demande a bien été envoyée");
                     $scope.sender = true;
                   });
-              }, function (ev) {
+              },
+              function (ev) {
                 // Annuler
                 ev.preventDefault();
               });
@@ -72,7 +165,9 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         (function ($) {
           $('#modal-history-cv-overflow').on('show.bs.modal', function (e) {
             loadingHistoricalElement.hide().text('Chargement en cours ...').fadeIn();
-            $http.get(itOptions.Helper.ajax_url + '?action=get_history_cv_view', {cache: true})
+            $http.get(itOptions.Helper.ajax_url + '?action=get_history_cv_view', {
+              cache: true
+            })
               .then(success => {
                 let resp = success.data;
                 if (resp.data.length <= 0) {
@@ -116,8 +211,9 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
               url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
             }
           });
-          jQuery('#key-search').on('keyup', () => {
-            table.search(this.value).draw();
+          jQuery('#key-search').on('keyup', (event) => {
+            let value = event.currentTarget.value;
+            table.search(value).draw();
           });
           scope.fireData = true;
         };
@@ -161,11 +257,11 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
             $scope.Citys = _.clone(data[2]);
             $scope.offerEditor = _.mapObject(offer, (val, key) => {
               if (typeof val.term_id !== 'undefined') return val.term_id;
-              if (typeof val.label !== 'undefined') return val.value;
               if (typeof val.post_title !== 'undefined') return val.ID;
               if (key === 'proposedSalary') return parseInt(val);
               return val;
             });
+            $scope.offerEditor.contractType = parseInt($scope.offerEditor.contractType.value) === 0 ? 'cdd' : 'cdi';
             if (!_.isEmpty(offer) || !_.isNull($scope.offerEditor)) {
               $scope.$parent.preloaderToogle();
               UIkit.modal('#modal-edit-offer-overflow').show();
@@ -204,8 +300,8 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
           return $scope.options();
         };
         $scope.collectFilterResults = (methode) => {
-          return methode === 'filter_selected_candidate' ? _.filter($scope.interestCandidats, (item) => $scope.filterSelectedCandidates(item))
-            : _.filter($scope.interestCandidats, (item) => $scope.filterPostuledCandidates(item));
+          return methode === 'filter_selected_candidate' ? _.filter($scope.interestCandidats, (item) => $scope.filterSelectedCandidates(item)) :
+            _.filter($scope.interestCandidats, (item) => $scope.filterPostuledCandidates(item));
         };
         // Filtrer les candidats qui sont selectionner et qui sont valider pour postuler
         $scope.filterSelectedCandidates = (item) => {
