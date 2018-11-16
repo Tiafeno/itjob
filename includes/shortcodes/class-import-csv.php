@@ -480,9 +480,9 @@ if ( ! class_exists( 'scImport' ) ) :
           update_post_meta( $post_id, '__id_offer', $obj->id );
 
           // Ajouter term region
-          $term = term_exists( $obj->region, 'region' );
+          $term = term_exists( $obj->poste_base_a, 'region' );
           if ( 0 !== $term && null !== $term ) {
-            $term = wp_insert_term( $obj->region, 'region' );
+            $term = wp_insert_term( $obj->poste_base_a, 'region' );
           }
           wp_set_post_terms( $post_id, [ $term['term_id'] ], 'region' );
           //wp_send_json_success( "Offre ajouter avec succès" );
