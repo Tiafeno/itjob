@@ -10,7 +10,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
       .state('import.form', {
         url: '/form',
         templateUrl: importOptions.partials_url + '/form.html',
-        controller: ['$scope', 'importService', function ($scope, importService) {
+        controller: ['$scope', 'importService', '$window', function ($scope, importService, $window) {
           $scope.chargement = false;
           $scope.entryTypes = _.clone(importService.typeOfEntry);
           $scope.fileContents = _.clone(importService.typeOfContent);
@@ -32,6 +32,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
                 encoding: "UTF-8",
                 complete: $scope.completeFn,
                 error: $scope.errorFn,
+                dynamicTyping: true,
                 //header: true,
                 download: false
               },
@@ -43,16 +44,38 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               },
             })
           };
+
+          $scope.ajouterOffre = () => {
+            const form = new FormData();
+            form.append('action', 'import_csv');
+            form.append('entry_type', 'offers');
+            $scope.chargement = true;
+            importService
+              .sendform(form)
+              .then(resp => {
+                let query = resp.data;
+                if (query.success) {
+                  $scope.chargement = false;
+                } else {
+                  console.log(query.data);
+                  $scope.chargement = false;
+                }
+
+              })
+          };
           $scope.stepFn = (results, parser) => {
             if (results || results.data) {
               const column = results.data;
               parser.pause();
               const form = new FormData();
-              const fileContent = _.findWhere($scope.fileContents, {_id: $scope.formData.fileContent});
+              if (!_.isEmpty($scope.formData.fileContent)) {
+                const fileContent = _.findWhere($scope.fileContents, {_id: $scope.formData.fileContent});
+                form.append('content_type', fileContent.slug);
+              }
+
               form.append('action', 'import_csv');
               form.append('entry_type', $scope.formData.entryType);
               form.append('order', $scope.columns);
-              form.append('content_type', fileContent.slug);
               form.append('column', JSON.stringify(column[0]));
               importService
                 .sendform(form)

@@ -14,10 +14,16 @@
             </select>
           </div>
 
+          <div class="form-group d-flex align-left">
+            <button ng-disabled="chargement" ng-if="formData.entryType === 'offers'" ng-click="ajouterOffre()" class="btn btn-outline-blue btn-icon btn-fix float-right" >
+              {{ chargement ? 'Chargement ...' : 'Ajouter les offres'}}
+            </button>
+          </div>
+
           <div class="form-group">
-            <label class="col-form-label ">Contenue de fichier <span style="color: red">*</span></label>
+            <label class="col-form-label ">Contenue de fichier </label>
             <select class="form-control" name="filecontent" ng-model="formData.fileContent"
-                    placeholder="Le contenue du fichier" ng-change="onFileContentChange()" required>
+                    placeholder="Le contenue du fichier" ng-change="onFileContentChange()">
               <option value="">Le contenue du fichier</option>
               <option ng-value="content._id" ng-repeat="content in fileContents">{{content.label}}</option>
             </select>
