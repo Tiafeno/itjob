@@ -143,7 +143,9 @@ if ( ! class_exists( 'vcSearch' ) ):
         foreach ( $posts as $post ) {
           // Return object term
           $term              = get_field( 'itjob_offer_abranch', $post->ID );
-          $branch_activity[] = $term->term_id;
+          if ( !empty($term) || !is_null($term) || !$term) {
+            $branch_activity[] = $term->term_id;
+          }
         }
         $branch_activity = array_unique( $branch_activity );
 

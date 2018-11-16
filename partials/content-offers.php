@@ -42,7 +42,7 @@ $limited = $offers->dateLimit < $today;
               <tbody>
               <tr>
                 <td>Région:</td>
-                <td><?= $offers->region->name ?></td>
+                <td><?= isset($offers->region->name) ? $offers->region->name : 'Non definie' ?></td>
               </tr>
               <tr>
                 <td>Mission:</td>
