@@ -303,7 +303,7 @@ if ( ! class_exists( 'scImport' ) ) :
 
             wp_send_json_success( [ 'msg' => "L'entreprise ajouter avec succès", 'data' => $Company ] );
           } else {
-            wp_send_json_error( "L'utilisateur n'existe pas, ID: {$rows_object->id_user}" );
+            wp_send_json_success( "L'utilisateur est refuser de s'inscrire ID:{$rows_object->id_user}" );
           }
           break;
 
