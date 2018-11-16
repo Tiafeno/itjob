@@ -437,7 +437,7 @@ if ( ! class_exists( 'scImport' ) ) :
       include get_template_directory() . '/includes/class/import/data/oc29_offers.php';
       $rows = &$oc29_offers;
       $response = [];
-      array_walk($rows, function ($row, $key) use ($response) {
+      array_walk($rows, function ($row, $key) use (&$response) {
         $Helper = new JHelper();
         $obj  = (object) $row;
         $User = $Helper->has_user( (int)$obj->id_user );
