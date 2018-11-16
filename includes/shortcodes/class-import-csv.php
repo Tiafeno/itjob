@@ -442,8 +442,9 @@ if ( ! class_exists( 'scImport' ) ) :
 
         $date_limit         = new \DateTime( $obj->date_limit );
         $acfDateLimit = $date_limit->format( 'Ymd' );
-        update_field('itjob_offer_datelimit', $acfDateLimit, $post_id);
+        update_field('itjob_offer_datelimit', $obj->contract, $post_id);
 
+        update_field('activated', $obj->status, $post_id);
         update_field('itjob_offer_contrattype', $obj->contract, $post_id);
         update_field('itjob_offer_profil', html_entity_decode(htmlspecialchars_decode ($obj->profil)), $post_id);
         update_field('itjob_offer_mission', html_entity_decode(htmlspecialchars_decode ($obj->mission)), $post_id);
