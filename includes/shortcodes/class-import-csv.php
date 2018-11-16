@@ -459,8 +459,9 @@ if ( ! class_exists( 'scImport' ) ) :
         wp_send_json_success("Utilisateur non inscrit, ID:" . $obj->id_user);
       }
       // Ajouter une offre
-      $publish_date = strtotime($obj->publish);
+      $publish_date = strtotime($obj->published);
       $publish = date('Y-m-d H:i:s', $publish_date);
+      
       $args    = [
         "post_type"   => 'offers',
         "post_title"  => $obj->poste_a_pourvoir,
