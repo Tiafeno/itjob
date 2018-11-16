@@ -458,6 +458,19 @@ if ( ! class_exists( 'scImport' ) ) :
       if (!$User && !in_array('company', $User->roles)) {
         wp_send_json_success("Utilisateur non inscrit, ID:" . $obj->id_user);
       }
+
+      $args = [
+        'post_type' => 'offers', 
+        'post_status' => ['publish', 'pending'],
+        'meta_query' => array([
+          'meta_key' => '__id_offer',
+          'meta_value' => (int)$obj->id
+        ]
+      )];
+      $offers_exists = get_posts($args);
+      if (is_array($offers_exists) && !empty($offers_exists)) {
+        wp_send_json_success("Offre déja publier");
+      }
       // Ajouter une offre
       $publish_date = strtotime($obj->published);
       $publish = date('Y-m-d H:i:s', $publish_date);
