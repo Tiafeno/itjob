@@ -163,6 +163,13 @@ if ( ! class_exists( 'scImport' ) ) :
                 if ( is_wp_error( $insert_company ) ) {
                   wp_send_json_error( $insert_company->get_error_message() );
                 }
+
+                // Mettre à jour le nom login
+                $up_user = wp_update_user(['user_login' => 'user' . $insert_company, 'ID' => $user_id]);
+                if (is_wp_error($up_user)) {
+                  wp_send_json_error($up_user->get_error_message());
+                }
+
                 $id_company = (int) $insert_company;
                 update_field( 'itjob_company_email', $rows_object->email, $id_company );
                 update_field( 'itjob_company_name', $rows_object->name, $id_company );
@@ -219,6 +226,12 @@ if ( ! class_exists( 'scImport' ) ) :
                 $insert_candidate = wp_insert_post( $argc );
                 if ( is_wp_error( $insert_candidate ) ) {
                   wp_send_json_error( $insert_candidate->get_error_message() );
+                }
+
+                // Mettre à jour le nom login
+                $up_user = wp_update_user(['user_login' => 'user' . $insert_candidate, 'ID' => $user_id]);
+                if (is_wp_error($up_user)) {
+                  wp_send_json_error($up_user->get_error_message());
                 }
 
                 $id_candidate = (int) $insert_candidate;
