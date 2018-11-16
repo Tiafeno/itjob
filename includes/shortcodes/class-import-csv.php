@@ -137,7 +137,7 @@ if ( ! class_exists( 'scImport' ) ) :
               // Ajouter une entreprise
               $args    = [
                 "user_pass"    => $rows_object->password,
-                "user_login"   => $rows_object->seoname,
+                "user_login"   => "user{$rows_object->id_user}",
                 "user_email"   => $rows_object->email,
                 "display_name" => $rows_object->name,
                 "first_name"   => $rows_object->name,
@@ -197,7 +197,7 @@ if ( ! class_exists( 'scImport' ) ) :
               } );
               $args    = [
                 "user_pass"    => $rows_object->password,
-                "user_login"   => $rows_object->seoname,
+                "user_login"   => "user{$rows_object->id_user}",
                 "user_email"   => $rows_object->email,
                 "display_name" => $rows_object->name,
                 "first_name"   => $first_name,
