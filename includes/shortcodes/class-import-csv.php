@@ -148,7 +148,7 @@ if (!class_exists('scImport')) :
             "first_name" => $rows_object->name,
             "role" => 'company'
           ];
-          if (username_exists($rows_object->seoname)) wp_send_json_success("Cet identifiant existe déjà !");
+          if (username_exists("user{$rows_object->id_user}")) wp_send_json_success("Cet identifiant existe déjà !");
           $user_id = wp_insert_user($args);
           if (!is_wp_error($user_id)) {
                 // Stocker les anciens information dans des metas
@@ -209,7 +209,7 @@ if (!class_exists('scImport')) :
             "last_name" => $last_name,
             "role" => 'candidate'
           ];
-          if (username_exists($rows_object->seoname)) wp_send_json_success("Cet identifiant existe déjà !");
+          if (username_exists("user{$rows_object->id_user}")) wp_send_json_success("Cet identifiant existe déjà !");
           $user_id = wp_insert_user($args);
           if (!is_wp_error($user_id)) {
                 // Stocker les anciens information dans des metas
