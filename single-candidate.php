@@ -134,8 +134,8 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                           <h5><?= $trainings->training_establishment ?></h5>
                           <h6 class="text-muted"><?= $trainings->training_diploma ?></h6>
                           <p><?= $trainings->training_city . ', ' . $trainings->training_country ?></p>
-                          <span class="cd-date badge badge-success"><?= ucfirst($trainings->training_dateBegin) ?> <b>-</b>
-                            <?= ucfirst($trainings->training_dateEnd ? $trainings->training_dateEnd : 'Aujourd’hui') ?></span>
+                          <span class="cd-date badge badge-success"><?= ucfirst($trainings->training_dateBegin) ?>
+                            <?= ucfirst($trainings->training_dateEnd ? ' <b>-</b> ' . $trainings->training_dateEnd : '') ?></span>
                         </div>
                       </div>
                       <?php

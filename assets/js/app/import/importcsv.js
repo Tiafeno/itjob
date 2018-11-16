@@ -15,9 +15,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
           $scope.entryTypes = _.clone(importService.typeOfEntry);
           $scope.fileContents = _.clone(importService.typeOfContent);
           $scope.onSubmitImport = (isValid) => {
-            if (!isValid ||
-              _.isEmpty($scope.formData.entryType) ||
-              _.isEmpty($scope.formData.fileContent))
+            if (!isValid || _.isEmpty($scope.formData.entryType))
                 return false;
 
             $scope.chargement = true;
@@ -29,7 +27,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
             inputCSV.parse({
               config: {
                 delimiter: ';',
-                preview: 4,
+                preview: 0,
                 step: $scope.stepFn,
                 encoding: "UTF-8",
                 complete: $scope.completeFn,
@@ -59,7 +57,15 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               importService
                 .sendform(form)
                 .then(resp => {
-                  parser.resume();
+                  let query = resp.data;
+                  if (query.success) {
+                    parser.resume();
+                  } else {
+                    console.log(query.data);
+                    parser.stop();
+                    $scope.chargement = false;
+                  }
+
                 })
             }
           };
@@ -91,6 +97,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         _id: 2,
         slug: 'user',
         label: 'Utilisateurs'
+      },
+      {
+        _id: 2,
+        slug: 'offers',
+        label: 'Offres'
       },
     ];
     self.typeOfContent = [
