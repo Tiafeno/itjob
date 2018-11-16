@@ -463,8 +463,8 @@ if ( ! class_exists( 'scImport' ) ) :
         'post_type' => 'offers', 
         'post_status' => ['publish', 'pending'],
         'meta_query' => array([
-          'meta_key' => '__id_offer',
-          'meta_value' => (int)$obj->id
+          'key' => '__id_offer',
+          'value' => (int)$obj->id
         ]
       )];
       $offers_exists = get_posts($args);
