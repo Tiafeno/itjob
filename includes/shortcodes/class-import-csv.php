@@ -112,7 +112,6 @@ if ( ! class_exists( 'scImport' ) ) :
 
           break;
       }
-      wp_send_json_success( "En construction ..." );
     }
 
     // FEATURED: Ajouter les utilisateurs du site itjobmada
@@ -445,6 +444,7 @@ if ( ! class_exists( 'scImport' ) ) :
       }
     }
 
+    // Ajouter les anciens offres
     protected function add_offer() {
       if ( ! is_user_logged_in() ) {
         return;
@@ -459,11 +459,14 @@ if ( ! class_exists( 'scImport' ) ) :
         wp_send_json_success("Utilisateur non inscrit, ID:" . $obj->id_user);
       }
       // Ajouter une offre
+      $publish_date = strtotime($obj->publish);
+      $publish = date('Y-m-d H:i:s', $publish_date);
       $args    = [
         "post_type"   => 'offers',
         "post_title"  => $obj->poste_a_pourvoir,
         "post_status" => (int)$obj->status ? 'publish' : 'pending',
-        'post_author' => $User->ID
+        'post_author' => $User->ID,
+        'post_date'   => $publish
       ];
       $post_id = wp_insert_post( $args );
       if ( ! is_wp_error( $post_id ) ) {
@@ -487,8 +490,12 @@ if ( ! class_exists( 'scImport' ) ) :
         }
 
         update_post_meta( $post_id, '__offer_job_sought', $company_job_sought ); // Secteur d'activité
-        update_post_meta( $post_id, '__offer_publish_date', new \DateTime($obj->publish) );
-        update_post_meta( $post_id, '__offer_create_date', new \DateTime($obj->created) );
+        update_post_meta( $post_id, '__offer_publish_date', $publish );
+
+        $created_date = strtotime($obj->created);
+        $created = date('Y-m-d H:i:s', $created_date);
+        update_post_meta( $post_id, '__offer_create_date', $created );
+
         update_post_meta( $post_id, '__offer_count_view', (int)$obj->nbr_vue );
         update_post_meta( $post_id, '__id_offer', (int)$obj->id );
 
