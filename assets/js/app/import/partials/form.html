@@ -15,9 +15,6 @@
           </div>
 
           <div class="form-group d-flex align-left">
-            <a href="#update" ng-disabled="chargement" ng-if="formData.entryType === 'offers'" ng-click="updateRegionForm()" class="btn btn-outline-blue btn-icon btn-fix float-right" >
-              {{ chargement ? 'Chargement ...' : 'Mettre à jour'}}
-            </a>
 
             <a href="#added" ng-disabled="chargement" ng-if="formData.entryType === 'offers'" ng-click="addedOfferForm()" class="btn btn-outline-blue btn-icon btn-fix float-right" >
               {{ chargement ? 'Chargement ...' : 'Ajouter'}}

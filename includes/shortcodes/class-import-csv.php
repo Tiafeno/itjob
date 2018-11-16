@@ -51,9 +51,6 @@ if ( ! class_exists( 'scImport' ) ) :
         case 'offers':
           $this->add_offer();
           break;
-        case 'update_offer_region':
-          $this->update_offer_region();
-          break;
       }
     }
 
@@ -108,11 +105,11 @@ if ( ! class_exists( 'scImport' ) ) :
           }
           wp_send_json_success( "({$parent_term['term_id']}) {$child_term['term_id']}" );
           break;
+        case 'software':
 
+          break;
         default:
-          if ( taxonomy_exists( $taxonomy ) ) {
 
-          }
           break;
       }
       wp_send_json_success( "En construction ..." );
@@ -446,38 +443,6 @@ if ( ! class_exists( 'scImport' ) ) :
           ];
           break;
       }
-    }
-
-    protected function update_offer_region() {
-      $column = Http\Request::getValue('column');
-      $row = json_decode($column);
-      $response = [];
-      $Helper = new JHelper();
-      $obj  = (object) $row;
-      $User = $Helper->has_user( (int)$obj->id_user );
-      if ($User && in_array('company', $User->roles)) {
-        // wp_send_json_success("L'utilisateur est refuser de s'inscrire, ID:" . $obj->id_user);
-        $query = new \WP_Query( ['post_type' => 'offers', 'post_author' => $User->ID, 'meta_query' => array(
-          ['meta_key' => '__id_offer', 'meta_value' => $obj->id]
-        ) ]);
-        while ($query->have_posts()): $query->the_post();
-          $current_offer_id = $query->post->ID;
-          // Ajouter term region
-          $term = term_exists( $obj->poste_base_a, 'region' );
-          if ( 0 !== $term && null !== $term ) {
-            $term = wp_insert_term( $obj->poste_base_a, 'region' );
-            if (is_wp_error($term)) {
-              $term = get_term_by('name', $obj->poste_base_a);
-            }
-          }
-          wp_set_post_terms( $current_offer_id, [ $term['term_id'] ], 'region' );
-          //wp_send_json_success( "Offre ajouter avec succès" );
-          array_push( $response, $query->post );
-          endwhile;
-        unset($query, $User);
-      }
-
-      wp_send_json_success($response);
     }
 
     protected function add_offer() {

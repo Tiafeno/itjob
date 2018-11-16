@@ -96,37 +96,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               })
           };
 
-          // Mettre à jours la regiono
-          $scope.updateRegionForm = () => {
-            const Form = new FormData();
-            Form.append('action', 'get_offer_data');
-            $scope.chargement = true;
-            importService
-              .sendform(Form)
-              .then(resp => {
-                let query = resp.data;
-                if (query.success) {
-                  let inputs = query.data;
-                  let response = [];
-
-                  async function loopOffers(inputs) {
-                    for (const input of inputs) {
-                      await self.sendOffer(input, 'update_offer_region')
-                        .then(resp => {
-                          response.push(resp);
-                        });
-                    }
-                    $scope.chargement = false;
-                  }
-
-                  loopOffers(inputs);
-                } else {
-                  $scope.chargement = false;
-                }
-
-              })
-          };
-
           $scope.deleteAllOffer = () => {
             const Form = new FormData();
             Form.append('action', 'delete_offer_data');

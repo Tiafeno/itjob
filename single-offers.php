@@ -58,11 +58,11 @@ wp_enqueue_style( 'offers' );
                 <div class="offer-description mt-4">
                   <h5 class="mt-3">Description</h5>
                   <div class="row mt-4">
-                    <div class="col-md-3 pt-4 pr-lg-5">
+                    <div class="col-md-6 pt-4 pr-lg-5">
                       <p class="offer-field-title m-0">Région:</p>
                       <p class="offer-field-value m-0"><?= isset($offers->region->name) ? $offers->region->name : 'Non definie'?></p>
                     </div>
-                    <div class="col-md-3 pt-4">
+                    <div class="col-md-6 pt-4">
                       <p class="offer-field-title m-0">Type de contrat: </p>
                       <p class="offer-field-value m-0"><?= $offers->contractType['label'] ?></p>
                     </div>
