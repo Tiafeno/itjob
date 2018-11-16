@@ -10,13 +10,14 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
       .state('import.form', {
         url: '/form',
         templateUrl: importOptions.partials_url + '/form.html',
-        controller: ['$scope', 'importService', '$window', function ($scope, importService, $window) {
+        controller: ['$scope', 'importService', '$q', function ($scope, importService, $q) {
+          const self = this;
           $scope.chargement = false;
           $scope.entryTypes = _.clone(importService.typeOfEntry);
           $scope.fileContents = _.clone(importService.typeOfContent);
           $scope.onSubmitImport = (isValid) => {
             if (!isValid || _.isEmpty($scope.formData.entryType))
-                return false;
+              return false;
 
             $scope.chargement = true;
             const inputCSV = jQuery('input#files');
@@ -45,24 +46,103 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
             })
           };
 
-          $scope.ajouterOffre = () => {
-            const form = new FormData();
-            form.append('action', 'import_csv');
-            form.append('entry_type', 'offers');
+          // Envoyer l'importation au serveur
+          self.sendOffer = (offer, entry_type) => {
+            return new Promise((resolve, reject) => {
+              const form = new FormData();
+              form.append('action', 'import_csv');
+              form.append('entry_type', entry_type);
+              form.append('column', JSON.stringify(offer));
+              importService
+                .sendform(form)
+                .then(resp => {
+                  let query = resp.data;
+                  if (query.success) {
+                    resolve(query.data);
+                  } else {
+                    reject(query.data);
+                  }
+                });
+            });
+          };
+
+          $scope.addedOfferForm = () => {
+            const Form = new FormData();
+            Form.append('action', 'get_offer_data');
             $scope.chargement = true;
             importService
-              .sendform(form)
+              .sendform(Form)
               .then(resp => {
                 let query = resp.data;
                 if (query.success) {
-                  $scope.chargement = false;
+                  let inputs = query.data;
+                  let response = [];
+
+                  async function loopOffers(inputs) {
+                    for (const input of inputs) {
+                      await self.sendOffer(input, 'offers')
+                        .then(resp => {
+                          response.push(resp);
+                        });
+                    }
+                    $scope.chargement = false;
+                  }
+
+                  loopOffers(inputs);
                 } else {
-                  console.log(query.data);
                   $scope.chargement = false;
                 }
 
               })
           };
+
+          // Mettre à jours la regiono
+          $scope.updateRegionForm = () => {
+            const Form = new FormData();
+            Form.append('action', 'get_offer_data');
+            $scope.chargement = true;
+            importService
+              .sendform(Form)
+              .then(resp => {
+                let query = resp.data;
+                if (query.success) {
+                  let inputs = query.data;
+                  let response = [];
+
+                  async function loopOffers(inputs) {
+                    for (const input of inputs) {
+                      await self.sendOffer(input, 'update_offer_region')
+                        .then(resp => {
+                          response.push(resp);
+                        });
+                    }
+                    $scope.chargement = false;
+                  }
+
+                  loopOffers(inputs);
+                } else {
+                  $scope.chargement = false;
+                }
+
+              })
+          };
+
+          $scope.deleteAllOffer = () => {
+            const Form = new FormData();
+            Form.append('action', 'delete_offer_data');
+            importService
+              .sendform(Form)
+              .then(resp => {
+                let query = resp.data;
+                if (query.success) {
+                  let inputs = query.data;
+                  $scope.chargement = false;
+                } else {
+                  $scope.chargement = false;
+                }
+              })
+          };
+
           $scope.stepFn = (results, parser) => {
             if (results || results.data) {
               const column = results.data;

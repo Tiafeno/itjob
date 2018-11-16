@@ -17,10 +17,22 @@ if ( ! class_exists( 'scImport' ) ) :
     public function __construct() {
       add_shortcode( 'itjob_import_csv', [ $this, 'sc_render_html' ] );
       add_action( 'wp_ajax_import_csv', [ &$this, 'import_csv' ] );
+      add_action( 'wp_ajax_get_offer_data', [ &$this, 'get_offer_data' ] );
+      add_action( 'wp_ajax_delete_offer_data', [ &$this, 'delete_offer_data' ] );
 
       add_action( 'init', function () {
 
       } );
+
+      add_action( 'admin_init', function () {
+        add_action( 'delete_offers', function ($pId) {
+          delete_post_meta($pId, '__offer_job_sought');
+          delete_post_meta($pId, '__offer_publish_date');
+          delete_post_meta($pId, '__offer_create_date');
+          delete_post_meta($pId, '__offer_count_view');
+          delete_post_meta($pId, '__id_offer');
+        }, 10 );
+      });
     }
 
     public function import_csv() {
@@ -39,7 +51,35 @@ if ( ! class_exists( 'scImport' ) ) :
         case 'offers':
           $this->add_offer();
           break;
+        case 'update_offer_region':
+          $this->update_offer_region();
+          break;
       }
+    }
+
+    /**
+     * Récuperer les anciens offres
+     */
+    public function get_offer_data() {
+      include get_template_directory() . '/includes/class/import/data/oc29_offers.php';
+      $rows = &$oc29_offers;
+      wp_send_json_success($rows);
+    }
+
+    public function delete_offer_data() {
+      $args = [
+        'posts_per_page' => -1,
+        'post_type' => 'offers',
+        'post_status' => ['pending', 'publish']
+      ];
+      $offers = get_posts($args);
+      $results = [];
+      foreach ($offers as $offer) {
+        $response = wp_delete_post($offer->ID);
+        array_push($results, $response);
+      }
+
+      wp_send_json_success($results);
     }
 
     /**
@@ -408,92 +448,98 @@ if ( ! class_exists( 'scImport' ) ) :
       }
     }
 
-    protected function add_offer() {
-      if ( ! is_user_logged_in() ) {
-        return;
-      }
-
-//      $lines  = Http\Request::getValue( 'column' );
-//      $lines  = json_decode( $lines );
-//      $rows = [
-//        'id'         => (int) $lines[0], //
-//        'id_user'    => (int) $lines[1],
-//        'status'     => (int) $lines[2], //
-//        'created'    => $lines[3], //
-//        'contract'   => (int) $lines[4], //
-//        'date_limit' => $lines[5], //
-//        'region'     => $lines[6], //
-//
-//        'post'       => $lines[8], //
-//        'mission'    => $lines[9], //
-//        'profil'     => $lines[10], //
-//        'autres'     => $lines[11], //
-//        'reference'  => $lines[12], //
-//        'sallary'    => (int) $lines[13], //
-//        'publish'    => $lines[14], //
-//        'view_count' => (int) $lines[15], //
-//      ];
-
-      include get_template_directory() . '/includes/class/import/data/oc29_offers.php';
-      $rows = &$oc29_offers;
+    protected function update_offer_region() {
+      $column = Http\Request::getValue('column');
+      $row = json_decode($column);
       $response = [];
-      array_walk($rows, function ($row, $key) use (&$response) {
-        $Helper = new JHelper();
-        $obj  = (object) $row;
-        $User = $Helper->has_user( (int)$obj->id_user );
-        if (!$User && !in_array('company', $User->roles)) {
-          // wp_send_json_success("L'utilisateur est refuser de s'inscrire, ID:" . $obj->id_user);
-          return false;
-        }
-        // Ajouter une offre
-        $args    = [
-          "post_type"   => 'offers',
-          "post_title"  => $obj->poste_a_pourvoir,
-          "post_status" => (int)$obj->status ? 'publish' : 'pending',
-          'post_author' => $User->ID
-        ];
-        $post_id = wp_insert_post( $args );
-        if ( ! is_wp_error( $post_id ) ) {
-          update_field( 'itjob_offer_post', $obj->poste_a_pourvoir, $post_id );
-          update_field( 'itjob_offer_reference', $obj->reference, $post_id );
-
-          $date_limit   = new \DateTime( $obj->date_limit_candidature );
-          $acfDateLimit = $date_limit->format( 'Ymd' );
-          update_field( 'itjob_offer_datelimit', $acfDateLimit, $post_id );
-
-          update_field( 'activated', (int)$obj->status, $post_id );
-          update_field( 'itjob_offer_contrattype', (int)$obj->type_contrat, $post_id );
-          update_field( 'itjob_offer_profil', html_entity_decode( htmlspecialchars_decode( $obj->profil_recherche ) ), $post_id );
-          update_field( 'itjob_offer_mission', html_entity_decode( htmlspecialchars_decode( $obj->mission ) ), $post_id );
-          update_field( 'itjob_offer_otherinformation', html_entity_decode( htmlspecialchars_decode( $obj->autre_info ) ), $post_id );
-
-          if ( in_array( 'company', $User->roles ) ) {
-            $Company = Company::get_company_by( $User->ID );
-            update_field( 'itjob_offer_company', $Company->getId(), $post_id );
-            $company_job_sought = get_post_meta( $Company->getId(), '__company_job_sought', true );
-          }
-
-          update_post_meta( $post_id, '__offer_job_sought', $company_job_sought ); // Secteur d'activité
-          update_post_meta( $post_id, '__offer_publish_date', new \DateTime($obj->publish) );
-          update_post_meta( $post_id, '__offer_create_date', new \DateTime($obj->created) );
-          update_post_meta( $post_id, '__offer_count_view', (int)$obj->nbr_vue );
-          update_post_meta( $post_id, '__id_offer', $obj->id );
-
+      $Helper = new JHelper();
+      $obj  = (object) $row;
+      $User = $Helper->has_user( (int)$obj->id_user );
+      if ($User && in_array('company', $User->roles)) {
+        // wp_send_json_success("L'utilisateur est refuser de s'inscrire, ID:" . $obj->id_user);
+        $query = new \WP_Query( ['post_type' => 'offers', 'post_author' => $User->ID, 'meta_query' => array(
+          ['meta_key' => '__id_offer', 'meta_value' => $obj->id]
+        ) ]);
+        while ($query->have_posts()): $query->the_post();
+          $current_offer_id = $query->post->ID;
           // Ajouter term region
           $term = term_exists( $obj->poste_base_a, 'region' );
           if ( 0 !== $term && null !== $term ) {
             $term = wp_insert_term( $obj->poste_base_a, 'region' );
+            if (is_wp_error($term)) {
+              $term = get_term_by('name', $obj->poste_base_a);
+            }
           }
-          wp_set_post_terms( $post_id, [ $term['term_id'] ], 'region' );
+          wp_set_post_terms( $current_offer_id, [ $term['term_id'] ], 'region' );
           //wp_send_json_success( "Offre ajouter avec succès" );
-          array_push($response, $row);
-          return true;
-        } else {
-          //wp_send_json_error( "Une erreur s'est produite pendant l'ajout :" . $post_id->get_error_message() );
-          return false;
-        }
-      });
+          array_push( $response, $query->post );
+          endwhile;
+        unset($query, $User);
+      }
+
       wp_send_json_success($response);
+    }
+
+    protected function add_offer() {
+      if ( ! is_user_logged_in() ) {
+        return;
+      }
+      $column = Http\Request::getValue('column');
+      $row = json_decode($column);
+      $Helper = new JHelper();
+      $obj  = (object) $row;
+
+      $User = $Helper->has_user( (int)$obj->id_user );
+      if (!$User && !in_array('company', $User->roles)) {
+        wp_send_json_success("Utilisateur non inscrit, ID:" . $obj->id_user);
+      }
+      // Ajouter une offre
+      $args    = [
+        "post_type"   => 'offers',
+        "post_title"  => $obj->poste_a_pourvoir,
+        "post_status" => (int)$obj->status ? 'publish' : 'pending',
+        'post_author' => $User->ID
+      ];
+      $post_id = wp_insert_post( $args );
+      if ( ! is_wp_error( $post_id ) ) {
+        update_field( 'itjob_offer_post', $obj->poste_a_pourvoir, $post_id );
+        update_field( 'itjob_offer_reference', $obj->reference, $post_id );
+
+        $date_limit   = new \DateTime( $obj->date_limit_candidature );
+        $acfDateLimit = $date_limit->format( 'Ymd' );
+        update_field( 'itjob_offer_datelimit', $acfDateLimit, $post_id );
+
+        update_field( 'activated', (int)$obj->status, $post_id );
+        update_field( 'itjob_offer_contrattype', (int)$obj->type_contrat, $post_id );
+        update_field( 'itjob_offer_profil', html_entity_decode( htmlspecialchars_decode( $obj->profil_recherche ) ), $post_id );
+        update_field( 'itjob_offer_mission', html_entity_decode( htmlspecialchars_decode( $obj->mission ) ), $post_id );
+        update_field( 'itjob_offer_otherinformation', html_entity_decode( htmlspecialchars_decode( $obj->autre_info ) ), $post_id );
+
+        if ( in_array( 'company', $User->roles ) ) {
+          $Company = Company::get_company_by( $User->ID );
+          update_field( 'itjob_offer_company', $Company->getId(), $post_id );
+          $company_job_sought = get_post_meta( $Company->getId(), '__company_job_sought', true );
+        }
+
+        update_post_meta( $post_id, '__offer_job_sought', $company_job_sought ); // Secteur d'activité
+        update_post_meta( $post_id, '__offer_publish_date', new \DateTime($obj->publish) );
+        update_post_meta( $post_id, '__offer_create_date', new \DateTime($obj->created) );
+        update_post_meta( $post_id, '__offer_count_view', (int)$obj->nbr_vue );
+        update_post_meta( $post_id, '__id_offer', (int)$obj->id );
+
+        // Ajouter term region
+        $term = term_exists( $obj->poste_base_a, 'region' );
+        if ( 0 === $term && null === $term ) {
+          $term = wp_insert_term( $obj->poste_base_a, 'region' );
+          if (is_wp_error($term)) {
+            $term = get_term_by('name', $obj->poste_base_a);
+          }
+        }
+        wp_set_post_terms( $post_id, [ $term['term_id'] ], 'region' );
+        wp_send_json_success( ['msg' => "Offre ajouter avec succès", 'term' => $term] );
+      } else {
+        wp_send_json_error( "Une erreur s'est produite pendant l'ajout :" . $post_id->get_error_message() );
+      }
 
     }
 
