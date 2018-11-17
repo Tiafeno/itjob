@@ -102,6 +102,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         <?php
                         if (!empty($candidate->driveLicences)) {
                           foreach ($candidate->driveLicences as $driveLicence):
+                            if (!is_array($driveLicence)) continue;
                             echo sprintf('<span class="badge badge-default mr-2">%s</span>', $driveLicence['label']);
                           endforeach;
                         } else {

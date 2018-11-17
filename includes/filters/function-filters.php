@@ -14,14 +14,20 @@ function itjob_filter_engine( $Engine ) {
   $Engine->addFilter(new Twig_SimpleFilter('explode_terms', function ($terms) {
     $exp = [];
     if (!is_array($terms)) return 'Aucun';
-    foreach ( $terms as $term ) : array_push( $exp, $term->name ); endforeach;
+    foreach ( $terms as $term ) :
+      if (!is_object($term)) continue;
+      array_push( $exp, $term->name );
+    endforeach;
     return ! empty( $exp ) ? implode( ', ', $exp ) : 'Aucun';
   }));
 
   $Engine->addFilter(new Twig_SimpleFilter('explode_array', function ($tabs) {
     $exp = [];
     if (!is_array($tabs)) return 'Aucun';
-    foreach ( $tabs as $tab ) : array_push( $exp, $tab['label'] ); endforeach;
+    foreach ( $tabs as $tab ) :
+      if (!is_array($tab)) continue;
+      array_push( $exp, $tab['label'] );
+    endforeach;
     return ! empty( $exp ) ? implode( ', ', $exp ) : 'Aucun';
   }));
 
