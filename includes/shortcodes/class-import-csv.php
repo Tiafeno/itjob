@@ -130,7 +130,7 @@ if (!class_exists('scImport')) :
         if (is_array($titles)) {
           foreach ($titles as $title) {
             // return bool
-            $this->insert_term($title);
+            $this->insert_term($title, $taxonomy);
           }
           wp_send_json_success("Ajouter avec succès");
         } else {
@@ -144,7 +144,7 @@ if (!class_exists('scImport')) :
         $id = (int)$id;
         if (!is_numeric($id)) wp_send_json_success("Passer aux colonnes suivantes");
         if (!is_array($title) && (int)$status) {
-          $term = $this->insert_term($title);
+          $term = $this->insert_term($title, $taxonomy);
           if ($term) {
             update_term_meta($term['term_id'], '__job_id', $id);
             wp_send_json_success("Emploie ajouter avec succès");
@@ -158,11 +158,11 @@ if (!class_exists('scImport')) :
     }
   }
 
-  protected function insert_term($name)
+  protected function insert_term($name, $taxonomy)
   {
-    $term = term_exists($name, 'software');
+    $term = term_exists($name, $taxonomy);
     if (0 === $term || null === $term || !$term) {
-      $term = wp_insert_term(ucfirst($name), 'software');
+      $term = wp_insert_term(ucfirst($name), $taxonomy);
       if (is_wp_error($term)) {
         $term = get_term_by('name', $name);
         if (!$term) return false;
