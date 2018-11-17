@@ -191,7 +191,7 @@
 
   <div class="alert alert-info alert-dismissable fade show has-icon mb-0"><i class="la la-info alert-icon"></i>
     <div class="d-flex align-items-center justify-content-between">
-      <div>En utilisant ce site, vous acceptez que les cookies soient utilisés à des fins d'analyse, de pertinence et de publicité.</div>
+      <div>Ceci est une version bêta du site ITJobMada. En utilisant ce site, vous acceptez que les cookies soient utilisés à des fins d'analyse, de pertinence et de publicité.</div>
       <div>
         <button class="btn btn-sm btn-info btn-rounded" data-dismiss="alert">Fermer</button>
       </div>
