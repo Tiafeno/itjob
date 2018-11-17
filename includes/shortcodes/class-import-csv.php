@@ -111,7 +111,7 @@ if ( ! class_exists( 'scImport' ) ) :
           if ( 0 == $child_term || is_null( $child_term ) ) {
             $child_term = wp_insert_term( $child, $taxonomy, [ 'parent' => $parent_term['term_id'] ] );
           }
-          wp_send_json_success( "({$parent} - {$child})" );
+          wp_send_json_success( "({$parent}) - {$child}" );
           break;
         case 'software':
             $titles  = &$row;
