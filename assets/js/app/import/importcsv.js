@@ -192,7 +192,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Term - Logiciels"
       },
       {
-        _id: 8,
+        _id: 9,
         slug: 'job_sought',
         label: "Term - Emplois"
       },
