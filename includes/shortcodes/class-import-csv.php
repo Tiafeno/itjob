@@ -15,13 +15,14 @@ use includes\post\Company;
 if ( ! class_exists( 'scImport' ) ) :
   class scImport {
     public function __construct() {
-      add_shortcode( 'itjob_import_csv', [ $this, 'sc_render_html' ] );
-      add_action( 'wp_ajax_import_csv', [ &$this, 'import_csv' ] );
-      add_action( 'wp_ajax_get_offer_data', [ &$this, 'get_offer_data' ] );
-      add_action( 'wp_ajax_delete_offer_data', [ &$this, 'delete_offer_data' ] );
-
+    
       add_action( 'init', function () {
-
+        if (current_user_can("remove_users")) {
+          add_shortcode( 'itjob_import_csv', [ $this, 'sc_render_html' ] );
+          add_action( 'wp_ajax_import_csv', [ &$this, 'import_csv' ] );
+          add_action( 'wp_ajax_get_offer_data', [ &$this, 'get_offer_data' ] );
+          add_action( 'wp_ajax_delete_offer_data', [ &$this, 'delete_offer_data' ] );
+        }
       } );
 
       add_action( 'admin_init', function () {
@@ -43,7 +44,8 @@ if ( ! class_exists( 'scImport' ) ) :
       $content_type = Http\Request::getValue( 'content_type' );
       switch ( $type ) {
         case 'taxonomy':
-          $this->add_term( $content_type );
+          $taxonomy = $content_type;
+          $this->add_term( $taxonomy );
           break;
         case 'user':
           $this->add_user( $content_type );
@@ -58,9 +60,15 @@ if ( ! class_exists( 'scImport' ) ) :
      * Récuperer les anciens offres
      */
     public function get_offer_data() {
-      include get_template_directory() . '/includes/class/import/data/oc29_offers.php';
-      $rows = &$oc29_offers;
-      wp_send_json_success($rows);
+      $fileLink = get_template_directory() . '/includes/class/import/data/oc29_offers.php';
+      if (\file_exists($fileLink)) {
+        include $fileLink;
+        $rows = &$oc29_offers;
+        wp_send_json_success($rows);
+      } else {
+        wp_send_json_error("Le fichier backup n'existe pas");
+      }
+      
     }
 
     public function delete_offer_data() {
@@ -88,11 +96,11 @@ if ( ! class_exists( 'scImport' ) ) :
       if ( ! is_user_logged_in() ) {
         wp_send_json_error( "Accès refuser" );
       }
+      $row = Http\Request::getValue( 'column' );
+      $row = json_decode( $row );
       switch ( $taxonomy ) {
         // Ajouter la ville d'une code postal
         case 'city':
-          $row         = Http\Request::getValue( 'column' );
-          $row         = json_decode( $row );
           $parent      = $row[0];
           $child       = $row[1];
           $parent_term = term_exists( $parent, $taxonomy );
@@ -106,7 +114,25 @@ if ( ! class_exists( 'scImport' ) ) :
           wp_send_json_success( "({$parent_term['term_id']}) {$child_term['term_id']}" );
           break;
         case 'software':
-
+            $titles  = &$row;
+            if (is_array($titles)) {
+              foreach ($titles as $title) {
+                $term = term_exists($title, 'software');
+                if ( 0 == $term && null == $term ) {
+                  $term = wp_insert_term( ucfirst($title), 'software' );
+                  if (is_wp_error($term)) {
+                    $term = get_term_by('name', $title);
+                  }
+                } 
+                // Activer le taxonomie
+                update_term_meta($term['term_id'], "activated", 1);
+              }
+              wp_send_json_success("Ajouter avec succès");
+            } else {
+              wp_send_json_error("Un probléme detecter, Erreur:" . $titles);
+            }
+            
+           
           break;
         default:
 
@@ -387,7 +413,6 @@ if ( ! class_exists( 'scImport' ) ) :
               if ( ! $candidatePost ) {
                 wp_send_json_error( "" );
               }
-
               // Update ACF field
               $greeting = $rows_object->greeting === 'NULL' ? '' : $rows_object->greeting;
               if ( ! empty( $greeting ) ) {
@@ -420,8 +445,11 @@ if ( ! class_exists( 'scImport' ) ) :
               update_post_meta( $candidatePost->ID, '__cv_id_demandeur', $rows_object->id_demandeur );
               // Ajouter term region
               $term = term_exists( $rows_object->region, 'region' );
-              if ( 0 !== $term && null !== $term ) {
+              if ( 0 == $term && null == $term ) {
                 $term = wp_insert_term( $rows_object->region, 'region' );
+                if (is_wp_error($term)) {
+                  $term = get_term_by('name', $rows_object->region);
+                }
               }
               wp_set_post_terms( $candidatePost->ID, [ $term['term_id'] ], 'region' );
             }
@@ -467,6 +495,7 @@ if ( ! class_exists( 'scImport' ) ) :
           'value' => (int)$obj->id
         ]
       )];
+      // Verifier si l'offre est déja publier ou ajouter dans le site
       $offers_exists = get_posts($args);
       if (is_array($offers_exists) && !empty($offers_exists)) {
         wp_send_json_success("Offre déja publier");
@@ -539,8 +568,9 @@ if ( ! class_exists( 'scImport' ) ) :
           $atts
         )
       );
-      if ( ! is_user_logged_in() && ! current_user_can( 'delete_users' ) ) {
+      if ( ! is_user_logged_in() && ! current_user_can( 'remove_users' ) ) {
         // Access refuser au public
+        return "<p class='align-center'>Accès interdit à toute personne non autorisée</p>";
       }
 
       wp_enqueue_script( 'import-csv', get_template_directory_uri() . '/assets/js/app/import/importcsv.js', [

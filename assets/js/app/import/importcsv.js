@@ -66,6 +66,9 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
             });
           };
 
+          /**
+           * @event ngClick
+           */
           $scope.addedOfferForm = () => {
             const Form = new FormData();
             Form.append('action', 'get_offer_data');
@@ -96,6 +99,9 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               })
           };
 
+          /**
+           * @event ngClick
+           */
           $scope.deleteAllOffer = () => {
             const Form = new FormData();
             Form.append('action', 'delete_offer_data');
@@ -117,11 +123,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               const column = results.data;
               parser.pause();
               const form = new FormData();
-              if (!_.isEmpty($scope.formData.fileContent)) {
+              if (_.isNumber($scope.formData.fileContent)) {
                 const fileContent = _.findWhere($scope.fileContents, {_id: $scope.formData.fileContent});
                 form.append('content_type', fileContent.slug);
               }
-
+              console.log($scope.formData.fileContent);
               form.append('action', 'import_csv');
               form.append('entry_type', $scope.formData.entryType);
               form.append('order', $scope.columns);
@@ -133,11 +139,9 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
                   if (query.success) {
                     parser.resume();
                   } else {
-                    console.log(query.data);
-                    parser.stop();
+                    parser.abort();
                     $scope.chargement = false;
                   }
-
                 })
             }
           };
@@ -180,7 +184,12 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
       {
         _id: 1,
         slug: 'city',
-        label: "Ville"
+        label: "Term - Ville"
+      },
+      {
+        _id: 8,
+        slug: 'software',
+        label: "Term - Logiciels"
       },
       {
         _id: 2,
