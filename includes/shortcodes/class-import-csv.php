@@ -476,7 +476,6 @@ if (!class_exists('scImport')) :
               // Meta
             update_post_meta($candidatePost->ID, '__cv_audition', $rows_object->audition);
             update_post_meta($candidatePost->ID, '__cv_find_job', $rows_object->find_job);
-            update_post_meta($candidatePost->ID, '__cv_find_job', $rows_object->find_job);
             update_post_meta($candidatePost->ID, '__cv_id_demandeur', $rows_object->id_demandeur);
               // Ajouter term region
             $term = term_exists($rows_object->region, 'region');
