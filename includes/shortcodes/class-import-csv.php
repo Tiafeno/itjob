@@ -103,7 +103,7 @@ if ( ! class_exists( 'scImport' ) ) :
         case 'city':
           $parent      = $row[0];
           $child       = $row[1];
-          $parent_term = term_exists( (int)$parent, $taxonomy );
+          $parent_term = term_exists( $parent, $taxonomy );
           if ( 0 == $parent_term || is_null( $parent_term ) ) {
             $parent_term = wp_insert_term( $parent, $taxonomy, [ 'slug' => $parent ] );
           }
