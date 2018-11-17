@@ -101,8 +101,9 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         <p class="mb-1 uk-text-bold">Permis de conduire:</p>
                         <?php
                         if (!empty($candidate->driveLicences)) {
-                          foreach ($candidate->driveLicences as $driveLicence):
-                            if (!is_array($driveLicence)) continue;
+                          $dls = array_filter($candidate->driveLicences, function ($dl) { return $dl !== '' || !empty($dl); });
+                          if (empty($dls)) echo 'Aucun';
+                          foreach ($dls as $driveLicence):
                             echo sprintf('<span class="badge badge-default mr-2">%s</span>', $driveLicence['label']);
                           endforeach;
                         } else {
@@ -208,9 +209,16 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                     <div class="col-11 d-flex align-items-center">
                       <ol class="candidate-language-list m-0 pl-0">
                         <?php
-                        foreach ($candidate->languages as $language):
-                          echo sprintf("<li><p class='mb-0'>%s</p></li>", $language->name);
-                        endforeach;
+                        if (!empty($candidate->languages)) {
+                          $lgs = array_filter($candidate->languages, function ($lg) { return $lg !== '' || !empty($lg); });
+                          if (empty($lgs)) echo 'Aucun';
+                          foreach ($lgs as $language):
+                            echo sprintf("<li><p class='mb-0'>%s</p></li>", $language->name);
+                          endforeach;
+                        } else {
+                          echo 'Aucune';
+                        }
+
                         ?>
                       </ol>
                     </div>
