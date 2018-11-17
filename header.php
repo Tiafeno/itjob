@@ -119,6 +119,11 @@
       color: #ffffff;
       font-size: 11px;
     }
+
+    .container-list-posts tbody {
+      display: inline-table;
+    }
+
     .alert-pink {
       font-size: 11.5px;
       margin-top: 3px;
