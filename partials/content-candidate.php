@@ -28,7 +28,7 @@ if ( ! $candidate->is_activated()) { return; }
               </tr>
               <tr>
                 <td>Secteur d'activité:</td>
-                <td><?= $candidate->branch_activity->name; ?></td>
+                <td><?= isset($candidate->branch_activity->name) ? $candidate->branch_activity->name: 'Non defini'; ?></td>
               </tr>
               <tr>
                 <td>Permis:</td>
@@ -36,7 +36,10 @@ if ( ! $candidate->is_activated()) { return; }
                   <?php
                   $driveLicences = [];
                   if ( ! empty($candidate->driveLicences) ) {
-                    foreach ( $candidate->driveLicences as $driveLicence ) : array_push( $driveLicences, $driveLicence['label'] ); endforeach;
+                    foreach ( $candidate->driveLicences as $driveLicence ) :
+                      if (!is_array($driveLicence)) continue;
+                      array_push( $driveLicences, $driveLicence['label'] );
+                    endforeach;
                   }
                   echo ! empty( $driveLicences ) ? implode( ', ', $driveLicences ) : 'Aucun';
                   ?>

@@ -534,6 +534,9 @@ if ( ! class_exists( 'scImport' ) ) :
             $dls      = explode( ",", $drive_licences );
             $dlValues = [];
             foreach ( $dls as $dl ) {
+              if ( empty( $dl ) ) {
+                continue;
+              }
               $result     = Arrays::find( $driveLicences, function ( $licence ) use ( $dl ) {
                 return $licence['label'] == $dl;
               } );
@@ -543,22 +546,33 @@ if ( ! class_exists( 'scImport' ) ) :
             update_field( 'itjob_cv_driveLicence', $dlValues, $candidat_id );
 
             // Emploi recherche
-            $jobResult = Arrays::find( $jobs, function ( $job ) use ( $emploi_rechercher ) {
-              return $job->__old_job_id == (int) $emploi_rechercher;
-            } );
-            if ( ! empty( $jobResult ) || ! isset( $jobResult ) || ! $jobResult ) {
-              wp_set_post_terms( $candidat_id, [ $jobResult->term_id ], 'job_sought' );
+            $emplois         = explode( ",", $emploi_rechercher );
+            $term_emploi_ids = [];
+            foreach ( $emplois as $emploi ) {
+              if ( empty( $emploi ) ) {
+                continue;
+              }
+              $jobResult = Arrays::find( $jobs, function ( $job ) use ( $emploi, &$term_emploi_ids ) {
+                return $job->__old_job_id == (int) $emploi;
+              } );
+              if ( ! empty( $jobResult ) || ! isset( $jobResult ) || ! $jobResult ) {
+                $term_emploi_ids[] = $jobResult->term_id;
+              }
             }
+            wp_set_post_terms( $candidat_id, $term_emploi_ids, 'job_sought' );
 
             unset( $jobs );
             // Langue
             $languages  = explode( ',', $langues );
+            $languages = Arrays::reject($languages, function ($lang) { return !empty($lang) || $lang !== '';});
             $languages  = array_map( function ( $langue ) {
               return strtolower( trim( $langue ) );
             }, $languages );
             $langValues = [];
             foreach ( $languages as $language ) {
-              if (empty($language)) continue;
+              if ( empty( $language ) ) {
+                continue;
+              }
               $langTerm = term_exists( $language, 'language' );
               if ( 0 === $langTerm || null === $langTerm || ! $langTerm ) {
                 $langTerm = wp_insert_term( ucfirst( $language ), 'language' );

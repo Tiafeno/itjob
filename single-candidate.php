@@ -78,7 +78,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <i class="fa fa-check-circle mr-2 candidate-icon-verify"></i>
                       <?= $candidate->title ?>
                     </h1>
-                    <h5 class="mb-2 text-muted"><?= $candidate->branch_activity->name ?></h5>
+                    <h5 class="mb-2 text-muted"><?= isset($candidate->branch_activity->name) ?$candidate->branch_activity->name : "" ?></h5>
 <!--                    Devider-->
                     <hr class="uk-width-4-4">
 
@@ -86,9 +86,14 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <div class="col-md-6 mt-3">
                         <p class="mb-1 uk-text-bold">Emploi recherché:</p>
                         <?php
-                        foreach ($candidate->jobSought as $job):
-                          echo sprintf('<span class="badge badge-blue mr-2 mt-1">%s</span>', ucfirst($job->name));
-                        endforeach;
+                        if ( isset($candidate->jobSought) && ! empty($candidate->jobSought)) {
+                          foreach ($candidate->jobSought as $job):
+                            echo sprintf('<span class="badge badge-blue mr-2 mt-1">%s</span>', ucfirst($job->name));
+                          endforeach;
+                        } else {
+                          echo "Non defini";
+                        }
+
                         ?>
                       </div>
 
@@ -113,8 +118,16 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                   </div>
                   <div class="col-md-4 d-flex align-items-top">
                     <div class="mt-2 informations">
-                      <p class="mb-2"><i class="ti-id-badge mr-2"></i> <?= $candidate->greeting['value'] === 'mr' ? 'Homme' : 'Femme' ?></p>
-                      <p class="mb-2"><i class="ti-map-alt mr-2"></i> <?= $candidate->region->name ?></p>
+                      <p class="mb-2"><i class="ti-id-badge mr-2"></i>
+                        <?php
+                          if (is_array($candidate->greeting)) {
+                            echo $candidate->greeting['value'] === 'mr' ? 'Homme' : 'Femme';
+                          } else {
+                            echo "Inconnu";
+                          }
+                        ?>
+                      </p>
+                      <p class="mb-2"><i class="ti-map-alt mr-2"></i> <?= isset($candidate->region->name) ? $candidate->region->name : 'inconnu' ?></p>
                       <p class="mb-2"><i class="ti-agenda mr-2"></i> Déposée le <?= $candidate->dateAdd ?></p>
                     </div>
                   </div>
@@ -211,14 +224,19 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <hr class="uk-devider">
                       <ol class="candidate-language-list mt-0">
                         <?php
-                        $various = $candidate->centerInterest->various;
-                        foreach (explode(',', $various) as $item):
-                          echo sprintf("<li><p class='mb-0'>%s</p></li>", $item);
-                        endforeach;
+                        if (isset($candidate->centerInterest->various)) {
+                          $various = $candidate->centerInterest->various;
+                          foreach (explode(',', $various) as $item):
+                            echo sprintf("<li><p class='mb-0'>%s</p></li>", $item);
+                          endforeach;
+                        } else {
+                          echo "Neant";
+                        }
+
                         ?>
                       </ol>
                     </div>
-                    <?php if (!empty(trim($candidate->centerInterest->projet))) { ?>
+                    <?php if (isset($candidate->centerInterest->projet) && !empty(trim($candidate->centerInterest->projet))) { ?>
                     <div class="col-6 ">
                       <h4>Projet</h4>
                       <hr class="uk-devider">
