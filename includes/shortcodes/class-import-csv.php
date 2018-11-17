@@ -103,14 +103,14 @@ if ( ! class_exists( 'scImport' ) ) :
         case 'city':
           $parent      = $row[0];
           $child       = $row[1];
-          $parent_term = term_exists( $parent, $taxonomy );
-          if ( 0 === $parent_term || null === $parent_term ) {
+          $parent_term = term_exists( trim($parent), 'city' );
+          if ( 0 === $parent_term || null === $parent_term || !$parent_term) {
             $parent_term = wp_insert_term( $parent, $taxonomy, [ 'slug' => $parent ] );
             if (is_wp_error($parent_term)) {
               wp_send_json_error($parent_term->get_message());
             }
           }
-          $child_term = term_exists( $child, $taxonomy, $parent_term['term_id'] );
+          $child_term = term_exists( trim($child), 'city', $parent_term['term_id'] );
           if ( 0 === $child_term || null === $child_term ) {
             $child_term = wp_insert_term( $child, $taxonomy, [ 'parent' => $parent_term['term_id'] ] );
             if (is_wp_error($child_term)) {
