@@ -88,7 +88,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         <?php
                         if ( isset($candidate->jobSought) && ! empty($candidate->jobSought)) {
                           foreach ($candidate->jobSought as $job):
-                            echo sprintf('<span class="badge badge-blue mr-2 mt-1">%s</span>', ucfirst($job->name));
+                            echo sprintf('<span class="badge badge-blue mr-2 mt-1" style="white-space: pre-line;">%s</span>', ucfirst($job->name));
                           endforeach;
                         } else {
                           echo "Non defini";
