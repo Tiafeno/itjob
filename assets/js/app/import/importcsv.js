@@ -212,6 +212,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Demandeur emploi - CV"
       },
       {
+        _id: 10,
+        slug: 'update_candidate_language',
+        label: "Demandeur emploi - Mettre à jour les langues"
+      },
+      {
         _id: 5,
         slug: 'user_candidate_information',
         label: "Demandeur emploi - Information utilisateur"

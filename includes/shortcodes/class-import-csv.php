@@ -564,16 +564,13 @@ if ( ! class_exists( 'scImport' ) ) :
             unset( $jobs );
             // Langue
             $languages  = explode( ',', $langues );
-            $languages = Arrays::reject($languages, function ($lang) { return !empty($lang) || $lang !== '';});
+            $languages = Arrays::reject($languages, function ($lang) { return empty($lang) || $lang === '';});
             $languages  = array_map( function ( $langue ) {
               return strtolower( trim( $langue ) );
             }, $languages );
             // TODO: Bug l'enregistrement de la langue n'a pas abouti
             $langValues = [];
             foreach ( $languages as $language ) {
-              if ( empty( $language ) ) {
-                continue;
-              }
               $langTerm = term_exists( $language, 'language' );
               if ( 0 === $langTerm || null === $langTerm || ! $langTerm ) {
                 $langTerm = wp_insert_term( ucfirst( $language ), 'language' );
@@ -610,7 +607,77 @@ if ( ! class_exists( 'scImport' ) ) :
           }
           wp_send_json_success( "Utilisateur abscent. Ancien CV:{$id_cv}" );
           break;
+
+        case 'update_candidate_language':
+          list(
+            $id_cv,
+            $id_demandeur, // get candidat post with __cv_id_demandeur (meta)
+            $drive_licences,
+            $emploi_rechercher,
+            $langues,
+            $statut,
+            $reference,
+            $certificat,
+            $date_creation,
+            $date_publish ) = $lines;
+          $id_cv        = (int) $id_cv;
+          $id_demandeur = (int) $id_demandeur;
+          if ( ! $id_cv ) {
+            wp_send_json_success( "Passer à la colonne suivante" );
+          }
+          $post_ids = get_posts( [
+            'meta_key'    => '__cv_id_demandeur',
+            'meta_value'  => $id_demandeur,
+            'post_status' => [ 'publish', 'pending' ],
+            'post_type'   => 'candidate',
+            'fields'      => 'ids',
+          ] );
+          if ( is_array( $post_ids ) && ! empty( $post_ids ) ) {
+            $candidat_id   = $post_ids[ count( $post_ids ) - 1 ];
+            $languages  = explode( ',', $langues );
+            $languages = Arrays::reject($languages, function ($lang) { return empty($lang) || $lang === '';});
+            $languages  = array_map( function ( $langue ) {
+              return strtolower( trim( $langue ) );
+            }, $languages );
+            // TODO: Bug l'enregistrement de la langue n'a pas abouti
+            $langValues = [];
+            foreach ( $languages as $language ) {
+              $langTerm = term_exists( $language, 'language' );
+              if ( 0 === $langTerm || null === $langTerm || ! $langTerm ) {
+                $langTerm = wp_insert_term( ucfirst( $language ), 'language' );
+                if ( is_wp_error( $langTerm ) ) {
+                  $langTerm = get_term_by( 'name', $language );
+                }
+              }
+              $langValues[] = $langTerm['term_id'];
+            }
+            wp_set_post_terms( $candidat_id, $langValues, 'language' );
+            
+            $languages  = explode( ',', $langues );
+            $languages = Arrays::reject($languages, function ($lang) { return empty($lang) || $lang === '';});
+            $languages  = array_map( function ( $langue ) {
+              return strtolower( trim( $langue ) );
+            }, $languages );
+            // TODO: Bug l'enregistrement de la langue n'a pas abouti
+            $langValues = [];
+            foreach ( $languages as $language ) {
+              $langTerm = term_exists( $language, 'language' );
+              if ( 0 === $langTerm || null === $langTerm || ! $langTerm ) {
+                $langTerm = wp_insert_term( ucfirst( $language ), 'language' );
+                if ( is_wp_error( $langTerm ) ) {
+                  $langTerm = get_term_by( 'name', $language );
+                }
+              }
+              $langValues[] = $langTerm['term_id'];
+            }
+            wp_set_post_terms( $candidat_id, $langValues, 'language' );
+            wp_send_json_success($langValues);
+          } else {
+            wp_send_json_success("Mise à jours non reussi");
+          }
+        break;
       }
+      
     }
 
     private function get_jobs() {
