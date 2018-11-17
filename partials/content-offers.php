@@ -74,7 +74,7 @@ $limited = $offers->dateLimit < $today;
         <div class="row">
           <div class="col-12">
             <table class="table">
-              <tbody>
+              <tbody style="display: table-row-group;">
               <tr>
                 <td class="no-bold uk-text-bold">Ref: <?= $offers->reference ?></td>
                 <td class="text-center uk-text-bold">Date limite: <?= $offers->dateLimitFormat ?></td>

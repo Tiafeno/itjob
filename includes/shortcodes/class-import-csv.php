@@ -568,6 +568,7 @@ if ( ! class_exists( 'scImport' ) ) :
             $languages  = array_map( function ( $langue ) {
               return strtolower( trim( $langue ) );
             }, $languages );
+            // TODO: Bug l'enregistrement de la langue n'a pas abouti
             $langValues = [];
             foreach ( $languages as $language ) {
               if ( empty( $language ) ) {
