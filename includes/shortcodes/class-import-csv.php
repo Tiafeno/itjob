@@ -439,36 +439,37 @@ if (!class_exists('scImport')) :
           return trim($row);
         }, $rows);
         $rows_object = (object)$rows;
+        $old_user_id = (int)$rows_object->id_user;
           // Retourne false or WP_User
-        $User = $Helper->has_user($rows_object->id_user);
+        if (!$old_user_id) wp_send_json_success("Passer à la colonne suivante");
+        $User = $Helper->has_user($old_user_id);
         if ($User) {
           if (in_array('candidate', $User->roles)) {
             $candidatePost = $Helper->get_candidate_by_email($User->user_email);
             if (!$candidatePost) {
-              wp_send_json_error("");
+              wp_send_json_error("Le candidat n'existe pas email: {$User->user_email}");
             }
+           
               // Update ACF field
-            $greeting = $rows_object->greeting === 'NULL' ? '' : $rows_object->greeting;
-            if (!empty($greeting)) {
-              update_field('itjob_cv_greeting', $greeting, $candidatePost->ID);
-            }
+            $condition = $rows_object->greeting === 'NULL' || empty($rows_object->greeting);
+            $greeting = $condition ? '' : $rows_object->greeting;
+            update_field('itjob_cv_greeting', $greeting, $candidatePost->ID);
             update_field('itjob_cv_firstname', $rows_object->first_name, $candidatePost->ID);
             update_field('itjob_cv_lastname', $rows_object->last_name, $candidatePost->ID);
             update_field('itjob_cv_address', $rows_object->address, $candidatePost->ID);
-
-            $birthday = new \DateTime($rows_object->birthday_date);
+            
+            $birthday = \DateTime::createFromFormat("d/m/Y",$rows_object->birthday_date);
             $acfBirthdayValue = $birthday->format('Ymd');
             update_field('itjob_cv_birthdayDate', $acfBirthdayValue, $candidatePost->ID);
-
+            
             update_field('itjob_cv_notifEmploi', ['notification' => $rows_object->notification_job], $candidatePost->ID);
             update_field('itjob_cv_notifFormation', ['notification' => $rows_object->notification_training], $candidatePost->ID);
             update_field('activated', $rows_object->activated, $candidatePost->ID);
             update_field('itjob_cv_newsletter', $rows_object->newsletter, $candidatePost->ID);
-
             $values = [];
             $cellphones = explode(',', $rows_object->phone);
             foreach ($cellphones as $phone) {
-              $values[] = ['number' => $phone];
+              $values[] = ['number' => preg_replace('/\s+/', '', trim($phone))];
             }
             update_field('itjob_cv_phone', $values, $candidatePost->ID);
 
@@ -479,14 +480,17 @@ if (!class_exists('scImport')) :
             update_post_meta($candidatePost->ID, '__cv_id_demandeur', $rows_object->id_demandeur);
               // Ajouter term region
             $term = term_exists($rows_object->region, 'region');
-            if (0 == $term && null == $term) {
+            if (0 === $term || null === $term || !$term) {
               $term = wp_insert_term($rows_object->region, 'region');
               if (is_wp_error($term)) {
                 $term = get_term_by('name', $rows_object->region);
               }
             }
             wp_set_post_terms($candidatePost->ID, [$term['term_id']], 'region');
+            wp_send_json_success("Information utilisateur mis à jours avec succès");
           }
+        } else {
+          wp_send_json_success("L'utilisateur n'existe pas, utilisateur id: {$rows_object->id_user}");
         }
         break;
 

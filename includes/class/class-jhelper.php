@@ -12,6 +12,7 @@ class JHelper {
     }
     $candidate_query = get_posts( [
       'post_type'    => 'candidate',
+      'post_status'  => ['pending', 'publish'],
       'meta_key'     => 'itjob_cv_email',
       'meta_value'   => $email,
       'meta_compare' => '='
