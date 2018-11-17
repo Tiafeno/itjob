@@ -103,7 +103,7 @@ if ( ! class_exists( 'scImport' ) ) :
         case 'city':
           $parent      = $row[0];
           $child       = $row[1];
-          $parent_term = term_exists( $parent, $taxonomy );
+          $parent_term = term_exists( (int)$parent, $taxonomy );
           if ( 0 == $parent_term || is_null( $parent_term ) ) {
             $parent_term = wp_insert_term( $parent, $taxonomy, [ 'slug' => $parent ] );
           }
@@ -111,7 +111,7 @@ if ( ! class_exists( 'scImport' ) ) :
           if ( 0 == $child_term || is_null( $child_term ) ) {
             $child_term = wp_insert_term( $child, $taxonomy, [ 'parent' => $parent_term['term_id'] ] );
           }
-          wp_send_json_success( "({$parent_term['term_id']}) {$child_term['term_id']}" );
+          wp_send_json_success( "({$parent} - {$child})" );
           break;
         case 'software':
             $titles  = &$row;
