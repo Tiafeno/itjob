@@ -651,25 +651,7 @@ if ( ! class_exists( 'scImport' ) ) :
               }
               $langValues[] = $langTerm['term_id'];
             }
-            wp_set_post_terms( $candidat_id, $langValues, 'language' );
             
-            $languages  = explode( ',', $langues );
-            $languages = Arrays::reject($languages, function ($lang) { return empty($lang) || $lang === '';});
-            $languages  = array_map( function ( $langue ) {
-              return strtolower( trim( $langue ) );
-            }, $languages );
-            // TODO: Bug l'enregistrement de la langue n'a pas abouti
-            $langValues = [];
-            foreach ( $languages as $language ) {
-              $langTerm = term_exists( $language, 'language' );
-              if ( 0 === $langTerm || null === $langTerm || ! $langTerm ) {
-                $langTerm = wp_insert_term( ucfirst( $language ), 'language' );
-                if ( is_wp_error( $langTerm ) ) {
-                  $langTerm = get_term_by( 'name', $language );
-                }
-              }
-              $langValues[] = $langTerm['term_id'];
-            }
             wp_set_post_terms( $candidat_id, $langValues, 'language' );
             wp_send_json_success($langValues);
           } else {
