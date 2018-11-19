@@ -718,10 +718,10 @@ if ( ! class_exists( 'scImport' ) ) :
             }
 
             $date_begin = $this->get_format_date( $date_begin );
-            $date_end   = $this->get_format_date( $date_end );
+            $date_end   = $date_end == 'null' || !$date_end ? '' : $this->get_format_date( $date_end );
 
-            $entreprise = mb_convert_encoding($entreprise,"ISO-8859-1","auto");
-            $mission = mb_convert_encoding($mission,"ISO-8859-1","auto");
+            //$entreprise = mb_convert_encoding($entreprise,"ISO-8859-1","auto");
+            //$mission = mb_convert_encoding($mission,"ISO-8859-1","auto");
 
             if ( ! empty( $ville_id ) && (int) $ville_id ) {
               $ville_id = (int) $ville_id;
