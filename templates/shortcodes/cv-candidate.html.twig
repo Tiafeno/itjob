@@ -143,24 +143,26 @@
             </div><!--// .yui-gf -->
           {% endif %}
 
-          <div class="row yui-gf">
-            <div class="col-md-4">
-              <h2>Experiences professionnelles</h2>
+          {% if  candidate.experiences is not empty %}
+            <div class="row yui-gf">
+              <div class="col-md-4">
+                <h2>Experiences professionnelles</h2>
+              </div><!--// .row -->
+
+              <div class="col-md-8">
+
+                {% for experience in candidate.experiences %}
+                  <div class="job {% if loop.last %} last {% endif %}">
+                    <h2 class="uk-text-bold">{{ experience.exp_company }}</h2>
+                    <h3 class="text-muted">{{ experience.exp_positionHeld }}</h3>
+                    <h4 style="font-family: Poppins, sans-serif">{{ experience.exp_dateBegin }} à {{ experience.exp_dateEnd }}</h4>
+                    {{ experience.exp_mission|raw }}
+                  </div>
+                {% endfor %}
+
+              </div>
             </div><!--// .row -->
-
-            <div class="col-md-8">
-
-              {% for experience in candidate.experiences %}
-                <div class="job {% if loop.last %} last {% endif %}">
-                  <h2 class="uk-text-bold">{{ experience.exp_company }}</h2>
-                  <h3 class="text-muted">{{ experience.exp_positionHeld }}</h3>
-                  <h4 style="font-family: Poppins, sans-serif">{{ experience.exp_dateBegin }} à {{ experience.exp_dateEnd }}</h4>
-                  {{ experience.exp_mission|raw }}
-                </div>
-              {% endfor %}
-
-            </div>
-          </div><!--// .row -->
+          {% endif %}
 
           <div class="row yui-gf">
             <div class="col-md-4">
