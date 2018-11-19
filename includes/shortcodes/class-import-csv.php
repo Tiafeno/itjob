@@ -863,18 +863,18 @@ if ( ! class_exists( 'scImport' ) ) :
     private function get_format_date( $custom_date_format ) {
       // Encode our CSV file to UTF-8 or save with this format
       $monthDash = [
-        [ 'slug' => 'janv', 'month' => '01' ],
-        [ 'slug' => 'févr', 'month' => '02' ],
-        [ 'slug' => 'mars', 'month' => '03' ],
-        [ 'slug' => 'avr', 'month' => '04' ],
-        [ 'slug' => 'mai', 'month' => '05' ],
-        [ 'slug' => 'juin', 'month' => '06' ],
-        [ 'slug' => 'juil', 'month' => '07' ],
-        [ 'slug' => 'août', 'month' => '08' ],
-        [ 'slug' => 'sept', 'month' => '09' ],
-        [ 'slug' => 'oct', 'month' => '10' ],
-        [ 'slug' => 'nov', 'month' => '11' ],
-        [ 'slug' => 'déc', 'month' => '12' ],
+        [ 'slug' => 'Jan', 'month' => '01' ],
+        [ 'slug' => 'Feb', 'month' => '02' ],
+        [ 'slug' => 'Mar', 'month' => '03' ],
+        [ 'slug' => 'Apr', 'month' => '04' ],
+        [ 'slug' => 'May', 'month' => '05' ],
+        [ 'slug' => 'Jun', 'month' => '06' ],
+        [ 'slug' => 'jul', 'month' => '07' ],
+        [ 'slug' => 'Aug', 'month' => '08' ],
+        [ 'slug' => 'Sep', 'month' => '09' ],
+        [ 'slug' => 'Oct', 'month' => '10' ],
+        [ 'slug' => 'Nov', 'month' => '11' ],
+        [ 'slug' => 'Dec', 'month' => '12' ],
       ];
       //$custom_date_format = mb_convert_encoding($custom_date_format,"ISO-8859-1","auto");
 
