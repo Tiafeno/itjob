@@ -904,6 +904,7 @@ if ( ! class_exists( 'scImport' ) ) :
         list( $day, $month ) = [ "01", "01" ];
         $custom_date_format = (int)$custom_date_format;
         $year = $custom_date_format ? $custom_date_format : 2018;
+        if (!$custom_date_format) return '';
       }
 
       if ( ! isset( $day ) || ! isset( $month ) || ! isset( $year ) ) {
