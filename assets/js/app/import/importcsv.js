@@ -66,6 +66,25 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
             });
           };
 
+          $scope.onRemoveExperienceForm = () => {
+            const Form = new FormData();
+            Form.append('action', 'remove_all_experiences');
+            $scope.chargement = true;
+            importService
+              .sendform(Form)
+              .then(resp => {
+                let query = resp.data;
+                if (query.success) {
+                  let inputs = query.data;
+                  $scope.chargement = false;
+                  alert(inputs);
+                } else {
+                  $scope.chargement = false;
+                }
+
+              })
+          };
+
           /**
            * @event ngClick
            */
@@ -202,11 +221,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Tout les utilisateurs"
       },
       {
-        _id: 3,
-        slug: 'user_candidate_experience',
-        label: "Demandeur emploi - Experience"
-      },
-      {
         _id: 4,
         slug: 'user_candidate_cv',
         label: "Demandeur emploi - CV"
@@ -219,11 +233,16 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
       {
         _id: 5,
         slug: 'user_candidate_information',
-        label: "Demandeur emploi - Information utilisateur"
+        label: "Demandeur emploi - Information"
+      },
+      {
+        _id: 3,
+        slug: 'user_candidate_experiences',
+        label: "Demandeur emploi - Experience"
       },
       {
         _id: 6,
-        slug: 'user_candidate_formation',
+        slug: 'user_candidate_trainings',
         label: "Demandeur emploi - Formation"
       },
       {

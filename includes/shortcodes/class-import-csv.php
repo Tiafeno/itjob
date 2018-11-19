@@ -23,7 +23,9 @@ if ( ! class_exists( 'scImport' ) ) :
           add_action( 'wp_ajax_import_csv', [ &$this, 'import_csv' ] );
           add_action( 'wp_ajax_get_offer_data', [ &$this, 'get_offer_data' ] );
           add_action( 'wp_ajax_delete_offer_data', [ &$this, 'delete_offer_data' ] );
+          add_action( 'wp_ajax_remove_all_experiences', [ &$this, 'remove_all_experiences' ] );
         }
+
       } );
 
       add_action( 'admin_init', function () {
@@ -70,6 +72,19 @@ if ( ! class_exists( 'scImport' ) ) :
         wp_send_json_error( "Le fichier backup n'existe pas" );
       }
 
+    }
+
+    public function remove_all_experiences() {
+      $argc = [
+        'post_type' => 'candidate',
+        'post_status' => ['pending', 'publish'],
+        'posts_per_page' => -1
+      ];
+      $posts = get_posts($argc);
+      foreach ($posts as $post) {
+        delete_field('itjob_cv_experiences', $post->ID);
+      }
+      wp_send_json_success("Tous les experiences sont effacer");
     }
 
     public function delete_offer_data() {
@@ -181,6 +196,7 @@ if ( ! class_exists( 'scImport' ) ) :
       $lines  = Http\Request::getValue( 'column' );
       $lines  = json_decode( $lines );
       switch ( $content_type ) {
+
         case 'user':
           $rows        = [
             'id_user'     => (int) $lines[0],
@@ -493,7 +509,6 @@ if ( ! class_exists( 'scImport' ) ) :
           }
           break;
 
-        // TODO: Ajouter les CV
         case 'user_candidate_cv':
           // Publier le CV
           list(
@@ -564,11 +579,12 @@ if ( ! class_exists( 'scImport' ) ) :
             unset( $jobs );
             // Langue
             $languages  = explode( ',', $langues );
-            $languages = Arrays::reject($languages, function ($lang) { return empty($lang) || $lang === '';});
+            $languages  = Arrays::reject( $languages, function ( $lang ) {
+              return empty( $lang ) || $lang === '';
+            } );
             $languages  = array_map( function ( $langue ) {
               return strtolower( trim( $langue ) );
             }, $languages );
-            // TODO: Bug l'enregistrement de la langue n'a pas abouti
             $langValues = [];
             foreach ( $languages as $language ) {
               $langTerm = term_exists( $language, 'language' );
@@ -595,7 +611,7 @@ if ( ! class_exists( 'scImport' ) ) :
             $argc           = [
               'ID'          => $candidat_id,
               'post_title'  => trim( $reference ),
-              'post_date'   => date($publish),
+              'post_date'   => date( $publish ),
               'post_status' => 'publish'
             ];
             $update_results = wp_update_post( $argc );
@@ -633,10 +649,12 @@ if ( ! class_exists( 'scImport' ) ) :
             'fields'      => 'ids',
           ] );
           if ( is_array( $post_ids ) && ! empty( $post_ids ) ) {
-            $candidat_id   = $post_ids[ count( $post_ids ) - 1 ];
-            $languages  = explode( ',', $langues );
-            $languages = Arrays::reject($languages, function ($lang) { return empty($lang) || $lang === '';});
-            $languages  = array_map( function ( $langue ) {
+            $candidat_id = $post_ids[ count( $post_ids ) - 1 ];
+            $languages   = explode( ',', $langues );
+            $languages   = Arrays::reject( $languages, function ( $lang ) {
+              return empty( $lang ) || $lang === '';
+            } );
+            $languages   = array_map( function ( $langue ) {
               return strtolower( trim( $langue ) );
             }, $languages );
             // TODO: Bug l'enregistrement de la langue n'a pas abouti
@@ -651,15 +669,260 @@ if ( ! class_exists( 'scImport' ) ) :
               }
               $langValues[] = $langTerm['term_id'];
             }
-            
+
             wp_set_post_terms( $candidat_id, $langValues, 'language' );
-            wp_send_json_success($langValues);
+            wp_send_json_success( $langValues );
           } else {
-            wp_send_json_success("Mise à jours non reussi");
+            wp_send_json_success( "Mise à jours non reussi" );
           }
-        break;
+          break;
+
+        case 'user_candidate_experiences':
+          list(
+            $id_experience,
+            $id_demandeur,
+            $id_cvs,
+            $date_begin,
+            $date_end,
+            $ville_id,
+            $pays,
+            $entreprise,
+            $post_occuper,
+            $mission ) = $lines;
+          $id_experience = (int) $id_experience;
+          $id_demandeur  = (int) $id_demandeur;
+          if ( ! $id_demandeur ) {
+            wp_send_json_success( "Passer à la colonne suivante" );
+          }
+          if ( empty( $entreprise ) || empty( $date_begin ) ) {
+            wp_send_json_success( "Annuler pour raison de manque d'information" );
+          }
+          $post_ids = get_posts( [
+            'meta_key'    => '__cv_id_demandeur',
+            'meta_value'  => $id_demandeur,
+            'post_status' => [ 'publish', 'pending' ],
+            'post_type'   => 'candidate',
+            'fields'      => 'ids',
+          ] );
+          if ( is_array( $post_ids ) && ! empty( $post_ids ) ) {
+            $candidat_id   = $post_ids[ count( $post_ids ) - 1 ];
+            $posts_occuped = $this->get_csv_contents( get_template_directory() . "/includes/class/import/data/postes.csv" );
+            $Villes        = $this->get_csv_contents( get_template_directory() . '/includes/class/import/data/villes.csv' );
+
+            $Experiences       = get_field( 'itjob_cv_experiences', $candidat_id );
+            $listOfExperiences = [];
+            if ( $Experiences ) {
+              foreach ( $Experiences as $Experience ) {
+                $listOfExperiences[] = $Experience;
+              }
+            }
+
+            $date_begin = $this->get_format_date( $date_begin );
+            $date_end   = $this->get_format_date( $date_end );
+
+            $entreprise = mb_convert_encoding($entreprise,"ISO-8859-1","auto");
+            $mission = mb_convert_encoding($mission,"ISO-8859-1","auto");
+
+            if ( ! empty( $ville_id ) && (int) $ville_id ) {
+              $ville_id = (int) $ville_id;
+              $city     = Arrays::find( $Villes, function ( $ville ) use ( $ville_id ) {
+                return $ville['id'] == $ville_id;
+              } );
+              $city     = empty( $city ) || $city == "undefined" ? '' : $city['ville'];
+            } else {
+              $city = '';
+            }
+            update_post_meta( $candidat_id, "experience_{$id_experience}_{$id_demandeur}_ville", $ville_id );
+
+            if ( ! empty( $posts_occuper ) && (int) $post_occuper ) {
+              $post_occuper = (int) $post_occuper;
+              $poste        = Arrays::find( $posts_occuped, function ( $occuped ) use ( $post_occuper ) {
+                return $occuped['id'] == $post_occuper;
+              } );
+              $poste        = empty( $poste ) || $poste == "undefined" ? '' : $poste['post'];
+            } else {
+              $poste = '';
+            }
+            update_post_meta( $candidat_id, "experience_{$id_experience}_{$id_demandeur}_poste", $post_occuper );
+
+            $state   = ucfirst( strtolower( $pays ) );
+            $company = ucfirst( $entreprise );
+
+            $listOfExperiences[] = [
+              'exp_dateBegin'    => $date_begin,
+              'exp_dateEnd'      => $date_end,
+              'exp_city'         => $city,
+              'exp_country'      => $state,
+              'exp_company'      => $company,
+              'exp_positionHeld' => $poste,
+              'exp_mission'      => $mission,
+              'validation'       => 0
+            ];
+            update_field( 'itjob_cv_experiences', $listOfExperiences, $candidat_id );
+            wp_send_json_success( "Experience ajouter avec succès ID: {$id_experience}" );
+          } else {
+            wp_send_json_success( "Aucun utilisateur ne correpond à cette identifiant ID:" . $id_demandeur );
+          }
+
+          break;
+
+        case 'user_candidate_trainings':
+          list( $id_formation, $id_demandeur, $id_cv, $year, $ville, $pays, $diplome, $universite ) = $lines;
+          $id_formation = (int) $id_formation;
+          $year         = (int) $year;
+          $ville        = (int) $ville;
+          $id_demandeur = (int) $id_demandeur;
+          if ( ! $id_demandeur ) {
+            wp_send_json_success( "Passer à la colonne suivante" );
+          }
+          if ( empty( $diplome ) || empty( $universite ) || ! $year || ! $ville ) {
+            wp_send_json_success( "Annuler pour raison de manque d'information" );
+          }
+          $post_ids = get_posts( [
+            'meta_key'    => '__cv_id_demandeur',
+            'meta_value'  => $id_demandeur,
+            'post_status' => [ 'publish', 'pending' ],
+            'post_type'   => 'candidate',
+            'fields'      => 'ids',
+          ] );
+          if ( is_array( $post_ids ) && ! empty( $post_ids ) ) {
+            $candidat_id = $post_ids[ count( $post_ids ) - 1 ];
+            $Dilplomes   = $this->get_csv_contents( get_template_directory() . "/includes/class/import/data/diplomes.csv" );
+            $Villes      = $this->get_csv_contents( get_template_directory() . '/includes/class/import/data/villes.csv' );
+            $Universitys = $this->get_csv_contents( get_template_directory() . '/includes/class/import/data/universites.csv' );
+
+            $Trainings       = get_field( 'itjob_cv_trainings', $candidat_id );
+            $listOfTrainings = [];
+            if ( $Trainings ) {
+              foreach ( $Trainings as $Training ) {
+                $listOfTrainings[] = $Training;
+              }
+            }
+
+            // Récuperer le nom de la ville
+            if ( ! empty( $ville ) && (int) $ville ) {
+              $city = Arrays::find( $Villes, function ( $el ) use ( $ville ) {
+                return $el['id'] == $ville;
+              } );
+              $city = empty( $city ) || $city == "undefined" ? '' : $city['ville'];
+            } else {
+              $city = '';
+            }
+            update_post_meta( $candidat_id, "training_{$id_formation}_{$id_demandeur}_ville", $ville );
+
+            // Récuperer le diplome
+            if ( ! empty( $diplome ) && (int) $diplome ) {
+              $diploma = Arrays::find( $Dilplomes, function ( $dipl ) use ( $diplome ) {
+                return $dipl['id'] == (int) $diplome;
+              } );
+              $diploma = empty( $diploma ) || $diploma == "undefined" ? '' : $diploma['diplome'];
+            } else {
+              $diploma = '';
+            }
+            update_post_meta( $candidat_id, "training_{$id_formation}_{$id_demandeur}_diplome", $diplome );
+
+            // Récuperer l'université
+            if ( ! empty( $universite ) && (int) $universite ) {
+              $university = Arrays::find( $Universitys, function ( $un ) use ( $universite ) {
+                return $un['id'] == (int) $universite;
+              } );
+              $university = empty( $university ) || $university == "undefined" ? '' : $university['universite'];
+            } else {
+              $university = '';
+            }
+            update_post_meta( $candidat_id, "training_{$id_formation}_{$id_demandeur}_universite", $university );
+
+            $state = ucfirst( strtolower( $pays ) );
+
+            $listOfTrainings[] = [
+              'training_dateBegin'     => $year,
+              'training_dateEnd'       => $year,
+              'training_city'          => $city,
+              'training_country'       => $state,
+              'training_diploma'       => $diploma,
+              'training_establishment' => $university,
+              'validation'             => 0
+            ];
+            update_field( 'itjob_cv_experiences', $listOfTrainings, $candidat_id );
+
+            // Ajouter ces formations dans un meta
+            $formations   = get_post_meta( $candidat_id, '__trainings', true );
+            $formations   = empty( $formations ) || ! $formations ? [] : ( ! is_array( $formations ) ? [] : $formations );
+            $formations[] = $id_formation;
+            update_post_meta( $candidat_id, '__trainings', $formations );
+
+            wp_send_json_success( "Experience ajouter avec succès ID: {$id_formation}" );
+          } else {
+            wp_send_json_success( "Aucun utilisateur ne correpond à cette identifiant ID:" . $post_ids[0] );
+          }
+          break;
       }
-      
+
+    }
+
+    private function get_format_date( $custom_date_format ) {
+      // Encode our CSV file to UTF-8 or save with this format
+      $monthDash = [
+        [ 'slug' => 'janv', 'month' => '01' ],
+        [ 'slug' => 'févr', 'month' => '02' ],
+        [ 'slug' => 'mars', 'month' => '03' ],
+        [ 'slug' => 'avr', 'month' => '04' ],
+        [ 'slug' => 'mai', 'month' => '05' ],
+        [ 'slug' => 'juin', 'month' => '06' ],
+        [ 'slug' => 'juil', 'month' => '07' ],
+        [ 'slug' => 'août', 'month' => '08' ],
+        [ 'slug' => 'sept', 'month' => '09' ],
+        [ 'slug' => 'oct', 'month' => '10' ],
+        [ 'slug' => 'nov', 'month' => '11' ],
+        [ 'slug' => 'déc', 'month' => '12' ],
+      ];
+      //$custom_date_format = mb_convert_encoding($custom_date_format,"ISO-8859-1","auto");
+
+      if ( strpos( $custom_date_format, '/' ) == true ) {
+        $dateTimeBegin = \DateTime::createFromFormat( "d/m/Y", $custom_date_format );
+        $dateFormat    = $dateTimeBegin->format( 'm/d/Y' );
+        $dateBEGIN     = $dateFormat;
+        return $dateBEGIN;
+      }
+
+      if ( strpos( $custom_date_format, '-' ) == true ) {
+        $db         = explode( '-', $custom_date_format );
+        $count_dash = count( $db );
+        $day        = $count_dash === 3 ? $db[0] : '01';
+        $monthArray = Arrays::find( $monthDash, function ( $el ) use ( $db, $count_dash ) {
+          $pst = $count_dash === 3 ? 1 : 0;
+
+          return $el['slug'] == $db[ $pst ];
+        } );
+        $month      = empty( $monthArray ) ? "01" : $monthArray['month'];
+        $year       = $db[ $count_dash - 1 ];
+        $year       = date( "y" ) <  $year ? "19{$year}" : "20{$year}";
+      }
+
+      if ( strpos( $custom_date_format, '-' ) === false && strpos( $custom_date_format, '/' ) === false ) {
+        // Year
+        list( $day, $month ) = [ "01", "01" ];
+        $year = $custom_date_format;
+      }
+
+      if ( ! isset( $day ) || ! isset( $month ) || ! isset( $year ) ) {
+        return null;
+      }
+      $time = "{$day}/{$month}/{$year}";
+      $dbegin          = \DateTime::createFromFormat( "d/m/Y", $time );
+      $dateBeginFormat = $dbegin->format( 'm/d/Y' );
+      $dateBEGIN       = $dateBeginFormat;
+      return $dateBEGIN;
+    }
+
+    private function get_csv_contents( $file ) {
+      if ( file_exists( $file ) ) {
+        $Helper = new JHelper();
+
+        return $Helper->parse_csv( $file );
+      } else {
+        return false;
+      }
     }
 
     private function get_jobs() {
@@ -771,11 +1034,10 @@ if ( ! class_exists( 'scImport' ) ) :
           $atts
         )
       );
-      if ( ! is_user_logged_in() && ! current_user_can( 'remove_users' ) ) {
+      if ( ! is_user_logged_in() ) {
         // Access refuser au public
         return "<p class='align-center'>Accès interdit à toute personne non autorisée</p>";
       }
-
       wp_enqueue_script( 'import-csv', get_template_directory_uri() . '/assets/js/app/import/importcsv.js', [
         'angular',
         'angular-ui-route',

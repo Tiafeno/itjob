@@ -51,6 +51,16 @@ class JHelper {
       return false;
     }
   }
+
+  public function parse_csv( $file ) {
+    $csv = array_map(function ($f) { return str_getcsv(mb_convert_encoding($f,"UTF-8","auto"), ';'); }, file($file));
+    $header = &$csv[0];
+    array_walk($csv, function(&$el) use ($header) {
+      $el = array_combine($header, $el);
+    });
+    array_shift($csv); # remove column header
+    return $csv;
+  }
 }
 
 
