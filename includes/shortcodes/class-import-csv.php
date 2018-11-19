@@ -861,60 +861,12 @@ if ( ! class_exists( 'scImport' ) ) :
     }
 
     private function get_format_date( $custom_date_format ) {
-      // Encode our CSV file to UTF-8 or save with this format
-      $monthDash = [
-        [ 'slug' => 'Jan', 'month' => '01' ],
-        [ 'slug' => 'Feb', 'month' => '02' ],
-        [ 'slug' => 'Mar', 'month' => '03' ],
-        [ 'slug' => 'Apr', 'month' => '04' ],
-        [ 'slug' => 'May', 'month' => '05' ],
-        [ 'slug' => 'Jun', 'month' => '06' ],
-        [ 'slug' => 'jul', 'month' => '07' ],
-        [ 'slug' => 'Aug', 'month' => '08' ],
-        [ 'slug' => 'Sep', 'month' => '09' ],
-        [ 'slug' => 'Oct', 'month' => '10' ],
-        [ 'slug' => 'Nov', 'month' => '11' ],
-        [ 'slug' => 'Dec', 'month' => '12' ],
-      ];
       //$custom_date_format = mb_convert_encoding($custom_date_format,"ISO-8859-1","auto");
-
-      if ( strpos( $custom_date_format, '/' ) == true ) {
-        $dateTimeBegin = \DateTime::createFromFormat( "d/m/Y", $custom_date_format );
-        $dateFormat    = $dateTimeBegin->format( 'm/d/Y' );
-        $dateBEGIN     = $dateFormat;
-        return $dateBEGIN;
-      }
-
-      if ( strpos( $custom_date_format, '-' ) == true ) {
-        $db         = explode( '-', $custom_date_format );
-        $count_dash = count( $db );
-        $day        = $count_dash === 3 ? $db[0] : '01';
-        $monthArray = Arrays::find( $monthDash, function ( $el ) use ( $db, $count_dash ) {
-          $pst = $count_dash === 3 ? 1 : 0;
-
-          return $el['slug'] == $db[ $pst ];
-        } );
-        $month      = empty( $monthArray ) ? "01" : $monthArray['month'];
-        $year       = $db[ $count_dash - 1 ];
-        $year       = date( "y" ) <  $year ? "19{$year}" : "20{$year}";
-      }
-
-      if ( strpos( $custom_date_format, '-' ) === false && strpos( $custom_date_format, '/' ) === false ) {
-        // Year
-        list( $day, $month ) = [ "01", "01" ];
-        $custom_date_format = (int)$custom_date_format;
-        $year = $custom_date_format ? $custom_date_format : 2018;
-        if (!$custom_date_format) return '';
-      }
-
-      if ( ! isset( $day ) || ! isset( $month ) || ! isset( $year ) ) {
-        return null;
-      }
-      $time = "{$day}/{$month}/{$year}";
-      $dbegin          = \DateTime::createFromFormat( "d/m/Y", $time );
-      $dateBeginFormat = $dbegin->format( 'm/d/Y' );
-      $dateBEGIN       = $dateBeginFormat;
-      return $dateBEGIN;
+      if (empty($custom_date_format) || $custom_date_format == "null" || $custom_date_format == null) return '';
+      if (strpos($custom_date_format, '-') === false) return '';
+      $dateTime   = \DateTime::createFromFormat( "M-y", $custom_date_format );
+      $dateFormat = $dateTime->format( 'm/d/Y' );
+      return $dateFormat;
     }
 
     private function get_csv_contents( $file ) {
