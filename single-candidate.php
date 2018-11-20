@@ -1,7 +1,7 @@
 <?php
 global $candidate;
 get_header();
-wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.css');
+wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timeline.css');
 ?>
   <style>
     ol.candidate-skill-list {
@@ -58,8 +58,8 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
         <div class="uk-width-3-4@s bg-transparent">
           <!--          Content here ... -->
           <?php
-          while ( have_posts() ) : the_post();
-            ?>
+          while (have_posts()) : the_post();
+          ?>
             <div class="candidate-section ibox-body">
               <div class="candidate-top d-block pb-4">
                 <div class="row">
@@ -78,7 +78,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <i class="fa fa-check-circle mr-2 candidate-icon-verify"></i>
                       <?= $candidate->title ?>
                     </h1>
-                    <h5 class="mb-2 text-muted"><?= isset($candidate->branch_activity->name) ?$candidate->branch_activity->name : "" ?></h5>
+                    <h5 class="mb-2 text-muted"><?= isset($candidate->branch_activity->name) ? $candidate->branch_activity->name : "" ?></h5>
 <!--                    Devider-->
                     <hr class="uk-width-4-4">
 
@@ -86,8 +86,8 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <div class="col-md-6 mt-3">
                         <p class="mb-1 uk-text-bold">Emploi recherché:</p>
                         <?php
-                        if ( isset($candidate->jobSought) && ! empty($candidate->jobSought)) {
-                          foreach ($candidate->jobSought as $job):
+                        if (isset($candidate->jobSought) && !empty($candidate->jobSought)) {
+                          foreach ($candidate->jobSought as $job) :
                             echo sprintf('<span class="badge badge-blue mr-2 mt-1" style="white-space: pre-line;">%s</span>', ucfirst($job->name));
                           endforeach;
                         } else {
@@ -101,9 +101,11 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         <p class="mb-1 uk-text-bold">Permis de conduire:</p>
                         <?php
                         if (!empty($candidate->driveLicences)) {
-                          $dls = array_filter($candidate->driveLicences, function ($dl) { return $dl !== '' || !empty($dl); });
+                          $dls = array_filter($candidate->driveLicences, function ($dl) {
+                            return $dl !== '' || !empty($dl);
+                          });
                           if (empty($dls)) echo 'Aucun';
-                          foreach ($dls as $driveLicence):
+                          foreach ($dls as $driveLicence) :
                             echo sprintf('<span class="badge badge-default mr-2">%s</span>', $driveLicence['label']);
                           endforeach;
                         } else {
@@ -122,11 +124,11 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                     <div class="mt-2 informations">
                       <p class="mb-2"><i class="ti-id-badge mr-2"></i>
                         <?php
-                          if (is_array($candidate->greeting)) {
-                            echo $candidate->greeting['value'] === 'mr' ? 'Homme' : 'Femme';
-                          } else {
-                            echo "Inconnu";
-                          }
+                        if (is_array($candidate->greeting)) {
+                          echo $candidate->greeting['value'] === 'mr' ? 'Homme' : 'Femme';
+                        } else {
+                          echo "Inconnu";
+                        }
                         ?>
                       </p>
                       <p class="mb-2"><i class="ti-map-alt mr-2"></i> <?= isset($candidate->region->name) ? $candidate->region->name : 'inconnu' ?></p>
@@ -141,8 +143,9 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                   <h4><i class="fa fa-graduation-cap"></i> Formations</h4>
                   <div class="cd-timeline timeline-1">
                     <?php
-                    foreach ($candidate->trainings as $trainings):
-                      ?>
+                    foreach ($candidate->trainings as $trainings) :
+                      $trBegin = $trainings->training_dateBegin;
+                    ?>
                       <div class="cd-timeline-block">
                         <div class="cd-timeline-icon bg-success text-white"><i class="fa fa-graduation-cap"></i></div>
                         <div class="cd-timeline-content">
@@ -150,11 +153,11 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                           <h6 class="text-muted"><?= $trainings->training_establishment ?></h6>
                           <p><?= $trainings->training_city . ', ' . $trainings->training_country ?></p>
                           <span class="cd-date badge badge-success"><?= ucfirst($trainings->training_dateBegin) ?>
-                            <?= ucfirst($trainings->training_dateEnd ? ' <b>-</b> ' . $trainings->training_dateEnd : '') ?></span>
+                            <?= ucfirst($trainings->training_dateEnd !== $trBegin ? ' <b>-</b> ' . $trainings->training_dateEnd : '') ?></span>
                         </div>
                       </div>
                       <?php
-                    endforeach;
+                      endforeach;
                       ?>
                   </div>
                 </div>
@@ -164,8 +167,8 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                   <h4><i class="fa fa-user"></i> Experiences professionnelles</h4>
                   <div class="cd-timeline timeline-1"> <!-- center-orientation -->
                     <?php
-                    foreach ($candidate->experiences as $experience):
-                      ?>
+                    foreach ($candidate->experiences as $experience) :
+                    ?>
                       <div class="cd-timeline-block">
                         <div class="cd-timeline-icon bg-primary text-white"><i class="fa fa-user"></i></div>
                         <div class="cd-timeline-content">
@@ -178,8 +181,8 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         </div>
                       </div>
                       <?php
-                    endforeach;
-                    ?>
+                      endforeach;
+                      ?>
                   </div>
                 </div>
 
@@ -190,13 +193,14 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                   <hr class="uk-devider">
                   <ol class="candidate-skill-list ml-0 pl-0">
                     <?php
-                    foreach ($candidate->softwares as $software):
+                    foreach ($candidate->softwares as $software) :
                       echo sprintf("<li><p>%s</p></li>", $software->name);
                     endforeach;
                     ?>
                   </ol>
                 </div>
-              <?php } ?>
+              <?php 
+            } ?>
 
 <!--                Langues-->
                 <div class="mt-5">
@@ -210,9 +214,11 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <ol class="candidate-language-list m-0 pl-0">
                         <?php
                         if (!empty($candidate->languages)) {
-                          $lgs = array_filter($candidate->languages, function ($lg) { return $lg !== '' || !empty($lg); });
+                          $lgs = array_filter($candidate->languages, function ($lg) {
+                            return $lg !== '' || !empty($lg);
+                          });
                           if (empty($lgs)) echo 'Aucun';
-                          foreach ($lgs as $language):
+                          foreach ($lgs as $language) :
                             echo sprintf("<li><p class='mb-0'>%s</p></li>", $language->name);
                           endforeach;
                         } else {
@@ -235,7 +241,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         <?php
                         if (isset($candidate->centerInterest->various)) {
                           $various = $candidate->centerInterest->various;
-                          foreach (explode(',', $various) as $item):
+                          foreach (explode(',', $various) as $item) :
                             echo sprintf("<li><p class='mb-0'>%s</p></li>", $item);
                           endforeach;
                         } else {
@@ -253,7 +259,8 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                         <?= $candidate->centerInterest->projet ?>
                       </p>
                     </div>
-                    <?php } ?>
+                    <?php 
+                  } ?>
                   </div>
                 </div>
               </div>
@@ -265,7 +272,7 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
 
                     <?php do_action('i_am_interested_this_candidate'); ?>
 
-                    <a href="<?= get_post_type_archive_link( 'candidate' ) ?>" class="ml-2">
+                    <a href="<?= get_post_type_archive_link('candidate') ?>" class="ml-2">
                       <button class="btn btn-outline-secondary btn-fix">
                         <span class="btn-icon"><i class="ti-angle-left"></i>Retour</span>
                       </button>
