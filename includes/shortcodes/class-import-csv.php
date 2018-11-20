@@ -734,12 +734,13 @@ if ( ! class_exists( 'scImport' ) ) :
             }
             update_post_meta( $candidat_id, "experience_{$id_experience}_{$id_demandeur}_ville", $ville_id );
 
+            // Récuperer le poste qui correspond à son identifiant
             if ( ! empty( $posts_occuper ) && (int) $post_occuper ) {
               $post_occuper = (int) $post_occuper;
               $poste        = Arrays::find( $posts_occuped, function ( $occuped ) use ( $post_occuper ) {
                 return $occuped['id'] == $post_occuper;
               } );
-              $poste        = empty( $poste ) || $poste == "undefined" ? '' : $poste['post'];
+              $poste        = empty( $poste ) || $poste == "undefined" ? '' : $poste['poste'];
             } else {
               $poste = '';
             }
@@ -756,7 +757,7 @@ if ( ! class_exists( 'scImport' ) ) :
               'exp_company'      => $company,
               'exp_positionHeld' => $poste,
               'exp_mission'      => $mission,
-              'validation'       => 0
+              'validation'       => 1
             ];
             update_field( 'itjob_cv_experiences', $listOfExperiences, $candidat_id );
             wp_send_json_success( "Experience ajouter avec succès ID: {$id_experience}" );
@@ -841,7 +842,7 @@ if ( ! class_exists( 'scImport' ) ) :
               'training_country'       => $state,
               'training_diploma'       => $diploma,
               'training_establishment' => $university,
-              'validation'             => 0
+              'validation'             => 1
             ];
             update_field( 'itjob_cv_experiences', $listOfTrainings, $candidat_id );
 
