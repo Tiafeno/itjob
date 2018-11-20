@@ -146,8 +146,8 @@ wp_enqueue_style('timeline', get_template_directory_uri().'/assets/css/timeline.
                       <div class="cd-timeline-block">
                         <div class="cd-timeline-icon bg-success text-white"><i class="fa fa-graduation-cap"></i></div>
                         <div class="cd-timeline-content">
-                          <h5><?= $trainings->training_establishment ?></h5>
-                          <h6 class="text-muted"><?= $trainings->training_diploma ?></h6>
+                          <h5><?= $trainings->training_diploma ?></h5>
+                          <h6 class="text-muted"><?= $trainings->training_establishment ?></h6>
                           <p><?= $trainings->training_city . ', ' . $trainings->training_country ?></p>
                           <span class="cd-date badge badge-success"><?= ucfirst($trainings->training_dateBegin) ?>
                             <?= ucfirst($trainings->training_dateEnd ? ' <b>-</b> ' . $trainings->training_dateEnd : '') ?></span>
