@@ -844,7 +844,7 @@ if ( ! class_exists( 'scImport' ) ) :
               'training_establishment' => $university,
               'validation'             => 1
             ];
-            update_field( 'itjob_cv_experiences', $listOfTrainings, $candidat_id );
+            update_field( 'itjob_cv_trainings', $listOfTrainings, $candidat_id );
 
             // Ajouter ces formations dans un meta
             $formations   = get_post_meta( $candidat_id, '__trainings', true );
