@@ -39,6 +39,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_client_area', [ &$this, 'client_area' ] );
         add_action( 'wp_ajax_update_offer', [ &$this, 'update_offer' ] );
         add_action( 'wp_ajax_update_profil', [ &$this, 'update_profil' ] );
+        add_action( 'wp_ajax_update_company_information', [ &$this, 'update_company_information' ] );
         add_action( 'wp_ajax_update_alert_filter', [ &$this, 'update_alert_filter' ] );
         add_action( 'wp_ajax_get_postuled_candidate', [ &$this, 'get_postuled_candidate' ] );
         add_action( 'wp_ajax_update-user-password', [ &$this, 'change_user_password' ] );
@@ -239,6 +240,33 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_send_json( [ 'success' => true ] );
     }
 
+    public function update_company_information() {
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $User = wp_get_current_user();
+      if ($User->ID !==0) {
+        $terms        = [
+          'branch_activity' => Http\Request::getValue( 'abranch' ),
+          'region'          => Http\Request::getValue( 'region' ),
+          'city'            => Http\Request::getValue( 'country' ),
+        ];
+        $Company = Company::get_company_by($User->ID);
+        foreach ( $terms as $key => $value ) {
+          if (!$value) continue;
+          $isError = wp_set_post_terms( $Company->getId(), [ (int) $value ], $key );
+          if ( is_wp_error( $isError ) ) {
+            wp_send_json_error( $isError->get_error_message() );
+          }
+        }
+
+        // Mettre à jour la salutation si necessaire
+        $greeting = Http\Request::getValue('greet');
+        if ($greeting)
+          update_field("itjob_company_greeting", $greeting, $Company->getId());
+        wp_send_json_success("Information mis à jour avec succès");
+      }
+    }
     /**
      * Fonction ajax - nopriv only
      * Envoie un email pour recuperer le mot de passe
@@ -713,6 +741,9 @@ if ( ! class_exists( 'scClient' ) ) :
         $listsCandidate   = array_map( function ( $list ) {
           return (int) $list->id_candidate;
         }, $listsCandidate );
+
+        // Récuperer son secteur d'activité
+        
         wp_send_json( [
           'iClient'        => Company::get_company_by( $User->ID ),
           'Offers'         => $this->__get_company_offers(),

@@ -103,6 +103,7 @@ if ( ! class_exists( 'scImport' ) ) :
       wp_send_json_success( $results );
     }
 
+
     /**
      * Ajouter des terms dans une taxonomie
      *
@@ -196,7 +197,6 @@ if ( ! class_exists( 'scImport' ) ) :
       $lines  = Http\Request::getValue( 'column' );
       $lines  = json_decode( $lines );
       switch ( $content_type ) {
-
         case 'user':
           $rows        = [
             'id_user'     => (int) $lines[0],
@@ -370,63 +370,52 @@ if ( ! class_exists( 'scImport' ) ) :
           break;
 
         case 'user_company':
-          $rows = [
-            'id_user'      => (int) $lines[0],
-            'company_name' => $lines[1],
-            'address'      => $lines[2],
-            'nif'          => $lines[3],
-            'stat'         => $lines[4],
-            'phone'        => $lines[5],
-            'greeting'     => $lines[6],
-            'first_name'   => $lines[7],
-            'last_name'    => $lines[8],
-            'cellphones'   => $lines[9],
-            'email'        => $lines[10],
-            'job_sought'   => $lines[11],
-            'newsletter'   => (int) $lines[12],
-            'notification' => (int) $lines[13],
-            'alert'        => $lines[14],
-            'create'       => $lines[15]
-          ];
 
-          $rows        = array_map( function ( $row ) {
-            return $row;
-          }, $rows );
-          $rows_object = (object) $rows;
-          if ( (int) $rows_object->id_user === 0 ) {
+          list(
+            $id_user, $company_name, $address, $nif,
+            $stat, $phone, $greeting, $first_name, 
+            $last_name, $cellphones, $email, $activated,
+            $branch_activity,,$newsletter, $notification, $alert, $create) = $lines;
+
+          $id_user = (int)$is_user;
+          $newsletter = (int)$newsletter;
+          $notification = (int)$notification;
+          $activated = (int)$activated;
+
+          if ( (int) $id_user === 0 || !$activated) {
             wp_send_json_success( "Passer sur une autre colonne" );
           }
           // Retourne false or WP_User
-          $User = $Helper->has_user( (int) $rows_object->id_user );
+          $User = $Helper->has_user( $id_user );
           if ( $User && in_array( 'company', $User->roles ) ) {
             $Company = Company::get_company_by( $User->ID );
             if ( function_exists( 'update_field' ) ) {
-              update_field( 'itjob_company_address', $rows_object->address, $Company->getId() );
-              update_field( 'itjob_company_nif', $rows_object->nif, $Company->getId() );
-              update_field( 'itjob_company_stat', $rows_object->stat, $Company->getId() );
-              update_field( 'itjob_company_name', $rows_object->first_name . ' ' . $rows_object->last_name, $Company->getId() );
-              update_field( 'itjob_company_newsletter', $rows_object->newsletter, $Company->getId() );
-              update_field( 'itjob_company_notification', $rows_object->notification === '0' || empty( $rows_object->notification ) ? '' : $rows_object->notification, $Company->getId() );
-              update_field( 'itjob_company_phone', $rows_object->phone, $Company->getId() );
-              update_field( 'itjob_company_alerts', $rows_object->alert === '0' ? '' : $rows_object->alert, $Company->getId() );
-              update_field( 'itjob_company_greeting', $rows_object->greeting, $Company->getId() );
+              update_field( 'itjob_company_address', $address, $Company->getId() );
+              update_field( 'itjob_company_nif', $nif, $Company->getId() );
+              update_field( 'itjob_company_stat', $stat, $Company->getId() );
+              update_field( 'itjob_company_name', $first_name . ' ' . $last_name, $Company->getId() );
+              update_field( 'itjob_company_newsletter', $newsletter, $Company->getId() );
+              update_field( 'itjob_company_notification', $notification === '0' || empty( $notification ) ? '' : $notification, $Company->getId() );
+              update_field( 'itjob_company_phone', $phone, $Company->getId() );
+              update_field( 'itjob_company_alerts', $alert === '0' ? '' : $alert, $Company->getId() );
+              update_field( 'itjob_company_greeting', $greeting, $Company->getId() );
               update_field( 'activated', 1, $Company->getId() );
 
               $values     = [];
-              $cellphones = explode( ';', $rows_object->cellphones );
+              $cellphones = explode( ';', $cellphones );
               foreach ( $cellphones as $phone ) {
                 $values[] = [ 'number' => $phone ];
               }
               update_field( 'itjob_company_cellphone', $values, $Company->getId() );
             }
             // Enregistrer la date de creation original & la secteur d'activité
-            update_post_meta( $Company->getId(), '__create', $rows_object->create );
+            update_post_meta( $Company->getId(), '__create', $create );
             // Ancien valeur du secteur d'activité
-            update_post_meta( $Company->getId(), '__company_job_sought', $rows_object->job_sought );
+            update_post_meta( $Company->getId(), '__company_branch_activity', $activity_area );
 
             wp_send_json_success( [ 'msg' => "L'entreprise ajouter avec succès", 'data' => $Company ] );
           } else {
-            wp_send_json_success( "L'utilisateur est refuser de s'inscrire ID:{$rows_object->id_user}" );
+            wp_send_json_success( "L'utilisateur est refuser de s'inscrire ID:{$id_user}" );
           }
           break;
 
@@ -857,10 +846,59 @@ if ( ! class_exists( 'scImport' ) ) :
             wp_send_json_success( "Aucun utilisateur ne correpond à cette identifiant ID:" . $post_ids[0] );
           }
           break;
+
+        case 'user_company_update_job_sought':
+          list($id_user,,,,,,,,,,,$activated,$job_sought,,,,,) = $lines;
+          $id_user = (int)$is_user;
+          $job_sought = trim($job_sought);
+          if ( (int) $id_user === 0 || !$activated) {
+            wp_send_json_success( "Passer sur une autre colonne" );
+          }
+          // Retourne false or WP_User
+          $User = $Helper->has_user( $id_user );
+          if ( $User && in_array( 'company', $User->roles ) ) {
+            $Company = Company::get_company_by( $User->ID );
+            update_field( 'activated', (int)$activated, $Company->getId() );
+
+            // Ajouter le term dans le secteur d'activité
+            $taxonomy = 'branch_activity';
+            delete_post_meta($Company->getId(), "__company_job_sought");
+            $term = term_exists($job_sought, $taxonomy);
+            if (is_wp_error($term)) {
+              $term = wp_insert_term($job_sought, $taxonomy);
+              if (is_wp_error($term)) {
+                $term = get_term_by('name', $job_sought, $taxonomy);
+              }
+            }
+
+            if (!is_array($term) || !isset($term['term_id'])) {
+              wp_send_json_success("Impossible d'ajouter la categorie car il n'est pas definie");
+            }
+            /**
+             * (array) An array of the terms affected if successful,
+             * (boolean) false if integer value of $post_id evaluates as false (if ( ! (int) $post_id )),
+             * (WP_Error) The WordPress Error object on invalid taxonomy ('invalid_taxonomy').
+             * (string) The first offending term if a term given in the $terms parameter is named incorrectly. (Invalid term ids are accepted and inserted).
+             */
+            $terms = [];
+            $terms[] = $term['term_id'];
+            $insert_result = wp_set_post_terms($Company->getId(), $terms, $taxonomy);
+            if (is_wp_error($insert_result) || $insert_result) {
+              wp_send_json_error($insert_result);
+            } else {
+              wp_send_json_success("Taxonomie ajouter avec succès, secteur d'activité de l'entreprise mise à jour avec succès");
+            }
+          }
+        break;
       }
 
     }
 
+    private function add_post_branch_activity( $post_id ) {
+
+    }
+
+    // Retourne une date formater
     private function get_format_date( $custom_date_format ) {
       //$custom_date_format = mb_convert_encoding($custom_date_format,"ISO-8859-1","auto");
       if (empty($custom_date_format) || $custom_date_format == "null" || $custom_date_format == null) return '';
@@ -870,6 +908,7 @@ if ( ! class_exists( 'scImport' ) ) :
       return $dateFormat;
     }
 
+    // Retourne les contenues d'un fichier d'extention CSV
     private function get_csv_contents( $file ) {
       if ( file_exists( $file ) ) {
         $Helper = new JHelper();
@@ -880,6 +919,7 @@ if ( ! class_exists( 'scImport' ) ) :
       }
     }
 
+    // Retourne la listes des emplois
     private function get_jobs() {
       $args  = [ 'taxonomy' => 'job_sought', 'hide_empty' => false, 'parent' => 0, 'posts_per_page' => - 1 ];
       $terms = get_terms( $args );
@@ -979,6 +1019,7 @@ if ( ! class_exists( 'scImport' ) ) :
 
     }
 
+    // Rendre le shortcode HTML
     public function sc_render_html( $atts, $content = "" ) {
       global $Engine, $itJob;
       extract(

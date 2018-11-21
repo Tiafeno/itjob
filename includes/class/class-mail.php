@@ -686,7 +686,7 @@ class Mailing
     global $Engine;
     $to = $email;
     $User = get_user_by('email', $to);
-    $subject = "Mot de passe oublié? - ItJobMada";
+    $subject = "Réinitialiser votre mot de passe - ItJobMada";
     $headers = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_email}>";

@@ -47,11 +47,13 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
           };
 
           // Envoyer l'importation au serveur
-          self.sendOffer = (offer, entry_type) => {
+          self.sendEntryContent = (offer, entry_type, content_type = '') => {
             return new Promise((resolve, reject) => {
               const form = new FormData();
               form.append('action', 'import_csv');
               form.append('entry_type', entry_type);
+              if (!_.isEmpty(content_type))
+                form.append('content_type', content_type);
               form.append('column', JSON.stringify(offer));
               importService
                 .sendform(form)
@@ -64,25 +66,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
                   }
                 });
             });
-          };
-
-          $scope.onRemoveExperienceForm = () => {
-            const Form = new FormData();
-            Form.append('action', 'remove_all_experiences');
-            $scope.chargement = true;
-            importService
-              .sendform(Form)
-              .then(resp => {
-                let query = resp.data;
-                if (query.success) {
-                  let inputs = query.data;
-                  $scope.chargement = false;
-                  alert(inputs);
-                } else {
-                  $scope.chargement = false;
-                }
-
-              })
           };
 
           /**
@@ -102,7 +85,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
 
                   async function loopOffers(inputs) {
                     for (const input of inputs) {
-                      await self.sendOffer(input, 'offers')
+                      await self.sendEntryContent(input, 'offers')
                         .then(resp => {
                           response.push(resp);
                         });
@@ -121,6 +104,62 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
           /**
            * @event ngClick
            */
+          $scope.updateCompanyJob = () => {
+            const inputCSV = jQuery('input#files');
+            if (!inputCSV[0].files.length) {
+              alert("Please choose at least one file to parse.");
+              return false;
+            }
+            inputCSV.parse({
+              config: {
+                delimiter: ';',
+                preview: 0,
+                step: (results) => {
+                  if (results || results.data) {
+                    const column = results.data;
+                    parser.pause();
+                    const form = new FormData();
+
+                    form.append('action', 'import_csv');
+                    form.append('entry_type', "user");
+                    form.append('content_type', "user_company_update_job_sought");
+                    form.append('column', JSON.stringify(column[0]));
+                    importService
+                      .sendform(form)
+                      .then(resp => {
+                        let query = resp.data;
+                        if (query.success) {
+                          parser.resume();
+                        } else {
+                          parser.abort();
+                          $scope.chargement = false;
+                        }
+                      })
+                  }
+                },
+                encoding: "UTF-8",
+                complete: (results) => {
+                  $scope.chargement = false;
+                },
+                error: (err, file) => {
+
+                },
+                dynamicTyping: true,
+                //header: true,
+                download: false
+              },
+              before: (file, inputElement) => {
+
+              },
+              error: function (err, file) {
+                console.log("ERROR:", err, file);
+              },
+            })
+          };
+
+          /**
+           * @event ngClick
+           */
           $scope.deleteAllOffer = () => {
             const Form = new FormData();
             Form.append('action', 'delete_offer_data');
@@ -134,6 +173,28 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
                 } else {
                   $scope.chargement = false;
                 }
+              })
+          };
+
+          /**
+           * @event ngClick
+           */
+          $scope.onRemoveExperienceForm = () => {
+            const Form = new FormData();
+            Form.append('action', 'remove_all_experiences');
+            $scope.chargement = true;
+            importService
+              .sendform(Form)
+              .then(resp => {
+                let query = resp.data;
+                if (query.success) {
+                  let inputs = query.data;
+                  $scope.chargement = false;
+                  alert(inputs);
+                } else {
+                  $scope.chargement = false;
+                }
+
               })
           };
 

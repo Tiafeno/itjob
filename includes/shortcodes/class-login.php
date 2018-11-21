@@ -27,6 +27,10 @@ if ( ! class_exists( 'scLogin' ) ) :
       }, 10, 0 );
     }
 
+    /**
+     * Fonction ajax
+     * Cette fonction permet de se connecter
+     */
     public function login() {
       if ( ! \wp_doing_ajax() || \is_user_logged_in()) {
         return;
@@ -39,6 +43,16 @@ if ( ! class_exists( 'scLogin' ) ) :
       $filterUser = filter_var( $log, FILTER_VALIDATE_EMAIL )
         ? get_user_by( 'email', $log )
         : get_user_by( 'login', $log );
+      $loginUser = &$filterUser;
+      $recoverUserPassword_ = get_user_meta($loginUser->ID, "__recovery_password", true);
+      $recoverUserPassword = (int)$recoverUserPassword_;
+      if ($recoverUserPassword) {
+        wp_send_json_error([
+          "msg" =>"Pour continuer à utiliser le service il est indispensable que vous procédiez à une réinitialisation de votre mot de passe", 
+          "code" => 1, 
+          "infos" => ['email' => $loginUser->user_email]
+        ]);
+      }
 
       if ( $filterUser && wp_check_password( $pwd, $filterUser->data->user_pass, $filterUser->ID ) ) {
         $creds = array(
@@ -48,14 +62,15 @@ if ( ! class_exists( 'scLogin' ) ) :
         );
         $user  = wp_signon( $creds, false ); // WP_Error|WP_User
         if ( is_wp_error( $user ) ) {
-          wp_send_json( [ 'logged' => false, 'msg' => __( 'Wrong username or password.' ) ] );
+          wp_send_json_error( ['msg' => "Nom d’utilisateur ou mot de passe non valide", 'code' => 3] );
         } else {
-          wp_send_json( [ 'logged' => true, 'msg' => 'Connexion réussie', 'user' => $user ] );
+          wp_send_json_success([ 'msg' => 'Connexion réussie', 'user' => $user ] );
         }
       } else {
-        wp_send_json( [ 'logged' => false, 'msg' => __( 'Wrong username or password.' ) ] );
+        wp_send_json_error( [ 'msg' => "Nom d’utilisateur ou mot de passe non valide", 'code' => 2 ] );
       }
     }
+
 
     public function sc_render_html( $attrs, $content = '' ) {
       global $Engine, $itJob, $wp_query;
@@ -112,7 +127,8 @@ if ( ! class_exists( 'scLogin' ) ) :
         'ajax_url'  => admin_url( 'admin-ajax.php' ),
         'urlHelper' => [
           'customer_area_url' => get_the_permalink($custom_area_url),
-          'redir'             => $redirection
+          'redir'             => $redirection,
+          'partials' => get_template_directory_uri() . '/assets/js/app/login/partials'
         ]
       ]);
 

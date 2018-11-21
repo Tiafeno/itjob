@@ -40,7 +40,6 @@
         <div class="ibox-head">
           <div class="ibox-title">Qu'est-ce que vous voulez faire?</div>
         </div>
-
         <div class="modal-body">
           <ul class="timeline scroller">
             <li class="timeline-item">
@@ -53,7 +52,6 @@
             </li>
           </ul>
         </div>
-
         <div class="modal-footer">
           <button class="btn btn-outline-secondary btn-fix btn-thick" data-dismiss="modal" type="button">Fermer
           </button>
@@ -94,7 +92,6 @@
             </div>
           </div>
           <div class="col-md-8 col-sm-8">
-
             <div class="form-group">
               <label class="col-form-label ">Mon status <span style="color: red">*</span></label>
               <select class="form-control" name="status" id="status" ng-model="profilEditor.status"
@@ -105,19 +102,16 @@
                 <option value="2">Je cherche un stage</option>
               </select>
             </div>
-
             <div class="form-group">
               <label class="col-form-label ">Adresse e-mail</label>
               <input class="form-control" name="email" id="email" ng-model="Candidate.privateInformations.author.data.user_email" disabled/>
             </div>
-
             <div class="form-group mt-4">
               <label class="checkbox">
                 <input type="checkbox" name="newsletter" id="newsletter" ng-model="profilEditor.newsletter">
                 <span class="input-span"></span>Est ce que vous voulez recevoir notre newsletter?
               </label>
             </div>
-
           </div>
         </div>
       </div>
@@ -133,6 +127,7 @@
 </div>
 <!-- .end modal -->
 
+
 <!-- Modal contact -->
 <div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1"
      role="dialog">
@@ -144,7 +139,6 @@
           <span aria-hidden="true">×</span>
         </button>
       </div>
-
       <div class="ibox-body">
         <p>
           Pour toutes modifications; Veuillez contacter le service commercial aux numéros suivants:<br>
@@ -153,7 +147,6 @@
           93 962 18</a>.
         </p>
       </div>
-
       <div class="ibox-footer">
         <div class="row">
           <div class="col-sm-12 uk-text-right">
@@ -180,7 +173,6 @@
               style="cursor: pointer">
           <i class="ti-pencil"></i>
         </span>
-
         <div class="card-avatar mt-3 mb-4">
           <img class="img-circle" ng-src="[[ Candidate.privateInformations.avatar ]]" alt="image">
         </div>
@@ -205,7 +197,6 @@
     </div>
   </div>
   <div class="col-lg-8">
-
     <div class="mt-4">
       <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
         <li class="nav-item">
@@ -258,7 +249,6 @@
                     <experiences candidate="Candidate"></experiences>
                     <!-- Formation directive --->
                     <trainings candidate="Candidate"></trainings>
-
                     <div class="col-lg-12">
                       <hr>
                       <div class="row">
@@ -292,7 +282,6 @@
                         </div>
                         <!-- .end Permis de conduire -->
                       </div>
-
                     </div>
                   </div>
                   <div ng-show="!cv.hasCV">
@@ -300,7 +289,6 @@
                     <a ng-href="[[cv.addCVUrl]]" class="btn btn-outline-blue">Ajouter un CV</a>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>

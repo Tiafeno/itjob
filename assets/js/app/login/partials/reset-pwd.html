@@ -1,0 +1,19 @@
+
+<div class="page-1" ng-if="page == 1">
+  <h4 class="text-center">Bienvenue sur la nouvelle plateforme itjob.</h4>
+  <p class="font-14 text-center">Pour continuer à utiliser le service il est indispensable que vous procédiez à une réinitialisation de votre mot de passe</p>
+  <p class="font-14 text-center">Un lien seras envoyé à cette adresse: <br><b>[[infos.email]]</b></p>
+  <div class="d-flex">
+    <button class="btn btn-blue uk-margin-auto" ng-disabled="disabledSend" data-ng-click="sendRecoveryLink()" type="button">Envoyer le lien</button>
+  </div>
+  
+  <div class="mt-2" style="color: rgb(255, 0, 0); font-size: 11px"> [[status]] </div>
+</div>
+
+<div class="page-2" ng-if="page == 2">
+  <div>
+    <h4 class="text-center">Nous avons envoyé un lien de récuperation</h4>
+    <p class="font-14 text-center">Merci de vérifier que vous avez reçu un e-mail à cette adresse <br> <b>[[infos.email]]</b></p>
+  </div>
+</div>
+

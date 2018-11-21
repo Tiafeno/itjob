@@ -4,7 +4,7 @@
   <div class="uk-modal-dialog">
     <button class="uk-modal-close-default" type="button" uk-close></button>
     <div class="uk-modal-header">
-      <h2 class="uk-modal-title">Modification</h2>
+      <h2 class="uk-modal-title">Mettre à jour votre profil</h2>
     </div>
     <div class="uk-modal-body" uk-overflow-auto>
       <form name="editUserForm" novalidate>
@@ -21,7 +21,7 @@
           </div>
           <div class="col-sm-8">
             <label class="col-form-label">Nom du responsable <span style="color: red">*</span></label>
-            <input class="form-control" name="name" ng-model="userEditor.name" type="text"
+            <input class="form-control" ng-disabled="true" name="name" ng-model="userEditor.name" type="text"
                    placeholder="Nom du responsable"
                    required>
           </div>
@@ -71,7 +71,7 @@
             <label class="col-form-label ">Adresse <span style="color: red">*</span></label>
             <div class="form-group">
               <div class="input-group ">
-                <input ng-model="userEditor.address" autocomplete="off" name="address" class="form-control" required>
+                <input ng-model="userEditor.address" ng-disabled="true" autocomplete="off" name="address" class="form-control" required>
               </div>
             </div>
           </div>

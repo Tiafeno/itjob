@@ -197,6 +197,7 @@ if ( ! class_exists( 'itJob' ) ) {
               CASE 'candidate':
                 $language = Http\Request::getValue( 'lg', '' );
                 $software = Http\Request::getValue( 'ms', '' );
+
                 if ( ! empty( $language ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
@@ -207,6 +208,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   ];
                 }
 
+                // Rechercher dans les logiciel si le champ n'es pas vide
                 if ( ! empty( $software ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
@@ -221,34 +223,45 @@ if ( ! class_exists( 'itJob' ) ) {
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
+                  $searchs = explode(' ', $s);
+                  foreach ($searchs as $search) {
+                    if (empty($search)) continue;
+                    $meta_query[] = [
+                      'relation' => 'OR',
+                      [
+                        'key'     => 'itjob_cv_trainings_0_training_establishment',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ],
+                      [
+                        'key'     => 'itjob_cv_trainings_0_training_diploma',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ],
+                      [
+                        'key'     => 'itjob_cv_experiences_0_exp_mission',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ],
+                      [
+                        'key'     => 'itjob_cv_experiences_0_exp_positionHeld',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ],
+                      [
+                        'key'     => 'itjob_cv_experiences_0_exp_company',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ]
+                    ];
+                  }
                   // Feature: Recherché aussi dans le profil recherché et mission
-                  $meta_query[] = [
-                    'relation' => 'OR',
-                    [
-                      'key'     => 'itjob_cv_experiences_0_exp_mission',
-                      'value'   => $s,
-                      'compare' => 'LIKE',
-                      'type'    => 'CHAR'
-                    ],
-                    [
-                      'key'     => 'itjob_cv_trainings_0_training_establishment',
-                      'value'   => $s,
-                      'compare' => 'LIKE',
-                      'type'    => 'CHAR'
-                    ],
-                    [
-                      'key'     => 'itjob_cv_experiences_0_exp_positionHeld',
-                      'value'   => $s,
-                      'compare' => 'LIKE',
-                      'type'    => 'CHAR'
-                    ],
-                    [
-                      'key'     => 'itjob_cv_experiences_0_exp_company',
-                      'value'   => $s,
-                      'compare' => 'LIKE',
-                      'type'    => 'CHAR'
-                    ]
-                  ];
+                  
                   $query->set( 'meta_query', $meta_query );
                   $query->meta_query = new \WP_Meta_Query( $meta_query );
                 }

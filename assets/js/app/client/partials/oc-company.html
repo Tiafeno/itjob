@@ -36,6 +36,90 @@
 </div>
 <!-- .end modal -->
 
+
+<!-- Modal information editor -->
+<div id="modal-information-editor" uk-modal="esc-close: false; bg-close: false">
+  <div class="uk-modal-dialog">
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Verification des informations</h2>
+    </div>
+    <form name="editInformationProfilForm" id="editInformationProfilForm" ng-submit="onSubmitCompanyInformation(editInformationProfilForm.$valid)">
+      <div class="uk-modal-body" uk-overflow-auto>
+        <div class="row">
+          <div class="col-md-10 col-sm-10">
+
+            <div class="form-group mb-2 row ">
+              <div  class="col-sm-4">
+                <label class="col-form-label ">Salutation <span style="color: red">*</span></label>
+                <div class="form-group">
+                  <select class="form-control" name="greet" ng-model="profilEditor.form.greeting"
+                          title="Salutation" required>
+                    <option value="mr">Monsieur</option>
+                    <option value="mrs">Madame</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-8">
+                <label class="col-form-label">Nom du responsable <span style="color: red">*</span></label>
+                <input class="form-control" ng-disabled="true" name="name" ng-model="Company.name" type="text"
+                       placeholder="Nom du responsable"
+                       required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Votre secteur d'activité <span style="color: red">*</span></label>
+              <select class="form-control" name="branch_activity" id="branch_activity" ng-model="profilEditor.form.abranch"
+                      ng-value=""
+                      title="Status" required>
+                <option value=""></option>
+                <option value="[[abranch.term_id]]" ng-value="abranch.term_id" ng-repeat="abranch in profilEditor.abranchs">
+                  [[abranch.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Region <span style="color: red">*</span></label>
+              <select class="form-control" name="region" id="region" ng-model="profilEditor.form.region"
+                      ng-value=""
+                      title="Status" required>
+                <option value=""></option>
+                <option value="[[region.term_id]]" ng-value="region.term_id" ng-repeat="region in profilEditor.regions">
+                  [[region.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-control-label ">Code postal ou Ville <span style="color: red">*</span></label>
+              <select class="form-control input-select2" name="country" id="country" ng-model="profilEditor.form.country"
+                      title="Selectionner une ville" required>
+                <option value=""></option>
+                <option value="[[city.term_id]]" ng-value="city.term_id" ng-repeat="city in profilEditor.city">[[city.name]]</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Adresse e-mail</label>
+              <input class="form-control" name="email" id="email" ng-model="Company.email" disabled/>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="uk-modal-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-blue ml-4" ng-disabled="profilEditor.loading" type="submit">Mettre à jour</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- .end modal -->
+
 <div class="">
   <div class="flexbox">
     <div class="flexbox-b">
