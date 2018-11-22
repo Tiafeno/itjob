@@ -651,6 +651,32 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           }, (error) => {
           });
       };
+
+      $scope.onSubmitCandidateInformation = (isValid) => {
+//update_candidate_information
+        if (!isValid) return false;
+        $scope.profilEditor.loading = true;
+        const Form = new FormData();
+        Form.append('action', 'update_candidate_information');
+        Form.append('abranch', $scope.profilEditor.form.abranch);
+        Form.append('region', $scope.profilEditor.form.region);
+        Form.append('country', $scope.profilEditor.form.country);
+        Form.append('greet', $scope.profilEditor.form.greeting);
+        clientFactory
+          .sendPostForm(Form)
+          .then(resp => {
+            let response = resp.data;
+            if (response.success) {
+              $scope.profilEditor.loading = false;
+              setTimeout(() => {
+                location.reload(true);
+              }, 1200);
+
+            }
+          }, (error) => {
+          });
+      };
+
       /**
        * Récuperer les données sur le client
        */
@@ -689,51 +715,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               })
           }
 
-          UIkit.util.on('#modal-information-editor', 'show', function (e) {
-            e.preventDefault();
-            jQuery("select.input-select2").select2({
-              placeholder: "Selectionner une ville",
-              allowClear: true,
-              width: '100%',
-              matcher: function (params, data) {
-                var inTerm = [];
-
-                // If there are no search terms, return all of the data
-                if (jQuery.trim(params.term) === '') {
-                  return data;
-                }
-
-                // Do not display the item if there is no 'text' property
-                if (typeof data.text === 'undefined') {
-                  return null;
-                }
-
-                // `params.term` should be the term that is used for searching
-                // `data.text` is the text that is displayed for the data object
-                var dataContains = data.text.toLowerCase();
-                var paramTerms = jQuery.trim(params.term).split(' ');
-                jQuery.each(paramTerms, (index, value) => {
-                  if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
-                    inTerm.push(true);
-                  } else {
-                    inTerm.push(false);
-                  }
-                });
-                var isEveryTrue = _.every(inTerm, (boolean) => {
-                  return boolean === true;
-                });
-                if (isEveryTrue) {
-                  var modifiedData = jQuery.extend({}, data, true);
-                  //modifiedData.text += ' (Trouver)';
-                  return modifiedData;
-                } else {
-                  // Return `null` if the term should not be displayed
-                  return null;
-                }
-              }
-            });
-          });
-
         } else {
           // Candidat
           // Crée une image par default
@@ -768,9 +749,42 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             }
           }); // .mapObject
           $scope.cv.hasCV = $scope.Candidate.has_cv;
+          const region = $scope.Candidate.privateInformations.address.region;
+          const country = $scope.Candidate.privateInformations.address.country;
+
+          if (_.isNull($scope.Candidate.branch_activity) || !$scope.Candidate.branch_activity || !country ||
+            !region || _.isEmpty($scope.Candidate.greeting)) {
+            $q.all([
+              $scope.asyncTerms('branch_activity'),
+              $scope.asyncTerms('region'),
+              $scope.asyncTerms('city')])
+              .then(data => {
+                $scope.profilEditor.abranchs = _.clone(data[0]);
+                $scope.profilEditor.regions = _.clone(data[1]);
+                $scope.profilEditor.city = [];
+                $scope.profilEditor.city = _.map(data[2], (term) => {
+                  term.name = `(${term.postal_code}) ${term.name}`;
+                  return term;
+                });
+
+                if (!_.isEmpty($scope.Candidate.greeting)) {
+                  $scope.profilEditor.form.greeting = $scope.Candidate.greeting.value;
+                }
+                if (!_.isNull($scope.Candidate.branch_activity) || $scope.Candidate.branch_activity) {
+                  $scope.profilEditor.form.abranch = $scope.Candidate.branch_activity.term_id;
+                }
+                if (!_.isNull(region) || region) {
+                  $scope.profilEditor.form.region = region.term_id;
+                }
+                $scope.profilEditor.form.name = `${$scope.Candidate.privateInformations.firstname} ${$scope.Candidate.privateInformations.lastname}`;
+                $scope.profilEditor.form.email = $scope.Candidate.privateInformations.author.data.user_email;
+                UIkit.modal('#modal-information-editor').show();
+              })
+          }
           if (!$scope.cv.hasCV) {
             jQuery('#modal-info-editor').modal('show')
           }
+
         } // .end candidate
 
 
@@ -778,6 +792,50 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
 
         // jQuery
         // Activate Popovers
+        UIkit.util.on('#modal-information-editor', 'show', function (e) {
+          e.preventDefault();
+          jQuery("select.input-select2").select2({
+            placeholder: "Selectionner une ville",
+            allowClear: true,
+            width: '100%',
+            matcher: function (params, data) {
+              var inTerm = [];
+
+              // If there are no search terms, return all of the data
+              if (jQuery.trim(params.term) === '') {
+                return data;
+              }
+
+              // Do not display the item if there is no 'text' property
+              if (typeof data.text === 'undefined') {
+                return null;
+              }
+
+              // `params.term` should be the term that is used for searching
+              // `data.text` is the text that is displayed for the data object
+              var dataContains = data.text.toLowerCase();
+              var paramTerms = jQuery.trim(params.term).split(' ');
+              jQuery.each(paramTerms, (index, value) => {
+                if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
+                  inTerm.push(true);
+                } else {
+                  inTerm.push(false);
+                }
+              });
+              var isEveryTrue = _.every(inTerm, (boolean) => {
+                return boolean === true;
+              });
+              if (isEveryTrue) {
+                var modifiedData = jQuery.extend({}, data, true);
+                //modifiedData.text += ' (Trouver)';
+                return modifiedData;
+              } else {
+                // Return `null` if the term should not be displayed
+                return null;
+              }
+            }
+          });
+        });
         jQuery('[data-toggle="popover"]').popover();
       };
 

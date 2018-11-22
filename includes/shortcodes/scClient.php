@@ -40,6 +40,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_update_offer', [ &$this, 'update_offer' ] );
         add_action( 'wp_ajax_update_profil', [ &$this, 'update_profil' ] );
         add_action( 'wp_ajax_update_company_information', [ &$this, 'update_company_information' ] );
+        add_action( 'wp_ajax_update_candidate_information', [ &$this, 'update_candidate_information' ] );
         add_action( 'wp_ajax_update_alert_filter', [ &$this, 'update_alert_filter' ] );
         add_action( 'wp_ajax_update_job_search', [ &$this, 'update_job_search' ] );
         add_action( 'wp_ajax_get_postuled_candidate', [ &$this, 'get_postuled_candidate' ] );
@@ -242,6 +243,10 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_send_json( [ 'success' => true ] );
     }
 
+    /**
+     * Function ajax
+     * Mettre à jour les informations de base (company) avant de continuer dan sle site
+     */
     public function update_company_information() {
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         wp_send_json( false );
@@ -264,6 +269,36 @@ if ( ! class_exists( 'scClient' ) ) :
         $greeting = Http\Request::getValue('greet');
         if ($greeting)
           update_field("itjob_company_greeting", $greeting, $this->Company->getId());
+        wp_send_json_success("Information mis à jour avec succès");
+      }
+    }
+
+    /**
+     * Function ajax
+     *  Mettre à jour les informations de base (candidate) avant de continuer dan sle site
+     */
+    public function update_candidate_information() {
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $User = wp_get_current_user();
+      if ($User->ID !==0) {
+        $terms        = [
+          'branch_activity' => Http\Request::getValue( 'abranch' ),
+          'region'          => Http\Request::getValue( 'region' ),
+          'city'            => Http\Request::getValue( 'country' ),
+        ];
+        foreach ( $terms as $key => $value ) {
+          if (!$value) continue;
+          $isError = wp_set_post_terms( $this->Candidate->getId(), [ (int) $value ], $key );
+          if ( is_wp_error( $isError ) ) {
+            wp_send_json_error( $isError->get_error_message() );
+          }
+        }
+        // Mettre à jour la salutation si necessaire
+        $greeting = Http\Request::getValue('greet');
+        if ($greeting)
+          update_field("itjob_cv_greeting", $greeting, $this->Candidate->getId());
         wp_send_json_success("Information mis à jour avec succès");
       }
     }
