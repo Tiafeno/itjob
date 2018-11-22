@@ -166,6 +166,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         softwareTerms: "&softwareTerms"
       },
       controller: ["$scope", "$q", "$http", function ($scope, $q, $http) {
+        $scope.status = '';
         $scope.form = {};
         $scope.form.softwares = [];
         $scope.loading = false;
@@ -193,8 +194,10 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
               let data = response.data;
               $scope.loading = false;
               if (!data.success) {
+                $scope.status = data.data;
               } else {
-
+                alertify.success(data.data);
+                UIkit.modal('#modal-software-editor-overflow').hide();
               }
             });
         };

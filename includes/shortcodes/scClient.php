@@ -272,10 +272,11 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         wp_send_json( false );
       }
-      if (!isset($_GET['softwares'])) wp_send_json_error("Les conditions ne sont pas remplie");
+      if (!isset($_POST['softwares'])) wp_send_json_error("Les conditions ne sont pas remplie");
       $softwares = Http\Request::getValue("softwares");
       $softwares = json_decode($softwares);
       $taxonomy = "software";
+      $notValidTerms = []; // Cette variable contient les terms à valider
       $softContainer = [];
       foreach ( $softwares as $software ) {
         if ( isset( $job->term_id ) ) {
@@ -290,7 +291,7 @@ if ( ! class_exists( 'scClient' ) ) :
             // Désactiver le term qu'on viens d'ajouter
             if ( ! is_wp_error( $term ) ) {
               update_term_meta( $term['term_id'], 'activated', 0 );
-              // TODO: Envoyer une notification à l'admin pour valider le term
+              $notValidTerms[] = $term;
               array_push( $softContainer, (int) $term['term_id'] );
             } else {
               wp_send_json_error("Une erreur s'est produite. Veillez reéssayer plus tard");
@@ -300,6 +301,11 @@ if ( ! class_exists( 'scClient' ) ) :
           }
         }
       }
+
+      if (!empty($notValidTerms)) {
+        // TODO: Envoyer une notification à l'admin pour valider le term
+      }
+      wp_set_post_terms($this->Candidate->getId(), $softContainer, $taxonomy);
       wp_send_json_success("Logiciel mis à jour avec succès");
     }
 
@@ -456,6 +462,7 @@ if ( ! class_exists( 'scClient' ) ) :
       if ($itJob->services->isClient() === 'candidate') {
         //$idJobs = array_map(function ($job) { return $job->term_id; }, $jobs);
         $jobContainer = [];
+        $notValidTerms = [];
         foreach ( $jobs as $job ) {
           if ( isset( $job->term_id ) ) {
             array_push( $jobContainer, $job->term_id );
@@ -469,7 +476,7 @@ if ( ! class_exists( 'scClient' ) ) :
               // Désactiver le term qu'on viens d'ajouter
               if ( ! is_wp_error( $term ) ) {
                 update_term_meta( $term['term_id'], 'activated', 0 );
-                // TODO: Envoyer une notification à l'admin pour valider le term
+                $notValidTerms[] = $term;
                 array_push( $jobContainer, (int) $term['term_id'] );
               } else {
                 wp_send_json_error("Une erreur s'est produite. Veillez reéssayer plus tard");
@@ -480,6 +487,9 @@ if ( ! class_exists( 'scClient' ) ) :
           }
         }
 
+        if (!empty($notValidTerms)) {
+          // TODO: Envoyer une notification à l'admin pour valider le term
+        }
         wp_set_post_terms($this->Candidate->getId(), $jobContainer, $taxonomy);
         wp_send_json_success("Emploi ajouter avec succès");
       }

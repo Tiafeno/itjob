@@ -15,6 +15,10 @@
 
       <div class="uk-modal-body" uk-overflow-auto>
         <div class="col-sm-12" style="min-height: 245px">
+          <div class="alert alert-pink alert-dismissable fade show alert-outline has-icon" ng-if="status">
+            <i class="la la-info-circle alert-icon"></i>
+            [[status]]
+          </div>
 
           <div class="form-group" ng-show="!loading">
             <tags-input ng-model="tags" max-lenght="1" max-tags="1" on-tag-adding="onAddedTag($tag)" display-property="name"
@@ -52,7 +56,7 @@
           </div>
           <div class="col-sm-8 uk-text-right">
             <button class="btn btn-default uk-modal-close" data-ng-click="abordModification()" type="button">Annuler</button>
-            <button class="btn btn-blue ml-4"  type="submit">Enregistrer</button>
+            <button class="btn btn-blue ml-4" ng-disabled="loading" type="submit">Enregistrer</button>
           </div>
         </div>
       </div>
