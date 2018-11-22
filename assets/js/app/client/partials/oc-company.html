@@ -96,7 +96,7 @@
               <select class="form-control input-select2" name="country" id="country" ng-model="profilEditor.form.country"
                       title="Selectionner une ville" required>
                 <option value=""></option>
-                <option value="[[city.term_id]]" ng-value="city.term_id" ng-repeat="city in profilEditor.city">[[city.name]]</option>
+                <option value="[[city.term_id]]" ng-value="city.term_id" ng-repeat="city in profilEditor.city|filter:searchCityFn">[[city.name]]</option>
               </select>
             </div>
 

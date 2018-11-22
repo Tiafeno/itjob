@@ -103,6 +103,19 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
 
           };
 
+          $rootScope.searchCityFn = (city) => {
+            if (!_.isUndefined($rootScope.company.region)) {
+              let region = parseInt($rootScope.company.region);
+              rg = _.findWhere($rootScope.regions, {term_id: region});
+              if (rg) {
+                if (city.name.indexOf(rg.name) > -1) {
+                  return true;
+                }
+              }
+            }
+            return false;
+          };
+
           /** Load jQuery elements **/
           var jqSelects = jQuery("select.form-control");
           jQuery.each(jqSelects, function (index, element) {

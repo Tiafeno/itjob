@@ -614,6 +614,19 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.preloader = !$scope.preloader;
       };
 
+      $scope.searchCityFn = (city) => {
+        if (!_.isUndefined($scope.profilEditor.form.region)) {
+          let region = parseInt($scope.profilEditor.form.region);
+          rg = _.findWhere($scope.profilEditor.regions, {term_id: region});
+          if (rg) {
+            if (city.name.indexOf(rg.name) > -1) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+
       // Mettre à jours les informations utilisateurs
       $scope.onSubmitCompanyInformation = (isValid) => {
         if (!isValid) return false;
@@ -658,7 +671,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 $scope.profilEditor.abranchs = _.clone(data[0]);
                 $scope.profilEditor.regions = _.clone(data[1]);
                 $scope.profilEditor.city = [];
-                $scope.profilEditor.city = _.clone(data[2]);
+                $scope.profilEditor.city = _.map(data[2], (term) => {
+                  term.name = `(${term.postal_code}) ${term.name}`;
+                  return term;
+                });
+
                 if (!_.isEmpty($scope.Company.greeting)) {
                   $scope.profilEditor.form.greeting = $scope.Company.greeting.value;
                 }
@@ -680,15 +697,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               width: '100%',
               matcher: function (params, data) {
                 var inTerm = [];
-
-                if (!_.isUndefined($scope.profilEditor.form.region)) {
-                  let region = parseInt($scope.profilEditor.form.region);
-                  rg = _.findWhere($scope.profilEditor.regions, {term_id: region});
-                  if (!_.isUndefined(rg) && !_.isUndefined(params.term)) {
-                    if (params.term.indexOf(rg.name) <= -1)
-                      params.term += ` ${rg.name}`;
-                  }
-                }
 
                 // If there are no search terms, return all of the data
                 if (jQuery.trim(params.term) === '') {

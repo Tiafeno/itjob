@@ -49,7 +49,7 @@
       <div class="col-md-6 form-group">
         <select class="form-control input-mode country" name="country" ng-model="company.country" required>
           <option></option>
-          <option value="[[city.term_id]]" ng-repeat="city in allCity">([[city.postal_code]]) [[city.name]]</option>
+          <option value="[[city.term_id]]" ng-repeat="city in allCity|filter:searchCityFn">([[city.postal_code]]) [[city.name]]</option>
         </select>
       </div>
     </div>
