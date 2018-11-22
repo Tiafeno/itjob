@@ -68,6 +68,13 @@ if ( isset($_GET['action']) || !empty($_GET['action']) ) {
         setcookie( $rp_cookie, ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
         // Password is reset succefuly
         $role = in_array('company', $user->roles) ? 'company' : 'candidate';
+
+        // Verifier si l'utilisateur est importer depuis le fichier CSV
+        $recoverUserPassword = get_user_meta($user->ID, "__recovery_password", true);
+        if ($recoverUserPassword) {
+          update_user_meta($user->ID, '__recovery_password', 0);
+        }
+
         wp_safe_redirect( add_query_arg( [ 'action' => 'confirmaction', 'role' =>  $role] ) );
         exit;
       }
