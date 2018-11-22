@@ -21,6 +21,15 @@ function itjob_filter_engine( $Engine ) {
     return ! empty( $exp ) ? implode( ', ', $exp ) : 'Aucun';
   }));
 
+  $Engine->addFilter(new Twig_SimpleFilter("activated", function ($terms) {
+    $termValid = [];
+    foreach ($terms as $term) {
+      if ($term->activated)
+        array_push($termValid, $term->name);
+    }
+    return $termValid;
+  }));
+
   $Engine->addFilter(new Twig_SimpleFilter('explode_array', function ($tabs) {
     $exp = [];
     if (!is_array($tabs)) return 'Aucun';

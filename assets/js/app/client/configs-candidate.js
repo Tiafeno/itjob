@@ -98,6 +98,155 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       }]
     }
   }])
+  .directive('jobSearch', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/job-search.html',
+      scope: {
+        inJobs: "=jobs"
+      },
+      controller: ['$scope', '$http', function ($scope, $http) {
+        $scope.jobs = [];
+        $scope.jobLoading = false;
+        this.$onInit = () => {
+          $scope.jobs = _.clone($scope.inJobs);
+        };
+        $scope.onSave = () => {
+          $scope.jobLoading = true;
+          var form = new FormData();
+          form.append('action', 'update_job_search');
+          form.append('jobs', JSON.stringify($scope.jobs));
+          $http({
+            method: 'POST',
+            url: itOptions.Helper.ajax_url,
+            headers: {
+              'Content-Type': undefined
+            },
+            data: form
+          })
+            .then(response => {
+              // Handle success
+              let data = response.data;
+              $scope.jobLoading = false;
+              if (!data.success) {
+                alertify.error("Une erreur inconue s'est produit")
+              } else {
+                alertify.success('Enregistrer avec succès')
+              }
+            });
+        };
+
+        /**
+         * Recuperer les emplois et les filtres
+         * @param {string} $query
+         * @param {string} taxonomy
+         */
+        $scope.queryJobs = function ($query, taxonomy) {
+          return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
+            cache: true
+          })
+            .then(function (response) {
+              const jobs = response.data;
+              return jobs.filter(function (job) {
+                return job.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+              });
+            });
+        };
+
+        $scope.$watch('jobs', value => { console.log(value); }, true)
+      }]
+    }
+  }])
+  .directive('addSoftwares', [function () {
+    return {
+      restrict: "E",
+      templateUrl: itOptions.Helper.tpls_partials + '/add-softwares.html',
+      scope: {
+        softwares: "=",
+        softwareTerms: "&softwareTerms"
+      },
+      controller: ["$scope", "$q", "$http", function ($scope, $q, $http) {
+        $scope.form = {};
+        $scope.form.softwares = [];
+        $scope.loading = false;
+
+        this.$onInit = () => {
+          $scope.form.softwares = _.clone($scope.softwares);
+        };
+
+        $scope.submitForm = (isValid) => {
+          if (!isValid) return;
+          $scope.loading = true;
+          const Form = new FormData();
+          Form.append('action', "update_candidate_softwares");
+          Form.append('softwares', JSON.stringify($scope.form.softwares));
+          $http({
+            method: 'POST',
+            url: itOptions.Helper.ajax_url,
+            headers: {
+              'Content-Type': undefined
+            },
+            data: Form
+          })
+            .then(response => {
+              // Handle success
+              let data = response.data;
+              $scope.loading = false;
+              if (!data.success) {
+              } else {
+
+              }
+            });
+        };
+
+        $scope.onAddedTag = ($tag) => {
+          $scope.form.softwares.push($tag);
+          $scope.tags = '';
+        };
+
+        $scope.removeInList = (software) => {
+          $scope.form.softwares = _.reject($scope.form.softwares, {name: software.name});
+        };
+
+        $scope.abordModification = () => {
+          this.$onInit();
+        };
+
+        $scope.querySoftware = function ($query) {
+          return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=software', {
+            cache: true
+          })
+            .then(function (response) {
+              const softwares = response.data;
+              return softwares.filter(function (software) {
+                return software.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+              });
+            });
+        };
+
+        $scope.openEditor = () => {
+          $scope.loading = true;
+          UIkit.modal('#modal-software-editor-overflow').show();
+          $q.all([$scope.softwareTerms()]).then(data => {
+            $scope.Terms = _.map(data[0], resp => {
+              return {id: resp.term_id, name: resp.name};
+            });
+
+            $scope.loading = false;
+          })
+        };
+
+        UIkit.util.on('#modal-software-editor-overflow', 'show', function (e) {
+          e.preventDefault();
+          jQuery(".select2_demo_1").select2({
+            placeholder: 'Compétence (ex: Analyses de données)'
+          });
+        });
+
+        $scope.$watch("form", form => { console.log(form); }, true);
+      }]
+    }
+  }])
   .directive('candidacy', [function () {
     return {
       restrict: 'E',

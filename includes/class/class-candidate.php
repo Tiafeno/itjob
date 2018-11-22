@@ -156,6 +156,7 @@ final class Candidate extends UserParticular implements \iCandidate
       'training_city',
       'training_diploma',
       'training_establishment',
+      'validated'
     ]);
     $this->experiences = $this->acfRepeaterElements('itjob_cv_experiences', [
       'exp_dateBegin',
@@ -163,7 +164,8 @@ final class Candidate extends UserParticular implements \iCandidate
       'exp_city',
       'exp_country',
       'exp_company',
-      'exp_mission'
+      'exp_mission',
+      'validated'
     ]);
 
     $this->centerInterest = $this->acfGroupField('itjob_cv_centerInterest', ['various', 'projet']);
@@ -299,9 +301,8 @@ final class Candidate extends UserParticular implements \iCandidate
       foreach ($terms as $term) {
       if (!is_wp_error($term)) {
         $valid = get_term_meta($term->term_id, 'activated', true);
-        if ($valid) {
-          array_push($validTerms, $term);
-        }
+        $term->activated = (int)$valid;
+        array_push($validTerms, $term);
       }
     }
     endif;

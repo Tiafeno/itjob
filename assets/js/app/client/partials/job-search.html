@@ -1,0 +1,24 @@
+<div class="form-group mb-5" id="jobsought">
+  <h6 class="font-bold">Emploi recherché ou vœux <span style="color: red">*</span></h6>
+  <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
+  <tags-input ng-model="jobs" max-lenght="2" max-tags="2" display-property="name" placeholder="Emploi recherché" replace-spaces-with-dashes="false" required>
+    <auto-complete source="queryJobs($query, 'job_sought')"
+                   load-on-focus="false"
+                   load-on-empty="false"
+                   max-results-to-show="10"
+                   template="job-template">
+    </auto-complete>
+  </tags-input>
+  <script type="text/ng-template" id="job-template">
+    <div class="right-panel">
+      <span style="font-size: 12px; font-family: Poppins, sans-serif;">{{data.name}}</span>
+    </div>
+  </script>
+  <div class="mt-2">
+    <button class="btn btn-success" ng-click="onSave()" ng-disabled="jobLoading">Enregistrer</button>
+  </div>
+  <p class="mention-text col-md-10 mt-3 pl-0">
+    Ajouter un vœux s'il ne ﬁgure pas dans la liste et valider par “ENTRER” ou le virgule “,”
+    et <b>éviter les fautes d'orthographe. Vous avez droit à seulement deux (2) voeux</b>
+  </p>
+</div>

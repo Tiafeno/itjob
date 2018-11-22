@@ -191,6 +191,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.addNewExperience = () => {
           $scope.mode = 0;
           $scope.newExperience.position_currently_works = true;
+          $scope.newExperience.validated = false;
           UIkit.modal('#modal-new-experience-overflow').show();
         };
 
@@ -212,6 +213,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           }
           $scope.Exp = {
             id: experience.id,
+            validated: experience.validated,
             position: experience.exp_positionHeld,
             company: experience.exp_company,
             city: experience.exp_city,
@@ -440,11 +442,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         this.$onInit = () => {
         };
 
-        /**
-         * Ajouter une nouvelle formation
-         */
+        // Ajouter une nouvelle formation
         $scope.newTraining = () => {
           $scope.mode = 0;
+          $scope.Train.validated = false;
           UIkit.modal('#modal-edit-training-overflow').show();
         };
 
@@ -516,7 +517,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               });
               break;
             default:
-              console.warn("Une erreur s'est produite dans le formulaire");
+              alertify.error("Une erreur s'est produite dans le formulaire");
               return false;
               break;
           }
@@ -595,6 +596,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.profilEditor.form = {};
       $scope.alertLoading = false; // Directive alert
       $scope.alerts = [];
+      $scope.jobSearchs = [];
       $scope.Helper = {};
       $scope.preloader = false;
       // Contient l'image par default de l'OC
@@ -644,7 +646,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
        * Récuperer les données sur le client
        */
       $scope.Initialize = () => {
-        console.log('Client init...');
+        console.info('Client init...');
         if (Client.post_type === 'company') {
           $scope.Company = _.clone(Client.iClient);
           $scope.Helper = _.clone(Client.Helper);
@@ -761,14 +763,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 break;
             }
           }); // .mapObject
-
-          // TODO: Afficher ici la boite de dialogue pour modifier les informations necessaire pour le bon fonctionnement du site
-
           $scope.cv.hasCV = $scope.Candidate.has_cv;
           if (!$scope.cv.hasCV) {
             jQuery('#modal-info-editor').modal('show')
           }
-        }
+        } // .end candidate
 
 
         $scope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));

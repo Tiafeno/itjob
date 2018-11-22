@@ -21,15 +21,20 @@ if ( ! $candidate->is_activated()) { return; }
                 <td>
                   <?php
                   $job_shought = [];
-                  foreach ( $candidate->jobSought as $job ) : array_push( $job_shought, $job->name ); endforeach;
+                  foreach ( $candidate->jobSought as $job ) :
+                    if ($job->activated)
+                      array_push( $job_shought, $job->name );
+                  endforeach;
                   echo ! empty( $job_shought ) ? implode( ', ', $job_shought ) : 'Aucun';
                   ?>
                 </td>
               </tr>
+              <?php if (isset($candidate->branch_activity->name)): ?>
               <tr>
                 <td>Secteur d'activité:</td>
-                <td><?= isset($candidate->branch_activity->name) ? $candidate->branch_activity->name: 'Non defini'; ?></td>
+                <td><?= $candidate->branch_activity->name ?></td>
               </tr>
+              <?php endif; ?>
               <tr>
                 <td>Permis:</td>
                 <td>

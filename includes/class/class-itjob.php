@@ -28,21 +28,30 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'acf/save_post', function ( $post_id ) {
         $post_type   = get_post_type( $post_id );
         $post_status = get_post_status( $post_id );
-        if ( $post_type !== 'offers' || $post_status !== 'publish' ) {
-          return;
-        }
-        // Activer l'offre
         update_field( 'activated', 1, $post_id );
-      }, 10, 1 );
 
-      // Activer le CV
-      add_action( 'acf/save_post', function ( $post_id ) {
-        $post_type   = get_post_type( $post_id );
-        $post_status = get_post_status( $post_id );
-        if ( $post_type !== 'candidate' || $post_status !== 'publish' ) {
-          return;
+        // Activer les experiences et les formations
+        if ($post_type === 'candidate' && $post_status === 'publish') {
+          $Experiences = get_field('itjob_cv_experiences', $post_id);
+          $Trainings = get_field('itjob_cv_trainings', $post_id);
+          if (is_array($Experiences) && !empty($Experiences)) {
+            $Values = [];
+            foreach ($Experiences as $experience) {
+              $experience['validated'] = 1;
+              $Values[] = $experience;
+            }
+            update_field('itjob_cv_experiences', $Values, $post_id);
+          }
+
+          if (is_array($Trainings) && !empty($Trainings)) {
+            $Values = [];
+            foreach ($Trainings as $training) {
+              $training['validated'] = 1;
+              $Values[] = $training;
+            }
+            update_field('itjob_cv_trainings', $Values, $post_id);
+          }
         }
-        update_field( 'activated', 1, $post_id );
       }, 10, 1 );
 
       /** Effacer les elements acf avant d'effacer l'article */

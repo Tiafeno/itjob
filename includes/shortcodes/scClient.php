@@ -41,10 +41,12 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_update_profil', [ &$this, 'update_profil' ] );
         add_action( 'wp_ajax_update_company_information', [ &$this, 'update_company_information' ] );
         add_action( 'wp_ajax_update_alert_filter', [ &$this, 'update_alert_filter' ] );
+        add_action( 'wp_ajax_update_job_search', [ &$this, 'update_job_search' ] );
         add_action( 'wp_ajax_get_postuled_candidate', [ &$this, 'get_postuled_candidate' ] );
         add_action( 'wp_ajax_update-user-password', [ &$this, 'change_user_password' ] );
         add_action( 'wp_ajax_update-candidate-profil', [ &$this, 'update_candidate_profil' ] );
         add_action( 'wp_ajax_update_experiences', [ &$this, 'update_experiences' ] );
+        add_action( 'wp_ajax_update_candidate_softwares', [ &$this, 'update_candidate_softwares' ] );
         add_action( 'wp_ajax_update_trainings', [ &$this, 'update_trainings' ] );
         add_action( 'wp_ajax_send_request_premium_plan', [ &$this, 'send_request_premium_plan' ] );
         add_action( 'wp_ajax_get_history_cv_view', [ &$this, 'get_history_cv_view' ] );
@@ -251,22 +253,56 @@ if ( ! class_exists( 'scClient' ) ) :
           'region'          => Http\Request::getValue( 'region' ),
           'city'            => Http\Request::getValue( 'country' ),
         ];
-        $Company = Company::get_company_by($User->ID);
         foreach ( $terms as $key => $value ) {
           if (!$value) continue;
-          $isError = wp_set_post_terms( $Company->getId(), [ (int) $value ], $key );
+          $isError = wp_set_post_terms( $this->Company->getId(), [ (int) $value ], $key );
           if ( is_wp_error( $isError ) ) {
             wp_send_json_error( $isError->get_error_message() );
           }
         }
-
         // Mettre à jour la salutation si necessaire
         $greeting = Http\Request::getValue('greet');
         if ($greeting)
-          update_field("itjob_company_greeting", $greeting, $Company->getId());
+          update_field("itjob_company_greeting", $greeting, $this->Company->getId());
         wp_send_json_success("Information mis à jour avec succès");
       }
     }
+
+    public function update_candidate_softwares() {
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      if (!isset($_GET['softwares'])) wp_send_json_error("Les conditions ne sont pas remplie");
+      $softwares = Http\Request::getValue("softwares");
+      $softwares = json_decode($softwares);
+      $taxonomy = "software";
+      $softContainer = [];
+      foreach ( $softwares as $software ) {
+        if ( isset( $job->term_id ) ) {
+          array_push( $softContainer, $software->term_id );
+        } else {
+          $eT = term_exists($software->name, $taxonomy);
+          if ( 0 === $eT || null === $eT || !$eT) {
+            $term = wp_insert_term(
+              wp_unslash(trim($software->name)),   // the term
+              $taxonomy // the taxonomy
+            );
+            // Désactiver le term qu'on viens d'ajouter
+            if ( ! is_wp_error( $term ) ) {
+              update_term_meta( $term['term_id'], 'activated', 0 );
+              // TODO: Envoyer une notification à l'admin pour valider le term
+              array_push( $softContainer, (int) $term['term_id'] );
+            } else {
+              wp_send_json_error("Une erreur s'est produite. Veillez reéssayer plus tard");
+            }
+          } else {
+            array_push( $softContainer, $eT['term_id']);
+          }
+        }
+      }
+      wp_send_json_success("Logiciel mis à jour avec succès");
+    }
+
     /**
      * Fonction ajax - nopriv only
      * Envoie un email pour recuperer le mot de passe
@@ -409,6 +445,46 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
+    public function update_job_search() {
+      global $itJob;
+      if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
+        wp_send_json( [ 'success' => false ] );
+      }
+      $taxonomy = 'job_sought';
+      $jobs = Http\Request::getValue( 'jobs' );
+      $jobs = \json_decode( $jobs );
+      if ($itJob->services->isClient() === 'candidate') {
+        //$idJobs = array_map(function ($job) { return $job->term_id; }, $jobs);
+        $jobContainer = [];
+        foreach ( $jobs as $job ) {
+          if ( isset( $job->term_id ) ) {
+            array_push( $jobContainer, $job->term_id );
+          } else {
+            $eT = term_exists($job->name, $taxonomy);
+            if ( 0 === $eT || null === $eT || !$eT) {
+              $term = wp_insert_term(
+                wp_unslash(trim($job->name)),   // the term
+                $taxonomy // the taxonomy
+              );
+              // Désactiver le term qu'on viens d'ajouter
+              if ( ! is_wp_error( $term ) ) {
+                update_term_meta( $term['term_id'], 'activated', 0 );
+                // TODO: Envoyer une notification à l'admin pour valider le term
+                array_push( $jobContainer, (int) $term['term_id'] );
+              } else {
+                wp_send_json_error("Une erreur s'est produite. Veillez reéssayer plus tard");
+              }
+            } else {
+              array_push( $jobContainer, $eT['term_id']);
+            }
+          }
+        }
+
+        wp_set_post_terms($this->Candidate->getId(), $jobContainer, $taxonomy);
+        wp_send_json_success("Emploi ajouter avec succès");
+      }
+    }
+
     /**
      * Function ajax
      * @route admin-ajax.php?action=update_experiences&experiences=<json>
@@ -431,7 +507,8 @@ if ( ! class_exists( 'scClient' ) ) :
           'exp_city'         => $experience->exp_city,
           'exp_company'      => $experience->exp_company,
           'exp_positionHeld' => $experience->exp_positionHeld,
-          'exp_mission'      => $experience->exp_mission
+          'exp_mission'      => $experience->exp_mission,
+          'validated'        => $experience->validated
         ];
       }
       update_field( 'itjob_cv_experiences', $new_experiences, $this->Candidate->getId() );
@@ -460,7 +537,8 @@ if ( ! class_exists( 'scClient' ) ) :
           'training_diploma'       => $training->training_diploma,
           'training_city'          => $training->training_city,
           'training_country'       => $training->training_country,
-          'training_establishment' => $training->training_establishment
+          'training_establishment' => $training->training_establishment,
+          'validated' => $training->validated
         ];
       }
       update_field( 'itjob_cv_trainings', $new_trainings, $this->Candidate->getId() );

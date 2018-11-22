@@ -292,6 +292,7 @@
           <div class="flex-1">
             <h5 class="media-heading">
               [[ experience.exp_positionHeld ]]
+              <span class="badge badge-pill ng-binding badge-pink" ng-if="!experience.validated">En attente de validation</span>
             </h5>
             <h6 class="text-muted">
               [[ experience.exp_company ]]

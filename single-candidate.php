@@ -88,7 +88,8 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
                         <?php
                         if (isset($candidate->jobSought) && !empty($candidate->jobSought)) {
                           foreach ($candidate->jobSought as $job) :
-                            echo sprintf('<span class="badge badge-blue mr-2 mt-1" style="white-space: pre-line;">%s</span>', ucfirst($job->name));
+                            if ($job->activated)
+                              echo sprintf('<span class="badge badge-blue mr-2 mt-1" style="white-space: pre-line;">%s</span>', ucfirst($job->name));
                           endforeach;
                         } else {
                           echo "Non defini";
@@ -143,17 +144,18 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
                   <h4><i class="fa fa-graduation-cap"></i> Formations</h4>
                   <div class="cd-timeline timeline-1">
                     <?php
-                    foreach ($candidate->trainings as $trainings) :
-                      $trBegin = $trainings->training_dateBegin;
+                    foreach ($candidate->trainings as $training) :
+                      if (!$training->validated) continue;
+                      $trBegin = $training->training_dateBegin;
                     ?>
                       <div class="cd-timeline-block">
                         <div class="cd-timeline-icon bg-success text-white"><i class="fa fa-graduation-cap"></i></div>
                         <div class="cd-timeline-content">
-                          <h5><?= $trainings->training_diploma ?></h5>
-                          <h6 class="text-muted"><?= $trainings->training_establishment ?></h6>
-                          <p><?= $trainings->training_city . ', ' . $trainings->training_country ?></p>
-                          <span class="cd-date badge badge-success"><?= ucfirst($trainings->training_dateBegin) ?>
-                            <?= ucfirst($trainings->training_dateEnd !== $trBegin ? ' <b>-</b> ' . $trainings->training_dateEnd : '') ?></span>
+                          <h5><?= $training->training_diploma ?></h5>
+                          <h6 class="text-muted"><?= $training->training_establishment ?></h6>
+                          <p><?= $training->training_city . ', ' . $training->training_country ?></p>
+                          <span class="cd-date badge badge-success"><?= ucfirst($training->training_dateBegin) ?>
+                            <?= ucfirst($training->training_dateEnd !== $trBegin ? ' <b>-</b> ' . $training->training_dateEnd : '') ?></span>
                         </div>
                       </div>
                       <?php
@@ -168,6 +170,7 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
                   <div class="cd-timeline timeline-1"> <!-- center-orientation -->
                     <?php
                     foreach ($candidate->experiences as $experience) :
+                      if (!$experience->validated) continue;
                     ?>
                       <div class="cd-timeline-block">
                         <div class="cd-timeline-icon bg-primary text-white"><i class="fa fa-user"></i></div>
@@ -189,12 +192,13 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
 <!--                Outils et technologie-->
                 <?php if (!empty($candidate->softwares)) { ?>
                 <div class="mt-5">
-                  <h4>Outils et technologie</h4>
+                  <h4>Logiciels</h4>
                   <hr class="uk-devider">
                   <ol class="candidate-skill-list ml-0 pl-0">
                     <?php
                     foreach ($candidate->softwares as $software) :
-                      echo sprintf("<li><p>%s</p></li>", $software->name);
+                      if ($software->activated)
+                        echo sprintf("<li><p>%s</p></li>", $software->name);
                     endforeach;
                     ?>
                   </ol>

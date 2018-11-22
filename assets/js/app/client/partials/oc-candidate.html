@@ -244,7 +244,11 @@
             <div class="ibox-body">
               <div class="row">
                 <div class="col-lg-12">
+                  <!-- Le candidat possède un CV-->
                   <div ng-show="cv.hasCV">
+                    <h2 class="font-bold mb-4">REFERENCE <span class="text-muted">#[[Candidate.reference]]</span> </h2>
+                    <!-- Emploi rechercher -->
+                    <job-search jobs="Candidate.jobSought"></job-search>
                     <!-- Experience directive -->
                     <experiences candidate="Candidate"></experiences>
                     <!-- Formation directive --->
@@ -254,7 +258,7 @@
                       <div class="row">
                         <!-- langues -->
                         <div class="ibox-body col-lg-6">
-                          <h4>Langues</h4>
+                          <h4 class="font-bold">Langues</h4>
                           <div class="row">
                             <div class="col-11 d-flex align-items-center">
                               <ol class="language-list m-0">
@@ -268,7 +272,7 @@
                         <!-- .end langues -->
                         <!-- Permis de conduire -->
                         <div class="ibox-body col-lg-6">
-                          <h4>Permis de conduire</h4>
+                          <h4 class="font-bold">Permis de conduire</h4>
                           <div class="row">
                             <div class="col-11 d-flex align-items-center">
                               <ol ng-show="Candidate.driveLicences !== ''" class="drivelicence-list m-0 pl-0">
@@ -283,10 +287,16 @@
                         <!-- .end Permis de conduire -->
                       </div>
                     </div>
+
+                    <div class="col-lg-12">
+                      <hr>
+                      <add-softwares softwares="Candidate.softwares" software-terms="asyncTerms('software')"></add-softwares>
+                    </div>
                   </div>
+                  <!-- Aucun CV -->
                   <div ng-show="!cv.hasCV">
-                    <p>Nous n'avons trouvé aucun CV.</p>
-                    <a ng-href="[[cv.addCVUrl]]" class="btn btn-outline-blue">Ajouter un CV</a>
+                    <h3 class="font-bold uppercase">Nous n'avons trouvé aucun CV.</h3>
+                    <a ng-href="[[cv.addCVUrl]]" class="btn btn-info">Ajouter un CV</a>
                   </div>
                 </div>
               </div>

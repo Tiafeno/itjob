@@ -25,22 +25,20 @@
                       <td>L'emploi recherché:</td>
                       <td>
                         {% if candidate.jobSought is not same as(undefined) %}
-                          {{ candidate.jobSought|explode_terms }}
+                          {{ candidate.jobSought|activated|join(', ') }}
                         {% else %}
                           Aucun
                         {% endif %}
                       </td>
                     </tr>
+                    {% if candidate.branch_activity.name is not same as(undefined) %}
                     <tr>
                       <td>Secteur d'activité:</td>
                       <td>
-                        {% if candidate.branch_activity.name is not same as(undefined) %}
-                          {{ candidate.branch_activity.name }}
-                        {% else %}
-                          Non defini
-                        {% endif %}
+                        {{ candidate.branch_activity.name }}
                       </td>
                     </tr>
+                    {% endif %}
                     <tr>
                       <td>Permis:</td>
                       <td>
@@ -52,8 +50,8 @@
                     <tr>
                       <td>Langues:</td>
                       <td>
-
-                        {{ candidate.languages|explode_terms }}
+                        {% if candidate.languages is empty %} Aucun {% endif %}
+                        {{ candidate.languages|activated|join(', ') }}
                       </td>
                     </tr>
                     </tbody>
