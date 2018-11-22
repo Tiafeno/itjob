@@ -327,12 +327,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             });
           }
           let listOfExperiences = ($scope.mode === 0) ? _.clone($scope.Candidate.experiences) : Experiences;
-          // Modifier les formats des date pour les autres expériences
           Experiences = _.map(listOfExperiences, exp => {
-            exp.exp_dateBegin = moment(exp.exp_dateBegin, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
-            if (!_.isEmpty(exp.exp_dateEnd)) {
-              exp.exp_dateEnd = moment(exp.exp_dateEnd, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
-            } else {
+            if (_.isEmpty(exp.exp_dateEnd)) {
               exp.position_currently_works = true;
             }
             return exp;

@@ -100,18 +100,18 @@
     <div class="mt-5 form-group" id="software">
       <label class="font-normal">Logiciel</label>
       <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-      <tags-input ng-model="formData.softwares" display-property="name" placeholder="Logiciel" replace-spaces-with-dashes="false" >
+      <tags-input ng-model="formData.softwares" display-property="name" max-lenght="10" max-tags="10" placeholder="Logiciel" replace-spaces-with-dashes="false" >
         <auto-complete source="queryItems($query, 'software')"
                        min-length="0"
                        load-on-focus="false"
                        load-on-empty="false"
-                       max-results-to-show="10"
+                       max-results-to-show="5"
                        template="auto-complete-template">
         </auto-complete>
       </tags-input>
       <p class="mention-text col-md-8 mt-1">
         S'il ne ﬁgure pas dans la liste, pour ajouter valider par “ENTRER” ou le virgule “,”
-        et <b>éviter les fautes d'orthographe</b>
+        et <b>éviter les fautes d'orthographe. <b>Vous avez droit à seulement dix (10) logiciels</b></b>
       </p>
     </div>
 

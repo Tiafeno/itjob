@@ -193,7 +193,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 redirect: 'form.informations'
               });
             }
-
             // Verifier les valeurs des champs (Formations, experiences & langue)
             let training = !$rootScope.formData.hasOwnProperty('trainings');
             if (training) return $q.reject({ redirect: 'form.career' });
@@ -217,7 +216,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
 
             let languages = !$rootScope.formData.hasOwnProperty('languages');
             if (languages) return $q.reject({ redirect: 'form.career' });
-
           }]
         },
         controller: ['$rootScope', '$scope', 'initScripts', 'Services',
@@ -358,7 +356,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     return {
       __init__: function () {
         jQuery('.input-group.date').datepicker({
-          format: "dd-mm-yyyy",
+          format: "mm/dd/yyyy",
           startView: 2,
           todayBtn: false,
           keyboardNavigation: true,
@@ -616,9 +614,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
         });
     };
 
-    $rootScope.$watch('formData', (value) => {
-      console.log(value);
-    }, true);
 
   }]).run(["$state", function ($state) {
     $state.defaultErrorHandler(function (error) {

@@ -29,6 +29,12 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       return _.findWhere(status, {slug: jQuery.trim(entryValue)}).label;
     }
   }])
+  .filter('moment', [function () {
+    return (entry) => {
+      if (_.isEmpty(entry)) return entry;
+      return moment(entry, "MM/DD/YYYY", "fr").format("MMMM, YYYY");
+    }
+  }])
   .directive('generalInformationCandidate', [function () {
     return {
       restrict: 'E',
@@ -190,20 +196,25 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
             data: Form
           })
             .then(response => {
-              // Handle success
               let data = response.data;
               $scope.loading = false;
               if (!data.success) {
                 $scope.status = data.data;
               } else {
                 alertify.success(data.data);
-                UIkit.modal('#modal-software-editor-overflow').hide();
+                //UIkit.modal('#modal-software-editor-overflow').hide();
               }
             });
         };
 
+        // @event Se déclanche quand un tag est ajouter dans l'input
         $scope.onAddedTag = ($tag) => {
-          $scope.form.softwares.push($tag);
+          // Limiter le nombre des logiciels pour 10
+          if ($scope.form.softwares.length < 10) {
+            $scope.form.softwares.push($tag);
+          } else {
+            $scope.status = "Vous avez atteint la limite maximum. <b>Vous avez droit à seulement dix (10) logiciels</b>";
+          }
           $scope.tags = '';
         };
 
@@ -211,6 +222,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
           $scope.form.softwares = _.reject($scope.form.softwares, {name: software.name});
         };
 
+        // Annuler le formulaire d'ajout et de modification
         $scope.abordModification = () => {
           this.$onInit();
         };
