@@ -172,13 +172,13 @@ if (!class_exists('scImport')) :
       case 'branch_activity':
       case 'job_sought':
         $job = &$row;
-        list($id, $title, $status) = $job;
+        list($id, $title, $status, $slug) = $job;
         $id = (int)$id;
         if (!is_numeric($id)) {
           wp_send_json_success("Passer aux colonnes suivantes");
         }
         if (!is_array($title) && (int)$status) {
-          $term = $this->insert_term($title, $taxonomy);
+          $term = $this->insert_term($title, $taxonomy, $slug);
           if ($term) {
             update_term_meta($term['term_id'], '__job_id', $id);
             wp_send_json_success("Emploie ajouter avec succès");
@@ -192,11 +192,12 @@ if (!class_exists('scImport')) :
     }
   }
 
-  protected function insert_term($name, $taxonomy)
+  protected function insert_term($name, $taxonomy, $slug)
   {
     $term = term_exists($name, $taxonomy);
     if (0 === $term || null === $term || !$term) {
-      $term = wp_insert_term(ucfirst($name), $taxonomy);
+      $arg = null === $slug ? [] : ['slug' => $slug];
+      $term = wp_insert_term(ucfirst($name), $taxonomy, $arg);
       if (is_wp_error($term)) {
         $term = get_term_by('name', $name);
         if (!$term) {
