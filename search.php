@@ -1,9 +1,9 @@
 <?php
 get_header();
-global $posts;
+global $posts, $wp_query;
 $s              = $_GET['s'];
 $search_results = $posts;
-$search_count   = count( $search_results );
+$search_count   = $wp_query->found_posts;
 ?>
   <div class="uk-section uk-section-transparent">
     <div class="uk-container ">

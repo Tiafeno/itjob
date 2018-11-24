@@ -136,7 +136,7 @@ if (!class_exists('scImport')) :
     $row = Http\Request::getValue('column');
     $row = json_decode($row);
     switch ($taxonomy) {
-        // Ajouter la ville d'une code postal
+      // Ajouter la ville d'une code postal
       case 'city':
         $parent = $row[0];
         $child = $row[1];
@@ -160,7 +160,7 @@ if (!class_exists('scImport')) :
         $titles = &$row;
         if (is_array($titles)) {
           foreach ($titles as $title) {
-              // return bool
+            // return bool
             $this->insert_term($title, $taxonomy);
           }
           wp_send_json_success("Ajouter avec succès");
@@ -205,7 +205,7 @@ if (!class_exists('scImport')) :
         }
       }
     }
-      // Activer le taxonomie
+    // Activer le taxonomie
     update_term_meta($term['term_id'], "activated", 1);
 
     return $term;
