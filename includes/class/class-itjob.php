@@ -235,6 +235,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   $searchs = explode(' ', $s);
                   foreach ($searchs as $search) {
                     if (empty($search)) continue;
+                    // TODO: Corriger la cherche pour tout les experiences et les formations
                     $meta_query[] = [
                       'relation' => 'OR',
                       [
@@ -299,6 +300,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 BREAK;
             } // .end switch
 
+
             // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
             $query->query['s']      = '';
             $query->query_vars['s'] = '';
@@ -326,8 +328,11 @@ if ( ! class_exists( 'itJob' ) ) {
 
             endif;
           }
+
+          
         }
       } );
+
 
       /**
        * Ajouter dans les variables global pour nom post-types le contenue du post

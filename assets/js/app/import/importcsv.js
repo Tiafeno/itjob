@@ -38,7 +38,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
                 download: false
               },
               before: (file, inputElement) => {
-
+                
               },
               error: function (err, file) {
                 console.log("ERROR:", err, file);
@@ -104,65 +104,10 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
           /**
            * @event ngClick
            */
-          $scope.updateCompanyJob = () => {
-            const inputCSV = jQuery('input#files');
-            if (!inputCSV[0].files.length) {
-              alert("Please choose at least one file to parse.");
-              return false;
-            }
-            inputCSV.parse({
-              config: {
-                delimiter: ';',
-                preview: 0,
-                step: (results) => {
-                  if (results || results.data) {
-                    const column = results.data;
-                    parser.pause();
-                    const form = new FormData();
-
-                    form.append('action', 'import_csv');
-                    form.append('entry_type', "user");
-                    form.append('content_type', "user_company_update_job_sought");
-                    form.append('column', JSON.stringify(column[0]));
-                    importService
-                      .sendform(form)
-                      .then(resp => {
-                        let query = resp.data;
-                        if (query.success) {
-                          parser.resume();
-                        } else {
-                          parser.abort();
-                          $scope.chargement = false;
-                        }
-                      })
-                  }
-                },
-                encoding: "UTF-8",
-                complete: (results) => {
-                  $scope.chargement = false;
-                },
-                error: (err, file) => {
-
-                },
-                dynamicTyping: true,
-                //header: true,
-                download: false
-              },
-              before: (file, inputElement) => {
-
-              },
-              error: function (err, file) {
-                console.log("ERROR:", err, file);
-              },
-            })
-          };
-
-          /**
-           * @event ngClick
-           */
           $scope.deleteAllOffer = () => {
             const Form = new FormData();
-            Form.append('action', 'delete_offer_data');
+            Form.append('action', 'delete_post');
+            Form.append('post_type', 'offers');
             importService
               .sendform(Form)
               .then(resp => {
@@ -226,7 +171,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
             }
           };
           $scope.errorFn = (err, file) => {
-
           };
           $scope.completeFn = (results) => {
             $scope.chargement = false;
@@ -234,9 +178,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
           $scope.onFileContentChange = () => {
             $scope.columns = importService.getColumns(parseInt($scope.formData.fileContent));
           };
-          $scope.$watch('formData', (value) => {
-
-          }, true);
         }]
       });
     $urlRouterProvider.otherwise('/import/form');
@@ -277,6 +218,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Term - Emplois"
       },
       {
+        _id: 12,
+        slug: 'branch_activity',
+        label: 'Term - Secteurs d\'activités'
+      },
+      {
         _id: 2,
         slug: 'user',
         label: "Tout les utilisateurs"
@@ -309,7 +255,12 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
       {
         _id: 7,
         slug: 'user_company',
-        label: 'Entreprise'
+        label: 'Utilisateurs - Ajouter les entreprises'
+      },
+      {
+        _id: 11,
+        slug: 'user_company_update_job_sought',
+        label: 'Entreprise - Mise à jour du secteur d\'activité'
       }
     ];
     self.getColumns = (typeofFileId) => {
