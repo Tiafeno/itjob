@@ -159,7 +159,6 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
             });
         };
 
-        $scope.$watch('jobs', value => { console.log(value); }, true)
       }]
     }
   }])
@@ -172,13 +171,15 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         softwareTerms: "&softwareTerms"
       },
       controller: ["$scope", "$q", "$http", function ($scope, $q, $http) {
+        $scope.softwareLists = [];
         $scope.status = '';
         $scope.form = {};
         $scope.form.softwares = [];
         $scope.loading = false;
 
         this.$onInit = () => {
-          $scope.form.softwares = _.clone($scope.softwares);
+          $scope.form.softwares = $scope.softwareLists = _.clone($scope.softwares);
+          console.info('Init collect softwares');
         };
 
         $scope.submitForm = (isValid) => {
@@ -202,6 +203,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
                 $scope.status = data.data;
               } else {
                 alertify.success(data.data);
+                $scope.softwareLists = _.clone($scope.form.softwares);
                 //UIkit.modal('#modal-software-editor-overflow').hide();
               }
             });
@@ -224,7 +226,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
 
         // Annuler le formulaire d'ajout et de modification
         $scope.abordModification = () => {
-          this.$onInit();
+          //this.$onInit();
         };
 
         $scope.querySoftware = function ($query) {
@@ -251,6 +253,10 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
           })
         };
 
+        $scope.$watch('form', (form) => {
+          console.log(form.softwares);
+        }, true);
+
         UIkit.util.on('#modal-software-editor-overflow', 'show', function (e) {
           e.preventDefault();
           jQuery(".select2_demo_1").select2({
@@ -258,7 +264,6 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
           });
         });
 
-        $scope.$watch("form", form => { console.log(form); }, true);
       }]
     }
   }])
