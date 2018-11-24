@@ -192,7 +192,7 @@ if (!class_exists('scImport')) :
     }
   }
 
-  protected function insert_term($name, $taxonomy, $slug)
+  protected function insert_term($name, $taxonomy, $slug = null)
   {
     $term = term_exists($name, $taxonomy);
     if (0 === $term || null === $term || !$term) {
