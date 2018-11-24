@@ -245,7 +245,7 @@ if ( ! class_exists( 'scClient' ) ) :
 
     /**
      * Function ajax
-     * Mettre à jour les informations de base (company) avant de continuer dan sle site
+     * Mettre à jour les informations de base (company) avant de continuer dans le site
      */
     public function update_company_information() {
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
@@ -261,6 +261,14 @@ if ( ! class_exists( 'scClient' ) ) :
         foreach ( $terms as $key => $value ) {
           if (!$value) continue;
           $isError = wp_set_post_terms( $this->Company->getId(), [ (int) $value ], $key );
+          if ($key === 'branch_activity')
+          {
+            $term = get_term((int)$value, 'branch_activity');
+            if (!is_wp_error($term) || null !== $term) {
+              // Ajouter la secteur d'activiter pour tout ces offres
+              $this->add_offers_branch_activity($this->Company->getId(), $term);
+            }
+          }
           if ( is_wp_error( $isError ) ) {
             wp_send_json_error( $isError->get_error_message() );
           }
@@ -271,6 +279,22 @@ if ( ! class_exists( 'scClient' ) ) :
           update_field("itjob_company_greeting", $greeting, $this->Company->getId());
         wp_send_json_success("Information mis à jour avec succès");
       }
+    }
+
+    // Mettre à jour la secteur d'activité pour les offres d'une entreprise definie
+    private function add_offers_branch_activity($company_id, $term)
+    {
+      $args = [
+        'post_type' => 'offers',
+        'post_status' => ['publish', 'pending'],
+        'meta_key' => 'itjob_offer_company',
+        'meta_value' => $company_id
+      ];
+      $offers = get_posts($args);
+      foreach ($offers as $offer) {
+        update_field('itjob_offer_abranch', $term->term_id, $offer->ID);
+      }
+      return true;
     }
 
     /**
