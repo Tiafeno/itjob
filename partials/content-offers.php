@@ -47,15 +47,29 @@ $limited = $offers->dateLimit < $today;
               <tr>
                 <td>Mission:</td>
                 <td>
-                  <?php echo substr( strip_tags( $offers->mission ), 0, 75 ); ?>
-                  <?= strlen( $offers->mission ) >= 75 ? ' ... ' : '' ?>
+                  <?php
+                    $offers->mission = strip_tags($offers->mission);
+                    $mission_words = explode(' ', $offers->mission);
+                    foreach ($mission_words as $index => $word) {
+                      if (($index < 12))
+                        echo " $word";
+                    }
+                    echo count($mission_words) >= 12 ? ' ... ' : ''
+                   ?>
                 </td>
               </tr>
               <tr>
                 <td>Profil:</td>
                 <td>
-                  <?php echo substr( strip_tags( $offers->profil ), 0, 75 ); ?>
-                  <?= strlen( $offers->profil ) >= 75 ? ' ... ' : '' ?>
+                  <?php
+                  $offers->profil = strip_tags($offers->profil);
+                  $profil_words = explode(' ', $offers->profil);
+                  foreach ($profil_words as $index => $word) {
+                    if (($index < 12))
+                      echo " $word";
+                  }
+                  echo count($profil_words) >= 12 ? ' ... ' : ''
+                  ?>
                 </td>
               </tr>
               </tbody>
