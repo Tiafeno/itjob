@@ -661,6 +661,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         Form.append('abranch', $scope.profilEditor.form.abranch);
         Form.append('region', $scope.profilEditor.form.region);
         Form.append('country', $scope.profilEditor.form.country);
+        Form.append('address', $scope.profilEditor.form.address);
         Form.append('greet', $scope.profilEditor.form.greeting);
         clientFactory
           .sendPostForm(Form)
@@ -778,6 +779,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 }
                 $scope.profilEditor.form.name = `${$scope.Candidate.privateInformations.firstname} ${$scope.Candidate.privateInformations.lastname}`;
                 $scope.profilEditor.form.email = $scope.Candidate.privateInformations.author.data.user_email;
+                // Récuperer l'adresse
+                let address = $scope.Candidate.privateInformations.address.address;
+                address = _.isEmpty(address) || _.isNull(address) ? '' : address;
+                $scope.profilEditor.form.address = address;
                 UIkit.modal('#modal-information-editor').show();
               })
           } else {

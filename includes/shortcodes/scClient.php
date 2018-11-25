@@ -310,7 +310,7 @@ if ( ! class_exists( 'scClient' ) ) :
         $terms        = [
           'branch_activity' => Http\Request::getValue( 'abranch' ),
           'region'          => Http\Request::getValue( 'region' ),
-          'city'            => Http\Request::getValue( 'country' ),
+          'city'            => Http\Request::getValue( 'country' )
         ];
         foreach ( $terms as $key => $value ) {
           if (!$value) continue;
@@ -319,6 +319,8 @@ if ( ! class_exists( 'scClient' ) ) :
             wp_send_json_error( $isError->get_error_message() );
           }
         }
+        $address = Http\Request::getValue( 'address' );
+        update_field('itjob_cv_address', $address, $this->Candidate->getId());
         // Mettre à jour la salutation si necessaire
         $greeting = Http\Request::getValue('greet');
         if ($greeting)
