@@ -17,6 +17,9 @@ class scInterests
 {
   public function __construct()
   {
+    add_action('init', function (){
+      add_rewrite_rule('^download/([0-9]+)/?', admin_url('admin-ajax.php') . '?action=download_pdf&id=$matches[1]', 'bottom');
+    });
     // Page title: Interest candidate
     add_shortcode('ask_candidate', [&$this, 'ask_candidate_render_html']);
 
@@ -28,6 +31,45 @@ class scInterests
     add_action('wp_ajax_nopriv_get_current_user_offers', [&$this, 'get_current_user_offers']);
 
     add_action('wp_ajax_remove_token_access', [&$this, 'remove_token_access']);
+    add_action('wp_ajax_download_pdf', [&$this, 'download_pdf']);
+  }
+
+  public function download_pdf() {
+    global $Engine;
+
+    $ErrorMessage = "Un erreur s'est produite";
+    $User = wp_get_current_user();
+    if ($User->ID === 0 || !in_array('company', $User->roles)) return $ErrorMessage;
+    $Entreprise = Company::get_company_by($User->ID);
+    $candidate_id = (int)Http\Request::getValue('id');
+    if (!$candidate_id) {
+      wp_send_json_error($ErrorMessage);
+    }
+    $Candidate = new Candidate($candidate_id);
+    // Une systéme pour limiter la visualisation des CV
+    // Verifier si le compte de l'entreprise est sereine ou standart
+    if (!$Candidate->is_candidate() || !$Entreprise->is_company()) {
+      wp_send_json_error($ErrorMessage);
+    }
+
+    // Verifier si l'entreprise a l'access au informations du candidat
+    // FEATURED: Verifier si le CV est dans la liste de l'entreprise
+    $itModel = new itModel();
+    if (!$itModel->interest_access($Candidate->getId(), $Entreprise->getId()) ||
+        !$itModel->list_exist($Entreprise->getId(), $Candidate->getId())) {
+      wp_send_json_error("Accès non autoriser");
+    }
+
+    $Candidate->__client_premium_access();
+    try {
+      return $Engine->render('@SC/cv-candidate.html.twig', [
+        'candidate' => $Candidate,
+      ]);
+    } catch (Twig_Error_Loader $e) {
+    } catch (Twig_Error_Runtime $e) {
+    } catch (Twig_Error_Syntax $e) {
+      echo $e->getRawMessage();
+    }
   }
 
   /**
