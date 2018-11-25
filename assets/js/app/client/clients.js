@@ -718,7 +718,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         } else {
           // Candidat
           // Crée une image par default
-          let sexe = (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';
+          let sexe = Client.iClient.greeting === null || _.isEmpty(Client.iClient.greeting) ? '' : (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';
           $scope.featuredImage = itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
           const Candidate = _.clone(Client.iClient);
           $scope.biography = Client.iClient.has_cv ? Client.iClient.status.label : '';
