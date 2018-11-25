@@ -320,6 +320,12 @@ if ( ! class_exists( 'itJob' ) ) {
                 'compare' => '=',
                 'type'    => 'NUMERIC'
               ];
+              $meta_query[] = [
+                'key'     => 'itjob_cv_hasCV',
+                'value'   => 1,
+                'compare' => '=',
+                'type'    => 'NUMERIC'
+              ];
 
               if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                 $query->set( 'meta_query', $meta_query );

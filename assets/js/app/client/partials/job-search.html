@@ -1,7 +1,7 @@
 <div class="form-group mb-5" id="jobsought">
   <h6 class="font-bold">Emploi recherché ou vœux <span style="color: red">*</span></h6>
   <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-  <tags-input ng-model="jobs" max-lenght="2" max-tags="2" display-property="name" placeholder="Emploi recherché" replace-spaces-with-dashes="false" required>
+  <tags-input ng-model="jobs" max-lenght="2" add-on-paste="true" paste-split-pattern="[,;|]"  max-tags="2" display-property="name" placeholder="Emploi recherché" replace-spaces-with-dashes="false" required>
     <auto-complete source="queryJobs($query, 'job_sought')"
                    load-on-focus="false"
                    load-on-empty="false"

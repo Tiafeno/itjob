@@ -56,6 +56,20 @@ if ( ! class_exists( 'jobServices' ) ) :
       if ( ! empty( $meta_query ) ) {
         $this->args['meta_query'][] = $meta_query;
       }
+      if ($class_name === 'candidate') {
+        $this->args = array_merge($this->args,
+          ['meta_query' => [
+            'relation' => 'AND',
+            [
+              'key' => 'activated',
+              'value' => 1
+            ],
+            [
+              'key' => 'itjob_cv_hasCV',
+              'value' => 1
+            ]
+        ]]);
+      }
       $this->getPostContents( $recentlyContainer, $class_name );
 
       return $recentlyContainer;
