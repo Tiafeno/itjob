@@ -94,6 +94,19 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
               $scope.abranchs = _.clone(abranchs);
               $scope.regions = _.clone(regions);
 
+              $rootScope.searchCityFn = (city) => {
+                if (!_.isUndefined($rootScope.offers.region)) {
+                  let region = parseInt($rootScope.offers.region);
+                  rg = _.findWhere($scope.regions, {term_id: region});
+                  if (rg) {
+                    if (city.name.indexOf(rg.name) > -1) {
+                      return true;
+                    }
+                  }
+                }
+                return false;
+              };
+
               /* jQuery element */
               var jqSelects = jQuery("select.form-control");
               jQuery.each(jqSelects, function (index, element) {
@@ -151,6 +164,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
 
               jQuery('[data-toggle="tooltip"]').tooltip();
             };
+
 
             /** Valider et envoyer le formulaire */
             $scope.formSubmit = function (isValid) {
