@@ -43,7 +43,9 @@
                       <td>Permis:</td>
                       <td>
                         {% if candidate.driveLicences is not empty %}
-                          {{ candidate.driveLicences|explode_array }}
+                            {{ candidate.driveLicences|explode_array }}
+                          {% else %}
+                            Aucun
                         {% endif %}
                       </td>
                     </tr>
