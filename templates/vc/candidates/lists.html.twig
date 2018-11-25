@@ -51,7 +51,7 @@
                       <td>Langues:</td>
                       <td>
                         {% if candidate.languages is empty %} Aucun {% endif %}
-                        {{ candidate.languages|activated|join(', ') }}
+                        {{ candidate.languages|explode_terms }}
                       </td>
                     </tr>
                     </tbody>
