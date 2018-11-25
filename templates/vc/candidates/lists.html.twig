@@ -25,7 +25,7 @@
                       <td>L'emploi recherché:</td>
                       <td>
                         {% if candidate.jobSought is not same as(undefined) %}
-                          {{ candidate.jobSought|activated|join(', ') }}
+                          {{ candidate.jobSought|explode_terms }}
                         {% else %}
                           Aucun
                         {% endif %}
