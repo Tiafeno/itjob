@@ -59,6 +59,10 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
           <!--          Content here ... -->
           <?php
           while (have_posts()) : the_post();
+           if (!$candidate->has_cv) {
+             echo sprintf("CV en attente de confirmation. Veillez réessayer plus tard.");
+             break;
+           }
           ?>
             <div class="candidate-section ibox-body">
               <div class="candidate-top d-block pb-4">

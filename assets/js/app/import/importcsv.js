@@ -104,6 +104,58 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
           /**
            * @event ngClick
            */
+          $scope.activeCandidateCareer = () => {
+            const inputCSV = jQuery('input#files');
+            if (!inputCSV[0].files.length) {
+              alert("Please choose at least one file to parse.");
+              return false;
+            }
+            inputCSV.parse({
+              config: {
+                delimiter: ';',
+                preview: 0,
+                step: (results, parser) => {
+                  if (results || results.data) {
+                    const column = results.data;
+                    parser.pause();
+                    const form = new FormData();
+                    form.append('action', 'active_career');
+                    form.append('column', JSON.stringify(column[0]));
+                    importService
+                      .sendform(form)
+                      .then(resp => {
+                        let query = resp.data;
+                        if (query.success) {
+                          parser.resume();
+                        } else {
+                          parser.abort();
+                          $scope.chargement = false;
+                        }
+                      })
+                  }
+                },
+                encoding: "UTF-8",
+                complete:  (results) => {
+                  $scope.chargement = false;
+                },
+                error: (error) => {},
+                dynamicTyping: true,
+                //header: true,
+                download: false
+              },
+              before: (file, inputElement) => {
+
+              },
+              error: function (err, file) {
+                console.log("ERROR:", err, file);
+              },
+            });
+
+          };
+
+          /**
+           * @event ngClick
+           */
           $scope.deleteAllOffer = () => {
             const Form = new FormData();
             Form.append('action', 'delete_post');

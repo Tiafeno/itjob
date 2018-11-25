@@ -103,6 +103,10 @@ final class Offers implements \iOffer {
     return $this;
   }
 
+  public function getId() {
+    return $this->ID;
+  }
+
   public function is_offer() {
     return get_post_type( $this->ID ) === 'offers';
   }

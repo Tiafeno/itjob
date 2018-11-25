@@ -11,6 +11,7 @@ use includes\classes\import\importUser;
 use includes\object\JHelper;
 use includes\post\Candidate;
 use includes\post\Company;
+use includes\post\Offers;
 use Underscore\Types\Arrays;
 
 if (!class_exists('scImport')) :
@@ -27,8 +28,8 @@ if (!class_exists('scImport')) :
         add_action('wp_ajax_delete_post', [&$this, 'delete_post']);
         add_action('wp_ajax_delete_term', [&$this, 'delete_term']);
         add_action('wp_ajax_remove_all_experiences', [&$this, 'remove_all_experiences']);
+        add_action('wp_ajax_active_career', [&$this, 'active_career']);
       }
-
     });
 
     add_action('admin_init', function () {
@@ -126,6 +127,49 @@ if (!class_exists('scImport')) :
       }
     }
     wp_send_json_success("Tous les terms sont effacé avec succès");
+  }
+
+  // Function ajax
+  public function active_career() {
+    $column = Http\Request::getValue('column');
+    $lines = json_decode($column);
+    list($id_cv, $id_demandeur) = $lines;
+    if (!(int) $id_demandeur) wp_send_json_success("Passer à la colonne suivante");
+    if (current_user_can("remove_users")) {
+      $post_ids = get_posts([
+        'meta_key' => '__cv_id_demandeur',
+        'meta_value' => (int)$id_demandeur,
+        'post_status' => ['publish', 'pending'],
+        'post_type' => 'candidate',
+        'fields' => 'ids',
+      ]);
+      if (is_array($post_ids) && !empty($post_ids)) {
+        $candidate_id = (int)$post_ids[count($post_ids) - 1];
+        $Experiences = get_field('itjob_cv_experiences', $candidate_id);
+        if ($Experiences && is_array($Experiences)) {
+          $Experiences = array_map(function ($experience) {
+            $experience['validated'] = 1;
+            return $experience;
+          }, $Experiences);
+          update_field('itjob_cv_experiences', $Experiences, $candidate_id);
+        }
+
+        $Formations = get_field('itjob_cv_trainings', $candidate_id);
+        if ($Formations && is_array($Formations)) {
+          $Formations = array_map(function ($formation) {
+            $formation['validated'] = 1;
+            return $formation;
+          }, $Formations);
+          update_field('itjob_cv_trainings', $Formations, $candidate_id);
+        }
+      } else {
+        wp_send_json_success("Impossible de trouver le candidat");
+      }
+
+      wp_send_json_success("All carrer is succefuly update");
+    } else {
+      wp_send_json_error("Votre compte n'as pas l'accès a ce niveau");
+    }
   }
 
   protected function add_term($taxonomy)
@@ -402,7 +446,7 @@ if (!class_exists('scImport')) :
           $branch_activity,, $newsletter, $notification, $alert, $create
         ) = $lines;
 
-        $id_user = (int)$is_user;
+        $id_user = (int)$id_user;
         $newsletter = (int)$newsletter;
         $notification = (int)$notification;
         $activated = (int)$activated;
@@ -438,7 +482,7 @@ if (!class_exists('scImport')) :
             // Enregistrer la date de creation original & la secteur d'activité
           update_post_meta($Company->getId(), '__create', $create);
             // Ancien valeur du secteur d'activité
-          update_post_meta($Company->getId(), '__company_branch_activity', $activity_area);
+          update_post_meta($Company->getId(), '__company_branch_activity', $branch_activity);
 
           wp_send_json_success(['msg' => "L'entreprise ajouter avec succès", 'data' => $Company]);
         } else {
