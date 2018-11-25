@@ -51,6 +51,7 @@
                       break;
                   }
                   $scope.message.body = resp.msg;
+                  elButton.html(textButton);
                   jQuery('#modal-error').modal('toggle')
                 }
               })

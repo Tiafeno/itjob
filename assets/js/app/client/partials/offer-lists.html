@@ -162,7 +162,7 @@
                             <span class="badge badge-default" ng-if="interest.type === 'apply'">Postulant</span>
                           </div>
                         </div>
-                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="!interest.inList && interest.status === 'validated'" data-ng-click="addList(interest.candidate.ID, $event)">Ajoute au favoris</button>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="!interest.inList && interest.status === 'validated'" data-ng-click="addList(interest.candidate.ID, $event)">Ajouter & Voir</button>
                         <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.inList" data-ng-click="viewCandidateInformation(interest.candidate.ID, offerView.ID)">Consulter</button>
                       </div>
                     </li>

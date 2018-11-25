@@ -212,14 +212,12 @@ if ( ! class_exists( 'vcOffers' ) ):
      * La deuxième (2) étape de formulaire d'ajout
      */
     public function update_offer_rateplan() {
-      $offer_id = Http\Request::getValue( 'offerId' );
+      $offer_id = (int)Http\Request::getValue( 'offerId' );
       $rateplan = Http\Request::getValue( 'rateplan', false );
       if ( $offer_id && $rateplan ) {
         $Offer = new Offers( (int) $offer_id );
-        if ( $Offer->is_offer() ) {
-          update_field( 'itjob_offer_rateplan', $rateplan, $Offer->ID );
-          wp_send_json( [ 'success' => true ] );
-        }
+        update_field( 'itjob_offer_rateplan', $rateplan, $Offer->ID );
+        wp_send_json( [ 'success' => true ] );
       }
       wp_send_json( [ 'success' => false, 'msg' => "Il est possible que cette erreur es dû à l’ID de l'offre" ] );
     }

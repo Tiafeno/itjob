@@ -18,7 +18,9 @@ class scInterests
   public function __construct()
   {
     add_action('init', function (){
-      add_rewrite_rule('^download/([0-9]+)/?', admin_url('admin-ajax.php') . '?action=download_pdf&id=$matches[1]', 'bottom');
+     // add_rewrite_tag('%id%', '([^&]+)');
+     // add_rewrite_rule('^download/([0-9]+)/?', admin_url('admin-ajax.php') . '?action=download_pdf&id=$matches[1]', 'top');
+
     });
     // Page title: Interest candidate
     add_shortcode('ask_candidate', [&$this, 'ask_candidate_render_html']);
@@ -37,15 +39,22 @@ class scInterests
   public function download_pdf() {
     global $Engine;
 
-    $ErrorMessage = "Un erreur s'est produite";
+    // create new PDF document
+    require  get_template_directory() . '/libs/tcpdf/vendor/autoload.php';
+    $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf->SetCreator(PDF_CREATOR);
+
+
+    $ErrorMessage = "Une erreur s'est produite";
     $User = wp_get_current_user();
     if ($User->ID === 0 || !in_array('company', $User->roles)) return $ErrorMessage;
     $Entreprise = Company::get_company_by($User->ID);
-    $candidate_id = (int)Http\Request::getValue('id');
+    $candidate_id = Http\Request::getValue('id');
     if (!$candidate_id) {
       wp_send_json_error($ErrorMessage);
     }
     $Candidate = new Candidate($candidate_id);
+
     // Une systéme pour limiter la visualisation des CV
     // Verifier si le compte de l'entreprise est sereine ou standart
     if (!$Candidate->is_candidate() || !$Entreprise->is_company()) {
@@ -61,15 +70,48 @@ class scInterests
     }
 
     $Candidate->__client_premium_access();
+    $name = $Candidate->privateInformations->firstname . " " . $Candidate->privateInformations->lastname;
+    $pdf->SetAuthor($name);
+    $pdf->SetTitle($Candidate->reference);
+    $pdf->SetSubject($Candidate->reference);
+
+// set default header data
+    $logo = get_template_directory() . '/img/logo.png';
+    $site = get_site_url();
+    $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.$Candidate->reference, "ItJobMada - {$site}");
+    // set header and footer fonts
+    $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    // set auto page breaks
+    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+// set image scale factor
+    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+    // set font
+    $pdf->SetFont('DejaVuSerifCondensed', '', 10);
+
+// add a page
+    $pdf->AddPage();
+
+    $html = '';
     try {
-      return $Engine->render('@SC/cv-candidate.html.twig', [
+      $html .= $Engine->render('@SC/cv-candidate.html.twig', [
         'candidate' => $Candidate,
       ]);
     } catch (Twig_Error_Loader $e) {
     } catch (Twig_Error_Runtime $e) {
     } catch (Twig_Error_Syntax $e) {
       echo $e->getRawMessage();
+      exit;
     }
+    // output the HTML content
+    $pdf->writeHTML($html, true, false, true, false, '');
+    // reset pointer to the last page
+    $pdf->lastPage();
+
+//Close and output PDF document
+    $pdf->Output(get_template_directory()."/contents/pdf/itjobmada_{$Candidate->reference}.pdf", 'FI');
   }
 
   /**
@@ -121,6 +163,7 @@ class scInterests
       do_action('get_notice');
       return $Engine->render('@SC/cv-candidate.html.twig', [
         'candidate' => $Candidate,
+        'download_link' => admin_url("admin-ajax.php?action=download_pdf&id={$Candidate->getId()}")
       ]);
     } catch (Twig_Error_Loader $e) {
     } catch (Twig_Error_Runtime $e) {
@@ -164,9 +207,6 @@ class scInterests
 
     // FEATURED: Vérifier si le candidat a déja postuler pour cette offre
     $interests = $itModel->get_offer_interests($offer_id);
-    if (!$interests) {
-      wp_send_json_error("Impossible de verifier le candidat s'il est dans la liste ou pas");
-    }
     // Content array of user id
     $apply = array_map(function ($interest) {
       return (int)$interest->id_candidate;
@@ -209,7 +249,7 @@ class scInterests
 
     } else {
       wp_send_json_error([
-        'msg' => 'Vous ne pouvez sélectionner de candidat avec votre compte',
+        'msg' => 'Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi',
         'status' => 'access',
         'data' => [
           'login' => home_url("/connexion/company?redir={$redir}"),
@@ -246,7 +286,7 @@ class scInterests
       $User = wp_get_current_user();
       if (!in_array('company', $User->roles)) {
         wp_send_json_error([
-          'msg' => 'Vous ne pouvez pas sélectionner de candidat avec votre compte',
+          'msg' => 'Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi',
           'status' => 'access'
         ]);
       }
@@ -265,7 +305,7 @@ class scInterests
     $offers = get_posts($args);
     if (empty($offers)) {
       wp_send_json_error([
-        'msg' => 'Vous n\'avez pas encore publier d\'offre. Veillez publier une offre avant de continuer',
+        'msg' => 'Vous devez avoir une offre en cours validée pour pouvoir continuer cette opération',
         'status' => 'access'
       ]);
     }

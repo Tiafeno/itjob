@@ -54,33 +54,30 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
           // Mode de diffusion par default
           $scope.rateplan = 'standard';
           $scope.sendSubscription = () => {
-            if ($scope.ratePlan) {
-              const sendData = new FormData();
-              sendData.append('action', 'ajx_update_offer_rateplan');
-              sendData.append('rateplan', $scope.rateplan);
-              sendData.append('offerId', $rootScope.offers.ID);
-              offerFactory
-                .sendPostForm(sendData)
-                .then(resp => {
-                  const data = resp.data;
-                  if (data.success) {
-                    swal({
-                      title: 'Reussi',
-                      text: "Votre offre a été envoyé avec succès",
-                      type: "info",
-                    }, () => {
-                      window.location.href = itOptions.urlHelper.redir;
-                    });
-                  }
-                });
-            } else {
-              window.location.href = itOptions.urlHelper.redir;
-            }
+            const sendData = new FormData();
+            sendData.append('action', 'ajx_update_offer_rateplan');
+            sendData.append('rateplan', $scope.rateplan);
+            sendData.append('offerId', $rootScope.offers.ID);
+            offerFactory
+              .sendPostForm(sendData)
+              .then(resp => {
+                const data = resp.data;
+                if (data.success) {
+                  swal({
+                    title: 'Reussi',
+                    text: "Votre offre a été envoyé avec succès",
+                    type: "info",
+                  }, () => {
+                    window.location.href = itOptions.urlHelper.redir;
+                  });
+                }
+              });
           };
 
           // Activate Popovers
           jQuery('[data-toggle="popover"]').popover();
           $scope.$watch('rateplan', value => {
+            console.log(value);
           });
         }]
       },
