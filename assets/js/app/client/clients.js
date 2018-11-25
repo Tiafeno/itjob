@@ -780,10 +780,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 $scope.profilEditor.form.email = $scope.Candidate.privateInformations.author.data.user_email;
                 UIkit.modal('#modal-information-editor').show();
               })
+          } else {
+            if (!$scope.cv.hasCV) {
+              jQuery('#modal-info-editor').modal('show');
+            }
           }
-          if (!$scope.cv.hasCV) {
-            jQuery('#modal-info-editor').modal('show')
-          }
+
 
         } // .end candidate
 
