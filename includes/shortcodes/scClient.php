@@ -299,11 +299,13 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $candidate_id = (int)Http\Request::getValue('candidate_id');
       $offer_id = (int)Http\Request::getValue('offer_id');
+      $status = Http\Request::getValue('status');
+      $status = $status ? $status : 'validated';
 
       $Model = new itModel();
       if ($request = $Model->exist_interest($candidate_id, $offer_id)) {
         if (empty($request)) wp_send_json_error("Aucun resultat trouver pendant la verification");
-        $update = $Model->update_interest_status((int)$request[0]->id_cv_request, 'validated');
+        $update = $Model->update_interest_status((int)$request[0]->id_cv_request, $status);
         if ($update)
           wp_send_json_success("Requete mis à jours avec succès");
         wp_send_json_error("Il est possible que la requete à déja activé la requete ou bien une erreur s'est produite");
