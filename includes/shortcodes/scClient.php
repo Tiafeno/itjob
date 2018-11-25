@@ -273,6 +273,9 @@ if ( ! class_exists( 'scClient' ) ) :
             wp_send_json_error( $isError->get_error_message() );
           }
         }
+        // Mettre à jour l'adresse
+        $address = Http\Request::getValue( 'address' );
+        update_field('itjob_company_address', $address, $this->Company->getId());
         // Mettre à jour la salutation si necessaire
         $greeting = Http\Request::getValue('greet');
         if ($greeting)

@@ -636,6 +636,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         Form.append('abranch', $scope.profilEditor.form.abranch);
         Form.append('region', $scope.profilEditor.form.region);
         Form.append('country', $scope.profilEditor.form.country);
+        Form.append('address', $scope.profilEditor.form.address);
         Form.append('greet', $scope.profilEditor.form.greeting);
         clientFactory
           .sendPostForm(Form)
