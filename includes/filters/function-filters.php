@@ -33,6 +33,7 @@ function itjob_filter_engine( $Engine ) {
   $Engine->addFilter(new Twig_SimpleFilter('explode_array', function ($tabs) {
     $exp = [];
     if (!is_array($tabs)) return 'Aucun';
+    $tabs = array_filter($tabs, function ($tab) { return !empty($tab); });
     foreach ( $tabs as $tab ) :
       if (!is_array($tab)) continue;
       array_push( $exp, $tab['label'] );
