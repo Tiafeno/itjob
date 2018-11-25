@@ -58,7 +58,7 @@ add_action('rest_api_init', function () {
    */
   register_rest_route('it-api', '/candidate/', [
     array(
-      'methods' => WP_REST_Server::READABLE,
+      'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCandidate(), 'get_candidates'],
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => []

@@ -107,7 +107,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
               });
 
               jQuery(".form-control.country").select2({
-                placeholder: "Tapez le nom de la ville",
+                placeholder: "Tapez le nom d'une ville ou code postal",
                 allowClear: true,
                 matcher: function (params, data) {
                   var inTerm = [];
