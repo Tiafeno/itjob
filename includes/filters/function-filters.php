@@ -35,7 +35,6 @@ function itjob_filter_engine( $Engine ) {
     if (!is_array($tabs)) return 'Aucun';
     $tabs = array_filter($tabs, function ($tab) { return !empty($tab); });
     foreach ( $tabs as $tab ) :
-      if (!is_array($tab)) continue;
       array_push( $exp, $tab['label'] );
     endforeach;
     return ! empty( $exp ) ? implode( ', ', $exp ) : 'Aucun';
