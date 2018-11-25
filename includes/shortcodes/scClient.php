@@ -21,6 +21,10 @@ if ( ! class_exists( 'scClient' ) ) :
 
     public function __construct() {
       if ( is_user_logged_in() ) {
+        add_action( 'wp_ajax_update_request_status', [ &$this, 'update_request_status' ] );
+        add_action( 'wp_ajax_get_all_request', [ &$this, 'get_all_request' ] );
+
+        // Tout les action en bas sont des action pour les utilisateurs particulier et entreprise
         if ( class_exists( 'includes\post\Company' ) && class_exists( 'includes\post\Candidate' ) ) {
           $userTypes  = [ 'company', 'candidate' ];
           $this->User = wp_get_current_user();
@@ -282,6 +286,41 @@ if ( ! class_exists( 'scClient' ) ) :
           update_field("itjob_company_greeting", $greeting, $this->Company->getId());
         wp_send_json_success("Information mis à jour avec succès");
       }
+    }
+
+    /**
+     * Function ajax
+     * Mettre à jours le status d'un requete (postulant ou interesser) dans la base de donnée
+     * @request wp-admin/admin-ajax.php?action=update_request_status&candidate_id=<int>&offer_id=<int>
+     */
+    public function update_request_status() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      $candidate_id = (int)Http\Request::getValue('candidate_id');
+      $offer_id = (int)Http\Request::getValue('offer_id');
+
+      $Model = new itModel();
+      if ($request = $Model->exist_interest($candidate_id, $offer_id)) {
+        if (empty($request)) wp_send_json_error("Aucun resultat trouver pendant la verification");
+        $update = $Model->update_interest_status((int)$request[0]->id_cv_request, 'validated');
+        if ($update)
+          wp_send_json_success("Requete mis à jours avec succès");
+        wp_send_json_error("Il est possible que la requete à déja activé la requete ou bien une erreur s'est produite");
+      } else {
+        wp_send_json_error("Aucun candidat n'a postulé ou ajouter à cette offre");
+      }
+    }
+
+    /**
+     * Function ajax
+     * Récupere tous les requetes dans la base de donnée
+     */
+    public function get_all_request() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+      wp_send_json_success(itModel::get_all());
     }
 
     // Mettre à jour la secteur d'activité pour les offres d'une entreprise definie

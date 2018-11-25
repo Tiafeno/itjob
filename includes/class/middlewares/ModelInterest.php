@@ -62,7 +62,7 @@ trait ModelInterest {
    * Mettre a jour le status de la requete
    *
    * @param int $id_request
-   * @param int $status
+   * @param int $status - [pending, validated, reject]
    *
    * @return bool|int
    */
@@ -72,7 +72,7 @@ trait ModelInterest {
       return false;
     }
     $results = $wpdb->update( $this->requestTable, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%s' ], [ '%d' ] );
-    return $results !== false;
+    return !!$results;
   }
 
   /**
@@ -92,8 +92,8 @@ trait ModelInterest {
       return null;
     }
     $table   = $wpdb->prefix . 'cv_request';
-    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $table WHERE id_candidate = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
-    $rows    = $wpdb->get_var( $prepare );
+    $prepare = $wpdb->prepare( "SELECT * FROM $table WHERE id_candidate = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
+    $rows    = $wpdb->get_results( $prepare );
 
     return $rows;
   }
@@ -124,7 +124,7 @@ trait ModelInterest {
     if (!is_user_logged_in() || !$id_candidate) {
       return false;
     }
-    $prepare = $wpdb->prepare( "SELECT * FROM $this->requestTable WHERE id_candidate = %d", (int) $id_candidate );
+    $prepare = $wpdb->prepare( "SELECT * FROM $this->requestTable WHERE id_candidate = %d AND type = %s", (int) $id_candidate, $status );
     $rows    = $wpdb->get_results( $prepare );
 
     return $rows;
@@ -194,6 +194,13 @@ trait ModelInterest {
       return false;
     }
     $interests = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cv_request WHERE id_offer = {$id_offer}" );
+
+    return $interests;
+  }
+
+  public static function get_all() {
+    global $wpdb;
+    $interests = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cv_request" );
 
     return $interests;
   }
