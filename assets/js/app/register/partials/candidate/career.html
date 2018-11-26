@@ -81,7 +81,10 @@
   <div class="form-group mt-5" id="language">
     <label class="font-normal">Les langues <span style="color: red">*</span></label>
       <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-    <tags-input ng-model="formData.languages" display-property="name" placeholder="Les langues" replace-spaces-with-dashes="false" required>
+    <tags-input ng-model="formData.languages" display-property="name" placeholder="Les langues"
+                on-tag-adding="onAddingTag($tag)"
+                on-invalid-tag="onTagInvalid($tag)"
+                replace-spaces-with-dashes="false" required>
       <auto-complete source="queryItems($query, 'language')"
                       min-length="0"
                       load-on-focus="true"
