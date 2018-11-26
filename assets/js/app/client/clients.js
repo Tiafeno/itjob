@@ -780,14 +780,18 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 if (!_.isNull($scope.Candidate.branch_activity) || $scope.Candidate.branch_activity) {
                   $scope.profilEditor.form.abranch = $scope.Candidate.branch_activity.term_id;
                 }
+                $scope.profilEditor.form.country = _.isEmpty(country) || _.isNull(country) ? '' : country.term_id;
                 if (!_.isNull(region) || region) {
                   $scope.profilEditor.form.region = region.term_id;
+                } else {
+                  // Effacer la valeur d'une ville si la region n'est pas definie
+                  $scope.profilEditor.form.country = '';
                 }
                 $scope.profilEditor.form.name = `${$scope.Candidate.privateInformations.firstname} ${$scope.Candidate.privateInformations.lastname}`;
                 $scope.profilEditor.form.email = $scope.Candidate.privateInformations.author.data.user_email;
                 // Récuperer l'adresse
                 $scope.profilEditor.form.address = _.isEmpty(address) || _.isNull(address) ? '' : address;
-                $scope.profilEditor.form.country = _.isEmpty(country) || _.isNull(country) ? '' : country.term_id;
+
                 UIkit.modal('#modal-information-editor').show();
               })
           } else {
