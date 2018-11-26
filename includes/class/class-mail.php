@@ -578,7 +578,7 @@ class Mailing {
     if (!$author) return false;
 
     $to = $email;
-    $subject   = 'Votre cv viens d\'être validé - ItJobMada';
+    $subject   = 'Votre CV viens d\'être validé - ItJobMada';
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
