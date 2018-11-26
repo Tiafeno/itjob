@@ -122,7 +122,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         $scope.onAddingTag = ($tag) =>
         {
           let isValid = true;
-          let splitTag = '|;_\/#*';
+          let splitTag = '|;_\/*';
           for (let i in splitTag) {
             let str = splitTag.charAt(i);
             if ($tag.name.indexOf(str) > -1) { isValid = false; break; }
@@ -273,7 +273,6 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         };
 
         $scope.$watch('form', (form) => {
-          console.log(form.softwares);
         }, true);
 
         UIkit.util.on('#modal-software-editor-overflow', 'show', function (e) {

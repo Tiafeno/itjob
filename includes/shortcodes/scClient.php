@@ -493,8 +493,8 @@ if ( ! class_exists( 'scClient' ) ) :
 
       $current_user = wp_get_current_user();
       $post_id      = (int) Http\Request::getValue( 'pId' );
-      $query        = "SELECT COUNT(*) FROM $wpdb->posts WHERE ID=$post_id";
-      $result       = (int) $wpdb->get_var( $wpdb->prepare( $query, [] ) );
+      $query        = "SELECT COUNT(*) FROM $wpdb->posts WHERE ID = %d";
+      $result       = (int) $wpdb->get_var( $wpdb->prepare( $query, $post_id ) );
       if ( $result > 0 ) {
         $wpdb->flush();
         $pt = new Offers( $post_id );

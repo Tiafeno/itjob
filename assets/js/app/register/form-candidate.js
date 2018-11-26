@@ -280,7 +280,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             $rootScope.onAddingTag = ($tag) =>
             {
               let isValid = true;
-              let splitTag = '|;_\/#*';
+              let splitTag = '|;_\/*';
               for (let i in splitTag) {
                 let str = splitTag.charAt(i);
                 if ($tag.name.indexOf(str) > -1) { isValid = false; break; }
