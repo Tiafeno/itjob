@@ -54,6 +54,7 @@ class Mailing {
         case 'candidate':
           switch ($post_status) {
             case 'publish':
+              $this->confirm_validate_candidate($post_id);
               // $this->alert_for_new_candidate( $post_id );
               break;
           }
@@ -548,6 +549,49 @@ class Mailing {
         'candidat_reference' => $Candidat->title,
         'logo'               => esc_url( $logo[0] ),
         'dashboard_url'      => $this->dashboard_url
+      ] );
+    } catch ( \Twig_Error_Loader $e ) {
+    } catch ( \Twig_Error_Runtime $e ) {
+    } catch ( \Twig_Error_Syntax $e ) {
+      $content .= $e->getRawMessage();
+    }
+    $sender = wp_mail( $to, $subject, $content, $headers );
+    if ( $sender ) {
+      // Mail envoyer avec success
+      return true;
+    } else {
+      // Erreur d'envoie
+      return false;
+    }
+  }
+
+  // Envoyer un mail au candidat
+  // Administrateur a validé le CV
+  public function confirm_validate_candidate( $candidat_id ) {
+    global $Engine;
+    if ( ! is_user_logged_in() ) {
+      return false;
+    }
+
+    // @var array $admin_emails - Contient les adresses email de l'admin et les moderateurs
+    $email = get_field('itjob_cv_email', $candidat_id);
+    $author = get_user_by('email', $email);
+    if (!$author) return false;
+
+    $to = $email;
+    $subject   = 'Votre cv viens d\'être validé - ItJobMada';
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = '';
+    try {
+      $custom_logo_id = get_theme_mod( 'custom_logo' );
+      $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+      $content        .= $Engine->render( '@MAIL/confirm-validate-candidate.html.twig', [
+        'user' => $author,
+        'home_url' => home_url('/'),
+        'logo'               => esc_url( $logo[0] ),
+        'archive_offer_link'      => get_post_type_archive_link('offers')
       ] );
     } catch ( \Twig_Error_Loader $e ) {
     } catch ( \Twig_Error_Runtime $e ) {
