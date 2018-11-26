@@ -2,6 +2,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
   .value('froalaConfig', {
     toolbarInline: false,
     quickInsertTags: null,
+    wordPasteModal: false,
     toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
   })
   .value('alertifyConfig', {
