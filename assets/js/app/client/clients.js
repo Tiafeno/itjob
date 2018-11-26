@@ -998,7 +998,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               }
             },
             submitHandler: function (form) {
-              if (!$scope.editProfilForm.$dirty) return;
+              //if (!$scope.editProfilForm.$dirty) return;
+              $scope.profilEditor.loading = true;
               const Fm = new FormData();
               Fm.append('action', 'update-candidate-profil');
               Fm.append('status', $scope.profilEditor.status);
@@ -1016,8 +1017,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                     $scope.avatarFile.result = response.data;
                     $scope.onSaveCandidateProfil(Fm);
                   }, response => { // Error
-                    if (response.status > 0)
+                    if (response.status > 0) {
                       alertify.error(response.status + ': ' + response.data);
+                      $scope.profilEditor.loading = false;
+                    }
                   }, evt => { // Progress
                     $scope.avatarFile.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
                   });
@@ -1046,6 +1049,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             let data = resp.data;
             if (!data.success) return;
             UIkit.modal('#modal-candidate-profil-editor').hide();
+            $scope.profilEditor.loading = false;
             location.reload();
           })
       };

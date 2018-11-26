@@ -69,7 +69,7 @@ final class Candidate extends UserParticular implements \iCandidate {
       $User        = get_user_by( 'email', $this->email );
       // Remove login information (security)
       $this->author = Obj\jobServices::getUserData( $User->ID );
-      $this->avatar = wp_get_attachment_image_src( get_post_thumbnail_id( $this->getId() ), 'large' );
+      $this->avatar = wp_get_attachment_image_src( get_post_thumbnail_id( $this->getId() ), [300, 300] );
 
       // TODO: Verifier si le client est une entreprise avec un compte premium
 
