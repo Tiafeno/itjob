@@ -93,7 +93,8 @@
             </div>
           </div>
           <div class="col-md-8 col-sm-8">
-            <div class="form-group">
+
+            <div class="form-group" ng-if="Candidate.has_cv">
               <label class="col-form-label ">Mon status <span style="color: red">*</span></label>
               <select class="form-control" name="status" id="status" ng-model="profilEditor.status"
                       ng-value="profilEditor.status"
@@ -103,6 +104,7 @@
                 <option value="2">Je cherche un stage</option>
               </select>
             </div>
+
             <div class="form-group">
               <label class="col-form-label ">Adresse e-mail</label>
               <input class="form-control" name="email" id="email"
@@ -194,7 +196,7 @@
               </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" ng-if="Candidate.has_cv">
               <label class="col-form-label ">Votre secteur d'activité <span style="color: red">*</span></label>
               <select class="form-control" name="branch_activity" ng-model="profilEditor.form.abranch"
                       ng-value=""
