@@ -90,11 +90,18 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
                       <div class="col-md-6 mt-3">
                         <p class="mb-1 uk-text-bold">Emploi recherché:</p>
                         <?php
+                        $jobs = [];
                         if (isset($candidate->jobSought) && !empty($candidate->jobSought)) {
-                          foreach ($candidate->jobSought as $job) :
-                            if ($job->activated)
-                              echo sprintf('<span class="badge badge-blue mr-2 mt-1" style="white-space: pre-line;">%s</span>', ucfirst($job->name));
-                          endforeach;
+                          if (is_array($candidate->jobSought)) {
+                            foreach ( $candidate->jobSought as $job ) :
+                              if ( $job->activated ) {
+                                echo sprintf( '<span class="badge badge-blue mr-2 mt-1" style="white-space: pre-line;">%s</span>', ucfirst( $job->name ) );
+                              }
+                            endforeach;
+                          } else {
+                            echo sprintf( '<span class="badge badge-blue mr-2 mt-1" style="white-space: pre-line;">%s</span>', ucfirst( $candidate->jobSought->name ) );
+                          }
+
                         } else {
                           echo "Non defini";
                         }

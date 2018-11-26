@@ -21,10 +21,16 @@ if ( ! $candidate->is_activated()) { return; }
                 <td>
                   <?php
                   $job_shought = [];
-                  foreach ( $candidate->jobSought as $job ) :
-                    if ($job->activated)
-                      array_push( $job_shought, $job->name );
-                  endforeach;
+
+                  if (is_array($candidate->jobSought)) {
+                    foreach ( $candidate->jobSought as $job ) :
+                      if ( $job->activated ) {
+                        array_push( $job_shought, $job->name );
+                      }
+                    endforeach;
+                  } else {
+                    array_push($job_shought, $candidate->jobSought->name);
+                  }
                   echo ! empty( $job_shought ) ? implode( ', ', $job_shought ) : 'Aucun';
                   ?>
                 </td>
