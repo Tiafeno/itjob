@@ -51,6 +51,7 @@ class Mailing {
               $this->notification_for_new_pending_offer($post_id);
               break;
             case 'publish':
+              $this->confirm_validate_offer($post_id);
               // $this->alert_for_new_offer( $post_id );
               break;
           }
@@ -73,7 +74,7 @@ class Mailing {
       endswitch;
 
 
-    }, 10, 1 );
+    }, 20, 1 );
   }
 
   /**
@@ -655,6 +656,44 @@ class Mailing {
     }
   }
 
+  public function confirm_validate_offer( $offer_id ) {
+    global $Engine;
+    if ( ! is_user_logged_in() ) {
+      return false;
+    }
+
+    $post_company = get_field('itjob_offer_company', $offer_id);
+    $to = get_field('itjob_company_email', $post_company->ID);
+    $subject   = 'Validation de votre offre d’emploi sur ITJobMada';
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = '';
+    try {
+      $custom_logo_id = get_theme_mod( 'custom_logo' );
+      $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+      $content        .= $Engine->render( '@MAIL/confirm-validate-offer.html.twig', [
+        'company' => new Company($post_company->ID),
+        'offer' => new Offers($offer_id),
+        'oc_url' => $this->espace_client,
+        'home_url' => home_url('/'),
+        'logo'     => esc_url( $logo[0] )
+      ] );
+    } catch ( \Twig_Error_Loader $e ) {
+    } catch ( \Twig_Error_Runtime $e ) {
+    } catch ( \Twig_Error_Syntax $e ) {
+      $content .= $e->getRawMessage();
+    }
+    $sender = wp_mail( $to, $subject, $content, $headers );
+    if ( $sender ) {
+      // Mail envoyer avec success
+      return true;
+    } else {
+      // Erreur d'envoie
+      return false;
+    }
+  }
+
   public function notification_for_new_pending_offer( $offer_id ) {
     global $Engine;
     if (!is_numeric($offer_id)) return false;
@@ -675,14 +714,14 @@ class Mailing {
     $headers        = [];
     $headers[]      = 'Content-Type: text/html; charset=UTF-8';
     $headers[]      = "From: ItJobMada <{$this->no_reply_email}>";
-    $subject        = "#{$Offer->reference} Publication d'un offre sur ItJobMada";
+    $subject        = "{$Offer->reference} - Notification de l’insertion d’une nouvelle offre sur ITJobMada";
     $content        = '';
     try {
       $args    =  [
-        'logo_url' => esc_url( $logo[0] ),
+        'logo' => esc_url( $logo[0] ),
         'company' => $Company,
         'offer' => $Offer,
-        'dashboard_url' => admin_url('/'),
+        'admin_url' => admin_url('/'),
         'home_url'      => home_url( "/" )
       ];
       $content .= $Engine->render( "@MAIL/admin/notification-new-offer.html.twig", $args );
