@@ -42,14 +42,27 @@ class Mailing {
     add_action( 'acf/save_post', function ( $post_id ) {
       $post_type   = get_post_type( $post_id );
       $post_status = get_post_status( $post_id );
+      switch ($post_type):
+        case 'offers':
+          switch ($post_status) {
+            case 'pending':
+              $this->notification_for_new_pending_offer($post_id);
+              break;
+            case 'publish':
+              $this->alert_for_new_offer( $post_id );
+              break;
+          }
+          break;
+        case 'candidate':
+          switch ($post_status) {
+            case 'publish':
+              $this->alert_for_new_candidate( $post_id );
+              break;
+          }
+          break;
+      endswitch;
 
-      if ( $post_type === 'candidate' || $post_status === 'publish' ) {
-        $this->alert_for_new_candidate( $post_id );
-      }
 
-      if ( $post_type === 'offers' || $post_status === 'publish' ) {
-        $this->alert_for_new_offer( $post_id );
-      }
     }, 10, 1 );
   }
 
@@ -553,6 +566,51 @@ class Mailing {
     }
   }
 
+  public function notification_for_new_pending_offer( $offer_id ) {
+    global $Engine;
+    if (!is_numeric($offer_id)) return false;
+    $Offer = new Offers($offer_id);
+    $User = wp_get_current_user();
+    if ($User->ID !==0) {
+      $Company = Company::get_company_by($User->ID);
+    } else return false;
+    // $admin_emails - Contient les adresses email de l'admin et les moderateurs
+    $admin_emails = $this->getModeratorEmail();
+    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
+    if ( ! $admin_emails ) {
+      return false;
+    }
+    $custom_logo_id = get_theme_mod( 'custom_logo' );
+    $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+    $args           = [
+      'logo_url' => esc_url( $logo[0] )
+    ];
+    $to             = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $headers        = [];
+    $headers[]      = 'Content-Type: text/html; charset=UTF-8';
+    $headers[]      = "From: ItJobMada <{$this->no_reply_email}>";
+    $subject        = "#{$Offer->reference} Publication d'un offre sur ItJobMada";
+    $content        = '';
+    try {
+      $args    = array_merge( $args, [
+        'company' => $Company,
+        'offer' => $Offer,
+        'dashboard_url' => admin_url('/'),
+        'home_url'      => home_url( "/" )
+      ] );
+      $content .= $Engine->render( "@MAIL/admin/notification-new-offer.html.twig", $args );
+    } catch ( \Twig_Error_Loader $e ) {
+    } catch ( \Twig_Error_Runtime $e ) {
+    } catch ( \Twig_Error_Syntax $e ) {
+      $content .= $e->getRawMessage();
+    }
+    $sender = wp_mail( $to, $subject, $content, $headers );
+    if ( $sender ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   /**
    * Notifier les candidates qui ont des alerts correspondant
    *

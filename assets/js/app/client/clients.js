@@ -679,6 +679,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           });
       };
 
+      self.send
+
       /**
        * Récuperer les données sur le client
        */
@@ -717,7 +719,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               })
           }
 
-        } else {
+        }
+        else {
           // Candidat
           // Crée une image par default
           let sexe = Client.iClient.greeting === null || _.isEmpty(Client.iClient.greeting) ? '' : (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';
@@ -791,10 +794,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               jQuery('#modal-info-editor').modal('show');
             }
           }
-
-
         } // .end candidate
-
 
         $scope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
 
