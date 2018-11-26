@@ -122,14 +122,16 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             $rootScope.driveLicences = _.clone(driveLicences);
           };
 
-          // Effacer tout les champs input des permis.
-          $scope.$watch('driveL', data => {
-            if (data) {
-              if (!_.isEmpty($rootScope.formData.driveLicence)) {
-                $rootScope.formData.driveLicence = [];
-              }
+          $rootScope.onSwitchDriveLicence = (hasDl) => {
+            if (hasDl) {
+              $scope.driveL = false;
+            } else {
+              $rootScope.formData.driveLicence = [];
             }
-          });
+          };
+
+          // Effacer tout les champs input des permis.
+
 
           $rootScope.initDatePicker = function () {
             window.setTimeout(() => {

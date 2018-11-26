@@ -60,7 +60,7 @@
     <div class="col-sm-6">
       <div class="drivelicence" ng-repeat="driveLicence in driveLicences">
         <label class="checkbox checkbox-grey checkbox-ebony">
-          <input type="checkbox"
+          <input type="checkbox" ng-change="onSwitchDriveLicence(true)"
            ng-model="formData.driveLicence[driveLicence.slug]">
           <span class="input-span"></span>
           {{driveLicence.label}}
@@ -69,7 +69,7 @@
       <!-- Aucun permis -->
       <div class="drivelicence">
         <label class="checkbox checkbox-grey checkbox-ebony">
-          <input type="checkbox" ng-model="driveL" class="">
+          <input type="checkbox" ng-change="onSwitchDriveLicence(false)" ng-model="driveL" class="">
           <span class="input-span"></span>
           Aucun
         </label>
@@ -149,7 +149,7 @@
               <div class="form-group">
                 <label class="col-form-label ">Nom de l'entreprise ou société <span style="color: red">*</span></label>
                 <input class="form-control" name="company" ng-model="experience.company" type="text"
-                       placeholder="ex: Google, Miscrosoft ..."
+                       placeholder="ex: Google, Microsoft ..."
                        required>
               </div>
 
