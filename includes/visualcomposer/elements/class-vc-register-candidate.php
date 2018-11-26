@@ -336,7 +336,6 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
      // $itHelper->Mailing->alert_for_new_candidate($this->Candidate->getId());
 
       wp_send_json( [ 'success' => true ] );
-      // TODO: Ajouter une notification pour les formations ajouté (dev)
 
     } // .end update_user_cv
 
@@ -383,6 +382,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
             update_term_meta( $term['term_id'], 'activated', 0 );
             array_push( $tabContainer, (int) $term['term_id'] );
           }
+          // TODO: Envoyer un mail pour notifier des nouveaux terms
         }
       }
 

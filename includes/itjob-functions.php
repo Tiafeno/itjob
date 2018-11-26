@@ -27,7 +27,7 @@ function itjob_current_user_is_company() {
   $User = wp_get_current_user();
   if (in_array('company', $User->roles)) {
     $Comp = \includes\post\Company::get_company_by($User->ID);
-    return $Comp->is_company();
+    return $Comp->is_company() && $Comp->isValid();
   } else {
     return false;
   }

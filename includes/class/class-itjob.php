@@ -66,29 +66,7 @@ if ( ! class_exists( 'itJob' ) ) {
       } );
 
       add_action( 'user_register', function ( $user_id ) {
-        global $itHelper;
-        // Ajouter le mot de passe de l'utilisateur
-        if ( isset( $_POST['pwd'] ) || ! empty( $_POST['pwd'] ) ) {
-          $user       = get_userdata( $user_id );
-          $user_roles = $user->roles;
-          if ( in_array( 'company', $user_roles, true ) ||
-               in_array( 'candidate', $user_roles, true ) ) {
-            $pwd = $_POST['pwd'];
-            if ( isset( $pwd ) ) {
-              $id = wp_update_user( [ 'ID' => $user_id, 'user_pass' => trim( $pwd ) ] );
-              if ( is_wp_error( $id ) ) {
-                return true;
-              } else {
-                // Mot de passe utilisateur à etes modifier avec success
-                return false;
-              }
-            }
-          }
-        }
-
-        // Envoyer une email au commercial et a l'administrateur
-        // pour notifier une inscription ou un nouveau utilisateur
-        $itHelper->Mailing->notif_admin_new_user( $user_id );
+        do_action("new_register_user", $user_id);
 
       }, 10, 1 );
 

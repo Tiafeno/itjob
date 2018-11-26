@@ -138,6 +138,14 @@ final class Company implements \iCompany {
   }
 
   /**
+   * Vérifier si l'netrepise est valide
+   * @return mixed|null
+   */
+  public function isValid() {
+    $activated = get_field("activated", $this->ID);
+    return $activated;
+  }
+  /**
    * Récuperer l'ID de l'entreprise (Non pas l'id de l'utilisateur)
    * @return int
    */

@@ -136,8 +136,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           $rootScope.initDatePicker = function () {
             window.setTimeout(() => {
               jQuery('.input-daterange-years').datepicker({
-                format: "yyyy",
-                minViewMode: "years",
+                format: "mm/dd/yyyy",
+                minViewMode: "months",
+                startView: 2,
                 autoclose: true,
                 language: "fr",
                 clearBtn: true,

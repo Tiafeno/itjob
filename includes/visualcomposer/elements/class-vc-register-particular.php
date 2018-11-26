@@ -21,7 +21,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       add_shortcode( 'vc_register_particular', [ &$this, 'register_render_html' ] );
 
       // Crée une utilisateur pour le post candidate
-      add_action( 'acf/update_value/name=itjob_cv_email', [ &$this, 'post_publish_candidate' ], 10, 2 );
+      add_action( 'acf/update_value/name=itjob_cv_email', [ &$this, 'create_particular_user' ], 10, 2 );
 
       add_action( 'wp_ajax_get_city', [ &$this, 'get_city' ] );
       add_action( 'wp_ajax_nopriv_get_city', [ &$this, 'get_city' ] );
@@ -203,7 +203,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
      *
      * @return bool
      */
-    public function post_publish_candidate( $value, $post_id ) {
+    public function create_particular_user( $value, $post_id ) {
 
       $post_type = get_post_type( $post_id );
       if ( $post_type != 'candidate' ) {

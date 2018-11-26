@@ -37,6 +37,10 @@ class Mailing {
     add_action( 'alert_when_company_interest', [ &$this, 'alert_when_company_interest' ], 10, 1 );
     add_action( 'new_validate_term', [ &$this, 'notif_admin_new_validate_term' ], 10, 1 );
 
+    // Envoyer une email au commercial et a l'administrateur
+    // pour notifier une inscription ou un nouveau utilisateur
+    add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
+
     add_action( 'acf/save_post', function ( $post_id ) {
       $post_type   = get_post_type( $post_id );
       $post_status = get_post_status( $post_id );
@@ -56,6 +60,13 @@ class Mailing {
             case 'publish':
               $this->confirm_validate_candidate($post_id);
               // $this->alert_for_new_candidate( $post_id );
+              break;
+          }
+          break;
+        case 'company':
+          switch ($post_status) {
+            case 'publish':
+              $this->confirm_validate_company($post_id);
               break;
           }
           break;
@@ -164,6 +175,7 @@ class Mailing {
 
   /**
    * Envoyer un email quand un CV viens d'être ajouter
+   * @call class-vc-register-candidate.php (line 333)
    *
    * @param int $candidate_id - Post candidate id
    *
@@ -282,13 +294,13 @@ class Mailing {
   }
 
   /**
-   * Cree une notification
-   *
+   * Cree une notification pour les nouvelles utilisateur
+   * @call class-itjob.php (line 91), user_register hook
    * @param int $user_id - L'identification du client
    *
    * @return bool|mixed
    */
-  public function notif_admin_new_user( $user_id ) {
+  public function new_register_user( $user_id ) {
     global $Engine;
     $error    = true;
     $template = null;
@@ -306,29 +318,28 @@ class Mailing {
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
     $User           = get_user_by( 'ID', $user_id );
-    $args           = [
-      'logo_url' => esc_url( $logo[0] )
-    ];
     if ( in_array( 'company', $User->roles ) ) {
       // L'utilisateur est une entreprise
       $subject  = "Inscription d'une nouvelle entreprise - ItJobMada";
       $Company  = Company::get_company_by( $User->ID );
-      $args     = array_merge( $args, [
+      $args     = [
+        'logo_url' => esc_url( $logo[0] ),
         'reference' => $User->user_login,
         'name'      => $Company->name,
         'email'     => $Company->email
-      ] );
+      ];
       $template = 'company';
       $error    = false;
     }
     if ( in_array( 'candidate', $User->roles ) ) {
       // L'utilisateur est un candidat
       $subject  = "Inscription d'un nouveau compte particulier - ItJobMada";
-      $args     = array_merge( $args, [
+      $args     = [
+        'logo_url' => esc_url( $logo[0] ),
         'reference' => $User->user_login,
         'name'      => $User->first_name . ' ' . $User->last_name,
         'email'     => $User->user_email
-      ] );
+      ];
       $template = 'particular';
       $error    = false;
     }
@@ -591,6 +602,43 @@ class Mailing {
         'home_url' => home_url('/'),
         'logo'               => esc_url( $logo[0] ),
         'archive_offer_link'      => get_post_type_archive_link('offers')
+      ] );
+    } catch ( \Twig_Error_Loader $e ) {
+    } catch ( \Twig_Error_Runtime $e ) {
+    } catch ( \Twig_Error_Syntax $e ) {
+      $content .= $e->getRawMessage();
+    }
+    $sender = wp_mail( $to, $subject, $content, $headers );
+    if ( $sender ) {
+      // Mail envoyer avec success
+      return true;
+    } else {
+      // Erreur d'envoie
+      return false;
+    }
+  }
+
+  public function confirm_validate_company( $company_id ) {
+    global $Engine;
+    if ( ! is_user_logged_in() ) {
+      return false;
+    }
+
+    $email = get_field('itjob_company_email', $company_id);
+    $to = $email;
+    $subject   = 'Confirmation de l’enregistrement - ItJobMada';
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = '';
+    try {
+      $custom_logo_id = get_theme_mod( 'custom_logo' );
+      $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+      $content        .= $Engine->render( '@MAIL/confirm-validate-company.html.twig', [
+        'company' => new Company($company_id),
+        'oc_url' => $this->espace_client,
+        'home_url' => home_url('/'),
+        'logo'     => esc_url( $logo[0] )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
     } catch ( \Twig_Error_Runtime $e ) {
