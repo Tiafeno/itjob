@@ -573,7 +573,6 @@ class Mailing {
       return false;
     }
 
-    // @var array $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $email = get_field('itjob_cv_email', $candidat_id);
     $author = get_user_by('email', $email);
     if (!$author) return false;
