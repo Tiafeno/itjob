@@ -280,8 +280,18 @@ final class Candidate extends UserParticular implements \iCandidate
     $this->country = wp_get_post_terms($this->getId(), 'city', ["fields" => "all"]);
     $this->country = isset($this->country[0]) ? $this->country[0] : '';
     // Récuperer les emplois recherché
+    $old_job_sought = get_post_meta($this->getId(), '_old_job_sought', true);
     $jobSoughts = wp_get_post_terms($this->getId(), 'job_sought', ["fields" => "all"]);
-    $this->jobSought = $this->getActivateField($jobSoughts);
+    $jobSoughts = $this->getActivateField($jobSoughts);
+    $objJob = new \stdClass();
+    if ($old_job_sought) {
+      $objJob->name = $old_job_sought;
+      $objJob->activated = true;
+    }
+
+    var_dump($old_job_sought);
+
+    $this->jobSought = empty($jobSoughts) ? ($old_job_sought ? $objJob : []) : $jobSoughts;
     // Les tags sont ajouter par 'administrateur
     $this->tags = wp_get_post_terms($this->getId(), 'itjob_tag', ["fields" => "names"]);
     // Le secteur d'activite du candidate

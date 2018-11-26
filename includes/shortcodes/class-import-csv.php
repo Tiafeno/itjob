@@ -696,9 +696,10 @@ if (!class_exists('scImport')) :
         ]);
         if (is_array($post_ids) && !empty($post_ids)) {
           $candidat_id = $post_ids[ count( $post_ids ) - 1 ];
-          $job_sought_post = wp_set_post_terms($candidat_id, 'job_sought');
+          $job_sought_post = wp_get_post_terms($candidat_id, 'job_sought', ['fields' => 'names']);
           if (!is_wp_error($job_sought_post)) {
-            update_post_meta($candidat_id, '_old_job_sought', $job_sought_post[0]->name); //Verifier
+            $old_name = implode(', ',$job_sought_post);
+            update_post_meta($candidat_id, '_old_job_sought', $old_name); //Verifier
             wp_set_post_terms($candidat_id, '', 'job_sought');
             wp_send_json_success("Candidate mis à jour avec succès");
           } else {
