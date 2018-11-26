@@ -30,6 +30,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       add_action( 'wp_ajax_update_user_cv', [ &$this, 'update_user_cv' ] );
       add_action( 'wp_ajax_nopriv_update_user_cv', [ &$this, 'update_user_cv' ] );
 
+      add_action( 'wp_ajax_collect_candidat_informations', [ &$this, 'collect_candidat_informations' ] );
+
     }
 
     public function register_candidate_mapping() {
@@ -337,6 +339,20 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       // TODO: Ajouter une notification pour les formations ajouté (dev)
 
     } // .end update_user_cv
+
+    /**
+     * Function ajax
+     * @return bool
+     */
+    public function collect_candidat_informations() {
+      if ( ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
+        return false;
+      }
+      if (!$this->Candidate instanceof Candidate) wp_send_json_error("Utilisateur non definie");
+      $Candidate = $this->Candidate;
+      $Candidate->__get_access();
+      wp_send_json_success($Candidate);
+    }
 
     /**
      * Ajouter dans le taxonomie les valeurs dans le champs qui ne sont pas des terms

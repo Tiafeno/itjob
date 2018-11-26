@@ -16,6 +16,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           jobSougths: function (Services) {
             return Services.getTaxonomy('job_sought');
           },
+          candidate: function (Services) {
+            return Services.collectCandidatInfo();
+          },
           access: ['$q', function ($q) {
           }]
         },
@@ -448,6 +451,14 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             return jobs.filter(_j =>  _j.name.toLowerCase().indexOf($query.toLowerCase()) != -1 );
           });
       },
+      collectCandidatInfo: function () {
+        return $http.get(`${itOptions.ajax_url}?action=collect_candidat_informations`, {cache: true})
+          .then(response => {
+            const query = response.data;
+            if (!query.success) return false;
+            return query.data;
+          })
+      },
       getStatus: function () {
         const status = [
           {
@@ -501,8 +512,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     };
   }])
   .controller('formController',[
-    "$scope", "$rootScope", "Services", "abranchs", "languages", "jobSougths", "Upload",
-    function ($scope, $rootScope, Services, abranchs, languages, jobSougths, Upload) {
+    "$scope", "$rootScope", "Services", "abranchs", "candidate", "languages", "jobSougths", "Upload",
+    function ($scope, $rootScope, Services, abranchs, candidate, languages, jobSougths, Upload) {
     let training_id = 0;
     let experience_id = 0;
 
@@ -510,9 +521,20 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     $scope.abranchs = _.clone(abranchs);
     $scope.languages = _.clone(languages);
     $scope.status = Services.getStatus();
+    $rootScope.Candidate = _.clone(candidate);
     $rootScope.loading = false;
     $rootScope.jobSougths = _.clone(jobSougths);
     $rootScope.formData = {};
+
+    this.$onInit = () => {
+      $rootScope.formData.featuredImage = {};
+      if (!_.isUndefined($rootScope.Candidate.privateInformations.avatar) && !_.isNull($rootScope.Candidate.privateInformations.avatar))
+        $rootScope.formData.featuredImage.src = $rootScope.Candidate.privateInformations.avatar[0];
+      if (!_.isUndefined($rootScope.Candidate.branch_activity) && !_.isNull($rootScope.Candidate.branch_activity))
+        $rootScope.formData.abranch = $rootScope.Candidate.branch_activity.term_id;
+      if (!_.isUndefined($rootScope.Candidate.status) && !_.isNull($rootScope.Candidate.status))
+        $rootScope.formData.status = parseInt($rootScope.Candidate.status.value);
+    };
 
     $rootScope.formData.trainings = [{
       id: training_id,
