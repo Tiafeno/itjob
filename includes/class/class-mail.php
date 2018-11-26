@@ -49,14 +49,14 @@ class Mailing {
               $this->notification_for_new_pending_offer($post_id);
               break;
             case 'publish':
-              $this->alert_for_new_offer( $post_id );
+              // $this->alert_for_new_offer( $post_id );
               break;
           }
           break;
         case 'candidate':
           switch ($post_status) {
             case 'publish':
-              $this->alert_for_new_candidate( $post_id );
+              // $this->alert_for_new_candidate( $post_id );
               break;
           }
           break;
