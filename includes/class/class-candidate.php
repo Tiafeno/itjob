@@ -289,8 +289,6 @@ final class Candidate extends UserParticular implements \iCandidate
       $objJob->activated = true;
     }
 
-    var_dump($old_job_sought);
-
     $this->jobSought = empty($jobSoughts) ? ($old_job_sought ? $objJob : []) : $jobSoughts;
     // Les tags sont ajouter par 'administrateur
     $this->tags = wp_get_post_terms($this->getId(), 'itjob_tag', ["fields" => "names"]);
