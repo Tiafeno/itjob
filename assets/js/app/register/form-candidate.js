@@ -282,12 +282,12 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 let str = splitTag.charAt(i);
                 if ($tag.name.indexOf(str) > -1) { isValid = false; break; }
               }
-              if (isValid) $scope.isValidTag = true;
+              if (isValid) $rootScope.isValidTag = true;
               return isValid;
             };
 
             // Call if tag in invalid
-            $rootScope.onTagInvalid = ($tag) => { $scope.isValidTag = false; };
+            $rootScope.onTagInvalid = ($tag) => { $rootScope.isValidTag = false; };
 
             /**
              * Récuperer les valeurs dispensable pour une image pré-upload
