@@ -37,8 +37,6 @@ class Mailing {
     add_action( 'alert_when_company_interest', [ &$this, 'alert_when_company_interest' ], 10, 1 );
     add_action( 'new_validate_term', [ &$this, 'notif_admin_new_validate_term' ], 10, 1 );
 
-    // Activer le CV
-    // Envoyer une alert pour les entreprises
     add_action( 'acf/save_post', function ( $post_id ) {
       $post_type   = get_post_type( $post_id );
       $post_status = get_post_status( $post_id );

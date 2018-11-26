@@ -14,6 +14,7 @@
                   <div class="mb-1">
                     <p class="mb-0 uk-text-bold">L'emploi recherché:</p>
                     <div>
+                      {% if candidate.jobSought is empty %} Aucun {% endif %}
                       {% for job in candidate.jobSought %}
                         {% if not loop.first %}, {% endif %}
                         {{ job.name }}
