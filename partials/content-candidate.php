@@ -21,8 +21,8 @@ if ( ! $candidate->is_activated()) { return; }
                 <td>
                   <?php
                   $job_shought = [];
+                  var_dump($candidate->jobSought);
                   foreach ( $candidate->jobSought as $job ) :
-                    var_dump($job);
                     if ($job->activated)
                       array_push( $job_shought, $job->name );
                   endforeach;
