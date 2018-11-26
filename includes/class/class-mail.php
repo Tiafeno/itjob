@@ -252,6 +252,7 @@ class Mailing {
     $admin_notification_emails = get_field( 'admin_editor_user', 'option' ); // Return array of user (WP_User)
     $admin_email               = get_field( 'admin_mail', 'option' ); // return string (mail)
     if ( empty( $admin_notification_emails ) ) {
+      $admin_email = strpos($admin_email, ',') ? explode(',', $admin_email) : $admin_email;
       return $admin_email;
     }
 
