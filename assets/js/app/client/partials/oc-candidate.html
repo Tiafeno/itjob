@@ -8,6 +8,7 @@
     height: 95px;
     position: relative;
     margin-left: 20px;
+    display: inline-table;
   }
 
   .add-new-picture img {
@@ -16,6 +17,8 @@
     border-radius: 50%;
     margin: auto;
     display: block;
+    height: inherit;
+    width: inherit;
   }
 
   li.timeline-item a:hover {
@@ -268,7 +271,7 @@
               style="cursor: pointer">
           <i class="ti-pencil"></i>
         </span>
-        <div class="card-avatar mt-3 mb-4">
+        <div class="card-avatar mt-3 mb-4" style="display: inline-table;">
           <img class="img-circle" ng-src="[[ Candidate.privateInformations.avatar ]]" alt="image">
         </div>
         <h4 class="card-title mb-1">[[Candidate.privateInformations.firstname]] [[
