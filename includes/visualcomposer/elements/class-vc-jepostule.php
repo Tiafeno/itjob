@@ -89,7 +89,7 @@ if (!class_exists('jePostule')) :
             // Ajouter l'offre dans le champ pour les offres postulé par le candidat
           $offer_apply[] = $id_offer;
           update_field('itjob_cv_offer_apply', $offer_apply, $Candidate->getId());
-          //do_action('alert_for_postuled_offer', $pId);
+          do_action('alert_for_postuled_offer', $id_offer);
           do_action('add_notice', 'Votre candidature à bien êtes soumis', 'info');
         }
       }
