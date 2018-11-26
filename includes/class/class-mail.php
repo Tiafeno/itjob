@@ -623,9 +623,6 @@ class Mailing {
     }
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-    $args           = [
-      'logo_url' => esc_url( $logo[0] )
-    ];
     $to             = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
     $headers        = [];
     $headers[]      = 'Content-Type: text/html; charset=UTF-8';
@@ -633,12 +630,13 @@ class Mailing {
     $subject        = "#{$Offer->reference} Publication d'un offre sur ItJobMada";
     $content        = '';
     try {
-      $args    = array_merge( $args, [
+      $args    =  [
+        'logo_url' => esc_url( $logo[0] ),
         'company' => $Company,
         'offer' => $Offer,
         'dashboard_url' => admin_url('/'),
         'home_url'      => home_url( "/" )
-      ] );
+      ];
       $content .= $Engine->render( "@MAIL/admin/notification-new-offer.html.twig", $args );
     } catch ( \Twig_Error_Loader $e ) {
     } catch ( \Twig_Error_Runtime $e ) {

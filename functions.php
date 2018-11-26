@@ -214,22 +214,22 @@ add_filter( 'wp_nav_menu_args', function ( $args ) {
 } );
 
 
-/*add_action('init', function () {
-  header('Content-Type: text/csv');
-  header('Content-Disposition: attachment; filename="emploi.csv"');
-  $args = [
-    'taxonomy' => 'job_sought',
-    'hide_empty' =>false
-  ];
-  $terms = get_terms($args);
-  $fp = fopen('php://output', 'wb');
-  fputs($fp, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
-  foreach ( $terms as $term ) {
-    $val = [$term->term_id, $term->name];
-    fputcsv($fp, $val, ';');
-  }
-  fclose($fp);
-  exit;
-});*/
+add_action('init', function () {
+//  header('Content-Type: text/csv');
+//  header('Content-Disposition: attachment; filename="emploi.csv"');
+//  $args = [
+//    'taxonomy' => 'job_sought',
+//    'hide_empty' =>false
+//  ];
+//  $terms = get_terms($args);
+//  $fp = fopen('php://output', 'wb');
+//  fputs($fp, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
+//  foreach ( $terms as $term ) {
+//    $val = [$term->term_id, $term->name];
+//    fputcsv($fp, $val, ';');
+//  }
+//  fclose($fp);
+//  exit;
+});
 
 
