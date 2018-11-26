@@ -285,6 +285,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Demandeur emploi - CV"
       },
       {
+        _id: 13,
+        slug: 'user_candidate_update_job_sought',
+        label: "Demandeur emploi - Ajouter l'emploi dans un meta"
+      },
+      {
         _id: 10,
         slug: 'update_candidate_language',
         label: "Demandeur emploi - Mettre à jour les langues"
@@ -311,7 +316,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
       },
       {
         _id: 11,
-        slug: 'user_company_update_job_sought',
+        slug: 'user_company_update_branch_activity',
         label: 'Entreprise - Mise à jour du secteur d\'activité'
       }
     ];

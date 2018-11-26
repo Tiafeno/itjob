@@ -597,7 +597,7 @@ if (!class_exists('scImport')) :
         ]);
         if (is_array($post_ids) && !empty($post_ids)) {
           $candidat_id = $post_ids[count($post_ids) - 1];
-          $jobs = $this->get_jobs();
+          $jobs = $this->get_jobs(); // Custom WP_term
           $driveLicences = [
             ['label' => 'A`', 'value' => 0],
             ['label' => 'A', 'value' => 1],
@@ -684,7 +684,30 @@ if (!class_exists('scImport')) :
         }
         wp_send_json_success("Utilisateur abscent. Ancien CV:{$id_cv}");
         break;
-
+      case 'user_candidate_update_job_sought':
+        list($id_cv, $id_demandeur) = $lines;
+        $id_demandeur = (int)$id_demandeur;
+        $post_ids = get_posts([
+          'meta_key' => '__cv_id_demandeur',
+          'meta_value' => $id_demandeur,
+          'post_status' => ['publish', 'pending'],
+          'post_type' => 'candidate',
+          'fields' => 'ids',
+        ]);
+        if (is_array($post_ids) && !empty($post_ids)) {
+          $candidat_id = $post_ids[ count( $post_ids ) - 1 ];
+          $job_sought_post = wp_set_post_terms($candidat_id, 'job_sought');
+          if (!is_wp_error($job_sought_post)) {
+            update_post_meta($candidat_id, '_old_job_sought', $job_sought_post[0]->name); //Verifier
+            wp_set_post_terms($candidat_id, '', 'job_sought');
+            wp_send_json_success("Candidate mis à jour avec succès");
+          } else {
+            wp_send_json_error($job_sought_post->get_error_message());
+          }
+        } else {
+          wp_send_json_success("Aucun utilisateur ne correpond à cette identifiant ID:" . $post_ids[0]);
+        }
+        break;
       case 'update_candidate_language':
         list(
           $id_cv,
@@ -921,7 +944,7 @@ if (!class_exists('scImport')) :
         }
         break;
 
-      case 'user_company_update_job_sought':
+      case 'user_company_update_branch_activity':
         list($id_user, $company_name,,,,,,,,,, $activated, $job_sought,,,,, ) = $lines;
         $id_user = (int)$id_user;
         $job_sought = trim($job_sought);

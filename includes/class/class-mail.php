@@ -469,7 +469,7 @@ class Mailing {
         $to = $User->user_email;
       }
 
-      $subject   = 'Notification de votre intérêt pour un poste ('.$Offer->reference.') sur  ITJobMada';
+      $subject   = 'Notification de votre intérêt pour un poste ('.$Offer->reference.') sur ITJobMada';
       $headers   = [];
       $headers[] = 'Content-Type: text/html; charset=UTF-8';
       $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
