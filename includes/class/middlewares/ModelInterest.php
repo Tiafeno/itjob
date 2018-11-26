@@ -98,6 +98,14 @@ trait ModelInterest {
     return $rows;
   }
 
+  /**
+   * Cette fonction permet de retourner une requete
+   *
+   * @param int $id_candidat
+   * @param int $id_offer
+   *
+   * @return array|bool|null|object
+   */
   public function collect_interest_candidate( $id_candidat = 0, $id_offer = 0 ) {
     global $wpdb;
     if ( ! is_user_logged_in() ) {
@@ -198,6 +206,7 @@ trait ModelInterest {
     return $interests;
   }
 
+  // Retourne tous les requetes dans la base de donnée
   public static function get_all() {
     global $wpdb;
     $interests = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cv_request" );

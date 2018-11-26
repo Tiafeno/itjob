@@ -316,7 +316,7 @@ if ( ! class_exists( 'scClient' ) ) :
 
     /**
      * Function ajax
-     * Récupere tous les requetes dans la base de donnée
+     * Cette fonction retourne tous les requetes dans la base de donnée
      */
     public function get_all_request() {
       if ( ! is_user_logged_in() ) {
@@ -343,7 +343,7 @@ if ( ! class_exists( 'scClient' ) ) :
 
     /**
      * Function ajax
-     *  Mettre à jour les informations de base (candidate) avant de continuer dan sle site
+     * Mettre à jour les informations de base (candidate) avant de continuer dans le site
      */
     public function update_candidate_information() {
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
