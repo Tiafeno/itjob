@@ -982,7 +982,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
        */
       $scope.onViewModalCandidateProfil = () => {
         $scope.profilEditor.featuredImage = $scope.Candidate.privateInformations.avatar;
-        $scope.profilEditor.status = $scope.Candidate.status.value;
+        let hasStatus = _.isNull($scope.Candidate.status) || _.isEmpty($scope.Candidate.status) || _.isUndefined($scope.Candidate.status);
+        $scope.profilEditor.status = hasStatus ? $scope.Candidate.status.value : '';
         $scope.profilEditor.newsletter = $scope.Candidate.newsletter;
         if (jQuery().validate) {
           jQuery("#editProfilForm").validate({
