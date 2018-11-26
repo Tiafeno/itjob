@@ -241,7 +241,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
         templateUrl: itOptions.partials_url + '/candidate/informations.html',
         controller: ['$rootScope', '$http', '$state', 'initScripts',
           function ($rootScope, $http, $state, initScripts) {
-
+            $rootScope.isValidTag = true;
             const fileFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
             /**
              * Cette fonction permet de redimensionner une image
@@ -272,6 +272,22 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
               tnCanvasContext.drawImage(bufferCanvas, startX, startY, newWidth * ratio, newHeight * ratio, 0, 0, newWidth, newHeight);
               return tnCanvas.toDataURL();
             };
+
+            // Call before added tag
+            $rootScope.onAddingTag = ($tag) =>
+            {
+              let isValid = true;
+              let splitTag = '|;_\/#*';
+              for (let i in splitTag) {
+                let str = splitTag.charAt(i);
+                if ($tag.name.indexOf(str) > -1) { isValid = false; break; }
+              }
+              if (isValid) $scope.isValidTag = true;
+              return isValid;
+            };
+
+            // Call if tag in invalid
+            $rootScope.onTagInvalid = ($tag) => { $scope.isValidTag = false; };
 
             /**
              * Récuperer les valeurs dispensable pour une image pré-upload
@@ -328,6 +344,10 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
              * @param {path} state 
              */
             $rootScope.next = (state) => {
+              if (!$rootScope.isValidTag) {
+                alertify.error("Veillez remplir correctement le champ 'Emploi recherché ou vouex'");
+                return false;
+              }
               if (typeof $rootScope.formData.featuredImage === 'undefined') {
                 alertify
                   .okBtn("Oui")

@@ -112,12 +112,31 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         inJobs: "=jobs"
       },
       controller: ['$scope', '$http', function ($scope, $http) {
+        $scope.isValidTag = true;
         $scope.jobs = [];
         $scope.jobLoading = false;
         this.$onInit = () => {
           $scope.jobs = _.clone($scope.inJobs);
         };
-        $scope.onSave = () => {
+        // Call before added tag
+        $scope.onAddingTag = ($tag) =>
+        {
+          let isValid = true;
+          let splitTag = '|;_\/#*';
+          for (let i in splitTag) {
+            let str = splitTag.charAt(i);
+            if ($tag.name.indexOf(str) > -1) { isValid = false; break; }
+          }
+          if (isValid) $scope.isValidTag = true;
+          return isValid;
+        };
+
+        // Call if tag in invalid
+        $scope.onTagInvalid = ($tag) => { $scope.isValidTag = false; };
+
+        $scope.onSave = () =>
+        {
+          if (!$scope.isValidTag) return false;
           $scope.jobLoading = true;
           var form = new FormData();
           form.append('action', 'update_job_search');

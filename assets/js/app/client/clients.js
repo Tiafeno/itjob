@@ -787,6 +787,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
                 let address = $scope.Candidate.privateInformations.address.address;
                 address = _.isEmpty(address) || _.isNull(address) ? '' : address;
                 $scope.profilEditor.form.address = address;
+                $scope.profilEditor.form.country = _.isEmpty(country) || _.isNull(country) ? '' : country.term_id;
                 UIkit.modal('#modal-information-editor').show();
               })
           } else {
