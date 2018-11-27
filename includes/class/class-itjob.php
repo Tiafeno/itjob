@@ -326,7 +326,6 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 BREAK;
             } // .end switch
-            print_r( $query );
             // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
             $query->query['s']      = '';
             $query->query_vars['s'] = '';
