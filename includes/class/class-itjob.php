@@ -330,11 +330,12 @@ if ( ! class_exists( 'itJob' ) ) {
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
                 }
 
+                $query->query['s']      = '';
+                $query->query_vars['s'] = '';
                 BREAK;
             } // .end switch
             // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
-            $query->query['s']      = '';
-            $query->query_vars['s'] = '';
+
           } // .end if - search conditional
           else {
             // Filtrer les candidates ou les offers ou les entreprises
