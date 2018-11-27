@@ -212,6 +212,8 @@ if ( ! class_exists( 'itJob' ) ) {
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
                   //$query->query_vars['tax_query'] = $query->tax_query->queries;
                 }
+                $query->query['s']      = '';
+                $query->query_vars['s'] = '';
                 BREAK;
 
               // Trouver des candidates
@@ -299,26 +301,25 @@ if ( ! class_exists( 'itJob' ) ) {
                     ];
                    endif;
 
-                } else {
-                  // Meta query
-                  if ( ! isset( $meta_query ) ) {
-                    $meta_query = $query->get( 'meta_query' );
-                  }
-                  $meta_query[] = [
-                    [
-                      'key'     => 'activated',
-                      'value'   => 1,
-                      'compare' => '=',
-                      'type'    => 'NUMERIC'
-                    ],
-                    [
-                      'key'     => 'itjob_cv_hasCV',
-                      'value'   => 1,
-                      'compare' => '=',
-                      'type'    => 'NUMERIC'
-                    ]
-                  ];
                 }
+
+                if ( ! isset( $meta_query ) ) {
+                  $meta_query = $query->get( 'meta_query' );
+                }
+                $meta_query[] = [
+                  [
+                    'key'     => 'activated',
+                    'value'   => 1,
+                    'compare' => '=',
+                    'type'    => 'NUMERIC'
+                  ],
+                  [
+                    'key'     => 'itjob_cv_hasCV',
+                    'value'   => 1,
+                    'compare' => '=',
+                    'type'    => 'NUMERIC'
+                  ]
+                ];
 
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
@@ -329,10 +330,8 @@ if ( ! class_exists( 'itJob' ) ) {
                   $query->set( 'tax_query', $tax_query );
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
                 }
-
-                $query->query['s']      = '';
-                $query->query_vars['s'] = '';
                 BREAK;
+
             } // .end switch
             // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
 
