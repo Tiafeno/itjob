@@ -31,25 +31,25 @@ if ( ! class_exists( 'itJob' ) ) {
         update_field( 'activated', 1, $post_id );
 
         // Activer les experiences et les formations
-        if ($post_type === 'candidate' && $post_status === 'publish') {
-          $Experiences = get_field('itjob_cv_experiences', $post_id);
-          $Trainings = get_field('itjob_cv_trainings', $post_id);
-          if (is_array($Experiences) && !empty($Experiences)) {
+        if ( $post_type === 'candidate' && $post_status === 'publish' ) {
+          $Experiences = get_field( 'itjob_cv_experiences', $post_id );
+          $Trainings   = get_field( 'itjob_cv_trainings', $post_id );
+          if ( is_array( $Experiences ) && ! empty( $Experiences ) ) {
             $Values = [];
-            foreach ($Experiences as $experience) {
+            foreach ( $Experiences as $experience ) {
               $experience['validated'] = 1;
-              $Values[] = $experience;
+              $Values[]                = $experience;
             }
-            update_field('itjob_cv_experiences', $Values, $post_id);
+            update_field( 'itjob_cv_experiences', $Values, $post_id );
           }
 
-          if (is_array($Trainings) && !empty($Trainings)) {
+          if ( is_array( $Trainings ) && ! empty( $Trainings ) ) {
             $Values = [];
-            foreach ($Trainings as $training) {
+            foreach ( $Trainings as $training ) {
               $training['validated'] = 1;
-              $Values[] = $training;
+              $Values[]              = $training;
             }
-            update_field('itjob_cv_trainings', $Values, $post_id);
+            update_field( 'itjob_cv_trainings', $Values, $post_id );
           }
         }
       }, 10, 1 );
@@ -66,22 +66,22 @@ if ( ! class_exists( 'itJob' ) ) {
       } );
 
       // Effacer le candidat ou l'entreprise si on supprime l'utilisateur
-      add_action('delete_user', function ($user_id) {
-        $user_obj = get_userdata($user_id);
-        if (in_array('company', $user_obj->roles)) {
-          $Company = Post\Company::get_company_by($user_id);
+      add_action( 'delete_user', function ( $user_id ) {
+        $user_obj = get_userdata( $user_id );
+        if ( in_array( 'company', $user_obj->roles ) ) {
+          $Company = Post\Company::get_company_by( $user_id );
           // TODO: Effacer les offres
-          wp_delete_post($Company->getId());
+          wp_delete_post( $Company->getId() );
         }
 
-        if (in_array('candidate', $user_obj->roles)) {
-          $Candidate = Post\Candidate::get_candidate_by($user_id);
-          wp_delete_post($Candidate->getId());
+        if ( in_array( 'candidate', $user_obj->roles ) ) {
+          $Candidate = Post\Candidate::get_candidate_by( $user_id );
+          wp_delete_post( $Candidate->getId() );
         }
-      });
+      } );
 
       add_action( 'user_register', function ( $user_id ) {
-        do_action("new_register_user", $user_id);
+        do_action( "new_register_user", $user_id );
 
       }, 10, 1 );
 
@@ -114,6 +114,7 @@ if ( ! class_exists( 'itJob' ) ) {
       add_filter( 'acf/settings/l10n_textdomain', function () {
         return __SITENAME__;
       } );
+
 
       // Ajouter le post dans la requete
       // @link: https://codex.wordpress.org/Plugin_API/Action_Reference/pre_get_posts
@@ -160,7 +161,7 @@ if ( ! class_exists( 'itJob' ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
                   // Feature: Recherché aussi dans le profil recherché et mission
-                  $meta_query = [
+                  $meta_query[] = [
                     'relation' => 'OR',
                     [
                       'key'     => 'itjob_offer_mission',
@@ -183,6 +184,20 @@ if ( ! class_exists( 'itJob' ) ) {
                   ];
 
                 }
+
+                // Meta query
+                if ( ! isset( $meta_query ) ) {
+                  $meta_query = $query->get( 'meta_query' );
+                }
+
+                $meta_query[] = [
+                  'key'     => 'activated',
+                  'value'   => 1,
+                  'compare' => '=',
+                  'type'    => 'NUMERIC'
+                ];
+
+                $meta_query['relation'] = "OR";
 
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
@@ -233,87 +248,85 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 if ( ! empty( $s ) ) {
-                  $searchs = explode(' ', $s);
-                  // Rechercher les mots dans les emplois
+
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
                     'taxonomy' => 'job_sought',
-                    'field' => 'name',
-                    'terms' => $searchs
+                    'field'    => 'name',
+                    'terms'    => $s,
+                    'operator' => "EXISTS"
                   ];
-
+                  $tax_query['relation'] = 'OR';
+                  // Rechercher les mots dans les emplois
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
-                  foreach ($searchs as $search) {
-                    if (empty($search)) continue;
+                  $meta_query[] = [
+                    'relation' => 'OR',
+                    [
+                      'key'     => 'itjob_cv_centerInterest_projet',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ],
+                    [
+                      'key'     => '_old_job_sought',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ],
+                    [
+                      'key'     => 'itjob_cv_centerInterest_various',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ],
+                    [
+                      'key'     => 'itjob_cv_notifEmploi_job_sought',
+                      'value'   => $s,
+                      'compare' => 'LIKE',
+                      'type'    => 'CHAR'
+                    ]
+                  ];
 
-                    /*$meta_query[] = [
-                      'relation' => 'OR',
-                      [
-                        'key'     => 'itjob_cv_trainings_0_training_establishment',
-                        'value'   => $search,
-                        'compare' => 'LIKE',
-                        'type'    => 'CHAR'
-                      ],
-                      [
-                        'key'     => 'itjob_cv_trainings_0_training_diploma',
-                        'value'   => $search,
-                        'compare' => 'LIKE',
-                        'type'    => 'CHAR'
-                      ],
-                      [
-                        'key'     => 'itjob_cv_experiences_0_exp_mission',
-                        'value'   => $search,
-                        'compare' => 'LIKE',
-                        'type'    => 'CHAR'
-                      ],
-                      [
-                        'key'     => 'itjob_cv_experiences_0_exp_positionHeld',
-                        'value'   => $search,
-                        'compare' => 'LIKE',
-                        'type'    => 'CHAR'
-                      ],
-                      [
-                        'key'     => 'itjob_cv_experiences_0_exp_company',
-                        'value'   => $search,
-                        'compare' => 'LIKE',
-                        'type'    => 'CHAR'
-                      ]
-                    ];*/
-                  }
-                  // Feature: Recherché aussi dans le profil recherché et mission
-                  
-                  $query->set( 'meta_query', $meta_query );
-                  $query->meta_query = new \WP_Meta_Query( $meta_query );
                 }
 
                 // Meta query
                 if ( ! isset( $meta_query ) ) {
                   $meta_query = $query->get( 'meta_query' );
                 }
-
                 $meta_query[] = [
-                  'key'     => 'activated',
-                  'value'   => 1,
-                  'compare' => '=',
-                  'type'    => 'NUMERIC'
+                  'relation' => 'AND',
+                  [
+                    'key'     => 'activated',
+                    'value'   => 1,
+                    'compare' => '=',
+                    'type'    => 'NUMERIC'
+                  ],
+                  [
+                    'key'     => 'itjob_cv_hasCV',
+                    'value'   => 1,
+                    'compare' => '=',
+                    'type'    => 'NUMERIC'
+                  ]
                 ];
+
+                // Mettre la relation en OU pour que tous les offres valide s'affichent toujours dans le site
+                $meta_query['relation'] = 'OR';
 
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
-                  $query->meta_query = new \WP_Meta_Query( $meta_query );
+                  //$query->meta_query = new \WP_Meta_Query( $meta_query );
                 endif;
 
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
                   $query->set( 'tax_query', $tax_query );
-                  $query->tax_query = new \WP_Tax_Query( $tax_query );
+                  //$query->tax_query = new \WP_Tax_Query( $tax_query );
                 }
 
                 BREAK;
             } // .end switch
-
-
+            print_r( $query );
             // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
             $query->query['s']      = '';
             $query->query_vars['s'] = '';
@@ -333,13 +346,14 @@ if ( ! class_exists( 'itJob' ) ) {
                 'compare' => '=',
                 'type'    => 'NUMERIC'
               ];
-              if ($post_type === 'candidate')
+              if ( $post_type === 'candidate' ) {
                 $meta_query[] = [
                   'key'     => 'itjob_cv_hasCV',
                   'value'   => 1,
                   'compare' => '=',
                   'type'    => 'NUMERIC'
                 ];
+              }
 
               if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                 $query->set( 'meta_query', $meta_query );
@@ -348,8 +362,6 @@ if ( ! class_exists( 'itJob' ) ) {
 
             endif;
           }
-
-          
         }
       } );
 
