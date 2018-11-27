@@ -157,6 +157,15 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 if ( ! empty( $s ) ) {
+                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query[] = [
+                    'taxonomy' => 'job_sought',
+                    'field'    => 'name',
+                    'terms'    => $s,
+                    'operator' => "EXISTS"
+                  ];
+                  $tax_query['relation'] = 'OR';
+
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
@@ -201,12 +210,12 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
-                  $query->meta_query = new \WP_Meta_Query( $meta_query );
+                  //$query->meta_query = new \WP_Meta_Query( $meta_query );
                 endif;
 
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
                   $query->set( 'tax_query', $tax_query );
-                  $query->tax_query = new \WP_Tax_Query( $tax_query );
+                  //$query->tax_query = new \WP_Tax_Query( $tax_query );
                   //$query->query_vars['tax_query'] = $query->tax_query->queries;
                 }
                 BREAK;
