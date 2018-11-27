@@ -68,6 +68,7 @@ final class Candidate extends UserParticular implements \iCandidate {
       $this->email = get_field( 'itjob_cv_email', $this->getId() );
       $User        = get_user_by( 'email', $this->email );
       // Remove login information (security)
+      if ($User->ID === 0) return false;
       $this->author = Obj\jobServices::getUserData( $User->ID );
       $this->avatar = wp_get_attachment_image_src( get_post_thumbnail_id( $this->getId() ), [300, 300] );
 
