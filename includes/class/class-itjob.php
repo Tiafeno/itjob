@@ -321,7 +321,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
                     $join .= " LEFT JOIN $wpdb->term_relationships as wtr ON ($wpdb->posts.ID = wtr.object_id) ";
                     $join .= " LEFT JOIN $wpdb->term_taxonomy as wtt ON (wtr.term_taxonomy_id = wtt.term_taxonomy_id) ";
-                    $join .= " LEFT JOIN $wpdb->terms as wt ON(wtt.term_id = wt.term_id) ";
+                    $join .= " LEFT JOIN $wpdb->terms as wt ON (wtt.term_id = wt.term_id) ";
                     return $join;
                   });
 
