@@ -44,30 +44,30 @@ class Mailing {
     add_action( 'acf/save_post', function ( $post_id ) {
       $post_type   = get_post_type( $post_id );
       $post_status = get_post_status( $post_id );
-      switch ($post_type):
+      switch ( $post_type ):
         case 'offers':
-          switch ($post_status) {
+          switch ( $post_status ) {
             case 'pending':
-              $this->notification_for_new_pending_offer($post_id);
+              $this->notification_for_new_pending_offer( $post_id );
               break;
             case 'publish':
-              $this->confirm_validate_offer($post_id);
+              $this->confirm_validate_offer( $post_id );
               // $this->alert_for_new_offer( $post_id );
               break;
           }
           break;
         case 'candidate':
-          switch ($post_status) {
+          switch ( $post_status ) {
             case 'publish':
-              $this->confirm_validate_candidate($post_id);
+              $this->confirm_validate_candidate( $post_id );
               // $this->alert_for_new_candidate( $post_id );
               break;
           }
           break;
         case 'company':
-          switch ($post_status) {
+          switch ( $post_status ) {
             case 'publish':
-              $this->confirm_validate_company($post_id);
+              $this->confirm_validate_company( $post_id );
               break;
           }
           break;
@@ -297,6 +297,7 @@ class Mailing {
   /**
    * Cree une notification pour les nouvelles utilisateur
    * @call class-itjob.php (line 91), user_register hook
+   *
    * @param int $user_id - L'identification du client
    *
    * @return bool|mixed
@@ -324,7 +325,7 @@ class Mailing {
       $subject  = "Inscription d'une nouvelle entreprise - ItJobMada";
       $Company  = Company::get_company_by( $User->ID );
       $args     = [
-        'logo_url' => esc_url( $logo[0] ),
+        'logo_url'  => esc_url( $logo[0] ),
         'reference' => $User->user_login,
         'name'      => $Company->name,
         'email'     => $Company->email
@@ -336,7 +337,7 @@ class Mailing {
       // L'utilisateur est un candidat
       $subject  = "Inscription d'un nouveau compte particulier - ItJobMada";
       $args     = [
-        'logo_url' => esc_url( $logo[0] ),
+        'logo_url'  => esc_url( $logo[0] ),
         'reference' => $User->user_login,
         'name'      => $User->first_name . ' ' . $User->last_name,
         'email'     => $User->user_email
@@ -433,7 +434,8 @@ class Mailing {
     $sender = wp_mail( $to, $subject, $content, $headers );
     if ( $sender ) {
       $this->email_company_for_postuled( $current_candidate, $offer );
-      $this->email_candidate_confirm_postuled($offer);
+      $this->email_candidate_confirm_postuled( $offer );
+
       // Mail envoyer avec success
       return true;
     } else {
@@ -458,7 +460,7 @@ class Mailing {
         $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
         $content        .= $Engine->render( '@MAIL/notification-company-when-candidate-postuled.html.twig', [
           'logo'      => $logo,
-          'oc_url' =>  $this->espace_client,
+          'oc_url'    => $this->espace_client,
           'candidate' => $Candidate,
           'offer'     => $Offer
         ] );
@@ -481,19 +483,21 @@ class Mailing {
     }
   }
 
-  private function email_candidate_confirm_postuled($Offer, $Candidate = null) {
+  private function email_candidate_confirm_postuled( $Offer, $Candidate = null ) {
     global $Engine;
     if ( $Offer instanceof Offers ) {
-      if (null === $Candidate) {
+      if ( null === $Candidate ) {
         $User = wp_get_current_user();
-        $to = $User->user_email;
+        $to   = $User->user_email;
       } else {
-        if (!$Candidate instanceof Candidate) return false;
+        if ( ! $Candidate instanceof Candidate ) {
+          return false;
+        }
         $User = $Candidate->getAuthor();
-        $to = $User->user_email;
+        $to   = $User->user_email;
       }
 
-      $subject   = 'Notification de votre intérêt pour un poste ('.$Offer->reference.') sur ITJobMada';
+      $subject   = 'Notification de votre intérêt pour un poste (' . $Offer->reference . ') sur ITJobMada';
       $headers   = [];
       $headers[] = 'Content-Type: text/html; charset=UTF-8';
       $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
@@ -560,7 +564,8 @@ class Mailing {
         'candidat_firstname' => $Candidat->privateInformations->firstname,
         'candidat_reference' => $Candidat->title,
         'logo'               => esc_url( $logo[0] ),
-        'dashboard_url'      => $this->dashboard_url
+        'home_url'           => home_url( '/' ),
+        'admin_url'          => $this->dashboard_url
       ] );
     } catch ( \Twig_Error_Loader $e ) {
     } catch ( \Twig_Error_Runtime $e ) {
@@ -585,11 +590,13 @@ class Mailing {
       return false;
     }
 
-    $email = get_field('itjob_cv_email', $candidat_id);
-    $author = get_user_by('email', $email);
-    if (!$author) return false;
+    $email  = get_field( 'itjob_cv_email', $candidat_id );
+    $author = get_user_by( 'email', $email );
+    if ( ! $author ) {
+      return false;
+    }
 
-    $to = $email;
+    $to        = $email;
     $subject   = 'Votre CV viens d\'être validé - ItJobMada';
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
@@ -599,10 +606,10 @@ class Mailing {
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/confirm-validate-candidate.html.twig', [
-        'user' => $author,
-        'home_url' => home_url('/'),
+        'user'               => $author,
+        'home_url'           => home_url( '/' ),
         'logo'               => esc_url( $logo[0] ),
-        'archive_offer_link'      => get_post_type_archive_link('offers')
+        'archive_offer_link' => get_post_type_archive_link( 'offers' )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
     } catch ( \Twig_Error_Runtime $e ) {
@@ -625,8 +632,8 @@ class Mailing {
       return false;
     }
 
-    $email = get_field('itjob_company_email', $company_id);
-    $to = $email;
+    $email     = get_field( 'itjob_company_email', $company_id );
+    $to        = $email;
     $subject   = 'Confirmation de l’enregistrement - ItJobMada';
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
@@ -636,9 +643,9 @@ class Mailing {
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/confirm-validate-company.html.twig', [
-        'company' => new Company($company_id),
-        'oc_url' => $this->espace_client,
-        'home_url' => home_url('/'),
+        'company'  => new Company( $company_id ),
+        'oc_url'   => $this->espace_client,
+        'home_url' => home_url( '/' ),
         'logo'     => esc_url( $logo[0] )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
@@ -662,21 +669,21 @@ class Mailing {
       return false;
     }
 
-    $post_company = get_field('itjob_offer_company', $offer_id);
-    $to = get_field('itjob_company_email', $post_company->ID);
-    $subject   = 'Validation de votre offre d’emploi sur ITJobMada';
-    $headers   = [];
-    $headers[] = 'Content-Type: text/html; charset=UTF-8';
-    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
-    $content   = '';
+    $post_company = get_field( 'itjob_offer_company', $offer_id );
+    $to           = get_field( 'itjob_company_email', $post_company->ID );
+    $subject      = 'Validation de votre offre d’emploi sur ITJobMada';
+    $headers      = [];
+    $headers[]    = 'Content-Type: text/html; charset=UTF-8';
+    $headers[]    = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content      = '';
     try {
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/confirm-validate-offer.html.twig', [
-        'company' => new Company($post_company->ID),
-        'offer' => new Offers($offer_id),
-        'oc_url' => $this->espace_client,
-        'home_url' => home_url('/'),
+        'company'  => new Company( $post_company->ID ),
+        'offer'    => new Offers( $offer_id ),
+        'oc_url'   => $this->espace_client,
+        'home_url' => home_url( '/' ),
         'logo'     => esc_url( $logo[0] )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
@@ -696,12 +703,16 @@ class Mailing {
 
   public function notification_for_new_pending_offer( $offer_id ) {
     global $Engine;
-    if (!is_numeric($offer_id)) return false;
-    $Offer = new Offers($offer_id);
-    $User = wp_get_current_user();
-    if ($User->ID !==0) {
-      $Company = Company::get_company_by($User->ID);
-    } else return false;
+    if ( ! is_numeric( $offer_id ) ) {
+      return false;
+    }
+    $Offer = new Offers( $offer_id );
+    $User  = wp_get_current_user();
+    if ( $User->ID !== 0 ) {
+      $Company = Company::get_company_by( $User->ID );
+    } else {
+      return false;
+    }
     // $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $admin_emails = $this->getModeratorEmail();
     $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
@@ -717,12 +728,12 @@ class Mailing {
     $subject        = "{$Offer->reference} - Notification de l’insertion d’une nouvelle offre sur ITJobMada";
     $content        = '';
     try {
-      $args    =  [
-        'logo' => esc_url( $logo[0] ),
-        'company' => $Company,
-        'offer' => $Offer,
-        'admin_url' => admin_url('/'),
-        'home_url'      => home_url( "/" )
+      $args    = [
+        'logo'      => esc_url( $logo[0] ),
+        'company'   => $Company,
+        'offer'     => $Offer,
+        'admin_url' => admin_url( '/' ),
+        'home_url'  => home_url( "/" )
       ];
       $content .= $Engine->render( "@MAIL/admin/notification-new-offer.html.twig", $args );
     } catch ( \Twig_Error_Loader $e ) {
@@ -737,6 +748,7 @@ class Mailing {
       return false;
     }
   }
+
   /**
    * Notifier les candidates qui ont des alerts correspondant
    *
