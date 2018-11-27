@@ -157,7 +157,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 if ( ! empty( $s ) ) {
-                  
+
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
@@ -192,10 +192,12 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 $meta_query[] = [
-                  'key'     => 'activated',
-                  'value'   => 1,
-                  'compare' => '=',
-                  'type'    => 'NUMERIC'
+                  [
+                    'key'     => 'activated',
+                    'value'   => 1,
+                    'compare' => '=',
+                    'type'    => 'NUMERIC'
+                  ]
                 ];
 
                 $meta_query['relation'] = "OR";
@@ -250,8 +252,8 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( ! empty( $s ) ) {
 
-                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
-                  $tax_query[] = [
+                  $tax_query             = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query[]           = [
                     'taxonomy' => 'job_sought',
                     'field'    => 'name',
                     'terms'    => $s,
