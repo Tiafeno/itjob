@@ -310,7 +310,6 @@ if ( ! class_exists( 'itJob' ) ) {
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
                 }
 
-                print_r($query);
                 BREAK;
             } // .end switch
 
