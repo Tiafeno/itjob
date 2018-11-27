@@ -247,8 +247,8 @@ if ( ! class_exists( 'itJob' ) ) {
                   }
                   foreach ($searchs as $search) {
                     if (empty($search)) continue;
-                    // TODO: Corriger la cherche pour tout les experiences et les formations
-                    $meta_query[] = [
+
+                    /*$meta_query[] = [
                       'relation' => 'OR',
                       [
                         'key'     => 'itjob_cv_trainings_0_training_establishment',
@@ -280,8 +280,8 @@ if ( ! class_exists( 'itJob' ) ) {
                         'compare' => 'LIKE',
                         'type'    => 'CHAR'
                       ]
-                    ];
-                                      }
+                    ];*/
+                  }
                   // Feature: Recherché aussi dans le profil recherché et mission
                   
                   $query->set( 'meta_query', $meta_query );
