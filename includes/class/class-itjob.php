@@ -225,7 +225,14 @@ if ( ! class_exists( 'itJob' ) ) {
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
+                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $searchs = explode(' ', $s);
+
+                  $tax_query[] = [
+                    'taxonomy' => 'job_sought',
+                    'field' => 'name',
+                    'terms' => $searchs
+                  ];
                   foreach ($searchs as $search) {
                     if (empty($search)) continue;
                     // TODO: Corriger la cherche pour tout les experiences et les formations
@@ -262,7 +269,7 @@ if ( ! class_exists( 'itJob' ) ) {
                         'type'    => 'CHAR'
                       ]
                     ];
-                  }
+                                      }
                   // Feature: Recherché aussi dans le profil recherché et mission
                   
                   $query->set( 'meta_query', $meta_query );
