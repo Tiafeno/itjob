@@ -157,15 +157,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 if ( ! empty( $s ) ) {
-                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
-                  $tax_query[] = [
-                    'taxonomy' => 'job_sought',
-                    'field'    => 'name',
-                    'terms'    => $s,
-                    'operator' => "EXISTS"
-                  ];
-                  $tax_query['relation'] = 'OR';
-
+                  
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
