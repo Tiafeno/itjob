@@ -65,6 +65,20 @@ if ( ! class_exists( 'itJob' ) ) {
         }
       } );
 
+      // Effacer le candidat ou l'entreprise si on supprime l'utilisateur
+      add_action('delete_user', function ($user_id) {
+        $user_obj = get_userdata($user_id);
+        if (in_array('company', $user_obj->roles)) {
+          $Company = Post\Company::get_company_by($user_id);
+          wp_delete_post($Company->getId());
+        }
+
+        if (in_array('candidate', $user_obj->roles)) {
+          $Candidate = Post\Candidate::get_candidate_by($user_id);
+          wp_delete_post($Candidate->getId());
+        }
+      });
+
       add_action( 'user_register', function ( $user_id ) {
         do_action("new_register_user", $user_id);
 
