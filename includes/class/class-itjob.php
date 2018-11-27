@@ -141,19 +141,20 @@ if ( ! class_exists( 'itJob' ) ) {
               ];
             }
 
-            if ( ! empty( $abranch ) ) {
-              $meta_query   = isset( $meta_query ) ? $meta_query : $query->get( 'meta_query' );
-              $meta_query[] = [
-                'key'     => 'itjob_offer_abranch',
-                'value'   => (int) $abranch,
-                'compare' => '=',
-                'type'    => 'NUMERIC'
-              ];
-            }
-
             switch ( $post_type ) {
               // Trouver des offres d'emplois
               CASE 'offers':
+
+                if ( ! empty( $abranch ) ) {
+                  $meta_query   = isset( $meta_query ) ? $meta_query : $query->get( 'meta_query' );
+                  $meta_query[] = [
+                    'key'     => 'itjob_offer_abranch',
+                    'value'   => (int) $abranch,
+                    'compare' => '=',
+                    'type'    => 'NUMERIC'
+                  ];
+                }
+
                 if ( ! empty( $s ) ) {
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
@@ -200,6 +201,16 @@ if ( ! class_exists( 'itJob' ) ) {
                 $language = Http\Request::getValue( 'lg', '' );
                 $software = Http\Request::getValue( 'ms', '' );
 
+                if ( ! empty( $abranch ) ) {
+                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query[] = [
+                    'taxonomy'         => 'branch_activity',
+                    'field'            => 'term_id',
+                    'terms'            => (int) $abranch,
+                    'include_children' => false
+                  ];
+                }
+
                 if ( ! empty( $language ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
@@ -225,14 +236,16 @@ if ( ! class_exists( 'itJob' ) ) {
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
-                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
-                  $searchs = explode(' ', $s);
 
+                  $searchs = explode(' ', $s);
+                  // Rechercher les mots dans les emplois
+                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
                     'taxonomy' => 'job_sought',
                     'field' => 'name',
                     'terms' => $searchs
                   ];
+
                   foreach ($searchs as $search) {
                     if (empty($search)) continue;
                     // TODO: Corriger la cherche pour tout les experiences et les formations
