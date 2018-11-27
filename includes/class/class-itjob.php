@@ -70,6 +70,7 @@ if ( ! class_exists( 'itJob' ) ) {
         $user_obj = get_userdata($user_id);
         if (in_array('company', $user_obj->roles)) {
           $Company = Post\Company::get_company_by($user_id);
+          // TODO: Effacer les offres
           wp_delete_post($Company->getId());
         }
 

@@ -306,8 +306,9 @@ if ( ! class_exists( 'scClient' ) ) :
       if ($request = $Model->exist_interest($candidate_id, $offer_id)) {
         if (empty($request)) wp_send_json_error("Aucun resultat trouver pendant la verification");
         $update = $Model->update_interest_status((int)$request[0]->id_cv_request, $status);
-        if ($update)
+        if ($update):
           wp_send_json_success("Requete mis à jours avec succès");
+        endif;
         wp_send_json_error("Il est possible que la requete à déja activé la requete ou bien une erreur s'est produite");
       } else {
         wp_send_json_error("Aucun candidat n'a postulé ou ajouter à cette offre");

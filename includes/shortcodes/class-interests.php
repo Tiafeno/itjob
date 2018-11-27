@@ -229,7 +229,7 @@ class scInterests
       if (!$itModel->exist_interest($cv_id, $offer_id)) {
         $response = $itModel->added_interest($cv_id, $offer_id);
         // Envoyer un mail a l'administrateur
-        do_action('alert_when_company_interest', $cv_id);
+        do_action('alert_when_company_interest', $cv_id, $offer_id);
         wp_send_json_success($response);
       } else {
 
@@ -237,7 +237,8 @@ class scInterests
         // On ajoute et on active automatiquement l'affichage du CV
         if ($itModel->interest_access($cv_id, $Company->getId())) {
           $results = $itModel->added_interest($cv_id, $offer_id, $Company->getId(), 'validated');
-          do_action('alert_when_company_interest', $cv_id);
+          // Envoyer un mail a l'administrateur
+          do_action('alert_when_company_interest', $cv_id, $offer_id);
           wp_send_json_success($results);
         }
 
