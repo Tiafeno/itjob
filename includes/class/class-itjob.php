@@ -128,9 +128,9 @@ if ( ! class_exists( 'itJob' ) ) {
 
           if ( $query->is_search ) {
 
-            $region  = Http\Request::getValue( 'rg', '' );
-            $abranch = Http\Request::getValue( 'ab', '' );
-            $s       = get_query_var( 's' );
+            $region  = Http\Request::getValue( 'rg' );
+            $abranch = Http\Request::getValue( 'ab' );
+            $s       = $_GET['s'];
 
             if ( ! empty( $region ) ) {
               $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
@@ -146,7 +146,7 @@ if ( ! class_exists( 'itJob' ) ) {
               // Trouver des offres d'emplois
               CASE 'offers':
 
-                if ( ! empty( $abranch ) ) {
+                if ( $abranch ) {
                   $meta_query   = isset( $meta_query ) ? $meta_query : $query->get( 'meta_query' );
                   $meta_query[] = [
                     'key'     => 'itjob_offer_abranch',
@@ -200,16 +200,16 @@ if ( ! class_exists( 'itJob' ) ) {
                   ]
                 ];
 
-                $meta_query['relation'] = "OR";
+                $meta_query['relation'] = "AND";
 
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
-                  //$query->meta_query = new \WP_Meta_Query( $meta_query );
+                  $query->meta_query = new \WP_Meta_Query( $meta_query );
                 endif;
 
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
                   $query->set( 'tax_query', $tax_query );
-                  //$query->tax_query = new \WP_Tax_Query( $tax_query );
+                  $query->tax_query = new \WP_Tax_Query( $tax_query );
                   //$query->query_vars['tax_query'] = $query->tax_query->queries;
                 }
                 BREAK;
@@ -219,7 +219,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 $language = Http\Request::getValue( 'lg', '' );
                 $software = Http\Request::getValue( 'ms', '' );
 
-                if ( ! empty( $abranch ) ) {
+                if ( $abranch ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
                     'taxonomy'         => 'branch_activity',
@@ -259,9 +259,8 @@ if ( ! class_exists( 'itJob' ) ) {
                     'terms'    => $s,
                     'operator' => "EXISTS"
                   ];
-                  $tax_query['relation'] = 'OR';
                   // Rechercher les mots dans les emplois
-                  if ( ! isset( $meta_query ) ) {
+                  /*if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
                   $meta_query[] = [
@@ -290,7 +289,7 @@ if ( ! class_exists( 'itJob' ) ) {
                       'compare' => 'LIKE',
                       'type'    => 'CHAR'
                     ]
-                  ];
+                  ];*/
 
                 }
 
@@ -315,20 +314,21 @@ if ( ! class_exists( 'itJob' ) ) {
                 ];
 
                 // Mettre la relation en OU pour que tous les offres valide s'affichent toujours dans le site
-                $meta_query['relation'] = 'OR';
+                $meta_query['relation'] = 'AND';
 
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
-                  //$query->meta_query = new \WP_Meta_Query( $meta_query );
+                  $query->meta_query = new \WP_Meta_Query( $meta_query );
                 endif;
 
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
                   $query->set( 'tax_query', $tax_query );
-                  //$query->tax_query = new \WP_Tax_Query( $tax_query );
+                  $query->tax_query = new \WP_Tax_Query( $tax_query );
                 }
 
                 BREAK;
             } // .end switch
+            print_r($query);
             // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
             $query->query['s']      = '';
             $query->query_vars['s'] = '';
