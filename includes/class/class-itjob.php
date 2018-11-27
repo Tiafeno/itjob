@@ -252,69 +252,99 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( ! empty( $s ) ) {
 
-                  $tax_query             = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  /*$tax_query             = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[]           = [
                     'taxonomy' => 'job_sought',
                     'field'    => 'name',
                     'terms'    => $s,
                     'operator' => "EXISTS"
                   ];
+                  */
                   // Rechercher les mots dans les emplois
-                  /*if ( ! isset( $meta_query ) ) {
+                  if (false):
+                    if ( ! isset( $meta_query ) ) {
+                      $meta_query = $query->get( 'meta_query' );
+                    }
+                    $meta_query = [
+                      "relation" => "OR",
+                      [
+                        'relation' => 'OR',
+                        [
+                          'key'     => '_old_job_sought',
+                          'value'   => $s,
+                          'compare' => 'LIKE',
+                        ],
+                        [
+                          'key'     => 'itjob_cv_notifEmploi_job_sought',
+                          'value'   => $s,
+                          'compare' => 'LIKE',
+                        ]
+                      ],
+                      [
+                        'relation' => 'AND',
+                        [
+                          'key'     => 'activated',
+                          'value'   => 1,
+                          'compare' => '=',
+                          'type'    => 'NUMERIC'
+                        ],
+                        [
+                          'key'     => 'itjob_cv_hasCV',
+                          'value'   => 1,
+                          'compare' => '=',
+                          'type'    => 'NUMERIC'
+                        ]
+                      ]
+
+                    ];
+                   endif;
+
+                  add_filter('posts_where', function ( $where ) {
+                    global $wpdb;
+                    //global $wp_query;
+                    $s = isset($_GET['s']) ? $_GET['s'] : '';
+                    if (!is_admin()) {
+                      $where .= " AND ( (({$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%' )  OR " .
+                                " ({$wpdb->postmeta}.meta_key = 'itjob_cv_notifEmploi_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%' )) " .
+                                " OR (({$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1) AND " .
+                                "({$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1)) )";
+                      $where .= "  OR (wtt.taxonomy IN ('job_sought') AND wt.name LIKE '{$s}' )";
+                    }
+
+                    return $where;
+                  });
+
+                  add_filter('posts_join', function ($join) {
+                    global $wpdb;
+                    // Join meta table
+                    $join .= " LEFT JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id ";
+
+                    $join .= " LEFT JOIN $wpdb->term_relationships as wtr ON ($wpdb->posts.ID = wtr.object_id) ";
+                    $join .= " LEFT JOIN $wpdb->term_taxonomy as wtt ON (wtr.term_taxonomy_id = wtt.term_taxonomy_id) ";
+                    $join .= " LEFT JOIN $wpdb->terms as wt ON(wtt.term_id = wt.term_id) ";
+                    return $join;
+                  });
+
+                } else {
+                  // Meta query
+                  if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
                   $meta_query[] = [
-                    'relation' => 'OR',
                     [
-                      'key'     => 'itjob_cv_centerInterest_projet',
-                      'value'   => $s,
-                      'compare' => 'LIKE',
-                      'type'    => 'CHAR'
+                      'key'     => 'activated',
+                      'value'   => 1,
+                      'compare' => '=',
+                      'type'    => 'NUMERIC'
                     ],
                     [
-                      'key'     => '_old_job_sought',
-                      'value'   => $s,
-                      'compare' => 'LIKE',
-                      'type'    => 'CHAR'
-                    ],
-                    [
-                      'key'     => 'itjob_cv_centerInterest_various',
-                      'value'   => $s,
-                      'compare' => 'LIKE',
-                      'type'    => 'CHAR'
-                    ],
-                    [
-                      'key'     => 'itjob_cv_notifEmploi_job_sought',
-                      'value'   => $s,
-                      'compare' => 'LIKE',
-                      'type'    => 'CHAR'
+                      'key'     => 'itjob_cv_hasCV',
+                      'value'   => 1,
+                      'compare' => '=',
+                      'type'    => 'NUMERIC'
                     ]
-                  ];*/
-
+                  ];
                 }
-
-                // Meta query
-                if ( ! isset( $meta_query ) ) {
-                  $meta_query = $query->get( 'meta_query' );
-                }
-                $meta_query[] = [
-                  'relation' => 'AND',
-                  [
-                    'key'     => 'activated',
-                    'value'   => 1,
-                    'compare' => '=',
-                    'type'    => 'NUMERIC'
-                  ],
-                  [
-                    'key'     => 'itjob_cv_hasCV',
-                    'value'   => 1,
-                    'compare' => '=',
-                    'type'    => 'NUMERIC'
-                  ]
-                ];
-
-                // Mettre la relation en OU pour que tous les offres valide s'affichent toujours dans le site
-                $meta_query['relation'] = 'AND';
 
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
