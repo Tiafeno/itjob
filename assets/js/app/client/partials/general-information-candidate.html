@@ -31,7 +31,6 @@
           </div>
         </div>
 
-
         <div class="form-group row mb-2">
 
           <div class="col-sm-4">
@@ -102,18 +101,22 @@
           <i class="ti-pencil"></i>
         </span>
       </h5>
-      <div class="row mb-2" ng-show="Candidate.branch_activity.name">
-        <div class="col-6 text-muted">Secteur d'activité:</div>
-        <div class="col-6">[[Candidate.branch_activity.name]]</div>
+      <div class="mb-2" ng-show="Candidate.privateInformations.birthday_date">
+        <div class=" text-muted">Date de naissance:</div>
+        <div class="d-block">[[Candidate.privateInformations.birthday_date]]</div>
       </div>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">Région:</div>
-        <div class="col-6">[[Candidate.region.name]]</div>
+      <div class=" mb-2" ng-show="Candidate.branch_activity.name">
+        <div class="text-muted">Secteur d'activité:</div>
+        <div class="d-block">[[Candidate.branch_activity.name]]</div>
       </div>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">Numéros de téléphone:</div>
-        <div class="col-6">
-          <span ng-repeat="cellphone in Candidate.privateInformations.cellphone" class="ml-2 mr-2 cellphone-list">
+      <div class="mb-2">
+        <div class="text-muted">Région:</div>
+        <div class="d-block">[[Candidate.region.name]]</div>
+      </div>
+      <div class="mb-2">
+        <div class=" text-muted">Numéros de téléphone:</div>
+        <div class="d-block">
+          <span ng-repeat="cellphone in Candidate.privateInformations.cellphone" class="mr-2 cellphone-list">
             [[ cellphone ]]
           </span>
 

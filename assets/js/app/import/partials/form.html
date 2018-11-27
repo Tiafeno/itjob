@@ -1,0 +1,79 @@
+<div class="ibox import-csv-container">
+  <div class="ibox-body">
+    <h4 class="font-light text-center">Importation des données CSV dans la base de donnée</h4>
+    <form name="importForm" class="form-group mt-4" ng-submit="onSubmitImport(importForm.$valid)" novalidate>
+      <div class="row mb-1">
+        <div class="col-md-12">
+
+          <div class="form-group">
+            <label class="col-form-label ">Type de contenue <span style="color: red">*</span></label>
+            <select class="form-control" name="status" ng-model="formData.entryType"
+                    placeholder="Type de contenue ajouter" required>
+              <option value="" >Type de contenue ajouter</option>
+              <option ng-value="type.slug" ng-repeat="type in entryTypes">{{type.label}}</option>
+            </select>
+          </div>
+
+          <div class="form-group d-flex align-left">
+
+            <a href="#added" ng-disabled="chargement" ng-if="formData.entryType === 'offers'" ng-click="addedOfferForm()" class="btn btn-outline-blue btn-icon btn-fix float-right" >
+              {{ chargement ? 'Chargement ...' : 'Ajouter'}}
+            </a>
+
+            <a href="#delete" ng-disabled="chargement" ng-if="formData.entryType === 'offers'" ng-click="deleteAllOffer()" class="btn btn-outline-danger btn-icon btn-fix float-right" >
+              {{ chargement ? 'Chargement ...' : 'Effacer'}}
+            </a>
+
+            <a href="#delete" ng-disabled="chargement" ng-if="formData.entryType === 'user_candidate_experiences'" ng-click="onRemoveExperienceForm()" class="btn btn-outline-danger btn-icon btn-fix float-right" >
+              {{ chargement ? 'Chargement ...' : 'Effacer les experiences'}}
+            </a>
+          </div>
+
+          <div class="form-group">
+            <label class="col-form-label ">Contenue de fichier </label>
+            <select class="form-control" name="filecontent" ng-model="formData.fileContent"
+                    placeholder="Le contenue du fichier" ng-change="onFileContentChange()">
+              <option value="">Le contenue du fichier</option>
+              <option ng-value="content._id" ng-repeat="content in fileContents">{{content.label}}</option>
+            </select>
+          </div>
+
+          <div class="form-group d-flex align-left">
+            <a href="#delete" ng-disabled="chargement" ng-if="formData.fileContent === 3" ng-click="onRemoveExperienceForm()" class="btn btn-outline-danger btn-icon btn-fix float-right" >
+              {{ chargement ? 'Chargement ...' : 'Effacer les experiences'}}
+            </a>
+
+            <a href="#delete" ng-disabled="chargement" ng-if="formData.fileContent === 4" ng-click="activeCandidateCareer()" class="btn btn-outline-info btn-icon btn-fix float-right" >
+              {{ chargement ? 'Chargement ...' : 'Activer les compétences'}}
+            </a>
+          </div>
+
+          <div class="form-group">
+            <input type="text" placeholder="Les colonnes" class="form-control" ng-model="columns" name="columns">
+            <span class="text-muted small">Exemple: id,name,date</span>
+          </div>
+
+          <div class="form-group">
+            <label class="col-form-label ">Joindre le fichier CSV <span style="color: red">*</span></label>
+            <input type="file" class="form-control" name="files" id="files" required="">
+            <span class="text-muted small">Exemple: id,name,date</span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="ibox-footer">
+        <div class="row">
+          <div class="col-md-6">
+            <p class="text-muted small">Tous les champs marqués d'un <span style="color: red">*</span> sont obligatoires</p>
+          </div>
+          <div class="col-md-6" ng-show="!cvForm.$invalid">
+            <button ng-disabled="chargement" class="btn btn-outline-blue btn-icon btn-fix float-right" type="submit" >
+              {{ chargement ? 'Chargement ...' : 'Ajouter'}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

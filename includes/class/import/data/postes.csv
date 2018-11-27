@@ -1,0 +1,2176 @@
+id;poste;created
+5;Developpeur mobile;15/06/2016 13:46
+2;Integrateur;13/06/2016 14:00
+3;Commercial;13/06/2016 14:05
+6;Développeur;16/06/2016 08:55
+7;Directeur Informatique;16/06/2016 15:00
+8;Operateur Machine;17/06/2016 08:08
+9;Chef CID (Centre Informatique de District) ;17/06/2016 08:08
+10;Technicien d’Appui  ;17/06/2016 08:08
+11;Technicien accompagnateur  ;17/06/2016 08:08
+12;Stagiaire;17/06/2016 09:32
+13;Technicien Informatique;17/06/2016 09:32
+14;Vendeur ;17/06/2016 10:11
+15;Développeur web;17/06/2016 13:35
+16;Développeur java;17/06/2016 14:39
+17;Direction;20/06/2016 13:52
+18;Direction de production;20/06/2016 13:58
+19;Technicien;20/06/2016 14:31
+20;Mécanicien;23/06/2016 07:59
+21;Electronicien;23/06/2016 07:59
+22;Enquêteur;23/06/2016 07:59
+23;Répétiteur;23/06/2016 07:59
+24;maintenance et réseau;23/06/2016 13:21
+25;développeur PHP;24/06/2016 07:06
+26;chef de projet;24/06/2016 12:28
+27;chef de chantier;02/09/2016 07:26
+28;responsable informatique;03/11/2016 08:14
+29;INFORMATICIEN DE MAINTENANCE;09/11/2016 13:21
+30;ADMINISTRATEUR RESEAU;09/11/2016 13:21
+31;INGENIEUR FORMATEUR ET ELECTRONICIEN;05/12/2016 08:41
+32;FORMATEUR;08/12/2016 08:26
+33;Professeur en Maintenance et Réseau Informatiques;08/12/2016 08:26
+34;Préstatire de service informatique (Sous traitance avec Sté Appolonia - Toulon, France);08/12/2016 08:26
+35;Stagiaire en Administration Réseau et Sécurité;08/12/2016 08:26
+36;Développeur (free-lance);08/12/2016 08:26
+37;Stagiaire en Analyse et Programmation;08/12/2016 08:26
+38;Opérateur de saisie;12/12/2016 08:04
+39;Responsable Technique de Projet ;12/12/2016 12:59
+40;Technicien de support réseau;14/12/2016 09:01
+41;Chef  informatique du district;14/12/2016 09:01
+42;;14/12/2016 13:57
+43;Conseillère technico-commerciale;20/12/2016 17:39
+44;Assistante commerciale;20/12/2016 17:39
+45;Conseillère technico-commerciale Stagiaire ;23/12/2016 11:03
+46;Assistante commerciale Stagiaire;23/12/2016 11:03
+47;Formateur en informatique (Bureautique, programmation sous ACCESS, VISUAL BASIC, Hardware);03/01/2017 12:55
+48;ASSISTANT RESSOURCES HUMAINES;05/01/2017 14:03
+49;Planificateur de maintenance;10/01/2017 14:33
+50;Responsable maintenance et travaux;10/01/2017 14:33
+51;Reeponsable Maintenance et Assurence qualité;10/01/2017 14:33
+52;CHEF D'USINE;10/01/2017 14:33
+53;Energéticien;10/01/2017 14:43
+54;Technicien en Energie;10/01/2017 14:43
+55;INFORMATICIEN ;11/01/2017 09:53
+56;Assistant de direction;11/01/2017 12:37
+57;"Technicien Informatique ; Commercial";11/01/2017 12:44
+58;Responsable park informatique;11/01/2017 12:44
+59;ingénieur réseaux;11/01/2017 13:10
+60;stagiaire en Mécanique Industrielle;11/01/2017 16:32
+61;monteur vidéo;12/01/2017 09:30
+62;Responsable Maintenance et Assurence qualité;12/01/2017 13:08
+63;Responsable parque informatique;12/01/2017 13:34
+64;RECEPTIONNISTE;12/01/2017 13:46
+65;Directeur Informatique par intérim;13/01/2017 05:59
+66;Administrateur Applicatif;13/01/2017 05:59
+67;Chargé d'étude Projet Intranet;13/01/2017 05:59
+68;Développeur PHP/Oracle;13/01/2017 05:59
+69;Infographiste;17/01/2017 09:53
+70;Attaché commercial;17/01/2017 17:20
+71;TELECONSEILLER;17/01/2017 17:20
+72;Technical Regional Manager;18/01/2017 09:23
+73;Assistant en étude et analyse des données douanieres;18/01/2017 16:03
+74;mecanique moto 2T;18/01/2017 17:13
+75;RESPONSABLE ADJOINT EN APPROVISIONNEMENT;18/01/2017 17:22
+76;Gestionnaire des emplois ;18/01/2017 17:22
+77;Gestionnaire et chargé du développement RH;18/01/2017 17:22
+78;Musicien Interpréteur, Programmeur;18/01/2017 17:27
+79;Volontaire des quartiers;18/01/2017 17:27
+80;R hse;19/01/2017 08:38
+81;Chargé de Projet Client;19/01/2017 11:24
+82;Attaché client et  responsable marketing;19/01/2017 16:50
+83;Responsable Ressources Humaines & Logistique;20/01/2017 08:25
+84;Responsable Administrative & Financier ;20/01/2017 08:25
+85;Comptable & Assistante Administrative ;20/01/2017 08:25
+86;Assistante Comptable;20/01/2017 08:25
+87;Web Master / Developper;20/01/2017 09:04
+88;Agent d'escale;20/01/2017 10:40
+89;Responsable achat ;20/01/2017 10:45
+90;Télé-conseiller;21/01/2017 08:19
+91;Chroniqueuse;21/01/2017 08:19
+92;Cordonateurs socio-organisationnelle;22/01/2017 09:46
+93;Stagiaire en Administration ;22/01/2017 10:43
+94;Chargé de Clientèle;22/01/2017 10:43
+95;Stagiaire en Comptabilité;22/01/2017 10:43
+96;Secrétaire standardiste sénior;24/01/2017 11:38
+97;Réceptionniste polyvalente;24/01/2017 11:38
+98;Administrateur des ventes opérations;24/01/2017 11:38
+99;assistante manager;25/01/2017 06:26
+100;Designer;25/01/2017 06:36
+101;Cadreur, Monteur, realisateur;25/01/2017 06:36
+102;Professeur de Mathématiques;25/01/2017 08:57
+103;Responsable Financier;25/01/2017 08:57
+104;Assistante administrative;25/01/2017 09:27
+105;agent de réservation;25/01/2017 09:28
+106;LABORATOIRE;25/01/2017 09:33
+107;SECRETAIRE LOGISTIQUE;25/01/2017 11:52
+108;comptable;25/01/2017 16:49
+109;Animateur;26/01/2017 11:03
+110;Rédacteur web Junior / Rédacteur web Confirmé / Chef de Mission;27/01/2017 15:34
+111;Responsable Volet Ecotourisme du Parc National de la Montagne d'Ambre;27/01/2017 15:34
+112;Assistante Import / Export;27/01/2017 15:34
+113;Consultant;30/01/2017 08:12
+114;superviseur;30/01/2017 08:33
+115;Informaticien polyvalent;30/01/2017 08:34
+116;Developper ;30/01/2017 09:17
+117;informatique;30/01/2017 09:17
+118;PAO-iste, infographiste;30/01/2017 10:47
+119;Participant;30/01/2017 10:47
+120;"Agent de production;agent administratif;vendeuse";30/01/2017 12:13
+121;RESPONSABLE BOUTIQUE;01/02/2017 09:10
+122;WEB Designer;01/02/2017 10:46
+123;receptioniste, femme de chambre;01/02/2017 14:08
+124;Responsable Commercial;01/02/2017 15:48
+125;Directeur Commercial;01/02/2017 15:48
+126;Chef de Produit HYUNDAI;01/02/2017 15:48
+127;secretaire générale;03/02/2017 15:52
+128;secretaire;03/02/2017 15:52
+129;RESPONSABLE RH ET COMPTABLE;03/02/2017 16:44
+130;GUICHETIER PAYEUR EXPLOITANT;03/02/2017 16:44
+131;redacteur free lance à domicile;06/02/2017 09:48
+132;Responsble bibliothèque;06/02/2017 11:32
+133;Professeur informatique et Bibliothècaires;06/02/2017 11:32
+134;Caissier, Aide comptable, Secretaire;06/02/2017 11:32
+135;IT Officer;06/02/2017 14:29
+136;caissiere;08/02/2017 06:52
+137;responsable d approvisionnement;08/02/2017 15:33
+138;Stagiaire en gestion;13/02/2017 09:38
+139;Enseignante de la langue anglaise;13/02/2017 09:45
+140;couturiere;13/02/2017 10:13
+141;Comptable Stagiaire;13/02/2017 11:34
+142;Agent Hotliner;13/02/2017 12:09
+143;Enseignant;13/02/2017 12:09
+144;opérateur de saisie au sénat de Madgascar;13/02/2017 13:37
+145;ICT Intern ;13/02/2017 14:45
+146;accueil;13/02/2017 15:59
+147;Stagiaire en Administration Réseau et Programmation;14/02/2017 13:13
+148;Chef de distribution ;14/02/2017 13:13
+149;;14/02/2017 13:30
+150;Magasinier;14/02/2017 14:22
+151;Agent technique ;14/02/2017 14:54
+152;Gestionnaire;14/02/2017 14:54
+153;Assistante Administrative et Financière ;14/02/2017 16:31
+154;Secretaire de direction ;14/02/2017 16:31
+155;Agent de Méthode;15/02/2017 09:24
+156;rédactrice web;15/02/2017 10:06
+157;Stagiaire approvisionnement;15/02/2017 11:13
+158;Stagiaire juridique;15/02/2017 11:13
+159;Stagiaire recouvrement;15/02/2017 11:13
+160;Assistant administratif et comptable;15/02/2017 11:13
+161;Contrôleur d’enquête ;15/02/2017 11:13
+162;vulgarisateur, contrôleur qualité, conseiller agricole, ;15/02/2017 13:46
+163;Ouivrier spécialisé;16/02/2017 11:22
+164;Chef d'équipe;16/02/2017 11:22
+165;Accueil et comptable;16/02/2017 14:54
+166;Conseiller Client;16/02/2017 14:54
+167;Agent commercial;16/02/2017 16:26
+168;animateur et gerante du projet tanora garanteen's;17/02/2017 11:33
+169;Graphiste;17/02/2017 11:54
+170;Développeur Windev;17/02/2017 12:12
+171;Développeur d'application et DBA Oracle;17/02/2017 12:12
+172;Préstataire specialiste Informatique;17/02/2017 12:12
+173;Cnsultant IT;17/02/2017 12:12
+174;Consultant IT;17/02/2017 12:16
+175;Opérateur web;17/02/2017 22:19
+176;Stagiaire récéptionniste et serveuse ;21/02/2017 16:18
+177;Surveillante;21/02/2017 16:18
+178;Stagiaire étalagiste au magasin de jouets;21/02/2017 16:18
+179;Responsable des affaires commerciales;22/02/2017 11:03
+180;Gérant;23/02/2017 07:37
+181;Responsable logistique;23/02/2017 13:52
+182;administrateur;25/02/2017 21:09
+183;Opérateur de gestion;26/02/2017 14:54
+184;Opérateur SIG;26/02/2017 14:54
+185;Chef d'atelier;26/02/2017 14:54
+186;Assistant technique ;26/02/2017 14:54
+187;Conseillère en vente;26/02/2017 19:28
+188;Téléopératrice;27/02/2017 07:24
+189;Rédactrice et suivi skype;27/02/2017 07:24
+190;Stage en vue de l'obtention du diplome Master II en Informatique option Génie logiciel ;27/02/2017 15:08
+191;Stage ene vue de l'obtention du diplome de liecence professionnelle en informatqi;27/02/2017 15:22
+192;Stage Lynux (Lycée numérique orienté exercice);28/02/2017 07:24
+193;assistant surete;28/02/2017 08:51
+194;Commerciale;28/02/2017 14:08
+195;Chauffeur;28/02/2017 16:14
+196;Analyste-programmeur;28/02/2017 17:01
+197;Analyste;28/02/2017 17:01
+198;Analyste-programmeur / Consultant;28/02/2017 17:01
+199;Chef de projet / Data manager / Concepteur de logiciels;28/02/2017 17:01
+200;Consultant en solutions informatiques;28/02/2017 17:01
+201;Administrateur en Système, maintenance et réseaux informatique ;01/03/2017 00:31
+202;Technicien en maintenance et réseaux informatique;01/03/2017 00:31
+203;Stagiere Administrateur en Système, maintenance et réseaux informatique ;01/03/2017 00:31
+204;Technicien en maintenance et système informatique;01/03/2017 00:31
+205;Agent de parc;01/03/2017 10:57
+206;Chef de Volet Ecotourisme;01/03/2017 10:57
+207;Intégrateur HTML/CSS Freelance;01/03/2017 11:20
+208;Opérateur de saisie/Online;02/03/2017 07:25
+209;maternités ;02/03/2017 07:50
+210;SECRETAIRE COMPTABLE;02/03/2017 16:19
+211;;03/03/2017 09:04
+212;secretaire commercial;03/03/2017 16:16
+213;chef de laboratoire géotechnique ;06/03/2017 11:01
+214;GERANTE;06/03/2017 12:31
+215;gestion outillage avion;06/03/2017 14:27
+216;IT INTERN;07/03/2017 13:12
+217;IT CONSULTANT;07/03/2017 13:12
+218;ACTING ADMINISTRATIVE ASSISTANT;07/03/2017 13:12
+219;electrotechnicien;07/03/2017 14:09
+220;Auditeur;07/03/2017 15:05
+221;caissiere et commerciale;07/03/2017 15:36
+222;Serveuse;07/03/2017 15:36
+223;Operatrcie media;08/03/2017 14:29
+224;Assistante chef projet;08/03/2017 14:29
+225;Formatrice en coiffure et esthetique;08/03/2017 14:29
+226;Gerante boutique, Coiffeuse Estheticienne;08/03/2017 14:29
+227;Secretaire Assistante;08/03/2017 14:29
+228;Télé-conseillé ;08/03/2017 16:00
+229;cadre;09/03/2017 10:11
+230;Conseiller juridique et Personnel administratif;09/03/2017 16:32
+231;assistant au responsable de la comptabilité;10/03/2017 08:48
+232;;10/03/2017 09:26
+233;téléopérateur;11/03/2017 09:05
+234;Responsable production;11/03/2017 13:09
+235;Technicien en Informatique;13/03/2017 09:49
+236;Magasinier et responsable administratif, contentieux;13/03/2017 10:56
+237;conseiller à la caisse ;13/03/2017 10:56
+238;technicien et conseiller ;13/03/2017 10:56
+239;aide mécano avion;13/03/2017 16:08
+240;Chef de département vente et location de matériels informatiques et mobiliers;14/03/2017 07:35
+241;Stagiaire: superviseur en call center;14/03/2017 07:40
+242;stagiaire: animatrice d'une émission;14/03/2017 08:11
+243;actrice;14/03/2017 08:11
+244;animatrice;14/03/2017 08:11
+245;Paire Educateur Jeune;14/03/2017 08:18
+246;développeur d'application;14/03/2017 09:20
+247;projet de fin d'année;14/03/2017 09:20
+248;concepteur;14/03/2017 09:22
+249;Agent d’accueil ;14/03/2017 10:01
+250;Attachée de production et commerciale;14/03/2017 10:01
+251;Assistante technique;14/03/2017 10:01
+252;Télé conseillère ;14/03/2017 10:01
+253;vulgarisateur agricol;14/03/2017 15:28
+254;stagiaire sur la conservation ex-situe de l'Aye-aye;14/03/2017 15:28
+255;téléconseiller et assistant sur terrain (118712 orange);15/03/2017 15:38
+256;téléopérateur/superviseur ;15/03/2017 15:47
+257;stagiaire (aide informaticien);15/03/2017 15:47
+258;initiateur en informatique;15/03/2017 15:47
+259;commercial technique;15/03/2017 15:47
+260;hôtesse d'accueil;16/03/2017 11:08
+261;animatrice de vente;16/03/2017 11:08
+262;conseillère client;16/03/2017 15:44
+263;stagiaire commerciale;16/03/2017 15:44
+264;traitement d'image ARC GIS, ENVI, IDRISI;17/03/2017 15:30
+265;responsable des ressources humaines et transit;18/03/2017 09:06
+266;infographe;19/03/2017 18:00
+267;CHAUFFEUR CONDUCEUR;20/03/2017 09:21
+268;Auditeur consultant ;20/03/2017 10:24
+269;enseignante;20/03/2017 12:41
+270;chef de ventes;20/03/2017 13:22
+271;Stagiaire Dessinateur-Projeteur-Métreur-Topographe;21/03/2017 08:05
+272;Stagiaire Assistance de Conducteur de Travaux;21/03/2017 08:05
+273;Stagiaire Assistance d’Ingénieur;21/03/2017 08:05
+274;Stagiaire Conseiller Technique;21/03/2017 08:05
+275;Stagiaire Assistance au Chef Service;21/03/2017 08:05
+276;Caissier;21/03/2017 13:49
+277;Technicien principal dans la section Développement et planification;22/03/2017 08:52
+278;Intervenant du projet Haiko ny fireneko;22/03/2017 08:52
+279;Directeur du personnel et de l'administration;22/03/2017 15:31
+280;Directeur département des marchés;22/03/2017 15:31
+281;Chef de service de l'agence municipale des initiatives pour l'emploi;22/03/2017 15:38
+282;responsable de la gestion des ressources humaines de la CPSE;22/03/2017 15:38
+283;responsable des projets de la cellule partenaire public privé;22/03/2017 15:38
+284;assistante de direction;22/03/2017 15:38
+285;formateur en informatique;22/03/2017 15:55
+286;formateur assistant;22/03/2017 15:55
+287;stagiaire en administrateur réseaux ;22/03/2017 15:55
+288;gérante cyber café;22/03/2017 16:03
+289;Responsable Technique Infrastructure;22/03/2017 18:24
+290;Directrice Generale;22/03/2017 20:32
+291;stagiaire dans le service qualité ;23/03/2017 07:38
+292;stagiaire dans le service de vulgarisation et marketing ;23/03/2017 07:40
+293;Vendeuse;24/03/2017 07:16
+294;Stagiaire dans la direction du suivi-évaluation et communication;24/03/2017 07:30
+295;Développeur stagiaire;24/03/2017 07:40
+296;Chauffeur du personnel;24/03/2017 08:04
+297;Chauffeur et conducteur d'engin;24/03/2017 08:05
+298;Chauffeur livreur;24/03/2017 08:06
+299;Stagiaire à la direction de système d'information;24/03/2017 08:20
+300;Stagiaire au sein de la Direction de système d'information;24/03/2017 08:23
+301;Stagiaire aurpès du service marketing et opérationnel;24/03/2017 08:29
+302;stagiaire en informatique;24/03/2017 10:40
+303;animatrice de fête;24/03/2017 14:10
+304;Assistant juridique ;24/03/2017 14:47
+305;journaliste report (stage);24/03/2017 14:49
+306;Assistant juridique (stage);24/03/2017 14:49
+307;superviseur production;25/03/2017 12:00
+308;technicien géneral;25/03/2017 12:18
+309;opératrice back office;27/03/2017 09:57
+310;opératrice de saisie on line;27/03/2017 09:57
+311;opératrice on line;27/03/2017 09:57
+312;Rédacteur Web;27/03/2017 13:37
+313;Opérateur Média;27/03/2017 13:38
+314;caissière et serveuse;27/03/2017 16:32
+315;responsable suivi environnemental;28/03/2017 07:20
+316;Commercial et  Conseiller clientèle;28/03/2017 09:58
+317;chimiste;28/03/2017 11:16
+318;ENQUETRICE;28/03/2017 14:49
+319;responsable  qualité;28/03/2017 16:17
+320;responsable  d'agence;28/03/2017 16:17
+321;RESPONSABLE  VENTE  ET  RECOUVREMENT DE GROS CLIENT;28/03/2017 16:17
+322;responsable  administratif;28/03/2017 16:17
+323;Gestionnaire de caisse;29/03/2017 08:31
+324;Surveillant;29/03/2017 13:22
+325;Agent de cyber;30/03/2017 09:28
+326;Dépanneur matériels informatiques;30/03/2017 09:29
+327;Enquêteur (temporaire);30/03/2017 09:49
+328;agent;30/03/2017 10:02
+329;Stagiaire en tant que Chargée de clientèle;30/03/2017 11:37
+330;responsable téléphonique;30/03/2017 11:38
+331;Animatrice et lanceur de produit airtel Money;30/03/2017 11:40
+332;Stagiaire/adjoint commercial;30/03/2017 12:01
+333;Stagiaire en tant que Gestionnaire ;30/03/2017 12:07
+334;Responsable de production (en période d'essaie de 3 mois);30/03/2017 14:58
+335;Superviseur finition et expédition produits;30/03/2017 15:03
+336;Technicien de production et maintenance stagiaire;30/03/2017 15:06
+337; DEVELOPPEUR STAGIAIRE;31/03/2017 06:56
+338;STAGIAIRE DEVELOPPEUR;31/03/2017 06:56
+339;Agent de contrôle;31/03/2017 07:04
+340;Chargé de mission- organisation du pavillon français 2010;31/03/2017 08:46
+341;Chauffeur de direction;31/03/2017 09:11
+342;Rédactrice;31/03/2017 09:23
+343;Opératrice de saisie;31/03/2017 09:28
+344;Commerciale et  Conseillère clientèle;31/03/2017 09:39
+345;monteur vidéo (Stagiaire);31/03/2017 09:53
+346;Caméraman/monteur (stagiaire);31/03/2017 09:55
+347;Représentante au CIS Ambatovy;31/03/2017 10:06
+348;Responsable de la boutique;31/03/2017 10:08
+349;Caissière/barmaid/serveuse;31/03/2017 10:16
+350;Enquêtrice (stagiaire);31/03/2017 13:41
+351;Stagiaire dans le département comptabilité;31/03/2017 13:43
+352;Responsable de Payeroll officer ;31/03/2017 13:55
+353;Responsable comptabilité;31/03/2017 13:58
+354;Assistant responsable planning;31/03/2017 13:59
+355;Assistant du responsable planning;31/03/2017 14:01
+356;Assistant du responsable développeur d'application informatique;31/03/2017 14:01
+357;Assistant statistique;31/03/2017 14:03
+358;co-gérante;31/03/2017 14:32
+359;Chef des ventes;31/03/2017 14:34
+360;Agent commerciale ;31/03/2017 14:35
+361;Directeur Technique;03/04/2017 08:12
+362;Stagiaire: assistant d'ingénieur et chef de chantier;03/04/2017 08:30
+363;Animatrice technicienne;03/04/2017 09:39
+364;hôtesse d'accueil (temporaire);03/04/2017 09:44
+365;animatrice de vente (temporaire);03/04/2017 09:45
+366;Animatrice et agent de communication (1 mois);03/04/2017 10:11
+367;Rechnicien réseaiu,maintenance informatique,Developpement web;03/04/2017 10:53
+368;Senior Technicien IT;03/04/2017 11:16
+369;"Superviseur de l'animation commerciale sur ""orange money""";03/04/2017 11:58
+370;Superviseur de l'animation commerciale sur ;03/04/2017 12:00
+371;Chargé de l'organisation du Pavillon France 2010;03/04/2017 12:00
+372;Web commercial et assistant de Direction;03/04/2017 12:01
+373;Attaché de Direction;03/04/2017 12:03
+374;Gestionnaire crédits client;03/04/2017 12:04
+375;Chargé des opérations administratives et comptables;03/04/2017 12:06
+376;Assistant Paoiste;03/04/2017 12:12
+377;Responsable en tant que structure adhoc;04/04/2017 06:24
+378;Stagiaire dans le département vente de produits et services;04/04/2017 06:30
+379;Stagiaire en tant qu'Agent d'accueil ;04/04/2017 06:32
+380;;04/04/2017 08:20
+381;Scrum Master;05/04/2017 07:57
+382;Projet RSS/GAVI;05/04/2017 08:45
+383;Projet PURPIV;05/04/2017 08:47
+384;Chef de laboratoire ;05/04/2017 09:03
+385;Technicien de laboratoire;05/04/2017 09:05
+386;Integrateur CSS;05/04/2017 09:19
+387;Infographiste Print;05/04/2017 09:21
+388;assistance service Finance;05/04/2017 11:43
+389;Assistant de direction Fonctionnement réseau;05/04/2017 11:43
+390;Développeur ERP;05/04/2017 12:59
+391;Professeur en bureautique (débutant/avancé) et électronique;05/04/2017 15:26
+392;Analyste de coût;06/04/2017 02:50
+393;RAF;06/04/2017 02:50
+394;Etudiant;06/04/2017 07:37
+395;Néant;06/04/2017 15:19
+396;secrétaire-récéptionniste;08/04/2017 09:23
+397;développeur stagaire;09/04/2017 02:34
+398;Technicien de maintenance informatique et réseau;09/04/2017 09:23
+399;Chef de projet et développeur ;10/04/2017 06:16
+400;Administrateur base de données ;10/04/2017 06:19
+401;Technicien en maintenance, développeur logiciel et réseaux;10/04/2017 06:26
+402;Technicien réseaux,maintenance informatique,Developpement web;10/04/2017 06:27
+403;Porteur du projet/Gérante/Responsable production;10/04/2017 15:26
+404;Développeur ERP (Stagiaire);11/04/2017 06:23
+405;Stage de 3 mois;11/04/2017 06:34
+406;chef de projet flux entrants;11/04/2017 06:41
+407;Contrôleur de rédaction web;11/04/2017 06:44
+408;Responsable logistique/ Formateur ;11/04/2017 08:39
+409;Assistant de recherche;11/04/2017 08:39
+410;Action Communautaire;11/04/2017 08:39
+411;Logistique;11/04/2017 08:39
+412;Gestionnaire back-office, opérateur web;11/04/2017 09:04
+413;Missionnaire en plein temps;11/04/2017 09:04
+414;Rédacteur;11/04/2017 09:04
+415;consultante juridique junior;11/04/2017 11:37
+416;Téléconseillère;11/04/2017 15:28
+417;Secrétaire/Réceptionniste;11/04/2017 15:30
+418;Assistant Technicien de maintenance et réseau informatique ;12/04/2017 06:31
+419;Agent de contrôle sur le chantier;12/04/2017 06:43
+420;Contribution au codage des informations de la base de données sur les communautés malgaches gestionnaires de ressources naturelles;12/04/2017 06:46
+421;développeur (stagiaire);12/04/2017 06:54
+422;DIRECTEUR D'AGENCE;12/04/2017 08:45
+423;RESPONSABLE DES OPÉRATIONS IMPORT ET EXPORT ;12/04/2017 08:45
+424;Assistant enquêteur;13/04/2017 09:17
+425;Stagiaire en tant qu'Assistant dans le service financier;13/04/2017 09:30
+426;Assistant de direction Fonctionnement réseau (Stagiaire);13/04/2017 09:33
+427;Assistante Comptable (Stagiaire);13/04/2017 11:43
+428;Professeur de Français, Anglais, Malagasy et Sciences physiques;13/04/2017 13:50
+429;Controleur qualité, conception éléctronique, installation caméra de survéillance et système d'alarme;14/04/2017 12:46
+430;Agent administrateur des ventes et caisses;15/04/2017 16:42
+431; Responsable import-export ;18/04/2017 09:05
+432;agent de liaison;18/04/2017 11:58
+433;Opératrice web, référenceuse;18/04/2017 13:54
+434;Stage en vue de l'obtention du diplome Master II en elctronique;19/04/2017 09:06
+435;Technicien réseaux et développeur;19/04/2017 09:49
+436;Technicien réseaux;19/04/2017 09:52
+437;consultante juridique junior (CDD);19/04/2017 10:03
+438;Secrétaire Administrative et Financière;19/04/2017 11:43
+439;Stage en communication;19/04/2017 11:46
+440;Assitante de Direction temporaire;19/04/2017 11:47
+441;Secrétaire administrative et commerciale;19/04/2017 11:48
+442;Responsable cantine;19/04/2017 12:00
+443;Cuisinière;19/04/2017 12:01
+444;superviseur commercial;19/04/2017 12:14
+445;Aide assistant;19/04/2017 16:25
+446;chef de mission comptable;20/04/2017 09:42
+447;chef magasin;20/04/2017 09:48
+448;Opérateur online Back office;20/04/2017 13:08
+449;Buisnessplan;20/04/2017 13:56
+450;Bureautique;20/04/2017 13:56
+451; Enseignant;20/04/2017 13:56
+452;Stagiaire  en tant que Chargée de clientèle;20/04/2017 15:05
+453;Agent de comptoir ;20/04/2017 15:06
+454;Operateur Clichage;20/04/2017 18:04
+455;webmaster;20/04/2017 18:04
+456;Technicien Flexible - Responsable Magasin ;21/04/2017 10:59
+457;RESPONSABLE DE PRODUCTION;22/04/2017 09:11
+458;TRANSITAIRE;22/04/2017 09:11
+459;RESPONSABLE DE TRANSIT;22/04/2017 09:11
+460;stagiaire en tant que technicien des opérations internationale;22/04/2017 16:38
+461;collecte des doneé, Maintenancier, électricien;23/04/2017 14:54
+462;Animateur vente Indirect;23/04/2017 20:04
+463;Ingénieur en Instrumentation et Automatisme (sur terrain);24/04/2017 09:23
+464;Ingénieur de conception et réalisation d'une Turbine Hélice;24/04/2017 09:23
+465;Stagiaire et Travaux Pratiques;24/04/2017 09:23
+466;Developpeur C#;24/04/2017 09:41
+467;Responsable Commercial et Marketing;24/04/2017 11:42
+468;Enquêteur temporaire;24/04/2017 11:44
+469;Maintenance;24/04/2017 16:26
+470;Aide assistant de Direction;25/04/2017 09:33
+471;HUMAN RESOURCES ASSISTANT;25/04/2017 12:15
+472;HUMAN RESOURCES COORDINATOR;25/04/2017 12:15
+473;Magasinier et Monteur flexible;26/04/2017 06:58
+474;Responsable magasin;26/04/2017 07:01
+475;Technicien Commercial;26/04/2017 07:02
+476;Agent de saisie Logistique chez PSI Madagascar;26/04/2017 08:04
+477;Consultant  Vérificateur  Suivi-évaluation  sur la campagne de lutte contre le   paludisme chez PSI Madagascar (sur Tana et toutes les provinces);26/04/2017 08:04
+478;Consultante Vérificateur de saisie MID chez PSI Madagascar ;26/04/2017 08:04
+479;Pair éducateur chez  PSI Madagascar  TOP RESEAU : sensibilisation sur la santé reproductive des jeunes (dans les quartiers vulnérables de Tana et périphéries);26/04/2017 08:04
+480;Stagiaire Déclarant, facturier, agent d’enlèvement, passeur de pièces, secrétaire, ;26/04/2017 08:39
+481;Commerciale grands comptes;26/04/2017 08:39
+482;Electromecanicien;26/04/2017 08:45
+483;gestion de stock et commande magasin;26/04/2017 10:27
+484;Agent de saisie Logistique ;26/04/2017 12:07
+485;Consultant  Vérificateur  Suivi-évaluation  sur la campagne de lutte contre le paludisme (sur Tana et toutes les provinces);26/04/2017 12:07
+486;Consultante Vérificateur de saisie MID ;26/04/2017 12:07
+487;Pair éducateur : sensibilisation sur la santé reproductive des jeunes (dans les quartiers vulnérables de Tana et périphéries);26/04/2017 12:07
+488;Responsable Commerciale;26/04/2017 12:57
+489;ACHAT ET DISTRIBUTEUR DE REPAS;26/04/2017 13:32
+490;Chef de Secteur;26/04/2017 13:36
+491;Assistant au responsable des statistiques;27/04/2017 06:25
+492;Entraîneur d'une équipe de Volley Ball de Haut Niveau;27/04/2017 06:38
+493;Magasinier et Assistant Logistique;27/04/2017 06:38
+494;Ressources Humaines;27/04/2017 07:00
+495;Développement des Ressources Humaines;27/04/2017 07:00
+496;cuisinier-patissier;27/04/2017 08:32
+497;cuisinier(chef);27/04/2017 08:32
+498;Technicien de maintenance (CDD de 6 mois);28/04/2017 07:06
+499;Chauffeur-Livreur (CDD de 6 mois);28/04/2017 07:06
+500;Stagiaire électricien;28/04/2017 07:06
+501;General manager;28/04/2017 10:39
+502;Administrateur Général;28/04/2017 10:39
+503;CFO rattaché au DG;28/04/2017 10:39
+504;Financial controller group;28/04/2017 10:39
+505;Directeur adjoint des relations entreprises;28/04/2017 10:39
+506;Analyste financier & conseiller en financement de projets;28/04/2017 10:39
+507;Consultant comptable, fiscal et auditeur;28/04/2017 10:39
+508;Chargé d'affaires entreprises;28/04/2017 10:39
+509;stagiaire en tant que technicien des opérations internationales;28/04/2017 11:43
+510;Stagiaire dans le service front office trésorerie;28/04/2017 11:46
+511;Stagiaire dans le service contentieux;28/04/2017 11:48
+512;Stagiaire dans le service des affaires générales;28/04/2017 11:54
+513;Créateur d'une ferme en zone rurale;28/04/2017 12:03
+514;Propriétaire d'une ferme en zone rurale;28/04/2017 13:57
+515;Gestion de livraison des colis;29/04/2017 12:39
+516;Gestionnaire des stocks;29/04/2017 12:39
+517;Chef d'équipe Magasin;29/04/2017 12:39
+518;Rédaction;30/04/2017 20:02
+519;Responsable Magasin produits vendables ;01/05/2017 08:11
+520;Responsable Administratif et Financier (RAF);01/05/2017 13:48
+521;Directeur Administratif et Financier (DAF);01/05/2017 13:48
+522;Directeur de Site (DS);01/05/2017 13:48
+523;Administrateur de Projet;01/05/2017 13:48
+524;Auditeur Junior;01/05/2017 13:48
+525;Junior;01/05/2017 13:48
+526;Agent administratif;02/05/2017 10:03
+527;CHARGE DE CLIENTELE/ COMMERCIALE;02/05/2017 10:03
+528;Gestionnaire et Agent de liaison Hk Service;02/05/2017 11:38
+529;Consultante  Vérificateur  Suivi-évaluation  sur la campagne de lutte contre le paludisme (sur Tana et toutes les provinces);02/05/2017 11:49
+530;Hôtesse d'accueil/Animatrice;02/05/2017 11:52
+531;;02/05/2017 15:40
+532;QHSE SUPERVISEUR;02/05/2017 15:40
+533;HSE SUPERVISEUR;02/05/2017 15:40
+534;Stagiaire Assistant de conducteur de travaux;03/05/2017 07:02
+535;Stagiaire Assistant d'Ingénieur;03/05/2017 07:04
+536;Stagiaire Assistant au Chef de service;03/05/2017 07:08
+537;Stagiaire Assistant d'ingénieur et chef de chantier;03/05/2017 07:09
+538;Stagiaire: conception éléctronique, installation caméra de survéillance et système d'alarme;03/05/2017 09:45
+539;Web designer et Installateur de caméra de surveillance;03/05/2017 09:47
+540;Maintenancier et programmeur;03/05/2017 09:56
+541;Collaborateur comptable privé;03/05/2017 12:07
+542;Consultant privé;03/05/2017 12:25
+543;Responsable Comptable;03/05/2017 12:29
+544;Professeur de comptabilité générale et mathématiques financières;03/05/2017 12:32
+545;Conseiller Régisseur;03/05/2017 12:39
+546;Responsable Importation;03/05/2017 12:39
+547;Responsable Achat et transit;03/05/2017 12:39
+548;Assistant au service comptabilité;03/05/2017 12:40
+549;Chef Comptable;04/05/2017 06:50
+550;Développeur web front-end et back-end;04/05/2017 20:59
+551;Inntégrateur web et maintenances des sites en wordpress;04/05/2017 20:59
+552;Développeur full stack (front-back);04/05/2017 20:59
+553;Intégrateur web et maintenances des sites en wordpress;04/05/2017 21:11
+554;Cuisinier;05/05/2017 06:28
+555;Aide cuisinier/Patissier;05/05/2017 06:29
+556;Cuisinier/Pâtissier/Pizzaiolo;05/05/2017 06:33
+557;Réceptionnsiste;05/05/2017 06:38
+558;RESPONSABLE AGENCE;05/05/2017 09:39
+559;Agent mapping;05/05/2017 11:48
+560;Responsable marketing et commercial;05/05/2017 11:51
+561;Stagiaire assistant Brand Marketing Representative;05/05/2017 11:54
+562;Responsable animation et entretien de sonorisation;05/05/2017 12:00
+563;INFORMATICIEN.;05/05/2017 18:40
+564;Secrétaire médicale;06/05/2017 06:55
+565;annimatrice;06/05/2017 09:42
+566;Assistant;06/05/2017 13:49
+567;QHSE;07/05/2017 14:29
+568;Gestionnaire de stock;07/05/2017 19:31
+569;chef mangasinier et géstionnaire d'entreprise;08/05/2017 07:08
+570;Assistante logistique et achat;08/05/2017 09:00
+571;Responsable de Communication;08/05/2017 09:05
+572;Chargée de clientèle/commerciale;08/05/2017 09:14
+573;Responsable Administratif et Financier;08/05/2017 09:24
+574;Responsable Département Recette ;08/05/2017 09:26
+575;Export de vanille;08/05/2017 09:30
+576;professeur de malgache;08/05/2017 10:16
+577;professeur d'orthographe malgache et française;08/05/2017 10:16
+578;Responsable Exploitation - HSE - Logistique;09/05/2017 08:03
+579;Responsable HSE;09/05/2017 08:03
+580;Collaborateur en Gestion Finance;09/05/2017 09:56
+581;RESPONSABLE RESSOURCES HUMAINES;09/05/2017 11:49
+582;Secrétaire et assistante Ressources Humaines;09/05/2017 11:53
+583;Assistante gestion du personnel;09/05/2017 12:01
+584;Stagiaire auprès du service marketing et opérationnel;09/05/2017 12:13
+585;stagiaire commercial;09/05/2017 12:13
+586;Démarcheur auprès des détaillants ;10/05/2017 07:11
+587;Stagiaire Développeur web;10/05/2017 07:30
+588;Institutrice;10/05/2017 14:14
+589;Agent de facuration, de resevation fret export et agent de comptoir fret export;10/05/2017 14:50
+590;STAGIAIRE EN VENTE ET TELEOERATION;10/05/2017 14:50
+591;STAGE EN TRANSIT;10/05/2017 14:50
+592;coach multimedia;10/05/2017 15:00
+593;responsable du stand;10/05/2017 15:00
+594;assistant commerciale;10/05/2017 15:49
+595;Auditeur Senior;11/05/2017 06:12
+596;DIFFERENTES;11/05/2017 07:57
+597;Manager;11/05/2017 09:46
+598;Assitant Manager;11/05/2017 09:46
+599;Senior Auditor - Senior Consultant;11/05/2017 09:46
+600;moderateur;12/05/2017 06:35
+601;RESPONSABLE STOCK-COMMERCIAL-ADMINISTRATION;12/05/2017 09:03
+602;Inspecteur financier et responsable contentieux;12/05/2017 09:16
+603;Aide assistante commerciale;13/05/2017 09:23
+604;AIde DRH;13/05/2017 09:23
+605;Comptable junior;13/05/2017 11:51
+606;Gérant et Proprietaire;15/05/2017 10:00
+607;Chargée des Ressources Humaines;16/05/2017 14:04
+608;Gestionnaire de paie intérimaire;16/05/2017 14:04
+609;enseignant de math;16/05/2017 18:05
+610;buraux d'etude;16/05/2017 19:52
+611;Consultant Commercial;17/05/2017 08:47
+612;Responsable Administratif et Management de l'équipe commerciale;17/05/2017 08:47
+613;ELECTRICIAN;19/05/2017 13:10
+614;STORMAN;19/05/2017 13:20
+615;Rigger ;19/05/2017 13:29
+616;PAINT, ELECTRICIAN;19/05/2017 13:38
+617;RIGGER, COMMON LABOR;19/05/2017 13:47
+618;service Maintenance et réseau;19/05/2017 18:54
+619;Agent cartographe;20/05/2017 10:06
+620;Superviseur de chantier (Consultation Individuelle);20/05/2017 10:06
+621;Stagiaire professionnel en qualité d' assistant de direction ;20/05/2017 10:06
+622;Responsable suivie Environnemental;20/05/2017 10:06
+623;Stagiaire professionnel ;20/05/2017 10:06
+624;gestionnaire financier et responsable informatique;22/05/2017 12:46
+625;Chef de departement Formation;22/05/2017 12:46
+626;Responsable informatique et administrateur SAGE;22/05/2017 12:46
+627;DRH;22/05/2017 12:46
+628;Responsable personnel;22/05/2017 12:46
+629;Directeur de Systeme informatique et administration SAGE;22/05/2017 12:46
+630;Administrateur SAGE;22/05/2017 12:46
+631;Directeur Technique EBP CIEL;22/05/2017 12:46
+632;RAF-RRH;22/05/2017 12:46
+633;Agent de production;23/05/2017 06:59
+634;Assistant de direction de production;23/05/2017 06:59
+635;Superviseur de ligne de production;23/05/2017 06:59
+636;Agent de transit;23/05/2017 06:59
+637;responsable de trasit;23/05/2017 06:59
+638;Distributeur de compacte disque;23/05/2017 07:17
+639;Premier responsable de SAHAN'NY ANKIZY MANDROSEZA;23/05/2017 07:17
+640;Premier responsable au Centre d'Eveil Communautaire MANDROSEZA;23/05/2017 07:17
+641;Chef magasinier;23/05/2017 07:17
+642;Premier responsable  ;23/05/2017 09:03
+643;ddeveloppeur d'une application;23/05/2017 14:40
+644;RESPONSABLE ADMINISTRATION-RESSOURCES HUMAINES;24/05/2017 09:53
+645;Chargé de fiabilisation des dossiers clients;24/05/2017 11:18
+646;Agent de transit (Service Opération);24/05/2017 11:18
+647;Merchandiser;24/05/2017 11:18
+648;Conseiller Client (stagiaire);24/05/2017 11:18
+649;Poste occupé;26/05/2017 17:27
+650;bureau d'étude;29/05/2017 09:07
+651;Aide assistante commerciale en tant que stagiaire;29/05/2017 09:37
+652;AIde DRH en tant que stagiaire;29/05/2017 09:39
+653;Assistante juridique;29/05/2017 12:39
+654;Rédactrice et correctrice Web;29/05/2017 12:45
+655;Aide comptable;29/05/2017 12:45
+656;opératrice de gestion ;29/05/2017 15:03
+657;Adjoint du responsable du stock ;29/05/2017 15:27
+658;Consultant financier;30/05/2017 13:52
+659;Responsable cyber;31/05/2017 07:19
+660;secrétaire administratif;31/05/2017 07:19
+661;Technicien du districk;31/05/2017 07:19
+662;Instrumentation Field Engineer, Spécialiste en E+H Instruments;31/05/2017 08:26
+663;Technico - Commercial;31/05/2017 08:26
+664;Stagiaire Technicien;31/05/2017 08:26
+665;Stage d'Imprégniation;31/05/2017 08:26
+666;Machiniste, chef d'équipe département Chaudronnerie;31/05/2017 08:59
+667;Inspecteur;31/05/2017 08:59
+668;Technical Clerk,Quality Assurance-Quality Control;31/05/2017 08:59
+669;Responsable stock;31/05/2017 08:59
+670;Respnsable HSE;31/05/2017 08:59
+671;Interlocuteur ;31/05/2017 08:59
+672;Rédacteur&Referenceur Web confirmé / community manager;31/05/2017 11:49
+673;cassière et assistante gerante, Rédacteur&Referenceur Web confirmé / community manager;31/05/2017 11:59
+674;AGENT RECCENSEUR;01/06/2017 08:14
+675;Stagiaire en maintenance et réseau;01/06/2017 12:39
+676;Ingénieur d'études et de travaux;02/06/2017 08:12
+677;Ingénieur Technique;02/06/2017 09:37
+678;Operateur online niveau Senior 1;03/06/2017 16:32
+679;Integrateur et developpeur php;03/06/2017 16:32
+680;Manoeuvre-élagueur-monteur;06/06/2017 06:27
+681;Etude,dessinateur et métreur;06/06/2017 06:27
+682;Boardmaker;06/06/2017 11:27
+683;Prof de Math et Francais;06/06/2017 15:06
+684;Assistant Administratif et Financier;06/06/2017 15:06
+685;Responsable administration et ressources humaines;06/06/2017 15:06
+686;ADVISOR ;07/06/2017 09:23
+687;OPERATRICE MEDIA;07/06/2017 09:23
+688;SALES ET CUSTOMER SERVICES;07/06/2017 09:23
+689;Génie Logiciel et Base de données;07/06/2017 09:25
+690;Administration des systèmes et réseaux;07/06/2017 09:25
+691;agent de saisie;07/06/2017 16:05
+692;AAAA;09/06/2017 11:16
+693;Responsable;09/06/2017 12:42
+694;PAO;09/06/2017 12:42
+695;Responsable d'édition Multimédia;09/06/2017 12:42
+696;PAO et responsable informatique;09/06/2017 12:51
+697;Agent d'accueil;09/06/2017 14:49
+698;Assistant traiteur d'eau;09/06/2017 14:49
+699;Superviseur forage;10/06/2017 10:10
+700;Superviseur mine service;10/06/2017 10:10
+701;Contremaître exploitation;10/06/2017 10:10
+702;Technicien minier;10/06/2017 10:10
+703;Topographe;10/06/2017 10:10
+704;Chef de mission Topographe;10/06/2017 10:10
+705;magasiner;10/06/2017 12:43
+706;;10/06/2017 17:42
+707;Centre d'appel;12/06/2017 07:21
+708;convaincre les gens à utiliser le plan familiale;12/06/2017 07:21
+709;administration ;12/06/2017 12:43
+710;INFIRMIER AMBULANCIER;13/06/2017 07:54
+711;ASSITANT LOGISTIQUE;13/06/2017 07:55
+712;CHEF DE DEPOT ;13/06/2017 07:55
+713;RESP LOGISTIQUE;13/06/2017 07:55
+714;PLANIFICATEUR;13/06/2017 07:55
+715;arpenteur mettreur;13/06/2017 11:11
+716;chauffeur de camion;13/06/2017 14:44
+717;aide garagiste;13/06/2017 14:44
+718;assistante commerciale et administrative;14/06/2017 06:50
+719;gestionnaire BMI;14/06/2017 10:43
+720;Analyste commercial;14/06/2017 10:43
+721;Directeur Adjoint;14/06/2017 10:43
+722;Chauffeur Livreur Camion-Citerne à gaz GPL;14/06/2017 11:44
+723;Conseiller client et web conseiller ;14/06/2017 14:38
+724;Back office;14/06/2017 14:38
+725;gestionnaire de parcking;14/06/2017 15:35
+726;technicien de maintenance informatique;14/06/2017 15:35
+727;administration financière (stagiaire);15/06/2017 06:26
+728;service administration (stagiaire);15/06/2017 06:26
+729;DRH (stagiaire);15/06/2017 06:26
+730; Logisticien;15/06/2017 08:11
+731;RESPONSABLE EXPLOITATION SAGE;15/06/2017 14:14
+732;Responsable chambre froide;15/06/2017 14:53
+733;Macourrier;16/06/2017 07:56
+734;service clientèle;16/06/2017 07:56
+735;Chauffeur Livreur Camion-Citerne ;16/06/2017 15:06
+736;service patron;16/06/2017 15:06
+737;Ouvrière;16/06/2017 15:14
+738;Digital project Manager;18/06/2017 19:58
+739;Administration Avions privés et Service Import Export;19/06/2017 10:24
+740;Stagiaire Imoprt Export;19/06/2017 10:24
+741;Stagiaire Ressources Humaines;19/06/2017 10:24
+742;Stagiaire Import ;19/06/2017 10:24
+743;opérateur Anglophone;19/06/2017 10:29
+744;Responsable informatique consultant;19/06/2017 11:17
+745;Econome;19/06/2017 11:17
+746;Technicien Sage;19/06/2017 11:17
+747;Assistant administrateur ;19/06/2017 11:17
+748;Facturier;19/06/2017 11:17
+749;inspectice ;19/06/2017 12:07
+750;ouvrier;19/06/2017 13:51
+751;Maintenancier;19/06/2017 13:51
+752;agent temporaire;19/06/2017 14:56
+753;agent;19/06/2017 14:56
+754;observatrice du fonctionnement de l'entreprise;19/06/2017 19:23
+755;Assistante stagiaire;20/06/2017 10:39
+756;Commercial back office;20/06/2017 10:39
+757;INGENIEUR;20/06/2017 12:27
+758;Dessinateur Métreur;20/06/2017 12:27
+759;inspectrice;20/06/2017 13:31
+760;croupière;20/06/2017 13:31
+761;Declarant;21/06/2017 07:15
+762;chef de projet/ responsable qualité/ opératrice de saisie;21/06/2017 14:01
+763;responsable communication;21/06/2017 14:22
+764;responsable supports visuels;21/06/2017 14:22
+765;controleur de vente;21/06/2017 14:50
+766;acceuil,guide  croisièriste, gestion de site web;21/06/2017 14:50
+767;interprète;21/06/2017 14:50
+768;Operatrice on line niveau 3 Confirmée;22/06/2017 08:40
+769;Traductrice;22/06/2017 08:40
+770;Enseignante de la langue Allemande;22/06/2017 08:40
+771;Service RH;22/06/2017 09:01
+772;Encadrement ;22/06/2017 09:01
+773;responsable controle qualite;22/06/2017 09:48
+774;prestataire de service;22/06/2017 14:42
+775;Agent de crédit;23/06/2017 06:35
+776;CHARGE CLIENTEL;23/06/2017 09:38
+777;Responsables Caisse;23/06/2017 14:19
+778;Assisstante Ressources humaines;23/06/2017 14:19
+779;Enquetrices;23/06/2017 14:19
+780;Agent de saisie Online;23/06/2017 14:19
+781;controleur HSE;23/06/2017 14:19
+782;Encadreur;23/06/2017 14:47
+783;CONDUCTEUR DE TRAVAUX;27/06/2017 11:15
+784;stagiaire en service suivi_évaluation;27/06/2017 11:20
+785;*Opérateur de saisie, responsable en finition & planning coordinateur;27/06/2017 11:29
+786;chargé de communication;27/06/2017 11:39
+787; Agent de saisie online;28/06/2017 06:55
+788;Opérateur de saisie et polyvalent;28/06/2017 08:03
+789;Professeur d'anglais;28/06/2017 09:45
+790;Auditeur junior et comptable confirmé;28/06/2017 10:13
+791;Assistant à la DMC;28/06/2017 12:01
+792;Ingénieur en BTP;28/06/2017 14:01
+793;Consultat;28/06/2017 14:01
+794;Secreétaire Administrative ;28/06/2017 14:33
+795;HR Manager Rewards;28/06/2017 19:26
+796;Assistante;29/06/2017 06:02
+797;Préparer les voyages ;29/06/2017 06:02
+798;Aide Assistant de direction (stagiaire);29/06/2017 13:05
+799;INFORMATICIEN (Stagiaire) ;29/06/2017 13:24
+800;Opérateur Back Office;29/06/2017 13:38
+801;traducteur;29/06/2017 14:10
+802;etudiante;29/06/2017 15:14
+803;Responsable Technique;30/06/2017 09:22
+804; Assistante;30/06/2017 14:04
+805;Responsable élevage, technicien agricole;01/07/2017 12:55
+806;Aide magasinier;01/07/2017 13:33
+807;Gestionnaire rétention client;02/07/2017 11:18
+808;Contrôleur de gestion;03/07/2017 08:16
+809;Assisstante Ressources humaines (stagiaire);03/07/2017 13:59
+810;(Stagiaire);03/07/2017 13:59
+811;Gestionnaire(stagiaire);03/07/2017 13:59
+812;transcripteur;03/07/2017 14:21
+813;Vendeur Technicien;03/07/2017 14:39
+814;technicien en système d'information;03/07/2017 14:40
+815;professeur  vacataire;04/07/2017 13:41
+816;Consultant en référencement;04/07/2017 14:01
+817;Rédacteur et référenceur;04/07/2017 14:01
+818;observateur;04/07/2017 14:01
+819;contrôleur technique;04/07/2017 14:16
+820;RESPONSABLE DES RESSOURCES HUMAINES;05/07/2017 06:58
+821;HUMAN RESOURCES SPECIALIST;05/07/2017 06:58
+822;Electricien;05/07/2017 08:15
+823;Téléopératrice / assistante virtuelle;05/07/2017 09:54
+824;Néeant;05/07/2017 10:46
+825;RSM: Régional Sales Manager;05/07/2017 13:12
+826;Représentant Commercial;05/07/2017 13:12
+827;Responsable Commericial;05/07/2017 13:12
+828;Agent de Guichet Foncier;05/07/2017 13:12
+829;bibliothécaire,enseignant (informatique);06/07/2017 14:02
+830;informaticien,aide comptable,secrétaire;06/07/2017 14:02
+831;Animateur,gestionnaire,bibliothécaire;06/07/2017 14:02
+832;téléprospectrice;06/07/2017 14:15
+833;Agent Comptable chargé de la trésorerie;07/07/2017 08:45
+834;Agent comptable chargé de la trésorerie, Contrôleur interne;07/07/2017 08:45
+835;COORDINATEUR DE MAINTENANCE;07/07/2017 12:25
+836;SUPERVISEUR DE SITE;07/07/2017 12:25
+837;Auditeur (stagiaire);07/07/2017 13:43
+838;Informatique et Membre de bureau d'étude;08/07/2017 08:15
+839;Team Lead;08/07/2017 08:32
+840;Java développeur senior;08/07/2017 08:32
+841;RESPONSABLE MAGASIN ACCESSOIRES;08/07/2017 09:02
+842;PURCHASER;08/07/2017 09:02
+843;Ingénieur DBA et responsable outils métiers;08/07/2017 10:12
+844;Développeur sous Delphi et administrateur de base de donnée Oracle 10g assistant au sein de la société MATERAUTO Madagascar.;08/07/2017 10:12
+845;sécurité civil;08/07/2017 18:02
+846;Stagiaire LOGISTIQUE;09/07/2017 21:53
+847;Developpeur python,awk,bash;10/07/2017 08:11
+848;Développeur (free-lance)(python/django);10/07/2017 08:11
+849;Stagiaire en Administration système et réseaux;10/07/2017 14:42
+850;Stagiaire en service personnel et service du budget;10/07/2017 14:50
+851;Stagiaire au sein de la DRH;10/07/2017 16:55
+852;opérateur ;11/07/2017 05:31
+853;Superviseur d'équipe;11/07/2017 05:31
+854;Contrôleur de Gestion et Auditeur;11/07/2017 08:40
+855;"Technicien Informatique ; ";11/07/2017 09:30
+856;Maintenance informatique et comerciale;11/07/2017 09:44
+857;Gestionnaire d'un site touristique;11/07/2017 14:10
+858;Vérificateur Subgrants;11/07/2017 14:47
+859;Consultante;11/07/2017 14:47
+860;Developpeur pythin, awk, bash;11/07/2017 15:12
+861;Data Manager;11/07/2017 19:17
+862;veille media;12/07/2017 06:11
+863;Freelanceur;12/07/2017 10:17
+864;Travail libéral;12/07/2017 11:15
+865;Maintenance en Informatique;12/07/2017 11:15
+866;Directeur Consultant;12/07/2017 11:59
+867;RESPONSABLE ADMINISTRATIVE ;12/07/2017 12:37
+868;"-	Plombier et électricien ";13/07/2017 11:18
+869;Superviseur maintenance;13/07/2017 14:10
+870;Responsable Maintenance;13/07/2017 14:10
+871;responsable administratif;13/07/2017 14:42
+872;Opérateur de saisie  (comptabilité);13/07/2017 14:42
+873;secrétaire-opérateur de tourisme;13/07/2017 14:42
+874;correctrice;13/07/2017 14:42
+875;opérateur spécialisé;13/07/2017 14:42
+876;ingenieur intégrateur internet;13/07/2017 18:25
+877;Modérateur web;14/07/2017 09:18
+878;Répondre aux appels téléphonique en français, conseiller les clients. ;14/07/2017 09:18
+879;professeur de philosophie,de mathématique;14/07/2017 13:43
+880;guide accompagnateur et organisateur touristique;14/07/2017 13:43
+881;responsable énergie et maintenance;14/07/2017 13:55
+882;professeur;14/07/2017 13:55
+883;informaticien,électronicien;14/07/2017 13:55
+884;responsable ressources humaine;14/07/2017 14:07
+885;assistante paie et ressource humaine;14/07/2017 14:07
+886;RESPONSABLE DE MAGASIN;14/07/2017 14:11
+887;plombier et éléctricien;14/07/2017 14:18
+888;plombier;14/07/2017 14:18
+889;responsable recrutement et diagnostic poids lourds;14/07/2017 14:33
+890;responsable magasin pièce détachées;14/07/2017 14:33
+891;chef maintenance;14/07/2017 14:33
+892;Consultant individuel;14/07/2017 14:51
+893;DAF;14/07/2017 14:51
+894;directeur régional successif;14/07/2017 14:51
+895;directeur général adjoint;14/07/2017 14:51
+896;directeur successif;14/07/2017 14:51
+897;Stagiaire dans le département commercial ;15/07/2017 13:24
+898;Résponsable Comptable et Administratif;17/07/2017 15:42
+899;Responsable Financière et comptable;17/07/2017 15:42
+900;Responsable Administrative & Financière;17/07/2017 15:42
+901;Classe de second;18/07/2017 07:19
+902;Opérateur à la Control Room ;18/07/2017 15:42
+903; Chargé clientelle;18/07/2017 23:49
+904;Profession libéral;19/07/2017 06:20
+905;Infographe PAOiste;19/07/2017 14:18
+906;Résponsable de stock;19/07/2017 14:18
+907;Transporteur;20/07/2017 06:25
+908;sans;20/07/2017 08:16
+909;Stagiaire Web Master / Developper;20/07/2017 16:19
+910;Web Master / Developper / Informaticien;20/07/2017 16:19
+911;Responsable suivi évaluation de projet;21/07/2017 08:16
+912;clerk store;21/07/2017 11:24
+913;MAGASINIERE;21/07/2017 12:23
+914;Gestionnaire  stock - Materiel;21/07/2017 12:23
+915;REPONSABLE BOUTIQUE;21/07/2017 12:23
+916;TRESORIERE-AGENT BACK OFFICE;21/07/2017 12:27
+917;Stagaire au niveau de l'assurances Retraite;21/07/2017 13:41
+918;Educatrice spécialisée;22/07/2017 10:43
+919;stagiaire comptable;22/07/2017 17:14
+920;Service client;24/07/2017 11:14
+921;Assistante des ressources humaines;24/07/2017 13:37
+922;consultant au service topographique et des domaines antananarivo;24/07/2017 13:59
+923;Responsable Département Web;24/07/2017 22:06
+924;Auditeur en Organisation et Informatique;24/07/2017 22:06
+925;econome adjointe;25/07/2017 08:36
+926;adminitratrice et comptable;25/07/2017 08:36
+927;community manager / redaction;25/07/2017 08:36
+928;administratrice et comptable;25/07/2017 09:04
+929;Stagiaire entant qu'éducatrice spécialisé;25/07/2017 13:22
+930;Patissier;26/07/2017 09:15
+931;Stagiaire en Marketing et Commercial;26/07/2017 12:13
+932;Assistante administrative (stagiaire);26/07/2017 12:35
+933;Assistante commerciale (stagiaire);26/07/2017 12:35
+934;Prof de Français;26/07/2017 13:01
+935;Gestionnaire de stock (Stagiaire);26/07/2017 14:27
+936;Commercial et  Conseiller clientèle (stagiaire);26/07/2017 14:27
+937;coach d'animation;26/07/2017 14:27
+938;Technicien de maintenance domaine service generaux;27/07/2017 02:35
+939;Stagiaire de Maîtrise ;27/07/2017 06:28
+940;Stage d’ouvrier;27/07/2017 06:28
+941;Stagiaire en Administration Réseau et systeme maintenance;27/07/2017 07:55
+942;Responsable de la collecte et  des conditonnements;27/07/2017 08:55
+943;Assistant en Ressources Humaines;27/07/2017 10:48
+944;Assistante comptable débutant;27/07/2017 11:43
+945;assistante administratrive et comptable;27/07/2017 11:43
+946;Professeur de Français,Anglais;27/07/2017 14:12
+947; aide responsable ;27/07/2017 14:14
+948;Assistant Administratif Logistique/Département parc automobile;27/07/2017 20:08
+949;Assistant Administratif Logistique(Service Gestion de Matériel);27/07/2017 20:08
+950;ACHETEUR;28/07/2017 07:54
+951;Responsable de la vie scolaire;28/07/2017 09:27
+952;Livreur;28/07/2017 11:20
+953;Consultante privée en finance et comptabilité;28/07/2017 13:20
+954;Chargée de clientèle;28/07/2017 13:20
+955;Assistante chargée clientèle;28/07/2017 13:20
+956;Agent back office;29/07/2017 14:33
+957;Redactrice web, modératrice web;31/07/2017 00:37
+958;Assistant Manager;01/08/2017 08:04
+959;contrôleuse opérateurs de saisie comptable;01/08/2017 12:11
+960;OPERATEUR DE TRAITEMENT;01/08/2017 12:11
+961;ACHETEUR CHARGEE DE L’IMPORT ;02/08/2017 13:10
+962;RESPONSABLE TRANSIT;02/08/2017 13:10
+963;ADJOINT AU DIRECTEUR CHARGEE DE L’IMPORTATION ;02/08/2017 13:10
+964;RESPONSABLE ADMINISTRATIVE CHARGEE DES IMPORTS & EXPORTS;02/08/2017 13:10
+965;DIRECTEUR D’AGENCE;02/08/2017 13:10
+966;TECHNICIENNE RH. ;02/08/2017 13:10
+967;RESPONSABLE LOGISTIQUE ET TRANSIT;02/08/2017 13:10
+968;COORDINATRICE DE PROJET CHARGEE DES APPELS D’OFFRES;02/08/2017 13:10
+969;RESPONSABLE ACHATS ET TRANSIT. ;02/08/2017 13:10
+970;caisse;02/08/2017 13:40
+971;Regisseur de recette;03/08/2017 07:06
+972;RESPONSABLE  TRANSIT;03/08/2017 07:32
+973;Manager / Chargée de formation et Qualité;03/08/2017 11:43
+974;¨Pilote de projet/Responsable de Plateau;03/08/2017 12:34
+975;assistante du direction;04/08/2017 13:51
+976;TRESORIER-AGENT BACK OFFICE;05/08/2017 15:15
+977;BARMAN, DJ;06/08/2017 14:15
+978;Hotesse;07/08/2017 07:05
+979;Formatrice en gestion informatisée;08/08/2017 13:16
+980;Chef de Département Ressources Humaines et Finance;08/08/2017 13:16
+981;Retranscripteur Audio;09/08/2017 09:30
+982;Animatrice Commercial;09/08/2017 13:44
+983;résponsable d'achat.;09/08/2017 13:50
+984;stagiaire en transit;09/08/2017 13:50
+985;Animateur, Livreur, vendeur, Guide touristique;09/08/2017 13:50
+986;Commerciale freelance;09/08/2017 15:15
+987;Agent de suivi Administratif ;10/08/2017 07:41
+988;Technico-Commercial ;10/08/2017 07:41
+989;COMMERCIAL FRONT OFFICE;10/08/2017 07:41
+990;Animatrice commerciale;11/08/2017 12:50
+991;Formateur de Français;11/08/2017 13:55
+992;Assistant Administratif Logistique(Service Gestion de Matériel), Résponsable Logistique et Magasinier au chantier, Agent et Responsable HSE au chantier,   ;11/08/2017 14:38
+993;Responsable de plateau;11/08/2017 15:26
+994;Assistant technique de District;14/08/2017 15:00
+995;Responsable de capitalisation et recherche action;14/08/2017 15:00
+996;Technicien de gestion des risques et catastrophes;14/08/2017 15:00
+997;Ventes ;16/08/2017 07:57
+998;Simulatrice d'Entretien, et  encadreur de mémoire;16/08/2017 11:25
+999;Auditeur consultante;16/08/2017 11:25
+1000;administrateur du siteweb;17/08/2017 08:32
+1001;Surveillance caméra;17/08/2017 11:16
+1002;Opératrice Téléphonique;17/08/2017 11:17
+1003;DIRECTEUR FINANCIER;17/08/2017 13:51
+1004;CONTROLEUR DE GESTION ET CONSULTANT;17/08/2017 13:51
+1005;MANAGEMENT ACCOUNTANT;17/08/2017 13:51
+1006;RESPONSABLE CONTROLE DE GESTION;17/08/2017 13:51
+1007;Getsionnaire de patrimoine;17/08/2017 13:51
+1008;Spécialiste des systèmes d'information;17/08/2017 14:08
+1009;ASSISTANTE ADMNISTRATIVE;18/08/2017 08:54
+1010;Concepteure et élaborateur d'un centre d'information;18/08/2017 13:59
+1011;Animatrice et agent de terrain;18/08/2017 13:59
+1012;membre de l'association IZANY KA TANORA;18/08/2017 13:59
+1013;Commercial freelance;18/08/2017 14:19
+1014;Consultant Opérateur de saisie;18/08/2017 14:49
+1015;Consultant responsable informatique;18/08/2017 14:49
+1016;Responsable Planning de Production;18/08/2017 16:00
+1017;Chargé de référencement francophone puis Référenceur-Rédacteur;18/08/2017 16:00
+1018;Assistant Administratif;18/08/2017 16:00
+1019;Professeur informatique et comptable;20/08/2017 07:00
+1020;administrateur de site web;20/08/2017 08:50
+1021;Assistante projet;21/08/2017 13:52
+1022;Stagiaire la Direction Déleguée aux Opérations Internationales;21/08/2017 14:22
+1023;Stagiaire en électromecanicien;21/08/2017 14:57
+1024;transcripteur, agent service client;22/08/2017 06:31
+1025;Stagiaire Assistant.;22/08/2017 06:51
+1026;Stagiaire en Administration Réseau et Sécurité.;22/08/2017 07:12
+1027;agent fret import;22/08/2017 07:33
+1028;Assistante en transit;22/08/2017 09:07
+1029;Assistante en Ressources Humaines et affaires générales;22/08/2017 11:35
+1030;Stagiaire en Ressource Humaine;22/08/2017 13:23
+1031;Merchandiser, Gestionnaire de Stock, Sourcing Achat;23/08/2017 10:16
+1032;Commercial Vente en Ligne;23/08/2017 10:16
+1033;Conecpteur - Animateur;23/08/2017 10:16
+1034;CHEF DE DEPARTEMENT APPROVISIONNEMENT;23/08/2017 12:00
+1035;GESTIONNAIRE DE STOCK PRODUITS FINI ET CONSOMMABLES;23/08/2017 12:00
+1036;Assistante administrative et commerciale;23/08/2017 14:56
+1037;Stagiaire service client;23/08/2017 14:56
+1038;Délégué medical et commercial en pharmaceutique;24/08/2017 11:49
+1039;Stagiaire Assistant Administratif;25/08/2017 10:57
+1040;COMITE AD HOC;25/08/2017 11:23
+1041;Collaborateur RH;26/08/2017 13:44
+1042;Asistante Comptable;26/08/2017 14:28
+1043;Commercial/ Technicien d'intervention Client;28/08/2017 09:14
+1044;Professeur de Physique / Survéillant Général;28/08/2017 16:34
+1045;Manager Processus extérnalisé;29/08/2017 09:37
+1046;Sécurité;29/08/2017 11:17
+1047;Stockiste (département logistique);29/08/2017 11:26
+1048;Sécurité d'accés internet;29/08/2017 11:40
+1049;Responsable qualité et formation;29/08/2017 13:36
+1050;service approvisionnement;29/08/2017 15:06
+1051;Assistant KAP;29/08/2017 16:19
+1052;Responsable Export par Intérim ;29/08/2017 16:19
+1053;Responsable de la documentation à l'Import;29/08/2017 16:19
+1054;Agent documentation export;29/08/2017 16:19
+1055;Attachée Commerciale ;29/08/2017 16:19
+1056;Sécrétaire Standardister - Customer Service;29/08/2017 16:19
+1057;Gestionnaire de courriers;30/08/2017 06:28
+1058;agent Administratif polyvalent;30/08/2017 06:28
+1059;Technicien de maintenance;30/08/2017 06:28
+1060;Responsable régional;30/08/2017 07:10
+1061;Operateur de sasie polyvalent;30/08/2017 07:10
+1062;Coach Niv I;30/08/2017 07:10
+1063;Assistant Comptable (stagie professionnel);30/08/2017 08:56
+1064;Commercial (Stage professionnel);30/08/2017 08:56
+1065;Assistant Commerciale (Stage professionnel) ;30/08/2017 08:56
+1066;Stagiaire au service des opérations;30/08/2017 09:32
+1067;Agent de bureau, résponsable de ressource humaine;30/08/2017 11:58
+1068;Assistante de direction/ Formateurs technique de secrétariat;30/08/2017 11:58
+1069;Formatrice Français;30/08/2017 11:58
+1070;Secrétaire Administrative;30/08/2017 11:58
+1071;Assistante en Ressources Humaines;31/08/2017 09:11
+1072;Responsable de stock et d’approvisionnement;31/08/2017 09:14
+1073;Relieur;31/08/2017 10:06
+1074;Commeciale;31/08/2017 11:05
+1075;gestionnaire de clientèle;31/08/2017 11:31
+1076;téléconseillère de wonderbox;31/08/2017 11:31
+1077;Créateur de site Web;31/08/2017 11:40
+1078;Opérateur de saisie (Online);31/08/2017 13:17
+1079;Chargé de Qualité Client et Réclamation (CQCR) Argus de la Presse;31/08/2017 13:42
+1080;Consultant auprès du projet Appui au Développement du Menabe et du Melaky à Morondava (AD2M);31/08/2017 13:42
+1081;Assistante de projet d'enquête;31/08/2017 13:52
+1082;Assistante en transit-Export;01/09/2017 09:56
+1083;Résponsable d'agence;01/09/2017 09:56
+1084;Assistant logistique et achat;02/09/2017 07:57
+1085;téléprospecteur;02/09/2017 18:57
+1086;shift nuit service facture et billet-age ;02/09/2017 18:57
+1087;CHEF ;02/09/2017 18:57
+1088;superviseur clienteles ;02/09/2017 18:57
+1089;assistant comptable et caissier;04/09/2017 08:01
+1090;ADMINISTRATEUR RESEAU et SYSTEME;05/09/2017 09:47
+1091;Coach Niv I, Gestion de personnel;05/09/2017 11:48
+1092;technicien de maintenance reseaux filaire;06/09/2017 03:04
+1093;Téléopérateur de vente;06/09/2017 09:00
+1094;Assistant Déclarant Transit;06/09/2017 09:00
+1095;Responsable approvisionnement;06/09/2017 11:30
+1096;Stagiaire , département des ressources humaines et commercial;06/09/2017 11:54
+1097;Stagiaire dans le service de Secrétariat de l'Agence;06/09/2017 11:54
+1098;Superviseur Online BPO;06/09/2017 14:09
+1099;Contrôleur qualité Online BPO;06/09/2017 14:09
+1100;Chargé de classement prestataire (Panorama) chez VIVETIC pour la société ARGUS DE LA PRESSE à Paris;06/09/2017 14:09
+1101;Pigiste ou rédactrice web;06/09/2017 14:09
+1102;Agent enquêteur;06/09/2017 14:09
+1103;Controleuse de Qualite;06/09/2017 14:11
+1104;vendeur et magasinier;06/09/2017 15:04
+1105;Stagiaire RH;07/09/2017 08:34
+1106;Assistant Technicien Intérimaire;07/09/2017 09:20
+1107;Rédacteur/Modérateur;07/09/2017 09:20
+1108;Socio-Organisateur stagiaire ;07/09/2017 09:20
+1109;Stagiaire en Ressources Humaines;07/09/2017 09:20
+1110;Stagiaire maintenance et support Informatique;07/09/2017 09:35
+1111;Stagiaire Aide Comptable;07/09/2017 10:22
+1112;Agent de recouvrement;07/09/2017 13:37
+1113;Caissier Principal;07/09/2017 13:37
+1114;Commercial livreur;07/09/2017 13:37
+1115;Stagiaire au département de la Ressource Humaine;07/09/2017 13:37
+1116;Professeur / Survéillant Général;07/09/2017 14:03
+1117;référenceur web;07/09/2017 14:30
+1118;Développeur web stagiaire;07/09/2017 14:32
+1119;Responsable Cybercafé;07/09/2017 14:52
+1120;responsable communication externe;08/09/2017 13:29
+1121;monteur et cadreur;08/09/2017 13:29
+1122;Operation supervisor;08/09/2017 13:38
+1123;responsable d'accueil et secretaire;09/09/2017 05:02
+1124;"o	Directrice Adjointe du Centre de Congrès (Centre Mariapoli)";09/09/2017 16:03
+1125;"o	Monitrice de Jeunes auprès du Mouvement des Focolari";09/09/2017 16:03
+1126;"o	Monitrice de jeunes";09/09/2017 16:03
+1127;Lingerie;09/09/2017 16:03
+1128;douanier;10/09/2017 09:33
+1129;ASSISTANTE ADMINISTRATIVE ET RH;11/09/2017 07:10
+1130;relation client et suivi import;11/09/2017 13:41
+1131;Stagiaire en Assistante de direction;11/09/2017 15:15
+1132;Stagiaire Ingénieur agronome;11/09/2017 15:15
+1133;Stagiaire en Technicien Supérieur;11/09/2017 15:21
+1134;Stage en Technicien Agricole;11/09/2017 15:21
+1135;Stagiaire en Ouvrier;11/09/2017 15:24
+1136;Stagiaire Assistante de direction;11/09/2017 15:25
+1137;Stagiaire Technicien Supérieur;11/09/2017 15:25
+1138;Stagiaire Technicien Agricole;11/09/2017 15:25
+1139;Stagiaire Ouvrier;11/09/2017 15:25
+1140;stagaire en technicien de maintenance reseaux filaire;12/09/2017 11:36
+1141;Assistant logistique;12/09/2017 14:52
+1142;Directrice Adjointe du Centre de Congrès - Centre Mariapoli ( mi-temps);12/09/2017 15:20
+1143;Monitrice de Jeunes auprès du Mouvement des Focolari (mi-temps);12/09/2017 15:20
+1144;Monitrice de jeunes;12/09/2017 15:20
+1145; Rédacteur&Referenceur Web confirmé / community manager;13/09/2017 06:21
+1146;Imprimeur et rédacteur;13/09/2017 06:24
+1147;Responsable, Superviseur, Technicien Solaire;13/09/2017 11:48
+1148;Mécanicien stagiaire;13/09/2017 14:54
+1149;Technicien stagiaire;13/09/2017 14:54
+1150;Commercial Freelance à domicile;13/09/2017 14:59
+1151;Contrôle qualité - département échantillon;13/09/2017 15:12
+1152;Opératrice de saisie ( sondage et échantillonnage);13/09/2017 15:12
+1153;Animatrice de distribution;13/09/2017 15:31
+1154;Commerciale free lance;14/09/2017 07:34
+1155;Stagiaire en Back Office;14/09/2017 07:46
+1156;Guichetière;14/09/2017 09:07
+1157;CUSTOMER SERVICE QUALITY ANALYST ET FORMATEUR;14/09/2017 11:52
+1158;CUSTOMER SERVICE QUALITY ANALYST;14/09/2017 11:52
+1159;INTERIM QUALITY ANALYST;14/09/2017 11:52
+1160;AGENT AU CENTRE D'APPEL;14/09/2017 11:52
+1161;INTERIM TEAM LEADER;14/09/2017 11:52
+1162;technicien supérieure;14/09/2017 13:53
+1163;Stagiaire au niveau du Responsable Budget et Prévoyance RH;14/09/2017 15:25
+1164;Stagiaire au niveau du Responsable personnel;14/09/2017 15:25
+1165;Stagiaire au niveau du Responsable paye;14/09/2017 15:25
+1166;responsable Import-export;14/09/2017 15:39
+1167;Stagiaire département Commercial;14/09/2017 15:39
+1168;Travaille en trinome;14/09/2017 16:16
+1169;Stagiaire en Administrateur Reseau Informatique;15/09/2017 14:32
+1170;responsable d approvisionnement et Transit;16/09/2017 16:34
+1171;Qualificateur de fiche d'entreprise;18/09/2017 07:01
+1172;Team Leader;18/09/2017 12:56
+1173;BACK OFFICE AIRTEL MADAGASCAR;18/09/2017 12:56
+1174;ANALYST COLLECTION ;18/09/2017 12:56
+1175;OUTBOUND RETENTION ;18/09/2017 12:56
+1176;INBOUND;18/09/2017 12:56
+1177;ingénieur réseaux stagiaire;18/09/2017 23:06
+1178;Trainee;19/09/2017 07:00
+1179;Opérateur OnLine Chez Mad’Com Vivetic;19/09/2017 11:37
+1180;Chef de chantier sur le projet de FID (Fonds d’Intervention pour le Développement) à   Ambatolampy;19/09/2017 11:37
+1181;Assistante relation client et suivi Import;19/09/2017 13:18
+1182;Formatrice;19/09/2017 13:18
+1183;Conseillère commerciale;19/09/2017 13:18
+1184;Educateur;19/09/2017 13:18
+1185;Organisatrice et coorganisatrice évènementiel;19/09/2017 13:18
+1186;Stagiaire dans le service approvisionnement ;19/09/2017 14:49
+1187;Télémarketing;20/09/2017 06:32
+1188;chef cuisinier;20/09/2017 09:06
+1189;ResponsableEnergie renouvelable et maintenance;20/09/2017 11:47
+1190;Superviseur technique d'intervention sur l'installation d'une centrale solaire;20/09/2017 11:47
+1191;Secretaire de rédaction;20/09/2017 11:55
+1192;Content Manager;20/09/2017 11:55
+1193;Contrôle qualité;20/09/2017 12:08
+1194;Pigiste;20/09/2017 12:08
+1195;Accompagnateur francophone;20/09/2017 12:10
+1196;Responsable technique et électricien solaire;20/09/2017 12:13
+1197;Technicien solaire;20/09/2017 12:13
+1198;IT Manager;20/09/2017 13:00
+1199;"•	Prestataire de service,";20/09/2017 13:00
+1200;coiffeuse ;20/09/2017 14:07
+1201;Administrateur de parc informatique;20/09/2017 14:48
+1202;Développeur javascript;20/09/2017 14:48
+1203;Responsable Commerciale & Marketing ;21/09/2017 08:33
+1204;Animateur de stand;21/09/2017 08:46
+1205;SECRETAIRE COMPTABLE ET LOGISTICIEN;21/09/2017 08:53
+1206;SECRETAIRE COMPTABLE ET OPERATEUR DE SAISIE;21/09/2017 08:53
+1207;Informaticien assistant;21/09/2017 08:53
+1208;Responsable de site ;21/09/2017 08:53
+1209;Contrôleur qualité ;21/09/2017 08:53
+1210;Stagiaire Technicien en Maintenance Informatique;21/09/2017 09:40
+1211;Technicien en Maintenance Informatique;21/09/2017 09:40
+1212;Operateur On-line;21/09/2017 09:40
+1213;Chargé de Clientèle CDD;21/09/2017 10:11
+1214;Superviseur Back office CDD;21/09/2017 10:11
+1215;Agent back office CDD;21/09/2017 10:11
+1216;Opérateur de saisie CDD;21/09/2017 10:11
+1217;animateur TELMA M 'SOMA;21/09/2017 11:09
+1218;Consultante RH ;21/09/2017 15:26
+1219;Consultant RH ;22/09/2017 13:34
+1220;Contrôleur de Gestion Sociale ;22/09/2017 13:34
+1221;HR Manager – Rewards / HR Operations & Analytics TL / Payroll & Software Assistant /;22/09/2017 13:34
+1222;Assistant Comptable ;22/09/2017 13:34
+1223;"RESPONSABLE STOCK-COMMERCIAL-ADMINISTRATION ; Agent Ticketing ; Serétaire de Direction";22/09/2017 15:31
+1224;Télé-assistante administrative;23/09/2017 10:41
+1225;;23/09/2017 15:52
+1226;Support technique;23/09/2017 18:37
+1227;DIRECTEUR COMMERCIAL et MARKETING;25/09/2017 06:56
+1228;aide mecanique et chauffeur;25/09/2017 08:32
+1229;Charge Clientèle et Comptabilité;25/09/2017 10:26
+1230;ASSUSTANTE DE DIRECTION / RESPONSABLE DEPARTEMENT / RESPONSABLE ADMINISTRATIF ET FINANCIER/COMMERCIALISATION;25/09/2017 13:03
+1231;Médiateur média;25/09/2017 13:13
+1232;Conseillère;25/09/2017 13:13
+1233;Productrice, animatrice et coordinatrice de programme;25/09/2017 13:13
+1234;Réalisateur émission télévisé;25/09/2017 13:25
+1235;Saisie comptable;25/09/2017 23:06
+1236;Pair Educateur;26/09/2017 09:02
+1237;Stagiaire en Développeur;26/09/2017 13:44
+1238;Stagiaire en Développeur web;26/09/2017 13:44
+1239;paire educateur;26/09/2017 19:47
+1240;Modérateur en langue française ;27/09/2017 07:11
+1241;enseignant de Mathématiques ;27/09/2017 07:11
+1242;Contrôleur Financier ;27/09/2017 07:11
+1243;Coordinateur en RESSOURCES HUMAINES;27/09/2017 07:39
+1244;opérateur de saisie au sénat de Madagascar;27/09/2017 07:49
+1245;Developpeur web et Mobile;27/09/2017 08:12
+1246;Technicien agricole;27/09/2017 10:07
+1247;Restaurateur, Archiviste et responsable triage;27/09/2017 10:12
+1248;Réparateur et Maintenance d'ordinateur en free lance;27/09/2017 10:48
+1249;Stagiaire en mécanique;27/09/2017 11:00
+1250;Suprviseur et Animateur;27/09/2017 11:32
+1251;chef de partie;27/09/2017 13:31
+1252;Cuisinier en cantine;27/09/2017 13:34
+1253;CHARGE GRAND COMPTE;27/09/2017 14:36
+1254;Traiteur;27/09/2017 14:50
+1255;Sous-chef cuisinier;27/09/2017 14:50
+1256;Cuisinier et Responsable de stockage;27/09/2017 14:58
+1257;Responsable achat accessoires;27/09/2017 15:04
+1258;Infographiste Metteur en page;27/09/2017 15:09
+1259;PAOiste;27/09/2017 15:09
+1260;Responsable Administratif et du Suivi du programme BABEO;28/09/2017 10:08
+1261;Assistante du Responsable des Passations de Marchés;28/09/2017 10:08
+1262;Assistante d'études;28/09/2017 10:08
+1263;Stagiaire mécanicien;28/09/2017 11:04
+1264;Coursier et Aide-magasinier;29/09/2017 14:50
+1265;Animatrice communale et secretaire;02/10/2017 11:06
+1266;ASSISTANTE DE DIRECTION / RESPONSABLE DEPARTEMENT / RESPONSABLE ADMINISTRATIF ET FINANCIER/COMMERCIALISATION;03/10/2017 14:32
+1267;Serétaire de Direction;04/10/2017 10:12
+1268;Agent ticketing;04/10/2017 12:02
+1269;Chef de service G.P.A.O;04/10/2017 12:02
+1270;Interim ;04/10/2017 12:02
+1271;"Assistante de direction/ Responsable département Accompagnement de projet et aménagement et Design ""ACP-AMD""";04/10/2017 15:26
+1272;Assistante de direction Technique et secrétaire de bureau d'études;04/10/2017 15:26
+1273;Assistante de direction/ Responsable département Accompagnement de projet et aménagement et Design ;04/10/2017 15:34
+1274;Consultante pour la conception et élaboration d'un centre d'information;05/10/2017 09:14
+1275;Animatrice et Educatrice de jeune;05/10/2017 09:14
+1276;POLYVALENT;06/10/2017 07:29
+1277;Inforgaphiste consultant;06/10/2017 08:50
+1278;Infographiste prestatiare;06/10/2017 08:50
+1279;Stagiaire développeur PHP;06/10/2017 09:27
+1280;Animatrice de ventes périodique;09/10/2017 09:23
+1281;Stagiaire en gestionnaire de stock;09/10/2017 09:49
+1282;Animateur de vente;09/10/2017 09:49
+1283;Stagiaire en Assistant comptable;09/10/2017 09:49
+1284;Assistsante et serveuse évènementielle;09/10/2017 10:49
+1285;Assistante Comptable Stagiaire;09/10/2017 13:37
+1286;;09/10/2017 15:33
+1287;KYC;10/10/2017 07:55
+1288;Garment Technologist;10/10/2017 08:54
+1289;Opérateur de saisie et Agent polyvalent;10/10/2017 09:25
+1290;Opérateur de saisie comptable;10/10/2017 09:56
+1291;Responsable vente;10/10/2017 09:56
+1292;Aide magasinier et aide gestionnaire de stock;10/10/2017 13:55
+1293;Animatrice shop;11/10/2017 09:57
+1294;Chargée d’Administration des ventes opérateurs;11/10/2017 13:05
+1295;Téléopératrice freelance;11/10/2017 13:08
+1296;Gestionnaire Clientèle;11/10/2017 13:44
+1297;Conseillère clientèle;11/10/2017 13:44
+1298;Téchnicien télécommunication et réseau;12/10/2017 10:06
+1299;Chef Secteur;12/10/2017 14:42
+1300;Assistante   administrative;12/10/2017 14:46
+1301;Support du service clientèle ;12/10/2017 14:50
+1302;Administrateur de la carte P+ ;12/10/2017 14:52
+1303;Stagiaire en Administration Réseau et Maintenance;13/10/2017 12:11
+1304;Agent de traitement et de saisie de base de données;13/10/2017 12:11
+1305;Intégrateur web et rédactrice;13/10/2017 13:39
+1306;Rédactrice publicitaire;13/10/2017 13:39
+1307;gestionnaire de stock, operateur media, commercial sedentaire, televendeur;15/10/2017 08:54
+1308;guide accompagnateur locale et organisateur touristique;16/10/2017 08:47
+1309;Stage en vue de l'obtention du diplôme Ingéniorat en Informatique ;16/10/2017 09:21
+1310;Directrice gérante;16/10/2017 14:56
+1311;Directrice commerciale;16/10/2017 14:56
+1312;Chef de zone et chef d'agence;16/10/2017 14:56
+1313;Stagiaire dans le département administration;17/10/2017 06:33
+1314;Agent logistique;17/10/2017 07:01
+1315;Téléconseillière;17/10/2017 11:05
+1316;droit;17/10/2017 14:23
+1317;Ingénieur d'étude;18/10/2017 06:29
+1318;Ingénieur d'études;18/10/2017 06:29
+1319;magasinier/ caissier;18/10/2017 08:41
+1320;logisticien ;18/10/2017 08:53
+1321;Technicien Administratif;18/10/2017 11:09
+1322;;18/10/2017 11:19
+1323;infirmier urgentiste;18/10/2017 11:27
+1324;Testeur;18/10/2017 14:24
+1325;Professeur de Mathématiques et de Physique;18/10/2017 15:03
+1326;Stagiaire en technicien informatique;18/10/2017 15:24
+1327;Stagiaire en maintenance industrielle;18/10/2017 15:24
+1328;marketing;19/10/2017 07:41
+1329;recéptioniste;19/10/2017 07:41
+1330;infirmière urgentiste;19/10/2017 09:09
+1331;Responsable Sécurité du Système d'Informations;19/10/2017 09:13
+1332;Stagiaire en Technicien de maintenance informatique;19/10/2017 14:15
+1333;Technicien Roll Out;19/10/2017 14:34
+1334;Conducteur machine;19/10/2017 15:02
+1335;Télévendeur;20/10/2017 07:26
+1336;Consultant commercial sédentaire francophone;20/10/2017 07:26
+1337;Télé-agent;20/10/2017 07:26
+1338;Assistant Inventaire;20/10/2017 07:26
+1339;Chargé clientèle;20/10/2017 15:35
+1340;Détaillante marchandise générale;20/10/2017 15:35
+1341;Stagiaire en finance et comptabilité;20/10/2017 15:35
+1342;Maintenancier Vehicule;20/10/2017 16:39
+1343;Conseiller Client et technicien SAV;20/10/2017 17:17
+1344;Téléopératrice commerciale;21/10/2017 15:32
+1345;Commerciale produit Gillette et Ariel;21/10/2017 15:32
+1346;Stagiaire et Assistante administrative;23/10/2017 08:04
+1347;Consultante Audit;23/10/2017 09:31
+1348;Opérateur centre de contrôle;23/10/2017 09:48
+1349;Responsable RH;23/10/2017 12:47
+1350;Stage au sein de la Direction commerciale service Corporate ;23/10/2017 14:16
+1351;Organisateur évenementiel;23/10/2017 14:22
+1352;Agent d'acceuil;23/10/2017 14:22
+1353;Dépanneur PC et maintenance informatique;23/10/2017 14:22
+1354;Assiçstante Controle Qualité;24/10/2017 08:20
+1355;Responsable Chargé de Clientèle;24/10/2017 11:26
+1356;Télé-enquêteur;24/10/2017 13:24
+1357;Stagiaire  chargé d'étude;24/10/2017 13:30
+1358;Stagiaire en chargé d'étude;24/10/2017 13:34
+1359;Stagiaire en Maintenancier Vehicule;24/10/2017 14:10
+1360;RESPONSABLE REPORTING;25/10/2017 08:24
+1361;SUPERVISEUR - CHEF DE PROJET ;25/10/2017 08:42
+1362;CLECK;25/10/2017 08:42
+1363;Assistante Import / Export, commercial;25/10/2017 09:27
+1364;gérant cyber café;25/10/2017 10:21
+1365;Aide patissière;25/10/2017 11:44
+1366;VENDEUSE - MAGASINIERE;25/10/2017 11:44
+1367;VENDEUSE-CAISSIERE A LA PATISSERIE;25/10/2017 11:44
+1368;Enseignante de la langue française;25/10/2017 12:44
+1369;Enseignante stagiaire;25/10/2017 12:44
+1370;Opérateur de saisie stagiaire;25/10/2017 13:52
+1371;Stagiaire en tant que Assistante de transit et commerciale;26/10/2017 09:55
+1372;Superviseur / Team Leader;26/10/2017 10:07
+1373;Agent call;26/10/2017 10:11
+1374;Responsable infrastructure IT;26/10/2017 11:45
+1375;Informaticien freelance;26/10/2017 11:55
+1376;Chef de pub;26/10/2017 12:05
+1377;Animateur de vente - HOTES;26/10/2017 14:19
+1378;CLECK - QUANTITY MANAGER OFFICER;26/10/2017 14:19
+1379;SUPERVIEUR;26/10/2017 14:19
+1380;RESPONSABLE REPORTING - CHEF DE VENTE SENIOR - CHEF DE PROJET;26/10/2017 14:19
+1381;Directeur PRA et Responsable importations diverses ;27/10/2017 06:22
+1382;Directeur PRA et Responsable importations diverses ;27/10/2017 06:25
+1383;CAISSIERE ET SERVICE CLIENT;27/10/2017 06:38
+1384;RESPONSABLE SECURITE ;27/10/2017 09:19
+1385;SENIOR SUPERVISEUR;27/10/2017 09:19
+1386;SENIOR GUARD;27/10/2017 09:19
+1387;greffier et informaticien;27/10/2017 12:55
+1388;Stagiaire , département de direction des opérations;27/10/2017 15:04
+1389;Stagiaire, département Administratif et Financier ;27/10/2017 15:04
+1390;Informaticien Stagiaire;27/10/2017 15:33
+1391;Modérateur de message;27/10/2017 15:33
+1392;Responsable de communication et relation éxtérieur;27/10/2017 15:44
+1393;Conducteur de travaux de Pylône;27/10/2017 15:44
+1394;Agent  Commercial;27/10/2017 15:44
+1395;Cogérant;27/10/2017 15:44
+1396;formation d'un assistant social et de developpement local dans le domaine psychologique;27/10/2017 15:44
+1397;COURSIER;27/10/2017 17:03
+1398;Assistant Commercial;27/10/2017 17:03
+1399;;28/10/2017 09:06
+1400;Stagiaire : Développeur et Technicien informatique;28/10/2017 15:01
+1401;Stagiaire: Développeur;28/10/2017 15:01
+1402;Développeur Web et Technicien informatique;28/10/2017 15:01
+1403;Stagiaire : Développeur;28/10/2017 15:01
+1404;Chargée d'approvisionnement;28/10/2017 20:52
+1405;DIRECTEUR MARKETING & COMMERCIAL;30/10/2017 09:13
+1406;professeur de Français;30/10/2017 11:05
+1407;Responsable Accueil;30/10/2017 14:49
+1408;Agent de facturation, de réservation fret export et agent de comptoir fret export;30/10/2017 16:00
+1409;Agent Comptable;30/10/2017 16:39
+1410;Chef de publicité;31/10/2017 07:39
+1411;Gérante du Magasin;31/10/2017 07:39
+1412;Assistante logistique;31/10/2017 08:57
+1413;ASSISTANT TRANSIT;31/10/2017 10:30
+1414;AGENT  DE SÛRETÉ AEROPORT;31/10/2017 10:30
+1415;Commercial marketeur;31/10/2017 11:05
+1416;professeur d'informatique;31/10/2017 11:05
+1417;missionnaire benevole;31/10/2017 11:05
+1418;chef de service d'exploitation et de développement;31/10/2017 11:15
+1419;Gestionnaire de comptes;31/10/2017 11:15
+1420;RESPONSABLE QUALITE;31/10/2017 11:46
+1421;Responsable Administration et Financier;31/10/2017 14:53
+1422;Responsable d'exportation;31/10/2017 15:23
+1423;Résponsable de la communication;01/11/2017 11:46
+1424;CHEF SECTEUR PAYSANNAT;01/11/2017 17:37
+1425;Responsable secteur;01/11/2017 17:40
+1426;commercial grossiste et gms;01/11/2017 17:40
+1427;Responsable marketing;01/11/2017 17:40
+1428;Responsable clientèle;01/11/2017 19:20
+1429;Assistante Export;01/11/2017 19:20
+1430;CONSEILLER CLIENTELE;02/11/2017 10:06
+1431;Chargé de renseignement Base Client;02/11/2017 12:24
+1432;Magasinier Temporaire;02/11/2017 12:24
+1433;Opérateur standard;02/11/2017 15:59
+1434;OTD - Opérateur de saisie;02/11/2017 15:59
+1435;Stagiaire Informaticien polyvalent;02/11/2017 16:26
+1436;Chargé de recrutement et de compétences;02/11/2017 16:35
+1437;comptable - gestionnaire de stock - commercial;03/11/2017 09:34
+1438;Enseignante, matière Histoire et Géographie en classe secondaire ;03/11/2017 10:30
+1439;Stagiaire enquêtrice;03/11/2017 10:30
+1440;Responsable du système informatique;03/11/2017 11:07
+1441;Chef de projet VFP6;03/11/2017 12:02
+1442;dépanneur informatique et éléctronique à domicile;03/11/2017 12:17
+1443;Stagiaire contrôleur;03/11/2017 13:51
+1444;Stagiaire en Marketing;03/11/2017 13:51
+1445;Stagiaire chargé de la clientèle;03/11/2017 13:51
+1446;Stagiaire projet RH;03/11/2017 14:23
+1447;responsable lavage et soudure;05/11/2017 22:11
+1448;hôtesse d'accueil- standardiste , Intérim;06/11/2017 12:19
+1449;Responsable de boutique de luxe;06/11/2017 12:19
+1450;Assistante en Développement et mobilité;06/11/2017 12:44
+1451;ouvrier de maintenance;06/11/2017 16:24
+1452;Stagiaire responsable maintenance;06/11/2017 16:33
+1453;Président;06/11/2017 16:33
+1454;Stagiaire en sismographie;07/11/2017 09:10
+1455;Stagiaire maintenancier;07/11/2017 09:20
+1456;Stagiaire de maintenance;07/11/2017 09:20
+1457;Ingénieur  électricien;07/11/2017 09:51
+1458;Stagiaire enquêteur;07/11/2017 10:21
+1459;Opérateur de saisie Freelance;07/11/2017 10:21
+1460;Bénévole instructeur en Français;07/11/2017 10:21
+1461;Mécanicien d'engin et camion;07/11/2017 11:05
+1462;Technicien de maintenance industriel, Ingénieur de maintenance industriel;07/11/2017 16:23
+1463;Vacataire;07/11/2017 16:23
+1464;Agent, bureau de méthode;07/11/2017 16:23
+1465;Exploitant commercial;08/11/2017 09:21
+1466;hôte;08/11/2017 09:34
+1467;Guide accompagnateur et organisateur touristique (périodique);08/11/2017 09:37
+1468;Stagiaire sous la Direction des affaires administratives et financière;08/11/2017 09:37
+1469;Finance Supervisor ;08/11/2017 10:56
+1470;Opératrice de saisie comptable;08/11/2017 15:02
+1471;Stagiaire responsable clientèle;08/11/2017 15:05
+1472;Stagiaire assistante administrative;08/11/2017 15:05
+1473;Stagiaire assistante Export;08/11/2017 15:05
+1474;Agent de Promotion (Commerciale);09/11/2017 07:50
+1475;Stagiaire auprès du services logistique rattaché au Secrétariat Général;09/11/2017 12:43
+1476;Stagiaire auprès du Chargé Clientèle et Comptabilité;09/11/2017 12:43
+1477;Vendeuse et interprète chinoise;09/11/2017 12:53
+1478;Stagiaire en assistant juridique ;09/11/2017 13:04
+1479;Stagiaire Communication et Information;09/11/2017 14:50
+1480;Responsable réservation et réceptionniste;09/11/2017 20:27
+1481;Formateur en Mission;10/11/2017 13:39
+1482;Stagiaire au sein di département marketing;10/11/2017 13:39
+1483;Stagiaire en création et domiciliation;10/11/2017 14:43
+1484;Assistant administratif, comptable et transit;11/11/2017 10:46
+1485;Gestionnaire de Portefeuille;13/11/2017 15:10
+1486;Responsable   Logistique ;13/11/2017 16:38
+1487;Socio Organisateur et Animateur en IEC périodique;13/11/2017 16:38
+1488;Chargé d'affaires - Responsable Recrutement et mobilité - Gestionnaire de formation;13/11/2017 16:43
+1489;Chargé RH;13/11/2017 16:43
+1490;Commercial Au Comptoir;14/11/2017 09:34
+1491;caissiere et Vendeuse;14/11/2017 09:34
+1492;HOTESSE DE VENTE;14/11/2017 09:34
+1493;Responsable de vente;14/11/2017 09:34
+1494;CHAUFFEUR CONVOYEUR;14/11/2017 10:15
+1495;Chargé de clientèle entreprise;14/11/2017 10:49
+1496;remplacent;14/11/2017 15:49
+1497;Stagiaire, Guide, Agent d'accueil, Agent de tourisme;14/11/2017 16:24
+1498;Agent suivi sous-traitant;14/11/2017 16:30
+1499;Agent d'installation;14/11/2017 16:38
+1500;Chauffeur livreur Commissionnaire;14/11/2017 16:40
+1501;Verbalisateur;14/11/2017 17:10
+1502;Consultante Ponctuelle - Assistante comptable;15/11/2017 08:13
+1503;superviseur de parc vehicule;15/11/2017 10:26
+1504;Responsabble Service Informatique;15/11/2017 11:27
+1505;Paire jeune Educateur;15/11/2017 12:18
+1506;assistant RH;15/11/2017 16:11
+1507;Responsable producton et chef d'usine;15/11/2017 16:23
+1508;Stagiaire d'accueil;16/11/2017 07:52
+1509;Coordinateur Technique;16/11/2017 16:27
+1510;Conseiller Technique en Energie Renouvelable ;16/11/2017 16:27
+1511;Responsable Exploitation -;16/11/2017 16:27
+1512;Chief Strategy Officer;17/11/2017 08:35
+1513;Responsable Administratif et Financier Intérimaire;17/11/2017 08:35
+1514;Chargés des comptes clients et fournisseurs;17/11/2017 08:35
+1515;Auditeur interne;17/11/2017 08:35
+1516;assistant responsable Marketing stagiaire;17/11/2017 09:01
+1517;Verbalisateur et chauffeur.;17/11/2017 12:08
+1518;Stagiaire  responsable communication externe;17/11/2017 12:13
+1519;Stagiaire monteur vidéo;17/11/2017 12:13
+1520;stagiaire monteur et cadreur;17/11/2017 12:13
+1521;suivre les dépenses carburants ;20/11/2017 08:44
+1522;Comptable, Responsable administratif et Financier;20/11/2017 09:01
+1523;Vendeuse Commerciale;20/11/2017 09:53
+1524;Opérateur web polyvalent;20/11/2017 13:15
+1525;sans emploi;21/11/2017 08:11
+1526;commissionnaire et preparateur et acheteur des vanilles;21/11/2017 09:18
+1527;Enseignante de la langue française et sécrétaire;21/11/2017 10:36
+1528;Concepteur et réalisateur;21/11/2017 11:04
+1529;Chauffeur taxi brousse zone national tana majunga et tana diego;22/11/2017 16:12
+1530;Chaufeur taxi ville;22/11/2017 16:12
+1531;vendeuse, commerciale , caissière;22/11/2017 16:22
+1532;assistante commeciale;22/11/2017 16:27
+1533;Assistante de direction et responsable personnel;22/11/2017 16:30
+1534;Responsable park informatique et de la relation à la clientèle;22/11/2017 20:35
+1535;Responsable de Plateau et des services informatique;22/11/2017 20:35
+1536;Opérateur Télésurveillance;22/11/2017 20:35
+1537;Metteur en pages XML;22/11/2017 20:35
+1538;Prestataire service informatique;22/11/2017 20:35
+1539;Socio-organisateur;23/11/2017 07:35
+1540;Analyste au système d'information et d'exploitation;24/11/2017 06:26
+1541;Agent de maintenance informatique;24/11/2017 06:36
+1542;Technicien en maintenance industriel;24/11/2017 10:17
+1543;Assistant admnistrative;24/11/2017 11:20
+1544;Chauffeur animateur;24/11/2017 13:37
+1545;vendeuse et commerciale;24/11/2017 14:08
+1546;Directeur;24/11/2017 15:16
+1547;Directeur du Système d'Information;24/11/2017 15:16
+1548;Stagiaire en radio communication, Liaison VSAT;24/11/2017 15:53
+1549;Consultante en tourisme;27/11/2017 11:33
+1550;Secrétaire - Caissière;27/11/2017 16:19
+1551;Télé-conseillère;27/11/2017 16:19
+1552;;28/11/2017 09:12
+1553;Consultante Senior en RH;28/11/2017 10:48
+1554;Assitante de direction;28/11/2017 10:48
+1555;Juriste intérimaire;28/11/2017 10:48
+1556; assistant, inspecteur commercial, responsable logistique;28/11/2017 15:32
+1557;Technico commercial;29/11/2017 07:51
+1558;Télé conseiller;29/11/2017 07:51
+1559;Déssinateur, Paoist, ;29/11/2017 08:00
+1560;Comptable, Responsable administratif et Financier, logistique;29/11/2017 08:11
+1561;Responsable de département;29/11/2017 10:40
+1562;Responsable des Opérations;29/11/2017 10:40
+1563;Coordinateur de projets;29/11/2017 10:40
+1564;Chargée de mission bénévole pour mise en place et la gestion du réseau social numérique;29/11/2017 16:02
+1565;Chargée de mission pour la mise en place du plan d'aménagement durable et équitable du site de la Mer d'émeraude;29/11/2017 16:02
+1566;Conduite de projet sur les démarches d'acquisition de l'écolabel européenne et pour les adhérents de l'UNAT;29/11/2017 16:02
+1567;Chargée de mission dans le cadre de l'élaboration de l'Atlasde la région DIANA;29/11/2017 16:02
+1568;Responsable Cellule Projet;30/11/2017 08:08
+1569;SAGE FEMME;30/11/2017 10:59
+1570;Chargée de Formation et de Qualité;30/11/2017 11:03
+1571;gouvernante/receptionniste;30/11/2017 13:07
+1572;Responsale d'un cash point de credit;30/11/2017 14:08
+1573;Adjoint Techniques d'Agriculture - Chef d'équipe;30/11/2017 17:01
+1574;Chargé d'étude de crédit;01/12/2017 15:07
+1575;Commercial Vente Indirect;01/12/2017 15:07
+1576;Trade Developper ;01/12/2017 15:07
+1577;Membre d'équipe de projet;02/12/2017 10:38
+1578;Assistante suivi et évaluation de projet;02/12/2017 10:38
+1579;Assistante du responsable administratif et financier;02/12/2017 10:38
+1580;Rzsponsable du département Informatique;04/12/2017 07:36
+1581;Ingénieur concepteur, developeur informatique;04/12/2017 07:36
+1582;conseil d'admnistration;04/12/2017 07:51
+1583;Responsable logistique et comptable;04/12/2017 07:51
+1584;Chargé de qualité Italohone;04/12/2017 09:25
+1585;media player;04/12/2017 13:24
+1586;animation;04/12/2017 14:23
+1587;Responsable livraison et de trésorerie ;04/12/2017 15:18
+1588;Assistante administrative/Magasinière ;04/12/2017 15:18
+1589;Conseillère de vente ;04/12/2017 15:18
+1590;ASSISTANTE ACHATS DIRECTION DEVELOPPEMENT AGRICOLE;04/12/2017 15:26
+1591;Hotesse évènementiel;04/12/2017 15:58
+1592;Electricien, maintenancier;05/12/2017 07:39
+1593;Infirmière;05/12/2017 12:12
+1594;Trade developpeur ;05/12/2017 16:04
+1595;Assistant admnistratif et financier;06/12/2017 07:30
+1596;opératrice de saisie on line, découpeur;06/12/2017 08:16
+1597;Caissière et comptable;06/12/2017 14:10
+1598;Coordinateur Technique, Responsable de Projet et d'exploitation;06/12/2017 14:42
+1599;Patissière;06/12/2017 15:15
+1600;Stagiaire Patissière;06/12/2017 15:15
+1601;Femme de Ménage;07/12/2017 15:53
+1602;Auditeur en Chef Santé sécurité;07/12/2017 16:06
+1603;Facilitateur 5S - Lean Management;07/12/2017 16:06
+1604;Conseiller Santé sécurité;07/12/2017 16:06
+1605;Superviseur QHSE;07/12/2017 16:06
+1606;DIRECTEUR ADMINISTRATIF ET FINANCIER;07/12/2017 16:53
+1607;Assistant marketing;08/12/2017 09:09
+1608;Directeur Systeme d'Information;08/12/2017 09:58
+1609;Responsable Projet IT;08/12/2017 09:58
+1610;Ingénieur de production;08/12/2017 10:41
+1611;Responsable de salle;08/12/2017 10:41
+1612;Contrôleur;08/12/2017 10:41
+1613;Agent validateur;08/12/2017 11:06
+1614;formation;09/12/2017 10:04
+1615;"Commercial et  Conseiller clientèle; comptabilité";09/12/2017 10:15
+1616;Analyste de credit ;09/12/2017 10:39
+1617;INTERNE;09/12/2017 19:15
+1618;Agent de sureté;11/12/2017 09:14
+1619;Directeur Exécutif;11/12/2017 13:26
+1620;Responsable VIP room Air France;11/12/2017 13:35
+1621;SECRETAIRE CONTRACTUELLE;11/12/2017 13:57
+1622;animatrice radio;11/12/2017 15:00
+1623;Consultant,Auditeur;12/12/2017 07:35
+1624;technicien biologiste;12/12/2017 07:39
+1625;technicien laboratoire;12/12/2017 07:39
+1626;Depanneur et maintenancier;12/12/2017 08:00
+1627;Serveur;12/12/2017 15:15
+1628;enquêtrice sur terrain;12/12/2017 16:21
+1629;contrôleur de qualité;13/12/2017 10:49
+1630;Opérateur  de traitement de documents;13/12/2017 15:40
+1631;Agent Admnistrative, assistante technique, responsable projet;13/12/2017 15:56
+1632;chef boulanger;14/12/2017 08:56
+1633;;14/12/2017 08:59
+1634;Agent Guichet Foncier;14/12/2017 13:02
+1635;Representant Commercial puis Regionals Sales Manager;14/12/2017 13:02
+1636;Secretaire standardiste;14/12/2017 15:36
+1637;Responsable server;15/12/2017 08:24
+1638;Ingénieur d'Etudes et de Méthodes;15/12/2017 13:08
+1639;Superviseur de chantier;15/12/2017 13:08
+1640;Assistant Conducteur de Travaux;15/12/2017 13:08
+1641;Conseiller clientèlle;15/12/2017 15:20
+1642;Commerciale et maquilleuse;15/12/2017 15:25
+1643;HOMME A TOUT FAIRE;18/12/2017 07:50
+1644;Juriste;18/12/2017 09:14
+1645;Aide planificateur de maintenance;18/12/2017 09:29
+1646;Aide responsable HSE;18/12/2017 09:29
+1647;Anlyste;18/12/2017 11:59
+1648;Operateur Machine et de tricotage;18/12/2017 14:26
+1649;Agent admnistrative et financière;18/12/2017 14:26
+1650;assistant chef de service;18/12/2017 14:28
+1651;Redacteur web freelance;18/12/2017 14:48
+1652;Agent admnistratif et financière;18/12/2017 14:48
+1653;Chef responsable de la boulangerie;18/12/2017 15:29
+1654;Agent de recouvrement et Agent Logistique;18/12/2017 15:34
+1655;Chef résponsable  de la boulangerie;18/12/2017 15:34
+1656;responsable informatique, Responsable Communication, assistant import;19/12/2017 11:47
+1657;Enseignante de science de la vie et de l;19/12/2017 12:49
+1658;Stage de 4 mois;19/12/2017 15:47
+1659;Analyste Siège;19/12/2017 16:12
+1660;Superviseur d'animation et commercial;19/12/2017 16:12
+1661;Agent enqêteur;20/12/2017 07:28
+1662;Chargé d'étude;20/12/2017 07:35
+1663;Gestionnaire de Base de données;20/12/2017 07:39
+1664;stagiaire en tant que manager;20/12/2017 08:15
+1665;conseille clientel - téléoperateur;20/12/2017 09:53
+1666;agent de collect et chef de chantier;20/12/2017 09:53
+1667;Formation en téléopérateur;21/12/2017 08:03
+1668;Téléopératrice on line ;21/12/2017 08:38
+1669;Vendeur et traitement service après vente;21/12/2017 08:40
+1670;Assistant Admnistratif;21/12/2017 09:17
+1671;Animateur et vendeur commercial;21/12/2017 09:17
+1672;Sereveur;22/12/2017 08:14
+1673;Rédacteur en chef;22/12/2017 12:48
+1674;Journaliste;22/12/2017 12:48
+1675;Responsable pôle web;22/12/2017 12:48
+1676;Secrétaire et mise en place du site midi et gazetiko;22/12/2017 12:48
+1677;Chef de rang;22/12/2017 13:10
+1678;;26/12/2017 13:31
+1679;Agent de collecte,chef de chantier,enqeuteur;27/12/2017 08:30
+1680;Réceptionniste et Agent administrative de l’hôtel sifaka auberge ;27/12/2017 10:42
+1681; assistante commercial;27/12/2017 13:36
+1682;Assistante Commerciale au prés de la Société ANKARANA RHUM ;27/12/2017 14:15
+1683;Réceptionniste et Agent administrative de l’hôtel sifaka auberge (même groupe de société).;27/12/2017 14:15
+1684;Concepteur et réalisateur d'emission;28/12/2017 09:38
+1685;Flux internationaux;04/01/2018 17:45
+1686;Professeurs anglais;05/01/2018 09:04
+1687;Professeurs anglais parlé;05/01/2018 09:04
+1688;Stagiaire en contrôle de gestion;10/01/2018 16:33
+1689;Consultant Business Intelligence;11/01/2018 07:15
+1690;RECEPTIONNISTE/ responsable d'hebergement/ gerant d'hôtel;12/01/2018 18:47
+1691;Chauffeur, gérant magasin, responsable commercial, magasinier, recouvrement, responsable parc auto (location de vehicule);14/01/2018 19:43
+1692;Responsable d'equipe;15/01/2018 09:10
+1693;Agent numériseur;15/01/2018 12:31
+1694;Contrôleur  numeriseur;15/01/2018 12:44
+1695;Secretaire d'examen au baccalauréat;15/01/2018 12:57
+1696;stagiaire en Assistante comptable;15/01/2018 16:22
+1697;Conducteur de travaux, Chef de chantier;15/01/2018 16:37
+1698;Conseillère experte;15/01/2018 16:58
+1699;Expert Metier;15/01/2018 16:58
+1700;Assureur Qualité Discours;15/01/2018 16:58
+1701;Surveillant média;16/01/2018 09:38
+1702;Responsable Qualité Process - Auditeur Qualité Interne;16/01/2018 11:07
+1703;Chargé de la Qualité CDO;16/01/2018 11:07
+1704;Responsable Logistique et Ressources Humaines;16/01/2018 11:07
+1705;Auditeur Qualité Interne;16/01/2018 11:07
+1706;Caissier, Aide comptable;17/01/2018 07:29
+1707;Stagiaire caissier, aide comptable;17/01/2018 08:18
+1708;COORDINATRICE FINITION ;19/01/2018 13:11
+1709;Moderatrice;19/01/2018 15:42
+1710;...;21/01/2018 10:55
+1711;VALIDEUR ET RESPONSABLE DE FRONT-OFFICE;22/01/2018 11:58
+1712;annimateur;23/01/2018 07:02
+1713;MEDIA PALNNEUR;23/01/2018 07:27
+1714;Opérateur Call;24/01/2018 14:47
+1715;Responsable des Services Généraux ;24/01/2018 14:47
+1716;maçon, electricien;24/01/2018 15:06
+1717;Facturiere.operateure de saisie;24/01/2018 15:57
+1718;Charge de Qualité Italophone;25/01/2018 07:56
+1719;stagiaire dans le département logistique technique;25/01/2018 08:30
+1720;Representante;25/01/2018 14:50
+1721;Stagiaire en comunication;25/01/2018 15:07
+1722;"o	Opérateur de saisie (10.000 caractères à l’heure) o	Assistant Marketing web: SEO, SEA. o	Opérateur web";25/01/2018 21:28
+1723;Opérateur de saisie polyvalent ;25/01/2018 21:28
+1724;Chargé Administrative;26/01/2018 10:48
+1725;"Modératrice Web; responsable référencement";26/01/2018 13:08
+1726;frappe de saisie et vendeur;28/01/2018 15:39
+1727;Representante de l'agence;29/01/2018 07:55
+1728;Administrateur Systeme et Reseau (Technicien Support Niveau 2);29/01/2018 14:46
+1729;;29/01/2018 15:02
+1730;Technical System Sécurity Controleur;29/01/2018 15:15
+1731;Technicien Hotliner, Support Niveau I (Helpdesk);29/01/2018 15:15
+1732;Stagiaire en secretaire particulier;29/01/2018 16:04
+1733;guitariste et chanteur;02/02/2018 20:16
+1734;Agent  administratif;03/02/2018 10:25
+1735;OPERATEUR EN LIGNE;05/02/2018 10:18
+1736;;06/02/2018 11:42
+1737;Chef de sous groupement;07/02/2018 11:53
+1738;Chef de division exploitation centrale thermique;07/02/2018 11:53
+1739;Chef d'usine centrale thermique;07/02/2018 11:53
+1740;Responsable maintenance de la centrale thermique;07/02/2018 11:53
+1741;Chef mécanicien itinerant;07/02/2018 11:53
+1742;Magasinniere;07/02/2018 12:23
+1743;Responsable référencement;07/02/2018 16:09
+1744;Modératrice web;07/02/2018 16:09
+1745;Responsable billetterie;07/02/2018 16:09
+1746;Promoteur de vente;07/02/2018 16:09
+1747;Assistante comptable et administrative;07/02/2018 16:47
+1748;Facturiere;07/02/2018 16:47
+1749;Responsable de caisse;07/02/2018 16:47
+1750;Modérateur Francophone;08/02/2018 09:56
+1751;Demand Creator (Commerciale);08/02/2018 10:07
+1752;Hebergement/RESTAURANT/CUISINE;08/02/2018 15:07
+1753;Communication - Promotion manager;08/02/2018 15:12
+1754;Communication - Marketing manager;08/02/2018 15:12
+1755;Responsable vente et marketing;08/02/2018 15:12
+1756;Agent de Méthode technique;08/02/2018 15:50
+1757;Responsable Méthode Technique;08/02/2018 15:50
+1758;Chef de Brigade / Responsable VAD;08/02/2018 19:17
+1759;Aide Maçon;08/02/2018 19:46
+1760;Responsabilité Sociétale de l'Entreprise Stagiaire;09/02/2018 14:00
+1761;Animatrice média Show;09/02/2018 14:00
+1762;Programmeur du projet site web ITARO, TAF’ITA;09/02/2018 14:00
+1763;Technicienne radiophonique;09/02/2018 14:00
+1764;Standardiste,Aide comptable,approvisionnement,assistant responsable chantier;09/02/2018 14:20
+1765;Chargé d’accueil;09/02/2018 15:39
+1766;Guide;09/02/2018 15:39
+1767;Laborantine;11/02/2018 13:38
+1768;Administrateur de ventes groupe;13/02/2018 09:25
+1769;Promoteur, Responsable District;13/02/2018 09:25
+1770;Chargé Grand Comptes;13/02/2018 09:25
+1771;Assistant Responsable Chantier ;13/02/2018 09:58
+1772;Caissier Standardiste;13/02/2018 09:58
+1773;Responsable Adjoint de Magasin;13/02/2018 10:50
+1774;Directeur Adjoint de camping et restaurant de l’Auberge;13/02/2018 10:50
+1775;Chargé de Qaulité francophone et italophone;13/02/2018 13:06
+1776;conseil client;13/02/2018 15:00
+1777;Sales and Marketing representative;13/02/2018 17:11
+1778;Paoiste et Photographe;14/02/2018 09:47
+1779;Photographe et Traiteur Photo;14/02/2018 10:08
+1780;Photographe,graphiste;14/02/2018 10:08
+1781;Responsable District;14/02/2018 11:12
+1782;chauffeur -commercial;14/02/2018 13:33
+1783;Référenceur d'un site de voyage (SEO);14/02/2018 15:34
+1784;Modérateur vidéo (TV pro), skyblog, rencontre;14/02/2018 15:34
+1785;Responsable administratif flotte location;14/02/2018 16:08
+1786;Chargé Parc Auto Moto ;14/02/2018 16:33
+1787;Prestataire de services en Logistique ;14/02/2018 16:33
+1788;Responsable parc véhicule et planification ;14/02/2018 16:33
+1789;Responsable parc véhicule;14/02/2018 16:33
+1790;Responsable Trasport ;14/02/2018 16:33
+1791;Assistant logistique et administratif;14/02/2018 16:33
+1792;Mecanicien Poids Lourds ;14/02/2018 16:33
+1793;Enseignante de la langue anglaise et culture patrimoine malgache;14/02/2018 21:37
+1794;Stagiaire en agent forfaitiste;14/02/2018 21:37
+1795;Stagiaire receptionniste;14/02/2018 21:37
+1796;Stagiaire cuisine;14/02/2018 21:37
+1797;Stagiaire - Chargé de Clientèle;15/02/2018 08:24
+1798;Animateur et mascotte;17/02/2018 11:32
+1799;Stage en entreprise touristique ;17/02/2018 11:32
+1800;conseillère en bien être ;18/02/2018 12:10
+1801;SHOP ADVISOR;18/02/2018 12:11
+1802;agent tacabilité;19/02/2018 16:21
+1803;Animateur, responsable de volet, chef de mission;19/02/2018 16:28
+1804;Contrôleur Qualité et Livreur du département Appels Sortants ;19/02/2018 17:27
+1805;Bureauticien;20/02/2018 10:42
+1806;PRE-PRODUCTION OU AGENT DE METHODE;20/02/2018 10:42
+1807;Chauffeur encaisseur;20/02/2018 11:37
+1808;Superviseur administratif et comptable;20/02/2018 14:36
+1809;assistante achat;20/02/2018 14:37
+1810;Assistant logistique et Magasinier;20/02/2018 15:03
+1811;Assistant Logistique (stagiaire);20/02/2018 15:17
+1812;Assistant de bureau (stagiaire);20/02/2018 15:17
+1813;Gestionnaire des stocks (stage);20/02/2018 16:22
+1814;Développeur NET VB;21/02/2018 17:40
+1815;Chef Sécurité;22/02/2018 11:41
+1816;superviseur patrouilleur et missionnaire;22/02/2018 11:41
+1817;Agent desécurité;22/02/2018 11:41
+1818;Releveur encaisseur;22/02/2018 11:41
+1819;Chef Chantier;22/02/2018 11:41
+1820;Assistante de prévention ;22/02/2018 14:05
+1821;Attachée de production et Commerciale de bureau ;22/02/2018 14:05
+1822;Secrétaire Quality Manager;22/02/2018 15:08
+1823;Assistante en développement et planification ;22/02/2018 15:11
+1824;CHARGEE BACK OFFICE DE RECLAMMATION;22/02/2018 15:24
+1825;OPERATRICE ANGLOPHONE ONLINE;22/02/2018 15:24
+1826;Superviseur, chef d'équipe et collécteur;22/02/2018 15:53
+1827;rédacteur web et SEO, Communication intérnational avec les plateforme ;22/02/2018 15:53
+1828;;22/02/2018 16:35
+1829;juriste habitat;22/02/2018 16:53
+1830;Développeur - infographiste;22/02/2018 20:02
+1831;Développeur Php - Python - windev;22/02/2018 20:02
+1832;Conducteur et chauffeur;23/02/2018 10:33
+1833;Conducteur d'Engin aux pelles;23/02/2018 10:33
+1834;Conducteur d'engin chargeur aux pelles;23/02/2018 10:33
+1835;Responsable Opération;23/02/2018 10:45
+1836;Chargé de projet Clipping;23/02/2018 10:45
+1837;Responsable d’Atelier de l’Atelier Texte;23/02/2018 10:45
+1838;Contrôleur Qualité et Livreur de l’Atelier Texte;23/02/2018 10:45
+1839;Consultante Chez Maky Engineering;23/02/2018 10:45
+1840;Responsable de Projet Junior ;23/02/2018 10:45
+1841;Assistant Responsable des Techniques Editoriaux ;23/02/2018 10:45
+1842;Agent monitoring;23/02/2018 20:27
+1843;Administrateur de Cantier;26/02/2018 14:04
+1844;Chef de projet et Développeur Windev;28/02/2018 08:49
+1845;stagiaire en conseillère clientéle;28/02/2018 10:32
+1846;AGENT QUALITE;28/02/2018 10:32
+1847;Assistante Direction Admin et FINanciere;28/02/2018 11:40
+1848;IT Analyst;28/02/2018 16:48
+1849;IT SUPPORT ENGINEER;28/02/2018 16:48
+1850;IT Specialist;28/02/2018 16:48
+1851;Gestionnaire de parc informatique et réseaux;28/02/2018 17:20
+1852;Responsable billing;28/02/2018 17:20
+1853;Technicien de maintenance bureautique;28/02/2018 17:20
+1854;Technicien informatique stagiaire;28/02/2018 17:20
+1855;Assistant personnel;01/03/2018 10:29
+1856;Moderateur web Franco-Anglo-Italophone;01/03/2018 10:29
+1857;Relation client et télémarketing du groupe Orange Madagascar;01/03/2018 10:29
+1858;Chauffeur Location de voiture;01/03/2018 17:26
+1859;Technicien Vsat et BLR;02/03/2018 13:19
+1860;Gestion des marchés publiques;02/03/2018 16:35
+1861;Responsable personnel Road ;03/03/2018 12:42
+1862;ANIMATEUR ET PRESENTATEUR EMISSION;03/03/2018 12:42
+1863;Operateur d'usine;03/03/2018 13:04
+1864;accueil client ,commercial,recouvrement ;05/03/2018 09:43
+1865;Chargée de renseignement base ;06/03/2018 11:09
+1866;Chef Atelier;06/03/2018 14:51
+1867;Stagiaire en gestion de personnel;06/03/2018 15:25
+1868;Back-Office Ventes;07/03/2018 11:01
+1869;COMMANDEUR;07/03/2018 22:19
+1870;animateur de programme,téléopératrice,bénévole,chargée de cours;08/03/2018 15:58
+1871;Informatisation Alphanumériques des Données Foncières;09/03/2018 16:46
+1872;Gérant et Responsable des exploitations;09/03/2018 16:46
+1873;CORRECTEUR  ET  RELECTEUR ;09/03/2018 16:46
+1874;ELS;10/03/2018 09:34
+1875;Formatrice en Education Financière;11/03/2018 09:35
+1876;Directeur d'Agence Antananarivo;12/03/2018 15:35
+1877;Responsable externalisation comptable;12/03/2018 15:35
+1878;E.L.S(employer libre et service);13/03/2018 11:21
+1879;consultante commerciale;13/03/2018 11:26
+1880;Maintenance informatique et commerciale;14/03/2018 10:11
+1881;Chef de projet Referencement;14/03/2018 14:58
+1882;RESPONSABLE D'AFFAIRE;14/03/2018 17:05
+1883;Administrateur de Ventes ;15/03/2018 09:34
+1884;Bénévole;15/03/2018 14:10
+1885;stagiaire en transit (assistante);15/03/2018 14:24
+1886;Responsable de services généraux;15/03/2018 14:42
+1887;GIS Analyst-Geophysicien;15/03/2018 15:50
+1888;STAGIARE;16/03/2018 07:13
+1889;Assistant Administratif/ Informaticien/ Chef de station;16/03/2018 09:49
+1890;Agent de sécurité;16/03/2018 11:28
+1891;Administrateur système IT;16/03/2018 11:54
+1892;Contrôleur et Technicien informatique;16/03/2018 11:54
+1893;Chargée de Veille Média ;16/03/2018 12:33
+1894;VENDEUR DES PIECES MOTO;16/03/2018 18:59
+1895;secrétaire et gestionaire de documents;18/03/2018 08:05
+1896;rédactrice freelance;18/03/2018 22:37
+1897;Géologue et Ingénieur des mines responsable techniques d’exploitation et d’exploration de gisement;19/03/2018 11:00
+1898;Géologue Chef de  Projet ;19/03/2018 11:00
+1899;Géologue Junior ;19/03/2018 11:00
+1900;Sigist, Ingénieur de Mines Environnementaliste ;19/03/2018 11:00
+1901;Chef de mission pour la prospection ;19/03/2018 11:00
+1902;Géologue d’exploration, modélisation et responsable base de données;19/03/2018 11:00
+1903;Ingénieur des Mines ;19/03/2018 11:00
+1904;Administrateur système;19/03/2018 12:33
+1905;Technicien Informatique et Contrôleur;19/03/2018 12:33
+1906;Opérateur Back-office;20/03/2018 09:21
+1907;Technicienne Réseaux et Systèmes;20/03/2018 10:43
+1908;Freelance;20/03/2018 12:59
+1909;Responsable des ventes ;20/03/2018 12:59
+1910;Responsable d’Equipe Génie civil,  fondation et coffrage ;20/03/2018 12:59
+1911;Mécanicien, Tôlier  ;20/03/2018 12:59
+1912;Ouvrier Spécialisé Soudeur et Montage ;20/03/2018 12:59
+1913;Chef d'atelier poids lourds;20/03/2018 12:59
+1914;INFORMATICIENNE;20/03/2018 13:36
+1915;SCHIFT SUPERVISOR;20/03/2018 13:36
+1916;POGRAMMEUR FREE LANCE;20/03/2018 13:36
+1917;Tôlier, Carrossier, Peintre;20/03/2018 13:57
+1918;Tôlier, Carrossier, Marbre;20/03/2018 13:57
+1919;Entrepreneur de Travaux Forestiers;20/03/2018 13:57
+1920;Consultante Hydrobiologiste;20/03/2018 14:14
+1921;Stagiaire  en Comptable;20/03/2018 15:01
+1922;Netwrok support;20/03/2018 16:08
+1923;Technicien Support Client ;20/03/2018 16:08
+1924;Responsable Intervention Client;20/03/2018 16:08
+1925;Responsable Opération Exploitation Maintenan ce et  Intervention Clients ;20/03/2018 16:08
+1926;Stagiaire en performance data ;21/03/2018 16:17
+1927;Chef de Secteurs ;22/03/2018 10:46
+1928;Commercial Ventes Indirectes;22/03/2018 10:46
+1929;Promoteur;22/03/2018 10:46
+1930;Contrôleur des surtensions électriques;22/03/2018 11:32
+1931;Opérateur control room  et télé-vidéo surveillance;22/03/2018 14:23
+1932;PROGRAMMEUR FREE LANCE;22/03/2018 16:16
+1933;pas de poste occupe;26/03/2018 20:54
+1934;Secrétaire caissière;27/03/2018 11:22
+1935;Financier;27/03/2018 11:31
+1936;Stagiaire  en informatique;27/03/2018 22:54
+1937;Stagiaire en programmation;27/03/2018 22:54
+1938; superviseur en call center;31/03/2018 16:42
+1939;ASSISTANT PERSONNEL et AGENT BPO;31/03/2018 17:14
+1940;Télé-recruteur / Télé-opérateur / B.O;31/03/2018 17:14
+1941;télé-prospecteur;31/03/2018 17:14
+1942;Animateur de terrain/Responsable Régionale analamanga/ Attaché Résponsable Logistique;31/03/2018 17:14
+1943;Responsable Commercial et Affaire général;03/04/2018 17:36
+1944;RESPONSABLE ADMINISTRATIF & COMPTABLE;04/04/2018 10:17
+1945;Assistante comptable , gestionnaire de stock, secretariat, charge personnel;04/04/2018 11:31
+1946;Aide déclarant;04/04/2018 12:02
+1947;Agent polyvalent;04/04/2018 12:02
+1948;Commerciale de professionnelle independante;04/04/2018 12:02
+1949;IGN( Institut Géographique National);04/04/2018 12:02
+1950;Preparateur Equipement;05/04/2018 08:49
+1951;Responsable de vente et de stock;05/04/2018 09:04
+1952;Producteur des produits laitiers;05/04/2018 09:30
+1953;Conseiller client au sein de la Société;05/04/2018 15:38
+1954;**;06/04/2018 10:03
+1955;Aucune Experience;06/04/2018 11:31
+1956;collaborateur technique;06/04/2018 16:36
+1957;stagiaire en recherche et développement;06/04/2018 16:59
+1958;Manœuvre et aide chauffeur;10/04/2018 08:59
+1959;Assistante Comptable, assistante de gestion ;11/04/2018 10:41
+1960;consultant chargé de programme;11/04/2018 10:41
+1961;Validation des BSC marchandises ;11/04/2018 12:49
+1962;Agent Administratif CIVIO;11/04/2018 12:49
+1963;Intérimaire;11/04/2018 12:49
+1964;Realisation de cartographie;12/04/2018 10:37
+1965;Professeur en Mathematique et physique chimie;13/04/2018 12:15
+1966;réhabilitation de chariot élévateur Electrique;13/04/2018 12:15
+1967;Formateur et educateur en informatique et Mathematique;14/04/2018 18:13
+1968;Integrateur Web;17/04/2018 10:14
+1969;CHAUFFEUR ET RESPONSABLE VOITURE;17/04/2018 11:11
+1970;RESPONSABLE SONORISATION;17/04/2018 11:11
+1971;RESPONSABLE MAINTENACE;17/04/2018 11:11
+1972;DIRECTEUR DE SALLE(MACHINES A SOUS);17/04/2018 11:11
+1973;Responsable clientèle et aide comptable;17/04/2018 13:50
+1974;Responsable Force de vente et Second Responsable Marketing Evenementiel;17/04/2018 16:30
+1975;Secretaire responsable ressource humaine;17/04/2018 17:03
+1976;Assistante de gestion (Administrative et financière) ;18/04/2018 10:30
+1977;Mpamakilain’iMadagasikara;18/04/2018 10:30
+1978;Agent recenceur;18/04/2018 11:28
+1979;Gestion clientèle;18/04/2018 13:37
+1980;magasiière;18/04/2018 16:10
+1981;Chargé d'accueil;18/04/2018 19:06
+1982;service en salle;19/04/2018 12:09
+1983;Journaliste et communicatrice;19/04/2018 12:09
+1984;Responsable point de vente;19/04/2018 13:01
+1985;Responsable vente et accueil;19/04/2018 13:01
+1986;"Agent d""Activites et Animation";19/04/2018 13:01
+1987;Guide touristique local ;19/04/2018 13:01
+1988;Agent d;19/04/2018 14:32
+1989;Réceptionniste et caissière;19/04/2018 14:45
+1990;Stagière;19/04/2018 14:46
+1991;Chef de Rang - Commis de Cuisine - Chef de Partie;19/04/2018 16:59
+1992;Chef de Partie - Stage;19/04/2018 16:59
+1993;Aide Responsable en Ressources Humaines;20/04/2018 14:03
+1994;Stagiaire en service commerciale;20/04/2018 14:03
+1995;COMMANDE RESEAU ;20/04/2018 22:20
+1996;SERVICES CLIENTELES;20/04/2018 22:20
+1997;SERVICE ACCUEIL ET ADMINISTRATION;20/04/2018 22:20
+1998;STAGIAIRE EN DIM;20/04/2018 22:20
+1999;ANIMATRICE DE VENTE ET MERCHANTE SHOP;20/04/2018 22:20
+2000;Formateur et educateur en informatique et MathematiqueS;23/04/2018 15:23
+2001;Moniteur;23/04/2018 15:31
+2002;Superviseur de chantier, Conducteur de travaux et Responsable de magasin;23/04/2018 15:31
+2003;Institutrice primaire;24/04/2018 11:10
+2004;AGENT DU TERRAIN;24/04/2018 12:50
+2005;STAGE TECHNICIEN SUR LES CULTURES DE CEREALE;24/04/2018 12:50
+2006;Responsable marketing et mobile banking;24/04/2018 14:57
+2007;Maintenance electricien;24/04/2018 22:53
+2008;ASSISTANT ASSURANCE QUALITE;25/04/2018 11:08
+2009;Chargée de Veille Média(Audio);25/04/2018 13:58
+2010;Confection et vente de produits de maroquinerie ;25/04/2018 14:20
+2011;Collecteur;26/04/2018 11:03
+2012;Mémoriste;27/04/2018 09:10
+2013;Stagiaire Agent de Maintenance;27/04/2018 09:10
+2014;Mémoriste - Apprenti stagiaire;27/04/2018 09:10
+2015;Travailleur indépendant en installation Photovoltaique et domestique;27/04/2018 09:10
+2016;assistante marketing;27/04/2018 09:52
+2017;"Assistante dentiste ; Accueil ; Caisse";27/04/2018 09:55
+2018;Stagiaire Responsable rayon;27/04/2018 15:32
+2019;preparateur de commande ;28/04/2018 14:44
+2020;chargée de controle et suivi engagement ;29/04/2018 17:30
+2021;Chrgée d'affaires entreprises;29/04/2018 17:30
+2022;Marketing & Executive;30/04/2018 21:40
+2023;OPERATEUR DE RECHERCHE;02/05/2018 09:13
+2024;TELECONSEILLER FRANCOPHONE ;02/05/2018 09:13
+2025;Coordinateur;02/05/2018 09:13
+2026;Assistant de recherche/ Consultant;02/05/2018 09:59
+2027;Assistant de recherche et Enquêteur temporaire;02/05/2018 10:04
+2028;stage de benevolat;02/05/2018 10:17
+2029;caisier ,vendeur et magasinier;02/05/2018 11:22
+2030;technicien et animateur;02/05/2018 17:10
+2031;entreneur;02/05/2018 17:10
+2032;CRH;03/05/2018 10:07
+2033;Stagiaire en conseiller clientéle;03/05/2018 12:43
+2034;Stagiaire marketing;03/05/2018 12:43
+2035;Conseiller - Psychologue du Travail;03/05/2018 14:07
+2036;COP;03/05/2018 14:39
+2037;Chargé de recrutement et formation ;03/05/2018 14:39
+2038;Chargé de Mission ;03/05/2018 14:39
+2039;Employé polyvalent ;03/05/2018 14:39
+2040;Chargé d'enseignement vacataire ;03/05/2018 14:39
+2041;Stagiaire au sein du Service Merchandising;03/05/2018 15:08
+2042; Conseillère clientèle;03/05/2018 15:08
+2043;Superviseur d'animation;03/05/2018 15:35
+2044;Gestion en relation Client mail et appel;03/05/2018 16:43
+2045;Responsable crédit;04/05/2018 17:28
+2046;Assistante en communication interne;06/05/2018 22:33
+2047;Aide institutrice;06/05/2018 22:33
+2048;Professeur de la Comptabilité Générale  et Informatique  ;07/05/2018 09:07
+2049;Professeur de la Comptabilité Générale  et Analytique ;07/05/2018 09:07
+2050;Chargée d’étude;07/05/2018 10:05
+2051;Esthéticienne;07/05/2018 11:44
+2052;Conseillère de beauté;07/05/2018 11:44
+2053;NOC;07/05/2018 11:44
+2054;Comptables Confirmé;07/05/2018 11:52
+2055;Comptable recouvreur;07/05/2018 11:52
+2056;Chargée de Contrôle;07/05/2018 12:20
+2057;Cadre Administrative Commerciale;07/05/2018 12:20
+2058;assistante d'approvisionnement;07/05/2018 15:14
+2059;agent administratif et transit ;08/05/2018 08:41
+2060;Agent de transit import et export ;08/05/2018 08:41
+2061;agent export;08/05/2018 08:41
+2062;bibliothécaire;09/05/2018 13:00
+2063;Maintenance informatique ;09/05/2018 19:55
+2064;DELI CONTROLLER;10/05/2018 11:43
+2065;DECLARANT EN DOUANE ET PASSEUR DE PIECES;10/05/2018 11:43
+2066;DECLARANT EN DOUANE;10/05/2018 11:43
+2067;CHEF DU DEPARTEMENT DE RESERVATION;10/05/2018 11:55
+2068;Animateur chat;10/05/2018 14:20
+2069;Transcripteur audio;10/05/2018 14:20
+2070;CHEF DE CHAINE;11/05/2018 11:20
+2071;gestion des stocks;13/05/2018 12:23
+2072;vente pièces détachées automobile;14/05/2018 18:14
+2073;assistante commerciale en ligne;15/05/2018 10:04
+2074;Agent booking;15/05/2018 13:41
+2075;Etude Marketing;15/05/2018 15:58
+2076;Gestionnaire de Stocks ;15/05/2018 15:58
+2077;Opérateur OCR ;16/05/2018 08:12
+2078;Assistant responsable logistique ;16/05/2018 08:12
+2079;Contrôleur qualité et PAOiste ;16/05/2018 08:12
+2080;Responsable de cyber café;16/05/2018 08:12
+2081;Technicien environnemental;16/05/2018 11:01
+2082;Assistante de Direction en charge de Trafic des projets interne et Production ;16/05/2018 11:09
+2083;Réviseur comptable;16/05/2018 12:03
+2084;RESPONSABLE DE LA COMPTABILITE ET FINANCES;16/05/2018 12:34
+2085;Service clientèle Grand Publique;16/05/2018 18:59
+2086;Chargée de la communication;16/05/2018 18:59
+2087;Développeur outil de production;17/05/2018 11:39
+2088;Projet à l’ENI, Business Intelligence;17/05/2018 22:18
+2089;Réalisateur des projets académiques au niveau de l’Ecole Nationale d’Informatique ;17/05/2018 22:18
+2090;Vendeur  et Livreur;18/05/2018 09:50
+2091;DIRECTEUR MARKETING ET DISTRIBUTION;18/05/2018 09:52
+2092;RESPONSABLE DE ZONE;18/05/2018 09:52
+2093;SALES TRAINER;18/05/2018 09:52
+2094;Trade Marketing;18/05/2018 09:52
+2095;Chef d'agence - Chargé de mission;20/05/2018 12:59
+2096;Assistant SAV - Technicien pièces de rechange;20/05/2018 12:59
+2097;Standardiste Acceuil;22/05/2018 09:03
+2098;Agent call center;22/05/2018 09:03
+2099;Finance Assistant;22/05/2018 12:51
+2100;Comptable par Inerim basé au niveau du Bureau Central;22/05/2018 12:51
+2101;Comptable basé au niveau du bureau Central;22/05/2018 12:51
+2102;Administrateur des Projets ;22/05/2018 12:51
+2103;Chargé de l’Administration et des Finances - Espace Centre;22/05/2018 12:51
+2104;Assistant Administratif et Financier - Projet Tamatave;22/05/2018 12:51
+2105;Réceptionniste-Caissière ;22/05/2018 15:42
+2106;Agent de sûreté aéroportuaire;22/05/2018 16:12
+2107;Transcripteur – remanieur;22/05/2018 16:12
+2108;Graduate programme - Service Comptabilité-Trésorerie-Contrôle Interne- Contrôle de gestion;22/05/2018 16:21
+2109;AGENT AU CENTRE D’APPEL;22/05/2018 16:56
+2110;Assistante de Production;22/05/2018 17:14
+2111;Stagiaire dans le service Informatique;23/05/2018 11:26
+2112;Chef de service spécialisé en structuration xml, sgml et HTML;23/05/2018 11:26
+2113;Gardien ;23/05/2018 14:39
+2114;Commercial freelince;24/05/2018 13:09
+2115;RESEAU;25/05/2018 16:10
+2116;Responsable Hebergement;25/05/2018 17:11
+2117;Responsable animateur ;25/05/2018 17:11
+2118;conseillère PF;26/05/2018 09:40
+2119;Attachée Commerciale, animatrice et présentatrice ;28/05/2018 09:24
+2120;Agent d’appui en Comptabilité et en Gestion du portefeuille du crédit;28/05/2018 11:01
+2121;Opérateur Back Office (modérateur)  ;28/05/2018 11:11
+2122;Outsourcer Specialist (Chargé de Veille) ;28/05/2018 11:11
+2123;Assistante du Gerant;28/05/2018 11:50
+2124;Attachée Commerciale et Prospectrice ;28/05/2018 11:50
+2125;CORDINATEUR PROJET;28/05/2018 17:26
+2126;ASSISTANTE ADMNISITRATIVE;29/05/2018 09:37
+2127;responsable SEO;29/05/2018 18:06
+2128;SOD;30/05/2018 15:31
+2129;ASSISTANTE AUX RESSOURCES HUMAINES ;30/05/2018 15:48
+2130;SECRETAIRE TEMPORAIRE;30/05/2018 15:48
+2131;Chef de programme;31/05/2018 10:01
+2132;Assistante transitaire;31/05/2018 15:06
+2133;Stage en RH;31/05/2018 18:18
+2134;Assistante en RH;31/05/2018 18:18
+2135;Chef d'équipe Back office;01/06/2018 10:57
+2136;Assistant Ressources Humaine Stagiaire;01/06/2018 10:57
+2137;Stagiaire en agent administratif;01/06/2018 13:04
+2138;Stagiaire en chargé de recrutement;01/06/2018 13:04
+2139;Responsable comptabilité client;01/06/2018 14:01
+2140;Répresantant Commercial;01/06/2018 14:08
+2141;Standardiste;04/06/2018 14:02
+2142;SECRETAIRE TECHNIQUE;04/06/2018 16:25
+2143;ASSISTANTE ADMINISTRATIVES;04/06/2018 16:25
+2144;ATTACHEE DE DIRECTION;04/06/2018 16:25
+2145;RESPONSABLE APPROVISIONNMENT ET TRANSIT ;05/06/2018 07:36
+2146;conseiller commerciale;05/06/2018 09:40
+2147;Responsable inventaire;05/06/2018 10:46
+2148;Chef de departement  approvisionnement ;05/06/2018 10:50
+2149;Assistant transitaire;05/06/2018 12:54
+2150;Pompier;06/06/2018 10:14
+2151;Conseiller technique;08/06/2018 10:13
+2152;Responsable logistique et appro;08/06/2018 12:51
+2153;Assistante moyens génèraux et Logistique;12/06/2018 11:56
+2154;Chargé transport et cantine ;12/06/2018 14:40
+2155;Responsable Plateau ;12/06/2018 14:40
+2156;chargee d'accueil et receptionniste;12/06/2018 15:22
+2157;Technico-Commercial Grand Compte;13/06/2018 13:47
+2158;Animatrice Productrice;13/06/2018 14:51
+2159;Juriste Assistant;13/06/2018 15:36
+2160;Responsable Santé;13/06/2018 16:22
+2161;Juriste consultant;14/06/2018 10:18
+2162;Assureur Débutant;18/06/2018 13:56
+2163;Chef département production et appuis Techniques;18/06/2018 18:19
+2164;Chef de Service étude et planification;19/06/2018 11:18
+2165;Chef de service qualité;19/06/2018 11:31
+2166;Chef de dépôt matériel remorqué (wagon);19/06/2018 11:34
+2167;Ingénieur matériel;19/06/2018 11:37
+2168;RESPONSABLE METHODE MAINTENANCE;19/06/2018 11:39
+2169;DEVELOPPEUR DOT NET;19/06/2018 14:04
+2170;logisticienne;19/06/2018 21:00
+2171;Conseillere client Entreprise;20/06/2018 12:17
+2172;Opération Superintendant ;21/06/2018 16:52
+2173;Ingénieur de maintenance;21/06/2018 16:52
+2174;Directeur de développement informatique;22/06/2018 14:01
+2175;Gérant de Cyber café ;22/06/2018 16:01
+2176;Animateur événement;27/06/2018 09:45
+2177;COORDINATEUR PROJET;27/06/2018 12:02

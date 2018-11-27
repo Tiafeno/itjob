@@ -1,39 +1,36 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: Tiafeno
- * Date: 26/09/2018
- * Time: 14:10
- */
 
 trait OfferHelper {
+  /** @var int $id_offer - Contient l'identification de l'offre */
+  protected $id_offer;
 
   /** @var WP_User $author - Contient les informations de l'entreprise */
-  public $author;
+  protected $author;
 
-  /** @var object $company - Contient les informations de l'auteur de l'offre  */
-  public $company;
+  /** @var object $company - Contient les informations de l'auteur de l'offre */
+  protected $company;
 
-  public $my_offer = false;
-  public $count_candidat_apply = 0;
   public $candidat_apply = [];
 
+  public function getPrivateInformations() {
+    $itModel   = new \includes\model\itModel();
+    $interests = $itModel->get_offer_interests( $this->id_offer );
+    foreach ( $interests as $interest ) {
+      $this->candidat_apply[] = [
+        'status'        => $interest->status,
+        'type'          => $interest->type,
+        'id_candidate'  => (int) $interest->id_candidate,
+        'id_cv_request' => (int) $interest->id_cv_request
+      ];
+    }
+  }
 
-  public function isMyOffer($offer_id) {
-    if ( ! is_user_logged_in() || ! is_int($offer_id)) return false;
-    $User = wp_get_current_user();
-    if ($this->company instanceof WP_Post) {
-      $Company = new \includes\post\Company($this->company->ID);
-      if ($User->ID === $Company->author->ID) {
-        $this->my_offer = true;
-        // Array of user id
-        $applyField = get_field('itjob_users_apply', $offer_id);
-        if ($applyField) {
-          $this->count_candidat_apply = count($applyField);
-          $this->candidat_apply = $applyField;
-        }
-      }
-    } else return false;
+  public function getAuthor() {
+    return $this->author;
+  }
+
+  public function getCompany() {
+    return $this->company;
   }
 
 }

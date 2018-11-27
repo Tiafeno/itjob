@@ -25,8 +25,13 @@ function itjob_current_user_is_company() {
     return false;
   }
   $User = wp_get_current_user();
-  $Comp = \includes\post\Company::get_company_by($User->ID);
-  return $Comp->is_company();
+  if (in_array('company', $User->roles)) {
+    $Comp = \includes\post\Company::get_company_by($User->ID);
+    return $Comp->is_company() && $Comp->isValid();
+  } else {
+    return false;
+  }
+
 }
 
 /**
@@ -43,12 +48,13 @@ function itjob_current_user_is_particular() {
 }
 
 // Ajouter une notification
-add_action('add_notice', 'itjob_add_notice', 10, 2);
-function itjob_add_notice($msg, $type = "info") {
+add_action('add_notice', 'itjob_add_notice', 10, 3);
+function itjob_add_notice($msg, $type = "info", $close = true) {
   global $it_alerts;
   $it_alerts[] = [
     'message' => $msg,
-    'type'    => $type
+    'type'    => $type,
+    'close'   => $close
   ];
 }
 
@@ -67,7 +73,8 @@ function itjob_get_notice() {
     foreach ($it_alerts as $alert) {
       $alert = (object)$alert;
       $notice .= "<div class=\"alert alert-{$alert->type} alert-dismissable fade show uk-width-1-2 uk-margin-auto mt-5\">";
-      $notice .= "<button class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"></button>";
+      if ($alert->close)
+        $notice .= "<button class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"></button>";
       $notice .= $alert->message;
       $notice .= "</div>";
     }
@@ -79,23 +86,25 @@ add_action('i_am_interested_this_candidate', function () {
   global $itJob, $post;
 
   // featured: Pour une entreprise premium on affiche un lien pour voir le CV au complete
-  if (is_user_logged_in()) {
-    $User = wp_get_current_user();
-    $Company = \includes\post\Company::get_company_by($User->ID);
-    if ($Company->is_company() && $Company->isPremium()) {
-      $page_interest_id = \includes\object\jobServices::page_exists('Interest candidate');
-      if ($page_interest_id === 0) {
-        echo 'Interests candidate page missing';
-        return;
-      }
-      $link = get_the_permalink((int)$page_interest_id) . '?mode=view&token=' .  $User->data->user_pass . '&cvId=' . $post->ID;
-      $button = '<a href="' . $link . '" class="btn btn-outline-blue btn-fix">';
-      $button .= '<span class="btn-icon"><i class="la la-credit-card"></i> Voir les informations du candidat</span>';
-      $button .= '</a>';
-      echo $button;
-      return;
-    }
-  }
+//  if (is_user_logged_in()) {
+//    $User = wp_get_current_user();
+//    if (in_array('company', $User->roles)) {
+//      $Company = \includes\post\Company::get_company_by($User->ID);
+//      if ($Company->is_company() && $Company->isPremium()) {
+//        $page_interest_id = \includes\object\jobServices::page_exists('Interest candidate');
+//        if ($page_interest_id === 0) {
+//          echo 'Interests candidate page missing';
+//          return;
+//        }
+//        $link = get_the_permalink((int)$page_interest_id) . '?mode=view&token=' .  $User->data->user_pass . '&cvId=' . $post->ID;
+//        $button = '<a href="' . $link . '" class="btn btn-outline-blue btn-fix">';
+//        $button .= '<span class="btn-icon"><i class="la la-credit-card"></i> Voir les informations du candidat</span>';
+//        $button .= '</a>';
+//        echo $button;
+//        return;
+//      }
+//    }
+//  }
   wp_enqueue_style('alertify');
   wp_enqueue_script('interests', get_template_directory_uri().'/assets/js/app/interests/interests.js', ['angular', 'alertify'], $itJob->version, true);
   wp_localize_script('interests', 'itOptions', [
@@ -110,60 +119,3 @@ add_action('i_am_interested_this_candidate', function () {
   $app .= "</div>";
   echo $app;
 });
-
-/**
- * Envoyer une candidature
- * Call in single-offers.php line 32
- */
-add_action('send_apply_offer', function () {
-  $action = Http\Request::getValue('action');
-  if (trim($action) === 'send_apply') {
-    $pId = (int)Http\Request::getValue('post_id', 0);
-    $User = wp_get_current_user();
-    require_once( ABSPATH . 'wp-admin/includes/image.php' );
-    require_once( ABSPATH . 'wp-admin/includes/file.php' );
-    require_once( ABSPATH . 'wp-admin/includes/media.php' );
-
-    // Let WordPress handle the upload.
-    // Remember, 'file' is the name of our file input in our form above.
-    // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
-    $attachment_id = media_handle_upload( 'motivation', $pId );
-
-    if ( is_wp_error( $attachment_id ) ) {
-      // There was an error uploading the image.
-      do_action('add_notice', 'Une erreur s\'est produit', 'danger');
-    } else {
-      // The image was uploaded successfully!
-      $apply = get_field('itjob_offer_users', $pId);
-      if ( ! is_array($apply)) {
-        $apply = [];
-      }
-      // Verifier l'utilisateur s'il a déja postuler
-      if ( in_array($User->ID, $apply)) {
-        $apply[] = $User->ID;
-        update_field('itjob_users_apply', $apply, $pId);
-      } else {
-
-        do_action('add_notice', 'Vous avez déjà postuler sur cette offre', 'warning');
-        return true;
-      }
-
-      unset($apply);
-
-      $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
-      $offer_apply = get_field('itjob_cv_offer_apply', $Candidate->getId());
-      if (! is_array($offer_apply)) {
-        $offer_apply = [];
-      }
-
-      if (in_array($pId, $offer_apply)) {
-        return true;
-      }
-      $offer_apply[] = $pId;
-      update_field('itjob_cv_offer_apply', $offer_apply, $Candidate->getId());
-      do_action('add_notice', 'Votre candidature à bien êtes soumis', 'info');
-
-    }
-  }
-
-}, 12);

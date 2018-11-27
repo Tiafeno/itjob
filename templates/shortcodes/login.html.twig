@@ -42,39 +42,43 @@
     <div class="alert alert-warning alert-dismissable fade show alert-outline has-icon" ng-show="error">
       <i class="la la-info-circle alert-icon"></i>
       <div class="d-flex align-items-center justify-content-between">
-        <div><strong>ERREUR</strong><br>Nom d’utilisateur ou mot de passe non valide.</div>
+        <div><strong>[[errorTitle]]</strong><br><span ng-bind-html="errorMessage"></span></div>
       </div>
     </div>
-
-    <div class="form-group mb-4">
-      <input class="form-control " type="text" name="login" ng-model="login" autocomplete="off"
-             placeholder="Votre adresse email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required>
-      <div ng-messages="loginForm.login.$error" ng-show="loginForm.login.$invalid && loginForm.login.$touched"
-           class="alert alert-pink" role="alert">
-        <div ng-message="required">Veuillez saisir une adresse email.</div>
-        <div ng-message="pattern">Vérifiez l'adresse email, son format n'est pas valide.</div>
+    <div ng-show="recoveryPassword">
+      <reset-pwd></reset-pwd>
+    </div>
+    <div ng-show="!recoveryPassword">
+      <div class="form-group mb-4">
+        <input class="form-control " type="text" name="login" ng-model="login" autocomplete="off"
+              placeholder="Votre adresse email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required>
+        <div ng-messages="loginForm.login.$error" ng-show="loginForm.login.$invalid && loginForm.login.$touched"
+            class="alert alert-pink" role="alert">
+          <div ng-message="required">Veuillez saisir une adresse email.</div>
+          <div ng-message="pattern">Vérifiez l'adresse email, son format n'est pas valide.</div>
+        </div>
       </div>
-    </div>
-    <div class="form-group mb-4">
-      <input class="form-control " type="password" name="pwd" ng-model="pwd" autocomplete="off"
-             placeholder="Mot de passe" required>
-      <div ng-messages="loginForm.pwd.$error" ng-show="loginForm.pwd.$invalid && loginForm.pwd.$touched"
-           class="alert alert-pink" role="alert">
-        <div ng-message="required">Champ requis.</div>
+      <div class="form-group mb-4">
+        <input class="form-control " type="password" name="pwd" ng-model="pwd" autocomplete="off"
+              placeholder="Mot de passe" required>
+        <div ng-messages="loginForm.pwd.$error" ng-show="loginForm.pwd.$invalid && loginForm.pwd.$touched"
+            class="alert alert-pink" role="alert">
+          <div ng-message="required">Champ requis.</div>
+        </div>
       </div>
-    </div>
-    <div class="flexbox mb-5">
-      <span>
-        <label class="ui-switch switch-icon mr-2 mb-0">
-          <input type="checkbox" name="rememberme" ng-model="rememberme" checked="false">
-          <span></span>
-        </label>
-        Se souvenir de moi
-      </span>
-      <a class="text-primary" href="{{ uri.forgot_pwd_url }}">Mot de passe oublié ?</a>
-    </div>
-    <div class="text-center mb-4">
-      <button class="btn btn-danger btn-rounded btn-block" type="submit" ng-disabled="buttonDisable">SE CONNECTER</button>
+      <div class="flexbox mb-5">
+        <span>
+          <label class="ui-switch switch-icon mr-2 mb-0">
+            <input type="checkbox" name="rememberme" ng-model="rememberme" checked="false">
+            <span></span>
+          </label>
+          Se souvenir de moi
+        </span>
+        <a class="text-primary" href="{{ uri.forgot_pwd_url }}">Mot de passe oublié ?</a>
+      </div>
+      <div class="text-center mb-4">
+        <button class="btn btn-danger btn-rounded btn-block" type="submit" ng-disabled="buttonDisable">SE CONNECTER</button>
+      </div>
     </div>
   </form>
 

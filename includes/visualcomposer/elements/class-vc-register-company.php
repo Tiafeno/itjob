@@ -18,7 +18,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
     public static $isInstance = false;
     public function __construct() {
       add_action( 'init', [ $this, 'register_mapping' ] );
-      add_filter( 'acf/update_value/name=itjob_company_email', [ &$this, 'post_publish_company' ], 10, 3 );
+      add_filter( 'acf/update_value/name=itjob_company_email', [ &$this, 'create_company_user' ], 10, 3 );
       // Ne pas envoyer une notification pour le changement de mot de passe
       add_filter( 'send_password_change_email', '__return_false' );
 
@@ -52,7 +52,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
      *
      * @return bool|string
      */
-    public function post_publish_company( $value, $post_id, $field ) {
+    public function create_company_user( $value, $post_id, $field ) {
       $chars     = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       $post_type = get_post_type( $post_id );
       if ( $post_type != 'company' ) {
@@ -61,9 +61,10 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       $post      = get_post( $post_id );
       $userEmail = &$value;
+      // Verifier si l'utilisateur existe déja; Si oui, retourner la valeur
       // (WP_User|false) WP_User object on success, false on failure.
       $userExist = get_user_by( 'email', $userEmail );
-      if ( true == $userExist ) {
+      if ( $userExist ) {
         return $value;
       }
       $args    = [
@@ -149,6 +150,12 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       wp_send_json( $terms );
     }
 
+    /**
+     * Function ajax
+     * @param bool $taxonomy
+     *
+     * @return array|bool|int|\WP_Error
+     */
     public function get_taxonomy($taxonomy = false) {
       $validateTaxonomy = ['job_sought', 'software'];
       /**
@@ -170,6 +177,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
           foreach ($terms as $term) {
             $valid = get_term_meta( $term->term_id, 'activated', true);
             if ($valid) {
+              //$term->name = utf8_encode($term->name);
               array_push($termValid, $term);
             }
           }

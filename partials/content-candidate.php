@@ -21,22 +21,36 @@ if ( ! $candidate->is_activated()) { return; }
                 <td>
                   <?php
                   $job_shought = [];
-                  foreach ( $candidate->jobSought as $job ) : array_push( $job_shought, $job->name ); endforeach;
+
+                  if (is_array($candidate->jobSought)) {
+                    foreach ( $candidate->jobSought as $job ) :
+                      if ( $job->activated ) {
+                        array_push( $job_shought, $job->name );
+                      }
+                    endforeach;
+                  } else {
+                    array_push($job_shought, $candidate->jobSought->name);
+                  }
                   echo ! empty( $job_shought ) ? implode( ', ', $job_shought ) : 'Aucun';
                   ?>
                 </td>
               </tr>
+              <?php if (isset($candidate->branch_activity->name)): ?>
               <tr>
                 <td>Secteur d'activité:</td>
-                <td><?= $candidate->branch_activity->name; ?></td>
+                <td><?= $candidate->branch_activity->name ?></td>
               </tr>
+              <?php endif; ?>
               <tr>
                 <td>Permis:</td>
                 <td>
                   <?php
                   $driveLicences = [];
                   if ( ! empty($candidate->driveLicences) ) {
-                    foreach ( $candidate->driveLicences as $driveLicence ) : array_push( $driveLicences, $driveLicence['label'] ); endforeach;
+                    foreach ( $candidate->driveLicences as $driveLicence ) :
+                      if (!is_array($driveLicence)) continue;
+                      array_push( $driveLicences, $driveLicence['label'] );
+                    endforeach;
                   }
                   echo ! empty( $driveLicences ) ? implode( ', ', $driveLicences ) : 'Aucun';
                   ?>
@@ -68,14 +82,7 @@ if ( ! $candidate->is_activated()) { return; }
         </div>
         <div class="row">
           <div class="col-12">
-            <table class="table">
-              <tbody>
-              <tr>
-                <td class="no-bold uk-text-bold"></td>
-                <td class="text-center uk-text-bold"></td>
-                <td class="text-right">CV ajouté le <?= $candidate->dateAdd ?></td>
-              </tr>
-            </table>
+            <div class="text-right">CV ajouté le <?= $candidate->dateAdd ?></div>
           </div>
         </div>
 

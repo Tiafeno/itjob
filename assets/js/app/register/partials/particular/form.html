@@ -55,6 +55,31 @@
       </div>
     </div>
 
+    <div class="row mb-4">
+      <div class="col-md-6 form-group">
+        <label class="form-control-label">Région</label>
+        <select class="form-control find" name="region" ng-model="particularForm.region" title="Région" required>
+          <option></option>
+          <option ng-repeat="rg in formulaire.region" value="{{rg.term_id}}">{{rg.name}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6 form-group">
+        <label class="form-control-label">Code postal ou nom d'une ville</label>
+        <select class="form-control input-mode country"
+                ng-disabled="!particularForm.region"
+                name="country"
+                ng-model="particularForm.country"
+                title="Tapez le nom d'un ville"
+                required>
+          <option></option>
+          <option value="{{city.term_id}}" ng-repeat="city in formulaire.allCity">({{city.postal_code}}) {{city.name}}</option>
+        </select>
+        <span ng-if="!particularForm.region" class="text-muted small">Séléctionnez une region avant d'ajouter une ville</span>
+      </div>
+    </div>
 
     <div class="row mb-1">
       <div class="col-md-8 form-group">
@@ -67,27 +92,6 @@
         </div>
       </div>
     </div>
-
-    <div class="row mb-4">
-      <div class="col-md-6 form-group">
-        <label class="form-control-label">Région</label>
-        <select class="form-control find" name="region" ng-model="particularForm.region" title="Région" required>
-          <option></option>
-          <option ng-repeat="rg in $ctrl.region" value="{{rg.term_id}}">{{rg.name}}</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row mb-4">
-      <div class="col-md-6 form-group">
-        <label class="form-control-label">Code postal ou nom d'une ville</label>
-        <select class="form-control input-mode country" name="country" ng-model="particularForm.country" title="Tapez le nom d'un ville" required>
-          <option></option>
-          <option value="{{city.term_id}}" ng-repeat="city in $ctrl.allCity">({{city.postal_code}}) {{city.name}}</option>
-        </select>
-      </div>
-    </div>
-
 
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Numéros de téléphone</label>
@@ -145,8 +149,8 @@
         <label class="form-control-label">Mot de passe</label>
         <input class="form-control" type="password" name="pwd" ng-model="particularForm.pwd" autocomplete="off"
                ng-pattern="/^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/" required>
-        <span class="help-block uk-text-small">Votre mot de passe doit comporter un minimum de 8 caractères,
-          se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.</span>
+        <span class="help-block uk-text-small">Votre mot de passe doit comporter 8 caractères minimum,
+          se composer des chiffres et de lettres et comprendre des majuscules/minuscules et 1 caractère spéciale.</span>
       </div>
       <div class="col-md-6 sol-sm-6 mt-1">
         <label class="form-control-label">Confirmez le mot de passe.</label>

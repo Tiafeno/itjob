@@ -1,0 +1,46 @@
+<div class="mt-2">
+  <div uk-grid>
+    <div class="uk-width-1-1">
+      <div>
+        <div class="ibox-body pt-2">
+          <div class="crad-deck" >
+            <div class="card text-left mb-4">
+              <div class="card-body">
+
+                <div class="preloader-backdrop" ng-if="loading">
+                  <div class="page-preloader">Chargement</div>
+                </div>
+
+                <button class="btn btn-outline-blue btn-sm btn-fix mb-4" data-ng-click="onReturn()">
+                  <span class="btn-icon"><i class="fa fa-angle-left"></i>Retour</span>
+                </button>
+
+                <h4 class="card-title mb-1">[[ Candidate.privateInformations.firstname ]] [[ Candidate.privateInformations.lastname ]]</h4>
+                <div class="text-muted">[[ Candidate.branch_activity.name ]]</div>
+                <p class="mt-4 mb-2"></p>
+
+                <div class="justify-content-around font-18">
+                  <p class="d-inline">
+                    <a class="btn btn-secondary" target="_blank" ng-href="[[ Attachment.guid ]]"><i class="fa fa-download"></i> Télécharger la lettre de motivation</a>
+                  </p>
+                  <a class="btn btn-outline-success" target="_blank" ng-href="[[ interestLink ]]">Voir le CV</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="uk-width-1-1">
+      <div class="ibox mt-4">
+        <div class="ibox-body alert alert-primary">
+          <h5 class="">Découvrez l'offre premium</h5>
+          <p>Pour pouvoir visionner et télécharger plus de CV et de trouver les bons candidats, plus rapidement sans
+            limite</p>
+          <button class="btn btn-info uk-modal-close uk-close-large" type="button">Améliorer mon compte</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

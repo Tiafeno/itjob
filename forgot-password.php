@@ -6,18 +6,23 @@
 
 if ( isset($_GET['action']) || !empty($_GET['action']) ) {
   $action = $_GET['action'];
+  // Initialisation de la variable erreur
   $errors = new WP_Error();
   switch ( $action ):
     case 'resetpass':
       list( $rp_path ) = explode( '?', wp_unslash( $_SERVER['REQUEST_URI'] ) );
+      // Crée et ajouter le nom du cookie
       $rp_cookie = 'wp-resetpass-' . COOKIEHASH;
       if ( isset($_GET['key']) ) {
+        // Valeur du cookie
         $value = sprintf( '%s:%s', wp_unslash( $_GET['account'] ), wp_unslash( $_GET['key'] ) );
+        // Ajouter une cookie qui contien la clé et le login
         setcookie( $rp_cookie, $value, 0, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
         wp_safe_redirect( remove_query_arg( array( 'key', 'account' ) ) );
         exit;
-      }
-
+      } 
+      // Si la cookie est definie, on ajoute l'utilisateur dans le variable $user
+      // Sinon, $user est égala à false
       if ( isset( $_COOKIE[ $rp_cookie ] ) && 0 < strpos( $_COOKIE[ $rp_cookie ], ':' ) ) {
         list( $rp_login, $rp_key ) = explode( ':', wp_unslash( $_COOKIE[ $rp_cookie ] ), 2 );
         $user = check_password_reset_key( $rp_key, $rp_login );
@@ -28,8 +33,11 @@ if ( isset($_GET['action']) || !empty($_GET['action']) ) {
         $user = false;
       }
 
+      // Si la variable utilisateur ou $user est false ou un erreur on efface la cookie
+      // et on redirige la page vers la page de reinitialisation de mot de passe
       if ( ! $user || is_wp_error( $user ) ) {
         setcookie( $rp_cookie, ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
+        // Revenir a la premiere étape de la reinitialisation de mot de passe
         if ( $user && $user->get_error_code() === 'expired_key' ) {
           wp_safe_redirect( remove_query_arg( array( 'action', 'key', 'account' ) ) );
         } else {
@@ -38,6 +46,7 @@ if ( isset($_GET['action']) || !empty($_GET['action']) ) {
         exit;
       }
 
+      // Si le mot de passe est envoyer par un formulaire et qu'ils ne sont pas identique on ajoute une erreur
       if ( isset($_POST['pwd']) && $_POST['pwd'] != $_POST['cpwd'] ) {
         $errors->add( 'password_reset_mismatch', "Les mots de passe saisis ne sont pas identiques." );
       }
@@ -50,13 +59,22 @@ if ( isset($_GET['action']) || !empty($_GET['action']) ) {
        * @param object $errors WP Error object.
        * @param WP_User|WP_Error $user WP_User object if the login and reset key match. WP_Error object otherwise.
        */
-      do_action( 'validate_password_reset', $errors, $user );
+      do_action( 'validate_password_reset', $errors, $user ); // Verifier si l'utilisateur a reinitialiser le mot de passe
 
+      // On change le mot de passe si ces condition sont requis
       if ( ( ! $errors->get_error_code() ) && isset($_POST['pwd']) && !empty($_POST['pwd'])) {
+        // Modifie le mot de passe
         reset_password( $user, $_POST['pwd'] );
         setcookie( $rp_cookie, ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
         // Password is reset succefuly
         $role = in_array('company', $user->roles) ? 'company' : 'candidate';
+
+        // Verifier si l'utilisateur est importer depuis le fichier CSV
+        $recoverUserPassword = get_user_meta($user->ID, "__recovery_password", true);
+        if ($recoverUserPassword) {
+          update_user_meta($user->ID, '__recovery_password', 0);
+        }
+
         wp_safe_redirect( add_query_arg( [ 'action' => 'confirmaction', 'role' =>  $role] ) );
         exit;
       }
@@ -171,27 +189,24 @@ get_header();
               unhighlight: function (e) {
                 $(e).closest(".form-group.row").removeClass("has-error")
               },
-            });
+              submitHandler: function (form) {
+                errorMessage.hide();
+                successMessage.hide();
+                var forgotEmail = $('input#forgot_email').val();
+                submitButton.text('Chargement en cours ...');
+                $.ajax({
+                  method: "POST",
+                  url: admin_ajax,
+                  dataType: "json",
+                  data: {email: forgotEmail, action: "forgot_password"}
+                })
+                  .done(function (resp) {
+                    var element = resp.success ? successMessage : errorMessage;
+                    element.html(resp.data).show();
+                    submitButton.text('Envoyer');
+                  });
 
-          forgotForm
-            .submit(function (event) {
-              event.preventDefault();
-              errorMessage.hide();
-              successMessage.hide();
-              var forgotEmail = $('input#forgot_email').val();
-              submitButton.text('Chargement en cours ...');
-              $.ajax({
-                method: "POST",
-                url: admin_ajax,
-                dataType: "json",
-                data: {email: forgotEmail, action: "forgot_password"}
-              })
-                .done(function (resp) {
-                  var element = resp.success ? successMessage : errorMessage;
-                  element.html(resp.data.msg).show();
-                  submitButton.text('Envoyer');
-                });
-
+              }
             });
         }
 
@@ -215,11 +230,11 @@ $forgot_password = Http\Request::getValue( 'forgot_password', 0 );
               Veuillez saisir votre adresse de messagerie.
               Un lien permettant de créer un nouveau mot de passe vous sera envoyé par e-mail.
             </p>
-
+<!--            Error message -->
             <div class="alert alert-pink alert-dismissable fade show alert-outline error-message" style="display:none">
               ...
             </div>
-
+<!--            Success message -->
             <div class="alert alert-info alert-dismissable fade show alert-outline success-message"
                  style="display:none">
               ...

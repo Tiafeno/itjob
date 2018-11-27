@@ -162,10 +162,15 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
 
       $User    = wp_get_current_user();
-      $Company = Company::get_company_by( $User->ID );
-      if ( ! $Company->is_company() ) {
-        wp_send_json( [ 'success' => false, 'msg' => 'Utilisateur n\'est pas une entreprise', 'user' => $Company ] );
+      if (in_array('company', $User->roles)) {
+        $Company = Company::get_company_by( $User->ID );
+        if ( ! $Company->is_company() ) {
+          wp_send_json( [ 'success' => false, 'msg' => 'Utilisateur n\'est pas une entreprise', 'user' => $Company ] );
+        }
+      } else {
+        wp_send_json(['success' => false, 'msg' => "Utilisateur n'est pas une entreprise"]);
       }
+
 
       $form = (object) [
         'post'            => Http\Request::getValue( 'post' ),
@@ -207,14 +212,12 @@ if ( ! class_exists( 'vcOffers' ) ):
      * La deuxième (2) étape de formulaire d'ajout
      */
     public function update_offer_rateplan() {
-      $offer_id = Http\Request::getValue( 'offerId' );
+      $offer_id = (int)Http\Request::getValue( 'offerId' );
       $rateplan = Http\Request::getValue( 'rateplan', false );
       if ( $offer_id && $rateplan ) {
         $Offer = new Offers( (int) $offer_id );
-        if ( $Offer->is_offer() ) {
-          update_field( 'itjob_offer_rateplan', $rateplan, $Offer->ID );
-          wp_send_json( [ 'success' => true ] );
-        }
+        update_field( 'itjob_offer_rateplan', $rateplan, $Offer->ID );
+        wp_send_json( [ 'success' => true ] );
       }
       wp_send_json( [ 'success' => false, 'msg' => "Il est possible que cette erreur es dû à l’ID de l'offre" ] );
     }

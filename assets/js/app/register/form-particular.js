@@ -98,7 +98,13 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
   .component('formComponent', {
     bindings: {region: '<', allCity: '<'},
     templateUrl: itOptions.partials_url + '/particular/form.html',
+    controllerAs: 'formulaire',
     controller: function ($scope, services) {
+      const self = this;
+      self.regions = [];
+      this.$onInit = () => {
+        self.regions = _.clone($scope.formulaire.region);
+      };
       $scope.error = false;
       $scope.uri = {};
       $scope.uri.singin = itOptions.urlHelper.singin;
@@ -160,8 +166,9 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
             });
           })
       };
-      $scope.$watch('particularForm', value => {
 
+      $scope.$watch('particularForm', value => {
+        console.log(value);
       }, true);
       //  JQLite
       var jqSelects = jQuery("select.form-control.find");
@@ -180,8 +187,17 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         allowClear: true,
         matcher: function (params, data) {
           var inTerm = [];
+          // `data.text` is the text that is displayed for the data object
+          var dataContains = data.text.toLowerCase();
+          var searchTyping = _.clone(params.term);
+          if (!_.isUndefined($scope.particularForm.region) && !_.isEmpty($scope.particularForm.region)) {
+            var region = _.findWhere(self.regions, {term_id: parseInt($scope.particularForm.region)});
+            var findRegion = region.name.toLowerCase();
+            searchTyping += ` ${findRegion} `;
+          }
+
           // If there are no search terms, return all of the data
-          if (jQuery.trim(params.term) === '') {
+          if (jQuery.trim(searchTyping) === '') {
             return data;
           }
 
@@ -191,10 +207,8 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
           }
 
           // `params.term` should be the term that is used for searching
-          // `data.text` is the text that is displayed for the data object
-
-          var dataContains = data.text.toLowerCase();
-          var paramTerms = jQuery.trim(params.term).split(' ');
+          var paramTerms = jQuery.trim(searchTyping).split(' ');
+          paramTerms = _.reject(paramTerms, term => term === 'undefined');
           jQuery.each(paramTerms, (index, value) => {
             if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
               inTerm.push(true);

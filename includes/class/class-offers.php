@@ -68,7 +68,6 @@ final class Offers implements \iOffer {
   private $featured;
 
 
-
   public function __construct( $postId = null ) {
     if ( is_null( $postId ) ) {
       return false;
@@ -79,26 +78,33 @@ final class Offers implements \iOffer {
      * (WP_Post|array|null) Type corresponding to $output on success or null on failure.
      * When $output is OBJECT, a WP_Post instance is returned.
      */
-    $output                = get_post( $postId );
-    $this->ID              = $output->ID;
-    $this->post_type       = $output->post_type;
-    $this->title           = $output->post_title; // Position Filled
-    $this->offer_url       = get_the_permalink($output->ID);
-    $this->offer_status    = $output->post_status;
-    /**
-     * La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
-     * NB: Il est donc preferable que les administrateurs ne publient pas une offre pour une ou des
-     * entreprise.
-     */
-    $this->author      = Obj\jobServices::getUserData( $output->post_author );
+    $output             = get_post( $postId );
+    $this->ID           = $output->ID;
+    $this->post_type    = $output->post_type;
+    $this->title        = $output->post_title; // Position Filled
+    $this->offer_url    = get_the_permalink( $output->ID );
+    $this->offer_status = $output->post_status;
     $this->datePublication = get_the_date( 'j F, Y', $output );
     if ( $this->is_offer() ) {
-      $this->post_url = get_the_permalink($this->ID);
+      $this->id_offer = &$this->ID;
+      $this->post_url = get_the_permalink( $this->ID );
       $this->acfElements()->getOfferTaxonomy();
-      $this->isMyOffer($this->ID);
+
+      // La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
+      // Retourne post entreprise...
+      $post_company   = get_field( "itjob_offer_company", $this->ID );
+      if (!$post_company) return;
+      $company_email  = get_field( 'itjob_company_email', $post_company->ID );
+      $post_user      = get_user_by( 'email', trim($company_email) );
+      $this->author   = Obj\jobServices::getUserData( $post_user->ID );
+
     }
 
     return $this;
+  }
+
+  public function getId() {
+    return $this->ID;
   }
 
   public function is_offer() {
@@ -113,6 +119,13 @@ final class Offers implements \iOffer {
     return $this->offer_status === 'publish' ? 1 : 0;
   }
 
+  public function __get_access() {
+    if ( ! is_user_logged_in() ) {
+      return;
+    }
+    $this->getPrivateInformations();
+  }
+
   /**
    * Récuperer les tags et la region pour l'annonce
    */
@@ -121,7 +134,7 @@ final class Offers implements \iOffer {
     $regions      = wp_get_post_terms( $this->ID, 'region', [
       "fields" => "all"
     ] );
-    $this->region = isset($regions[0]) ? $regions[0] : '';
+    $this->region = isset( $regions[0] ) ? $regions[0] : '';
     $this->tags   = wp_get_post_terms( $this->ID, 'itjob_tag', [ "fields" => "names" ] );
     if ( is_wp_error( $this->tags ) ) {
       $this->tags = null;
@@ -139,7 +152,7 @@ final class Offers implements \iOffer {
     $this->company = get_field( 'itjob_offer_company', $this->ID ); // Object article
 
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
-    $this->dateLimitFormat  = \DateTime::createFromFormat( 'm/d/Y', $this->dateLimit )->format( 'F j, Y' );
+    $this->dateLimitFormat  = date_i18n('F j, Y', strtotime($this->dateLimit)); // \DateTime::createFromFormat( 'm/d/Y', $this->dateLimit )->format( 'F j, Y' );
     $this->activated        = get_field( 'activated', $this->ID ); // Bool
     $this->postPromote      = get_field( 'itjob_offer_post', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );

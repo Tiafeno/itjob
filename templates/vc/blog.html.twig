@@ -28,7 +28,7 @@
             <h4 class="card-title mb-2">
               <a href="{{ content.permalink }}" class="text-dark">{{ content.title }}</a>
             </h4>
-            <p class="text-light">{{ content.content|raw }}</p>
+            <p class="text-light" style="min-height: 180px">{{ content.content|striptags|raw }}</p>
             <div class="d-flex align-items-center justify-content-between">
               <div class="text-primary"></div>
               <div>

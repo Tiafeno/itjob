@@ -13,11 +13,11 @@ final class Candidate extends UserParticular implements \iCandidate {
   use \Auth;
 
   private $activated;
-  private $accessCompanyToken = '';
   private $author;
   private $avatar;
 
   public $title;
+  public $state;
   public $candidate_url;
   public $reference;
   public $region; // Region
@@ -59,6 +59,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     parent::__construct();
 
     $this->title         = $this->reference = $output->post_title;
+    $this->state         = $output->post_status;
     $this->candidate_url = get_the_permalink( $this->getId() );
     $this->postType      = $output->post_type;
 
@@ -67,8 +68,9 @@ final class Candidate extends UserParticular implements \iCandidate {
       $this->email = get_field( 'itjob_cv_email', $this->getId() );
       $User        = get_user_by( 'email', $this->email );
       // Remove login information (security)
+      if ($User->ID === 0) return false;
       $this->author = Obj\jobServices::getUserData( $User->ID );
-      $this->avatar = wp_get_attachment_image_src( get_post_thumbnail_id( $this->getId() ), 'large' );
+      $this->avatar = wp_get_attachment_image_src( get_post_thumbnail_id( $this->getId() ), [300, 300] );
 
       // TODO: Verifier si le client est une entreprise avec un compte premium
 
@@ -148,6 +150,7 @@ final class Candidate extends UserParticular implements \iCandidate {
       'training_city',
       'training_diploma',
       'training_establishment',
+      'validated'
     ] );
     $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [
       'exp_dateBegin',
@@ -155,12 +158,14 @@ final class Candidate extends UserParticular implements \iCandidate {
       'exp_city',
       'exp_country',
       'exp_company',
-      'exp_mission'
+      'exp_mission',
+      'validated'
     ] );
 
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
     $this->newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
     $this->driveLicences  = get_field( 'itjob_cv_driveLicence', $this->getId() );
+
     return true;
 
   }
@@ -202,9 +207,12 @@ final class Candidate extends UserParticular implements \iCandidate {
     $User = wp_get_current_user();
     if ( $User->user_email === $this->email || is_user_admin() ) {
       // Récuperer les notifications du client
+      // Notification pour les offres
       $this->getJobNotif();
+      // Notification pour les formations
       $this->getTrainingNotif();
-      // Les informations
+
+      // Les informations du candidate
       $this->getInformations();
     }
   }
@@ -213,12 +221,13 @@ final class Candidate extends UserParticular implements \iCandidate {
    * Récuperer les information de contact et son nom
    */
   protected function getInformations() {
-    $this->privateInformations            = new \stdClass();
-    $this->privateInformations->cellphone = $this->getCellphone();
-    $this->privateInformations->phone     = $this->getPhones();
-    $this->privateInformations->firstname = $this->getFirstName();
-    $this->privateInformations->lastname  = $this->getLastName();
-    $this->privateInformations->address   = $this->getAddress();
+    $this->privateInformations                = new \stdClass();
+    $this->privateInformations->cellphone     = $this->getCellphone();
+    $this->privateInformations->phone         = $this->getPhones();
+    $this->privateInformations->firstname     = $this->getFirstName();
+    $this->privateInformations->lastname      = $this->getLastName();
+    $this->privateInformations->address       = $this->getAddress();
+    $this->privateInformations->birthday_date = $this->getBirthday();
 
     $this->privateInformations->author = $this->author;
     $this->privateInformations->avatar = $this->avatar;
@@ -231,72 +240,19 @@ final class Candidate extends UserParticular implements \iCandidate {
    * NB: L'utilisation de cette fonction n'est pas conseiller pour une raison de sécurité
    */
   public function __client_premium_access() {
-    if ( ! is_user_logged_in()) return false;
+    if ( ! is_user_logged_in() ) {
+      return false;
+    }
     $this->getInformations();
+
     return true;
   }
 
-  /**
-   * Mettre à jours les token des entreprises dans une post meta
-   * @return array|bool|mixed
-   */
-  public function updateAccessToken() {
-    if ( empty( $this->accessCompanyToken ) ) {
-      return false;
-    }
-    $accessToken = get_post_meta( $this->getId(), 'access_company_token', true );
-    if ( ! empty( $accessToken ) ) {
-      if ( ! is_array( $accessToken ) ) {
-        return false;
-      }
-      $Token = new Obj\Token( trim( $this->accessCompanyToken ) );
-      foreach ( $accessToken as $tk ) {
-        if ( $this->accessCompanyToken === $tk->getToken() ) {
-          return $accessToken;
-          break;
-        }
-      }
-      array_push( $accessToken, $Token );
-      update_post_meta( $this->getId(), 'access_company_token', $accessToken );
-    } else {
-      $Token       = new Obj\Token( trim( $this->accessCompanyToken ) );
-      $accessToken = [ $Token ];
-      update_post_meta( $this->getId(), 'access_company_token', $accessToken );
-    }
+  public function __get_access() {
+    $this->getJobNotif();
+    $this->getTrainingNotif();
 
-    return $accessToken;
-  }
-
-  /**
-   * Verifier l'autorisation de l'entreprise avant de voir le CV au complete.
-   * Si l'information ou le token est valide, on recupere les informations du candidate
-   *
-   * @param null|string $TOKEN
-   *
-   * @return bool
-   */
-  public function hasTokenAccess( $TOKEN = null ) {
-    $accessToken = get_post_meta( $this->getId(), 'access_company_token', true );
-    if ( is_null( $TOKEN ) || ! is_user_logged_in() ) {
-      return false;
-    }
-    $accessToken              = empty( $accessToken ) ? [] : $accessToken;
-    $usr                      = wp_get_current_user();
-    $this->accessCompanyToken = $TOKEN;
-    if ( is_array( $accessToken ) ) {
-      foreach ( $accessToken as $token ) {
-        if ( $token->getToken() === $usr->data->user_pass ) {
-          $this->getInformations();
-
-          return true;
-          break;
-        }
-      }
-
-      return false;
-    } else {
-      return false;
-    }
+    return $this->__client_premium_access();
   }
 
   /**
@@ -311,28 +267,46 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->softwares = $this->getActivateField( $softwares );
     // Get region
     $this->region = wp_get_post_terms( $this->getId(), 'region', [ "fields" => "all" ] );
-    $this->region = $this->region[0];
+    $this->region = isset( $this->region[0] ) ? $this->region[0] : '';
     // Get region
     $this->country = wp_get_post_terms( $this->getId(), 'city', [ "fields" => "all" ] );
-    $this->country = $this->country[0];
-    // Récuperer les emplois recherché
-    $jobSoughts      = wp_get_post_terms( $this->getId(), 'job_sought', [ "fields" => "all" ] );
-    $this->jobSought = $this->getActivateField( $jobSoughts );
+    $this->country = isset( $this->country[0] ) ? $this->country[0] : '';
 
-    $this->tags            = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
+    // Récuperer l'ancien emploi rechercher
+    $old_job_sought = get_post_meta( $this->getId(), '_old_job_sought', true );
+    // Récuperer les emplois recherché
+    $jobSoughts     = wp_get_post_terms( $this->getId(), 'job_sought', [ "fields" => "all" ] );
+    $jobSoughts     = $this->getActivateField( $jobSoughts );
+    // Si l'ancien emploi est definie ou existe
+    if ( $old_job_sought ) {
+      $objJob         = new \stdClass();
+      $objJob->name      = $old_job_sought;
+      $objJob->activated = true;
+    }
+    $this->jobSought = empty( $jobSoughts ) ? ( $old_job_sought ? $objJob : [] ) : $jobSoughts;
+
+    // Les tags sont ajouter par 'administrateur
+    $this->tags = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
+    // Le secteur d'activite du candidate
     $this->branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "all" ] );
     $this->branch_activity = ! is_array( $this->branch_activity ) || ! empty( $this->branch_activity ) ? $this->branch_activity[0] : null;
   }
 
+  /**
+   * Cette fonction permet de recuperer les terms qui sont activer
+   *
+   * @param array $terms - Array of term
+   *
+   * @return array
+   */
   private function getActivateField( $terms ) {
     $validTerms = [];
-    if ( ! is_wp_error( $terms ) ):
+    if ( ! is_wp_error( $terms ) ) :
       foreach ( $terms as $term ) {
         if ( ! is_wp_error( $term ) ) {
-          $valid = get_term_meta( $term->term_id, 'activated', true );
-          if ( $valid ) {
-            array_push( $validTerms, $term );
-          }
+          $valid           = get_term_meta( $term->term_id, 'activated', true );
+          $term->activated = (int) $valid;
+          array_push( $validTerms, $term );
         }
       }
     endif;

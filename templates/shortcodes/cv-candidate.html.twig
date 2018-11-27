@@ -1,16 +1,4 @@
 <style type="text/css">
-  /*
----------------------------------------------------------------------------------
-	STRIPPED DOWN RESUME TEMPLATE
-    html resume
-
-    v0.9: 5/28/09
-
-    design and code by: thingsthatarebrown.com
-                        (matt brown)
----------------------------------------------------------------------------------
-*/
-
 
   .msg { padding: 10px; background: #222; position: relative; }
   .msg h1 { color: #fff;  }
@@ -109,7 +97,7 @@
 
         <div class="col-md-4">
           <div class="contact-info text-right">
-            <h3><a id="pdf" href="#" class="text-uppercase">Télécharger en PDF</a></h3>
+            <h3><a id="pdf" href="{{ download_link }}" class="text-uppercase">Télécharger en PDF</a></h3>
             <h3 class="d-inline-block">
               <a href="mailto:{{ candidate.privateInformations.author.data.user_email }}">
                 {{ candidate.privateInformations.author.data.user_email }}
@@ -143,24 +131,26 @@
             </div><!--// .yui-gf -->
           {% endif %}
 
-          <div class="row yui-gf">
-            <div class="col-md-4">
-              <h2>Experiences professionnelles</h2>
+          {% if  candidate.experiences is not empty %}
+            <div class="row yui-gf">
+              <div class="col-md-4">
+                <h2>Experiences professionnelles</h2>
+              </div><!--// .row -->
+
+              <div class="col-md-8">
+
+                {% for experience in candidate.experiences %}
+                  <div class="job {% if loop.last %} last {% endif %}">
+                    <h2 class="uk-text-bold">{{ experience.exp_company }}</h2>
+                    <h3 class="text-muted">{{ experience.exp_positionHeld }}</h3>
+                    <h4 style="font-family: Poppins, sans-serif">{{ experience.exp_dateBegin }} à {{ experience.exp_dateEnd }}</h4>
+                    {{ experience.exp_mission|raw }}
+                  </div>
+                {% endfor %}
+
+              </div>
             </div><!--// .row -->
-
-            <div class="col-md-8">
-
-              {% for experience in candidate.experiences %}
-                <div class="job {% if loop.last %} last {% endif %}">
-                  <h2 class="uk-text-bold">{{ experience.exp_company }}</h2>
-                  <h3 class="text-muted">{{ experience.exp_positionHeld }}</h3>
-                  <h4 style="font-family: Poppins, sans-serif">{{ experience.exp_dateBegin }} à {{ experience.exp_dateEnd }}</h4>
-                  {{ experience.exp_mission|raw }}
-                </div>
-              {% endfor %}
-
-            </div>
-          </div><!--// .row -->
+          {% endif %}
 
           <div class="row yui-gf">
             <div class="col-md-4">
@@ -186,7 +176,7 @@
 
           <div class="row yui-gf">
             <div class="col-md-4">
-              <h2>Outils et technologie</h2>
+              <h2>Logiciels</h2>
             </div>
             <div class="col-md-8">
 

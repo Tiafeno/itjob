@@ -1,0 +1,50 @@
+<style type="text/css">
+  form[name="search-offers"] {
+    background-color: rgba(255, 255, 255, 1);
+    padding: 2rem 2rem 1rem;
+  }
+</style>
+<form name="search-offers" action="{{ home_url }}" method="get" class="mr-4 mb-4">
+  <div class="flexbox-b mb-4">
+    <span class="mr-2 static-badge badge-blue"><i class="ti-search"></i></span>
+    <div>
+      <h5 class="mb-0">Recherche emplois</h5>
+      {#<div class="text-light">{{ search_count }} résultats trouvés dans {{ activity_count }} secteur d'activité</div>#}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-3 no-pd">
+      <div class="form-group">
+        <input class="form-control" name="s" value="{{ s }}" type="text" placeholder="Mot clé">
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <select class="form-control" name="ab" title="Secteur d'activité">
+          <option></option>
+
+          {% for abranch in abranchs %}
+            <option value="{{ abranch.term_id }}">{{ abranch.name }}</option>
+          {% endfor %}
+
+          </optgroup>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <select class="form-control" name="rg" title="Région">
+          <option></option>
+          {% for region in regions %}
+            <option value="{{ region.term_id }}">{{ region.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <input type="hidden" name="post_type" value="offers">
+      <button class="btn btn-blue btn-block">Trouver</button>
+    </div>
+  </div>
+</form>

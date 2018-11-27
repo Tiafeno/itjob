@@ -21,7 +21,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       add_shortcode( 'vc_register_particular', [ &$this, 'register_render_html' ] );
 
       // Crée une utilisateur pour le post candidate
-      add_action( 'acf/update_value/name=itjob_cv_email', [ &$this, 'post_publish_candidate' ], 10, 2 );
+      add_action( 'acf/update_value/name=itjob_cv_email', [ &$this, 'create_particular_user' ], 10, 2 );
 
       add_action( 'wp_ajax_get_city', [ &$this, 'get_city' ] );
       add_action( 'wp_ajax_nopriv_get_city', [ &$this, 'get_city' ] );
@@ -178,9 +178,17 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       $user = get_user_by( 'email', trim($form->email) );
       do_action('register_user_particular', $user->ID);
 
+      // Ne pas activer le CV de l'utilisateur
+      update_field('activated', 0, $post_id);
+
       wp_send_json( [ 'success' => true, 'msg' => 'Vous avez réussi votre inscription'] );
     }
 
+    /**
+     * Mettre à jours les champs ACF
+     * @param $post_id
+     * @param $form
+     */
     private function update_acf_field( $post_id, $form ) {
       foreach ( get_object_vars( $form ) as $key => $value ) {
         update_field( "itjob_cv_" . $key, $value, $post_id );
@@ -195,7 +203,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
      *
      * @return bool
      */
-    public function post_publish_candidate( $value, $post_id ) {
+    public function create_particular_user( $value, $post_id ) {
 
       $post_type = get_post_type( $post_id );
       if ( $post_type != 'candidate' ) {
@@ -220,6 +228,7 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
         "last_name"    => $userLastName,
         "role"         => $post_type
       ];
+      // Hook user_register fire ...
       $user_id       = wp_insert_user( $args );
       if ( ! is_wp_error( $user_id ) ) {
         $user = new \WP_User( $user_id );
@@ -231,6 +240,10 @@ if ( ! class_exists( 'vcRegisterParticular' ) ) :
       }
     }
 
+    /**
+     * Récuperer un objet WP_City
+     * @return array
+     */
     public function get_city() {
       $taxonomy          = 'city';
       $allCity           = [];

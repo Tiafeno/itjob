@@ -2,6 +2,10 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
   .value('froalaConfig', {
     toolbarInline: false,
     quickInsertTags: null,
+    wordAllowedStyleProps: ['text-decoration', 'height', 'padding', 'margin', 'text-align'],
+    wordDeniedAttrs: ['class'],
+    wordPasteModal: false,
+    wordPasteKeepFormatting: true,
     toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
   })
   .value('alertifyConfig', {
@@ -54,33 +58,30 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
           // Mode de diffusion par default
           $scope.rateplan = 'standard';
           $scope.sendSubscription = () => {
-            if ($scope.ratePlan) {
-              const sendData = new FormData();
-              sendData.append('action', 'ajx_update_offer_rateplan');
-              sendData.append('rateplan', $scope.rateplan);
-              sendData.append('offerId', $rootScope.offers.ID);
-              offerFactory
-                .sendPostForm(sendData)
-                .then(resp => {
-                  const data = resp.data;
-                  if (data.success) {
-                    swal({
-                      title: 'Reussi',
-                      text: "Votre offre a été envoyé avec succès",
-                      type: "info",
-                    }, () => {
-                      window.location.href = itOptions.urlHelper.redir;
-                    });
-                  }
-                });
-            } else {
-              window.location.href = itOptions.urlHelper.redir;
-            }
+            const sendData = new FormData();
+            sendData.append('action', 'ajx_update_offer_rateplan');
+            sendData.append('rateplan', $scope.rateplan);
+            sendData.append('offerId', $rootScope.offers.ID);
+            offerFactory
+              .sendPostForm(sendData)
+              .then(resp => {
+                const data = resp.data;
+                if (data.success) {
+                  swal({
+                    title: 'Reussi',
+                    text: "Votre offre a été envoyé avec succès",
+                    type: "info",
+                  }, () => {
+                    window.location.href = itOptions.urlHelper.redir;
+                  });
+                }
+              });
           };
 
           // Activate Popovers
           jQuery('[data-toggle="popover"]').popover();
           $scope.$watch('rateplan', value => {
+            console.log(value);
           });
         }]
       },
@@ -93,6 +94,19 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
             this.$onInit = function () {
               $scope.abranchs = _.clone(abranchs);
               $scope.regions = _.clone(regions);
+
+              $rootScope.searchCityFn = (city) => {
+                if (!_.isUndefined($rootScope.offers.region)) {
+                  let region = parseInt($rootScope.offers.region);
+                  rg = _.findWhere($scope.regions, {term_id: region});
+                  if (rg) {
+                    if (city.name.indexOf(rg.name) > -1) {
+                      return true;
+                    }
+                  }
+                }
+                return false;
+              };
 
               /* jQuery element */
               var jqSelects = jQuery("select.form-control");
@@ -107,7 +121,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
               });
 
               jQuery(".form-control.country").select2({
-                placeholder: "Tapez le nom de la ville",
+                placeholder: "Tapez le nom d'une ville ou code postal",
                 allowClear: true,
                 matcher: function (params, data) {
                   var inTerm = [];
@@ -151,6 +165,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
 
               jQuery('[data-toggle="tooltip"]').tooltip();
             };
+
 
             /** Valider et envoyer le formulaire */
             $scope.formSubmit = function (isValid) {

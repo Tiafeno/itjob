@@ -22,93 +22,86 @@ if ( ! class_exists( 'itJob' ) ) {
       /**
        * Activer l'offre.
        * Cette evenement ce declanche quand l'administrateur publie une offre
-       * @param int $ID
-       */
-      add_action('publish_offers', function ($ID) {
-        // Activer l'offre
-        update_field('activated', 1, $ID);
-      }, 10, 1);
-
-      /**
-       * Activer le CV.
-       * Cette evenement ce declanche quand l'administrateur publie le CV
-       * @param int $ID
-       */
-      add_action( 'transition_post_status', function ($new_status, $old_status, $post) {
-        // Marquer le candidate possède un CV
-        if ('publish' === $new_status && 'candidate' === $post->post_type) {
-        // update_field( 'itjob_cv_hasCV', 1, $post->ID );
-          update_field( 'activated', 1, $post->ID );
-
-          //update_post_meta($post->ID, 'itjob_cv_hasCV', 1);
-          //update_post_meta($post->ID, 'activated', 1);
-        }
-
-      }, 10, 3 );
-
-      // TODO: Envoyer un mail information utilisateur et adminstration (pour s'informer d'un nouveau utilisateur)
-      add_action( 'acf/save_post', function ( $post_id ) {
-        // Code here
-
-      }, 20 );
-
-      /** Effacer les elements acf avant d'effacer l'article */
-      add_action( 'before_delete_post', function ( $postId ) {
-        $isPosts = ['candidate', 'offers', 'company'];
-        $pst = get_post( $postId );
-        $class_name = ucfirst( $pst->post_type );
-        if (class_exists($class_name) && in_array($pst->post_type, $isPosts)) {
-          $class = new \ReflectionClass( "includes\\post\\$class_name" );
-          $class->remove();
-        }
-
-
-      } );
-
-      /**
-       * When there’s no previous status (this means these hooks are always run whenever "save_post" runs).
-       * @Hook: new_post (https://codex.wordpress.org/Post_Status_Transitions)
        *
-       * @param int $post_ID Post ID.
-       * @param WP_Post $post Post object.
-       * @param bool $update Whether this is an existing post being updated or not.
+       * @param int $ID
        */
-      add_action( 'save_post', function ( $post_id, $post, $update ) {
+      add_action( 'acf/save_post', function ( $post_id ) {
+        $post_type   = get_post_type( $post_id );
+        $post_status = get_post_status( $post_id );
+        update_field( 'activated', 1, $post_id );
 
-      }, 10, 3 );
-
-      // Ajouter le mot de passe de l'utilisateur
-      add_action( 'user_register', function ( $user_id ) {
-        $user       = get_userdata( $user_id );
-        $user_roles = $user->roles;
-        if ( in_array( 'company', $user_roles, true ) ||
-             in_array( 'candidate', $user_roles, true ) ) {
-          $pwd = $_POST['pwd'];
-          if ( isset( $pwd ) ) {
-            $id = wp_update_user( [ 'ID' => $user_id, 'user_pass' => trim( $pwd ) ] );
-            if ( is_wp_error( $id ) ) {
-              return true;
-            } else {
-              // Mot de passe utilisateur à etes modifier avec success
-              return false;
+        // Activer les experiences et les formations
+        if ($post_type === 'candidate' && $post_status === 'publish') {
+          $Experiences = get_field('itjob_cv_experiences', $post_id);
+          $Trainings = get_field('itjob_cv_trainings', $post_id);
+          if (is_array($Experiences) && !empty($Experiences)) {
+            $Values = [];
+            foreach ($Experiences as $experience) {
+              $experience['validated'] = 1;
+              $Values[] = $experience;
             }
+            update_field('itjob_cv_experiences', $Values, $post_id);
+          }
+
+          if (is_array($Trainings) && !empty($Trainings)) {
+            $Values = [];
+            foreach ($Trainings as $training) {
+              $training['validated'] = 1;
+              $Values[] = $training;
+            }
+            update_field('itjob_cv_trainings', $Values, $post_id);
           }
         }
       }, 10, 1 );
 
+      /** Effacer les elements acf avant d'effacer l'article */
+      add_action( 'before_delete_post', function ( $postId ) {
+        $isPosts    = [ 'candidate', 'offers', 'company' ];
+        $pst        = get_post( $postId );
+        $class_name = ucfirst( $pst->post_type );
+        if ( class_exists( $class_name ) && in_array( $pst->post_type, $isPosts ) ) {
+          $class = new \ReflectionClass( "includes\\post\\$class_name" );
+          $class->remove();
+        }
+      } );
 
-      add_action( 'wp_loaded', function () {
+      // Effacer le candidat ou l'entreprise si on supprime l'utilisateur
+      add_action('delete_user', function ($user_id) {
+        $user_obj = get_userdata($user_id);
+        if (in_array('company', $user_obj->roles)) {
+          $Company = Post\Company::get_company_by($user_id);
+          wp_delete_post($Company->getId());
+        }
 
-      }, 20 );
+        if (in_array('candidate', $user_obj->roles)) {
+          $Candidate = Post\Candidate::get_candidate_by($user_id);
+          wp_delete_post($Candidate->getId());
+        }
+      });
+
+      add_action( 'user_register', function ( $user_id ) {
+        do_action("new_register_user", $user_id);
+
+      }, 10, 1 );
 
       // @doc https://wordpress.stackexchange.com/questions/7518/is-there-a-hook-for-when-you-switch-themes
-      add_action('after_switch_theme', function ($new_theme) {
+      add_action( 'after_switch_theme', function ( $new_theme ) {
         global $wpdb;
-        //$meta_sql = "ALTER TABLE $wpdb->postmeta ADD COLUMN IF NOT EXISTS `meta_activate` INT NOT NULL DEFAULT 1 AFTER `meta_value`";
-        //$term_sql = "ALTER TABLE {$wpdb->prefix}terms ADD COLUMN IF NOT EXISTS `term_activate` INT NOT NULL DEFAULT 1 AFTER `slug`";
-        //$wpdb->query($meta_sql);
-        //$wpdb->query($term_sql);
-      });
+
+        // Cree une table pour les entreprise intereser par des candidats
+        $cv_request = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_request (`id_cv_request` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
+`id_candidate` BIGINT(20) NOT NULL DEFAULT 0, `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , `status` VARCHAR(20) NOT NULL DEFAULT 'pending' , 
+`id_attachment` BIGINT(20) NOT NULL DEFAULT 0,
+                         PRIMARY KEY (`id_cv_request`)) ENGINE = InnoDB;";
+        $wpdb->query( $cv_request );
+
+        // Crée une table pour ajouter les CV dans la liste des entreprise
+        // Pour les entreprise de membre standar, la liste se limite à 5 CV
+        $cv_lists = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_lists (`id_lists` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
+                      `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
+                      PRIMARY KEY (`id_lists`)) ENGINE = InnoDB;";
+        $wpdb->query( $cv_lists );
+      } );
 
       // Add acf google map api
       add_filter( 'acf/init', function () {
@@ -125,7 +118,6 @@ if ( ! class_exists( 'itJob' ) ) {
       // @link: https://codex.wordpress.org/Plugin_API/Action_Reference/pre_get_posts
       add_action( 'pre_get_posts', function ( &$query ) {
         if ( ! is_admin() && $query->is_main_query() ) {
-          $Types = ['offers', 'candidate', 'company'];
           // Afficher les posts pour status 'en attente' et 'publier'
           $query->set( 'post_status', [ 'publish' ] );
           $post_type = $query->get( 'post_type' );
@@ -206,6 +198,7 @@ if ( ! class_exists( 'itJob' ) ) {
               CASE 'candidate':
                 $language = Http\Request::getValue( 'lg', '' );
                 $software = Http\Request::getValue( 'ms', '' );
+
                 if ( ! empty( $language ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
@@ -216,6 +209,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   ];
                 }
 
+                // Rechercher dans les logiciel si le champ n'es pas vide
                 if ( ! empty( $software ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query[] = [
@@ -224,6 +218,54 @@ if ( ! class_exists( 'itJob' ) ) {
                     'terms'            => (int) $software,
                     'include_children' => false
                   ];
+                }
+
+                if ( ! empty( $s ) ) {
+                  if ( ! isset( $meta_query ) ) {
+                    $meta_query = $query->get( 'meta_query' );
+                  }
+                  $searchs = explode(' ', $s);
+                  foreach ($searchs as $search) {
+                    if (empty($search)) continue;
+                    // TODO: Corriger la cherche pour tout les experiences et les formations
+                    $meta_query[] = [
+                      'relation' => 'OR',
+                      [
+                        'key'     => 'itjob_cv_trainings_0_training_establishment',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ],
+                      [
+                        'key'     => 'itjob_cv_trainings_0_training_diploma',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ],
+                      [
+                        'key'     => 'itjob_cv_experiences_0_exp_mission',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ],
+                      [
+                        'key'     => 'itjob_cv_experiences_0_exp_positionHeld',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ],
+                      [
+                        'key'     => 'itjob_cv_experiences_0_exp_company',
+                        'value'   => $search,
+                        'compare' => 'LIKE',
+                        'type'    => 'CHAR'
+                      ]
+                    ];
+                  }
+                  // Feature: Recherché aussi dans le profil recherché et mission
+                  
+                  $query->set( 'meta_query', $meta_query );
+                  $query->meta_query = new \WP_Meta_Query( $meta_query );
                 }
 
                 // Meta query
@@ -250,6 +292,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 BREAK;
             } // .end switch
 
+
             // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
             $query->query['s']      = '';
             $query->query_vars['s'] = '';
@@ -269,15 +312,26 @@ if ( ! class_exists( 'itJob' ) ) {
                 'compare' => '=',
                 'type'    => 'NUMERIC'
               ];
+              if ($post_type === 'candidate')
+                $meta_query[] = [
+                  'key'     => 'itjob_cv_hasCV',
+                  'value'   => 1,
+                  'compare' => '=',
+                  'type'    => 'NUMERIC'
+                ];
 
               if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                 $query->set( 'meta_query', $meta_query );
                 $query->meta_query = new \WP_Meta_Query( $meta_query );
               endif;
+
             endif;
           }
+
+          
         }
       } );
+
 
       /**
        * Ajouter dans les variables global pour nom post-types le contenue du post
@@ -292,14 +346,14 @@ if ( ! class_exists( 'itJob' ) ) {
             $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
             // Afficher les CV pour les comptes entreprise premium
             $current_user = wp_get_current_user();
-            if ($current_user->ID !== 0 && ! current_user_can('delete_user')) {
-              $Company = Post\Company::get_company_by($current_user->ID);
-              // Si le client en ligne est une entreprise on continue...
-              if ($Company->is_company()) {
+            if ( $current_user->ID !== 0 && ! current_user_can( 'remove_users' ) ) {
+              if ( in_array( 'company', $current_user->roles ) ) {
+                $Company = Post\Company::get_company_by( $current_user->ID );
+                // Si le client en ligne est une entreprise on continue...
                 // On recupere le type du compte
-                $account = get_post_meta($Company->getId(), 'itjob_meta_account', true);
+                $account = get_post_meta( $Company->getId(), 'itjob_meta_account', true );
                 // Si le compte de l'entreprise est premium
-                if ((int)$account === 1) {
+                if ( (int) $account === 1 ) {
                   $GLOBALS['candidate']->__client_premium_access();
                 }
               }
@@ -459,7 +513,7 @@ if ( ! class_exists( 'itJob' ) ) {
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular-aria' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [], '1.7.2' );
-      wp_register_script('ngFileUpload', get_template_directory_uri() . '/assets/js/libs/ngfileupload/ng-file-upload.min.js',[], '12.2.13', true);
+      wp_register_script( 'ngFileUpload', get_template_directory_uri() . '/assets/js/libs/ngfileupload/ng-file-upload.min.js', [], '12.2.13', true );
 
       wp_register_script( 'angular-froala', VENDOR_URL . '/froala-editor/src/angular-froala.js', [], '2.8.4' );
       wp_register_script( 'froala', VENDOR_URL . '/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
@@ -470,21 +524,21 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_style( 'themify-icons', VENDOR_URL . '/themify-icons/css/themify-icons.css', '', '1.1.0' );
       wp_register_style( 'select-2', VENDOR_URL . "/select2/dist/css/select2.min.css", '', $itJob->version );
 
-      wp_register_script('jquery-additional-methods', VENDOR_URL . '/jquery-validation/dist/additional-methods.min.js', ['jquery'], '1.17.0', true);
-      wp_register_script('jquery-validate', VENDOR_URL . '/jquery-validation/dist/jquery.validate.min.js', ['jquery'], '1.17.0', true);
+      wp_register_script( 'jquery-additional-methods', VENDOR_URL . '/jquery-validation/dist/additional-methods.min.js', [ 'jquery' ], '1.17.0', true );
+      wp_register_script( 'jquery-validate', VENDOR_URL . '/jquery-validation/dist/jquery.validate.min.js', [ 'jquery' ], '1.17.0', true );
       // papaparse
-      wp_register_script( 'papaparse',get_template_directory_uri() . '/assets/js/libs/papaparse/papaparse.min.js', [], '4.6.0' );
+      wp_register_script( 'papaparse', get_template_directory_uri() . '/assets/js/libs/papaparse/papaparse.min.js', [], '4.6.0' );
 
       // Register components adminca stylesheet
       wp_register_style( 'bootstrap', VENDOR_URL . '/bootstrap/dist/css/bootstrap.min.css', '', '4.0.0' );
 
       wp_register_style( 'bootstrap-tagsinput', VENDOR_URL . '/bootstrap-tagsinput/src/bootstrap-tagsinput.css', '', '4.0.0' );
-      wp_register_script('bootstrap-tagsinput', VENDOR_URL . '/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js', [], '0.8', true);
+      wp_register_script( 'bootstrap-tagsinput', VENDOR_URL . '/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js', [], '0.8', true );
 
       wp_register_style( 'ng-tags-bootstrap', get_template_directory_uri() . '/assets/css/ng-tags-input.min.css', '', '3.2.0' );
-      wp_register_script('ng-tags', get_template_directory_uri() . '/assets/js/ng-tags-input.min.js', ['angular'], '3.2.0', true);
+      wp_register_script( 'ng-tags', get_template_directory_uri() . '/assets/js/ng-tags-input.min.js', [ 'angular' ], '3.2.0', true );
 
-      wp_register_script('typeahead', get_template_directory_uri() . '/assets/js/typeahead.bundle.js', ['jquery'], '0.11.1', true);
+      wp_register_script( 'typeahead', get_template_directory_uri() . '/assets/js/typeahead.bundle.js', [ 'jquery' ], '0.11.1', true );
 
       wp_register_style( 'adminca-animate', VENDOR_URL . '/animate.css/animate.min.css', '', '3.5.1' );
       wp_register_style( 'toastr', VENDOR_URL . '/toastr/toastr.min.css', '', '3.5.1' );
@@ -507,8 +561,8 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_style( 'b-datepicker-3', VENDOR_URL . '/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css', '', '1.7.1' );
       wp_register_style( 'admin-adminca', get_template_directory_uri() . '/assets/css/admin-custom.css', [ 'adminca' ], $itJob->version );
 
-      wp_register_script('daterangepicker-lang', VENDOR_URL . '/bootstrap-daterangepicker/locales/bootstrap-datepicker.fr.min.js', ['jquery']);
-      wp_register_script('daterangepicker', VENDOR_URL . '/bootstrap-daterangepicker/daterangepicker.js', ['daterangepicker-lang']);
+      wp_register_script( 'daterangepicker-lang', VENDOR_URL . '/bootstrap-daterangepicker/locales/bootstrap-datepicker.fr.min.js', [ 'jquery' ] );
+      wp_register_script( 'daterangepicker', VENDOR_URL . '/bootstrap-daterangepicker/daterangepicker.js', [ 'daterangepicker-lang' ] );
 
       wp_register_style( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.css' );
       wp_register_script( 'sweetalert', VENDOR_URL . '/bootstrap-sweetalert/dist/sweetalert.min.js', [], $itJob->version, true );
@@ -528,14 +582,14 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_script( 'jq-slimscroll', VENDOR_URL . '/jquery-slimscroll/jquery.slimscroll.min.js', [ 'jquery' ], '1.3.8', true );
       wp_register_script( 'idle-timer', VENDOR_URL . '/jquery-idletimer/dist/idle-timer.min.js', [], '1.1.0', true );
       wp_register_script( 'toastr', VENDOR_URL . '/toastr/toastr.min.js', [ 'jquery' ], '0.0.0', true );
-      wp_register_script( 'fr-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js', ['jquery' ], '1.7.1' );
+      wp_register_script( 'fr-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/locales/bootstrap-datepicker.fr.min.js', [ 'jquery' ], '1.7.1' );
 
-      wp_register_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', ['jquery' ], '1.7.1' );
+      wp_register_script( 'b-datepicker', VENDOR_URL . '/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js', [ 'jquery' ], '1.7.1' );
       wp_register_script( 'bootstrap-select', VENDOR_URL . '/bootstrap-select/dist/js/bootstrap-select.min.js', [
-          'jquery',
-          'bootstrap'
-        ], '1.12.4', true );
-      wp_register_script('moment-locales', VENDOR_URL . '/moment/min/moment-with-locales.min.js', [], '2.19.1', true);
+        'jquery',
+        'bootstrap'
+      ], '1.12.4', true );
+      wp_register_script( 'moment-locales', VENDOR_URL . '/moment/min/moment-with-locales.min.js', [], '2.19.1', true );
       wp_register_script( 'adminca', get_template_directory_uri() . '/assets/adminca/adminca.js', [
         'bootstrap',
         'jq-slimscroll',

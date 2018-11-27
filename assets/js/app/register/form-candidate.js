@@ -16,6 +16,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
           jobSougths: function (Services) {
             return Services.getTaxonomy('job_sought');
           },
+          candidate: function (Services) {
+            return Services.collectCandidatInfo();
+          },
           access: ['$q', function ($q) {
           }]
         },
@@ -46,7 +49,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
               });
             }
           }],
-          driveLicences: function ($q) {
+          driveLicences: ['$q', function ($q) {
             // Permis de conduire (Schema)
             const licences = [
               {
@@ -73,12 +76,13 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 _id: 4,
                 label: "D",
                 slug: "d"
-              },
+              }
             ];
             return $q.resolve(licences);
-          }
+          }]
         },
         controller: function ($rootScope, $scope, $http, driveLicences) {
+          $scope.driveL = false;
           // Effacer une nouvelle formation
           $scope.removeTraining = id => {
             // Ne pas effacer le premier champ de formation
@@ -118,11 +122,23 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             $rootScope.driveLicences = _.clone(driveLicences);
           };
 
+          $rootScope.onSwitchDriveLicence = (hasDl) => {
+            if (hasDl) {
+              $scope.driveL = false;
+            } else {
+              $rootScope.formData.driveLicence = [];
+            }
+          };
+
+          // Effacer tout les champs input des permis.
+
+
           $rootScope.initDatePicker = function () {
             window.setTimeout(() => {
               jQuery('.input-daterange-years').datepicker({
-                format: "yyyy",
-                minViewMode: "years",
+                format: "mm/dd/yyyy",
+                minViewMode: "months",
+                startView: 2,
                 autoclose: true,
                 language: "fr",
                 clearBtn: true,
@@ -169,8 +185,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 source: country.ttAdapter()
               });
             }, 600);
-
-
           }
         }
       })
@@ -185,7 +199,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
                 redirect: 'form.informations'
               });
             }
-
             // Verifier les valeurs des champs (Formations, experiences & langue)
             let training = !$rootScope.formData.hasOwnProperty('trainings');
             if (training) return $q.reject({ redirect: 'form.career' });
@@ -209,7 +222,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
 
             let languages = !$rootScope.formData.hasOwnProperty('languages');
             if (languages) return $q.reject({ redirect: 'form.career' });
-
           }]
         },
         controller: ['$rootScope', '$scope', 'initScripts', 'Services',
@@ -235,7 +247,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
         templateUrl: itOptions.partials_url + '/candidate/informations.html',
         controller: ['$rootScope', '$http', '$state', 'initScripts',
           function ($rootScope, $http, $state, initScripts) {
-
             const fileFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
             /**
              * Cette fonction permet de redimensionner une image
@@ -322,6 +333,10 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
              * @param {path} state 
              */
             $rootScope.next = (state) => {
+              if (!$rootScope.isValidTag) {
+                alertify.error("Veillez remplir correctement le champ 'Emploi recherché ou vouex'");
+                return false;
+              }
               if (typeof $rootScope.formData.featuredImage === 'undefined') {
                 alertify
                   .okBtn("Oui")
@@ -350,7 +365,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     return {
       __init__: function () {
         jQuery('.input-group.date').datepicker({
-          format: "dd-mm-yyyy",
+          format: "mm/dd/yyyy",
           startView: 2,
           todayBtn: false,
           keyboardNavigation: true,
@@ -422,6 +437,14 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             return jobs.filter(_j =>  _j.name.toLowerCase().indexOf($query.toLowerCase()) != -1 );
           });
       },
+      collectCandidatInfo: function () {
+        return $http.get(`${itOptions.ajax_url}?action=collect_candidat_informations`, {cache: true})
+          .then(response => {
+            const query = response.data;
+            if (!query.success) return false;
+            return query.data;
+          })
+      },
       getStatus: function () {
         const status = [
           {
@@ -475,8 +498,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     };
   }])
   .controller('formController',[
-    "$scope", "$rootScope", "Services", "abranchs", "languages", "jobSougths", "Upload",
-    function ($scope, $rootScope, Services, abranchs, languages, jobSougths, Upload) {
+    "$scope", "$rootScope", "Services", "abranchs", "candidate", "languages", "jobSougths", "Upload",
+    function ($scope, $rootScope, Services, abranchs, candidate, languages, jobSougths, Upload) {
     let training_id = 0;
     let experience_id = 0;
 
@@ -484,9 +507,37 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     $scope.abranchs = _.clone(abranchs);
     $scope.languages = _.clone(languages);
     $scope.status = Services.getStatus();
+    $rootScope.Candidate = _.clone(candidate);
     $rootScope.loading = false;
     $rootScope.jobSougths = _.clone(jobSougths);
     $rootScope.formData = {};
+    $rootScope.isValidTag = true;
+
+    // Call before added tag
+    $rootScope.onAddingTag = ($tag) =>
+    {
+      let isValid = true;
+      let splitTag = '|;_\/*';
+      for (let i in splitTag) {
+        let str = splitTag.charAt(i);
+        if ($tag.name.indexOf(str) > -1) { isValid = false; break; }
+      }
+      if (isValid) $rootScope.isValidTag = true;
+      return isValid;
+    };
+
+    // Call if tag in invalid
+    $rootScope.onTagInvalid = ($tag) => { $rootScope.isValidTag = false; };
+
+    this.$onInit = () => {
+      $rootScope.formData.featuredImage = {};
+      if (!_.isUndefined($rootScope.Candidate.privateInformations.avatar) && !_.isNull($rootScope.Candidate.privateInformations.avatar))
+        $rootScope.formData.featuredImage.src = $rootScope.Candidate.privateInformations.avatar[0];
+      if (!_.isUndefined($rootScope.Candidate.branch_activity) && !_.isNull($rootScope.Candidate.branch_activity))
+        $rootScope.formData.abranch = $rootScope.Candidate.branch_activity.term_id;
+      if (!_.isUndefined($rootScope.Candidate.status) && !_.isNull($rootScope.Candidate.status))
+        $rootScope.formData.status = parseInt($rootScope.Candidate.status.value);
+    };
 
     $rootScope.formData.trainings = [{
       id: training_id,
@@ -608,9 +659,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
         });
     };
 
-    $rootScope.$watch('formData', (value) => {
-      console.log(value);
-    }, true);
 
   }]).run(["$state", function ($state) {
     $state.defaultErrorHandler(function (error) {

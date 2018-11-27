@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
+use includes\model\itModel;
 use includes\object as Obj;
 
 final class Company implements \iCompany {
@@ -28,6 +29,7 @@ final class Company implements \iCompany {
   public $nif;
   public $stat;
   public $phone;
+  public $alerts;
   public $newsletter = false;
   public $notification = false;
   // Cette variable contient l'information sur le type du compte
@@ -43,6 +45,9 @@ final class Company implements \iCompany {
     switch ( $handler ):
       case 'user_id':
         $User = get_user_by( 'ID', (int) $value );
+        if ( ! $User->ID ) {
+          return false;
+        }
         $args = [
           'post_status'  => [ 'pending', 'publish' ],
           'post_type'    => 'company',
@@ -106,7 +111,7 @@ final class Company implements \iCompany {
 
       // Récuperer le secteur d'activité
       $abranch               = wp_get_post_terms( $this->ID, 'branch_activity' );
-      $this->branch_activity = reset( $abranch );
+      $this->branch_activity = !is_array ($abranch) || !empty($abranch) ? $abranch[0] : null;
 
       $this->init();
     }
@@ -117,8 +122,10 @@ final class Company implements \iCompany {
    * @return array|mixed
    */
   public function getInterests() {
-    $ids = get_field('itjob_company_interests', $this->ID);
-    return $this->interests = empty($ids) || !$ids ? [] : $ids;
+    $itModel = new itModel();
+    $interests = $itModel->get_interests($this->ID);
+    $interests = array_map(function ($interest) { return $interest->id_candidate; }, $interests);
+    return $this->interests = empty($interests) || !$interests ? [] : $interests;
   }
 
   /**
@@ -130,6 +137,14 @@ final class Company implements \iCompany {
     return (int)$account === 1 ? true : false;
   }
 
+  /**
+   * Vérifier si l'netrepise est valide
+   * @return mixed|null
+   */
+  public function isValid() {
+    $activated = get_field("activated", $this->ID);
+    return $activated;
+  }
   /**
    * Récuperer l'ID de l'entreprise (Non pas l'id de l'utilisateur)
    * @return int
@@ -176,9 +191,12 @@ final class Company implements \iCompany {
       }
     }
 
+    // Recuperer les alerts de cette entreprise
+    $alerts = get_field('itjob_company_alerts', $this->ID);
+    $this->alerts = !$alerts || !empty($alerts) ? explode(',', $alerts) : [];
+
     return true;
   }
-
 
   /**
    * @param int $paged

@@ -2,51 +2,1179 @@
 
 namespace includes\shortcode;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
   exit;
 }
 
-if ( ! class_exists( 'scImport' ) ) :
-  class scImport {
-    public function __construct() {
-      add_shortcode( 'itjob_import_csv', [$this, 'sc_render_html'] );
+use Http;
+use includes\classes\import\importUser;
+use includes\object\JHelper;
+use includes\post\Candidate;
+use includes\post\Company;
+use includes\post\Offers;
+use Underscore\Types\Arrays;
+
+if (!class_exists('scImport')) :
+  class scImport
+{
+  public function __construct()
+  {
+
+    add_action('init', function () {
+      if (current_user_can("remove_users")) {
+        add_shortcode('itjob_import_csv', [$this, 'sc_render_html']);
+        add_action('wp_ajax_import_csv', [&$this, 'import_csv']);
+        add_action('wp_ajax_get_offer_data', [&$this, 'get_offer_data']);
+        add_action('wp_ajax_delete_post', [&$this, 'delete_post']);
+        add_action('wp_ajax_delete_term', [&$this, 'delete_term']);
+        add_action('wp_ajax_remove_all_experiences', [&$this, 'remove_all_experiences']);
+        add_action('wp_ajax_active_career', [&$this, 'active_career']);
+      }
+    });
+
+    add_action('admin_init', function () {
+      add_action('delete_offers', function ($pId) {
+        delete_post_meta($pId, '__offer_job_sought');
+        delete_post_meta($pId, '__offer_publish_date');
+        delete_post_meta($pId, '__offer_create_date');
+        delete_post_meta($pId, '__offer_count_view');
+        delete_post_meta($pId, '__id_offer');
+      }, 10);
+    });
+  }
+
+  public function import_csv()
+  {
+    if (!is_user_logged_in()) {
+      wp_send_json_error("Accès refuser");
     }
-
-    public function sc_render_html( $atts, $content ="" ) {
-      global $Engine, $itJob;
-
-      if ( ! $Engine instanceof Twig_Environment ) {
-        return $content;
-      }
-      extract(
-        shortcode_atts(
-          array(
-            'title' => ''
-          ),
-          $atts
-        )
-      );
-
-      wp_enqueue_script( 'import-csv', get_template_directory_uri() . '/assets/js/app/import/importcsv.js', [
-        'angular',
-        'angular-sanitize',
-        'angular-messages',
-        'angular-animate',
-        'angular-aria',
-        'papaparse'
-      ], $itJob->version, true );
-      try {
-        /** @var STRING $title */
-        return $Engine->render( '@SC/import-csv.html.twig', [
-          'title' => $title
-        ] );
-      } catch ( Twig_Error_Loader $e ) {
-      } catch ( Twig_Error_Runtime $e ) {
-      } catch ( Twig_Error_Syntax $e ) {
-        echo $e->getRawMessage();
-      }
+    $type = Http\Request::getValue('entry_type');
+    $content_type = Http\Request::getValue('content_type');
+    switch ($type) {
+      case 'taxonomy':
+        $taxonomy = $content_type;
+        $this->add_term($taxonomy);
+        break;
+      case 'user':
+        $this->add_user($content_type);
+        break;
+      case 'offers':
+        $this->add_offer();
+        break;
     }
   }
+
+  /**
+   * Récuperer les anciens offres
+   */
+  public function get_offer_data()
+  {
+    $fileLink = get_template_directory() . '/includes/class/import/data/oc29_offers.php';
+    if (\file_exists($fileLink)) {
+      include $fileLink;
+      $rows = &$oc29_offers;
+      wp_send_json_success($rows);
+    } else {
+      wp_send_json_error("Le fichier backup n'existe pas");
+    }
+
+  }
+
+  public function remove_all_experiences()
+  {
+    $argc = [
+      'post_type' => 'candidate',
+      'post_status' => ['pending', 'publish'],
+      'posts_per_page' => -1
+    ];
+    $posts = get_posts($argc);
+    foreach ($posts as $post) {
+      delete_field('itjob_cv_experiences', $post->ID);
+    }
+    wp_send_json_success("Tous les experiences sont effacer");
+  }
+
+    // Function ajax
+  public function delete_post()
+  {
+    $post_type = Http\Request::getValue('post_type');
+    if (!post_type_exists($post_type)) wp_send_json_error("Le post type n'existe pas");
+    $args = [
+      'posts_per_page' => -1,
+      'post_type' => $post_type,
+      'post_status' => ['pending', 'publish']
+    ];
+    $posts = get_posts($args);
+    $results = [];
+    foreach ($posts as $post) {
+      $response = wp_delete_post($post->ID);
+      array_push($results, $response);
+    }
+
+    wp_send_json_success($results);
+  }
+
+    // Function ajax
+  public function delete_term()
+  {
+    $taxonomy = Http\Request::getValue('taxonomy');
+    if (!taxonomy_exists($taxonomy)) wp_send_json_error("Le taxonomy n'existe pas");
+    $terms = get_terms($taxonomy, ['hide_empty' => false]);
+    foreach ($terms as $term) {
+      $result = wp_delete_term($term->term_id, $taxonomy);
+      if (is_wp_error($result)) {
+        wp_send_json_error($result->get_error_message());
+      }
+    }
+    wp_send_json_success("Tous les terms sont effacé avec succès");
+  }
+
+  // Function ajax
+  public function active_career() {
+    $column = Http\Request::getValue('column');
+    $lines = json_decode($column);
+    list($id_cv, $id_demandeur) = $lines;
+    if (!(int) $id_demandeur) wp_send_json_success("Passer à la colonne suivante");
+    if (current_user_can("remove_users")) {
+      $post_ids = get_posts([
+        'meta_key' => '__cv_id_demandeur',
+        'meta_value' => (int)$id_demandeur,
+        'post_status' => ['publish', 'pending'],
+        'post_type' => 'candidate',
+        'fields' => 'ids',
+      ]);
+      if (is_array($post_ids) && !empty($post_ids)) {
+        $candidate_id = (int)$post_ids[count($post_ids) - 1];
+        $Experiences = get_field('itjob_cv_experiences', $candidate_id);
+        if ($Experiences && is_array($Experiences)) {
+          $Experiences = array_map(function ($experience) {
+            $experience['validated'] = 1;
+            return $experience;
+          }, $Experiences);
+          update_field('itjob_cv_experiences', $Experiences, $candidate_id);
+        }
+
+        $Formations = get_field('itjob_cv_trainings', $candidate_id);
+        if ($Formations && is_array($Formations)) {
+          $Formations = array_map(function ($formation) {
+            $formation['validated'] = 1;
+            return $formation;
+          }, $Formations);
+          update_field('itjob_cv_trainings', $Formations, $candidate_id);
+        }
+      } else {
+        wp_send_json_success("Impossible de trouver le candidat");
+      }
+
+      wp_send_json_success("All carrer is succefuly update");
+    } else {
+      wp_send_json_error("Votre compte n'as pas l'accès a ce niveau");
+    }
+  }
+
+  protected function add_term($taxonomy)
+  {
+    if (!is_user_logged_in()) {
+      wp_send_json_error("Accès refuser");
+    }
+    $row = Http\Request::getValue('column');
+    $row = json_decode($row);
+    switch ($taxonomy) {
+      // Ajouter la ville d'une code postal
+      case 'city':
+        $parent = $row[0];
+        $child = $row[1];
+        $parent_term = term_exists(trim($parent), 'city');
+        if (0 === $parent_term || null === $parent_term || !$parent_term) {
+          $parent_term = wp_insert_term($parent, $taxonomy, ['slug' => $parent]);
+          if (is_wp_error($parent_term)) {
+            wp_send_json_error($parent_term->get_message());
+          }
+        }
+        $child_term = term_exists(trim($child), 'city', $parent_term['term_id']);
+        if (0 === $child_term || null === $child_term || !$child_term) {
+          $child_term = wp_insert_term($child, $taxonomy, ['parent' => $parent_term['term_id']]);
+          if (is_wp_error($child_term)) {
+            wp_send_json_error($child_term->get_message());
+          }
+        }
+        wp_send_json_success("({$parent}) - {$child}");
+        break;
+      case 'software':
+        $titles = &$row;
+        if (is_array($titles)) {
+          foreach ($titles as $title) {
+            // return bool
+            $this->insert_term($title, $taxonomy);
+          }
+          wp_send_json_success("Ajouter avec succès");
+        } else {
+          wp_send_json_error("Un probléme detecter, Erreur:" . $titles);
+        }
+
+        break;
+      case 'branch_activity':
+      case 'job_sought':
+        $job = &$row;
+        list($id, $title, $status, $slug) = $job;
+        $id = (int)$id;
+        if (!is_numeric($id)) {
+          wp_send_json_success("Passer aux colonnes suivantes");
+        }
+        if (!is_array($title) && (int)$status) {
+          $term = $this->insert_term($title, $taxonomy, $slug);
+          if ($term) {
+            update_term_meta($term['term_id'], '__job_id', $id);
+            wp_send_json_success("Emploie ajouter avec succès");
+          }
+        }
+        wp_send_json_success("Emploi désactiver par l'administrateur, impossible de l'ajouter");
+        break;
+      default:
+
+        break;
+    }
+  }
+
+  protected function insert_term($name, $taxonomy, $slug = null)
+  {
+    $term = term_exists($name, $taxonomy);
+    if (0 === $term || null === $term || !$term) {
+      $arg = null === $slug ? [] : ['slug' => $slug];
+      $term = wp_insert_term(ucfirst($name), $taxonomy, $arg);
+      if (is_wp_error($term)) {
+        $term = get_term_by('name', $name);
+        if (!$term) {
+          return false;
+        }
+      }
+    }
+    // Activer le taxonomie
+    update_term_meta($term['term_id'], "activated", 1);
+
+    return $term;
+  }
+
+    // FEATURED: Ajouter les utilisateurs du site itjobmada
+  protected function add_user($content_type)
+  {
+    if (!is_user_logged_in()) {
+      return false;
+    }
+    $Helper = new JHelper();
+    $lines = Http\Request::getValue('column');
+    $lines = json_decode($lines);
+    switch ($content_type) {
+      case 'user':
+        $rows = [
+          'id_user' => (int)$lines[0],
+          'name' => $lines[1],
+          'seoname' => $lines[2],
+          'email' => $lines[3],
+          'password' => $lines[4],
+          'change_pwd' => (int)$lines[5],
+          'description' => $lines[6],
+          'status' => (int)$lines[7],
+          'id_role' => (int)$lines[8],
+          'created' => $lines[9],
+          'last_login' => $lines[10],
+          'subscriber' => (int)$lines[11]
+        ];
+        $rows = array_map(function ($row) {
+          return trim($row);
+        }, $rows);
+        $rows_object = (object)$rows;
+        $Helper = new JHelper();
+        if (!$rows_object->status) {
+          $user = $Helper->has_user($rows_object->id_user);
+          if ($user) {
+            $objPost = in_array('company', $user->roles) ? Company::get_company_by($user->ID) : Candidate::get_candidate_by($user->ID);
+            wp_delete_post($objPost->getId());
+            wp_delete_user($user->ID);
+
+            wp_send_json_success("Mise à jours de la base de donnée avec succès");
+          }
+          wp_send_json_success("Passer sur une autres colonne, utilisateur pour status désactiver");
+        }
+        if (!$rows_object->id_role) {
+          wp_send_json_success("Passer sur une autres colonne");
+        }
+        $userExist = get_user_by('email', $rows_object->email);
+        if ($userExist) {
+          wp_send_json_success("L'utilisateur existe déja");
+        }
+        switch ($rows_object->id_role) :
+          case 11:
+        case 12:
+        case 14:
+        case 15:
+        case 16:
+        case 18:
+        case 19:
+              // Entreprise
+              // Ajouter une entreprise
+          $args = [
+            "user_pass" => $rows_object->password,
+            "user_login" => "user{$rows_object->id_user}",
+            "user_email" => $rows_object->email,
+            "display_name" => $rows_object->name,
+            "first_name" => $rows_object->name,
+            "role" => 'company'
+          ];
+          if (username_exists("user{$rows_object->id_user}")) {
+            wp_send_json_success("Cet identifiant existe déjà !");
+          }
+          $user_id = wp_insert_user($args);
+          if (!is_wp_error($user_id)) {
+                // Stocker les anciens information dans des metas
+            $importUser = new importUser($user_id);
+            $importUser->update_user_meta($rows_object);
+
+                // Ajouter une post type 'company'
+            $argc = [
+              'post_title' => $rows_object->name,
+              'post_status' => 'publish',
+              'post_type' => 'company',
+              'post_author' => $user_id
+            ];
+            $insert_company = wp_insert_post($argc);
+            if (is_wp_error($insert_company)) {
+              wp_send_json_error($insert_company->get_error_message());
+            }
+
+                // Mettre à jour le nom login
+            $up_user = wp_update_user(['user_login' => 'user' . $insert_company, 'ID' => $user_id]);
+            if (is_wp_error($up_user)) {
+              wp_send_json_error($up_user->get_error_message());
+            }
+
+            $id_company = (int)$insert_company;
+            update_field('itjob_company_email', $rows_object->email, $id_company);
+            update_field('itjob_company_name', $rows_object->name, $id_company);
+            update_field('itjob_company_newsletter', $rows_object->subscriber, $id_company);
+
+            $user = new \WP_User($user_id);
+            get_password_reset_key($user);
+            wp_send_json_success(['msg' => "Utilisateur ajouter avec succès", 'utilisateur' => $user]);
+
+          } else {
+            wp_send_json_error($user_id->get_error_message());
+          }
+          break;
+
+        case 13:
+        case 17:
+              // Candidate
+          $names = $rows_object->name;
+          $names = explode(' ', $names);
+          $first_name = $names[count($names) - 1];
+          $last_name = '';
+          array_walk($names, function ($name, $key) use ($names, &$last_name) {
+            if (count($names) - 1 < $key) {
+              $last_name .= $name . " ";
+            }
+
+            return $name;
+          });
+          $args = [
+            "user_pass" => $rows_object->password,
+            "user_login" => "user{$rows_object->id_user}",
+            "user_email" => $rows_object->email,
+            "display_name" => $rows_object->name,
+            "first_name" => $first_name,
+            "last_name" => $last_name,
+            "role" => 'candidate'
+          ];
+          if (username_exists("user{$rows_object->id_user}")) {
+            wp_send_json_success("Cet identifiant existe déjà !");
+          }
+          $user_id = wp_insert_user($args);
+          if (!is_wp_error($user_id)) {
+                // Stocker les anciens information dans des metas
+            $importUser = new importUser($user_id);
+            $importUser->update_user_meta($rows_object);
+
+                // Ajouter une post type 'candidate'
+            $argc = [
+              'post_title' => $rows_object->name,
+              'post_status' => 'pending',
+              'post_type' => 'candidate',
+              'post_author' => $user_id
+            ];
+            $insert_candidate = wp_insert_post($argc);
+            if (is_wp_error($insert_candidate)) {
+              wp_send_json_error($insert_candidate->get_error_message());
+            }
+
+                // Mettre à jour le nom login
+            $up_user = wp_update_user(['user_login' => 'user' . $insert_candidate, 'ID' => $user_id]);
+            if (is_wp_error($up_user)) {
+              wp_send_json_error($up_user->get_error_message());
+            }
+
+            $id_candidate = (int)$insert_candidate;
+            update_field('itjob_cv_email', $rows_object->email, $id_candidate);
+            update_field('itjob_cv_firstname', $first_name, $id_candidate);
+            update_field('itjob_cv_lastname', $last_name, $id_candidate);
+            update_field('itjob_cv_newsletter', $rows_object->subscriber, $id_candidate);
+
+                // Voir fichier ~ itjob_demandeur_cvs.csv
+                /*$up_candidate = wp_update_post( [ 'post_title' => 'CV' . $id_candidate, 'ID' => $id_candidate ] );
+                if ( is_wp_error( $up_candidate ) ) {
+                  wp_send_json_error( $up_candidate->get_error_message() );
+                }*/
+
+            $user = new \WP_User($user_id);
+            get_password_reset_key($user);
+            wp_send_json_success(['msg' => "Utilisateur ajouter avec succès", 'utilisateur' => $user]);
+          } else {
+            wp_send_json_error($user_id->get_error_message());
+          }
+          break;
+        default:
+          wp_send_json_success("Impossible d'ajouter ce type de compte: " . $rows_object->id_role);
+          break;
+        endswitch;
+        break;
+
+      case 'user_company':
+
+        list(
+          $id_user, $company_name, $address, $nif,
+          $stat, $phone, $greeting, $first_name,
+          $last_name, $cellphones, $email, $activated,
+          $branch_activity,, $newsletter, $notification, $alert, $create
+        ) = $lines;
+
+        $id_user = (int)$id_user;
+        $newsletter = (int)$newsletter;
+        $notification = (int)$notification;
+        $activated = (int)$activated;
+
+        if ((int)$id_user === 0 || !$activated) {
+          wp_send_json_success("Passer sur une autre colonne");
+        }
+          // Retourne false or WP_User
+        $User = $Helper->has_user($id_user);
+        if ($User && in_array('company', $User->roles)) {
+          $Company = Company::get_company_by($User->ID);
+          if (function_exists('update_field')) {
+            update_field('itjob_company_address', $address, $Company->getId());
+            update_field('itjob_company_nif', $nif, $Company->getId());
+            update_field('itjob_company_stat', $stat, $Company->getId());
+            update_field('itjob_company_name', $first_name . ' ' . $last_name, $Company->getId());
+            update_field('itjob_company_newsletter', $newsletter, $Company->getId());
+            update_field('itjob_company_notification', $notification === '0' || empty($notification) ? '' : $notification, $Company->getId());
+            update_field('itjob_company_phone', $phone, $Company->getId());
+            update_field('itjob_company_alerts', $alert === '0' ? '' : $alert, $Company->getId());
+            update_field('itjob_company_greeting', $greeting, $Company->getId());
+            update_field('activated', 1, $Company->getId());
+
+            $values = [];
+            $cellphones = explode(';', $cellphones);
+            foreach ($cellphones as $phone) {
+              $values[] = ['number' => $phone];
+            }
+            update_field('itjob_company_cellphone', $values, $Company->getId());
+          }
+
+          $update_post_company = wp_update_post(['ID' => $Company->getId(), 'post_title' => $company_name]);
+            // Enregistrer la date de creation original & la secteur d'activité
+          update_post_meta($Company->getId(), '__create', $create);
+            // Ancien valeur du secteur d'activité
+          update_post_meta($Company->getId(), '__company_branch_activity', $branch_activity);
+
+          wp_send_json_success(['msg' => "L'entreprise ajouter avec succès", 'data' => $Company]);
+        } else {
+          wp_send_json_success("L'utilisateur est refuser de s'inscrire ID:{$id_user}");
+        }
+        break;
+
+      case 'user_candidate_information':
+        $rows = [
+          'id_user' => (int)$lines[0], // Ne pas enregistrer
+          'audition' => (int)$lines[1], // Ajouter ~ meta
+          'find_job' => (int)$lines[2], // Ajouter ~ meta
+          'greeting' => $lines[3], // Ajouter
+          'first_name' => $lines[4], // Ajouter
+          'last_name' => $lines[5], // Ajouter
+          'email' => $lines[6], // Déja ajouter depuis utilisateur
+          'address' => $lines[7], // Ajouter
+          'region' => trim($lines[8]), // Ajouter
+          'phone' => $lines[9], // Ajouter
+          'birthday_date' => $lines[10], // Ajouter
+          'notification_job' => (int)$lines[11], // Ajouter
+          'notification_training' => (int)$lines[12], // Ajouter
+          'activated' => (int)$lines[13], // Ajouter
+          'newsletter' => (int)$lines[14], // Ajouter
+          'id_demandeur' => (int)$lines[15] // Ajouter
+        ];
+        $rows = array_map(function ($row) {
+          return trim($row);
+        }, $rows);
+        $rows_object = (object)$rows;
+        $old_user_id = (int)$rows_object->id_user;
+          // Retourne false or WP_User
+        if (!$old_user_id) {
+          wp_send_json_success("Passer à la colonne suivante");
+        }
+        $User = $Helper->has_user($old_user_id);
+        if ($User) {
+          if (in_array('candidate', $User->roles)) {
+            $candidatePost = $Helper->get_candidate_by_email($User->user_email);
+            if (!$candidatePost) {
+              wp_send_json_error("Le candidat n'existe pas email: {$User->user_email}");
+            }
+
+              // Update ACF field
+            $condition = $rows_object->greeting === 'NULL' || empty($rows_object->greeting);
+            $greeting = $condition ? '' : $rows_object->greeting;
+            update_field('itjob_cv_greeting', $greeting, $candidatePost->ID);
+            update_field('itjob_cv_firstname', $rows_object->first_name, $candidatePost->ID);
+            update_field('itjob_cv_lastname', $rows_object->last_name, $candidatePost->ID);
+            update_field('itjob_cv_address', $rows_object->address, $candidatePost->ID);
+
+            $birthday = \DateTime::createFromFormat("d/m/Y", $rows_object->birthday_date);
+            $acfBirthdayValue = $birthday->format('Ymd');
+            update_field('itjob_cv_birthdayDate', $acfBirthdayValue, $candidatePost->ID);
+
+            update_field('itjob_cv_notifEmploi', ['notification' => $rows_object->notification_job], $candidatePost->ID);
+            update_field('itjob_cv_notifFormation', ['notification' => $rows_object->notification_training], $candidatePost->ID);
+            update_field('activated', $rows_object->activated, $candidatePost->ID);
+            update_field('itjob_cv_newsletter', $rows_object->newsletter, $candidatePost->ID);
+            $values = [];
+            $cellphones = explode(',', $rows_object->phone);
+            foreach ($cellphones as $phone) {
+              $values[] = ['number' => preg_replace('/\s+/', '', trim($phone))];
+            }
+            update_field('itjob_cv_phone', $values, $candidatePost->ID);
+
+              // Meta
+            update_post_meta($candidatePost->ID, '__cv_audition', $rows_object->audition);
+            update_post_meta($candidatePost->ID, '__cv_find_job', $rows_object->find_job);
+            update_post_meta($candidatePost->ID, '__cv_id_demandeur', $rows_object->id_demandeur);
+              // Ajouter term region
+            $term = term_exists($rows_object->region, 'region');
+            if (0 === $term || null === $term || !$term) {
+              $term = wp_insert_term($rows_object->region, 'region');
+              if (is_wp_error($term)) {
+                $term = get_term_by('name', $rows_object->region);
+              }
+            }
+            wp_set_post_terms($candidatePost->ID, [$term['term_id']], 'region');
+            wp_send_json_success("Information utilisateur mis à jours avec succès");
+          }
+        } else {
+          wp_send_json_success("L'utilisateur n'existe pas, utilisateur id: {$rows_object->id_user}");
+        }
+        break;
+
+      case 'user_candidate_cv':
+          // Publier le CV
+        list(
+          $id_cv,
+          $id_demandeur, // get candidat post with __cv_id_demandeur (meta)
+          $drive_licences,
+          $emploi_rechercher,
+          $langues,
+          $statut,
+          $reference,
+          $certificat,
+          $date_creation,
+          $date_publish
+        ) = $lines;
+        $id_cv = (int)$id_cv;
+        $id_demandeur = (int)$id_demandeur;
+        if (!$id_cv) {
+          wp_send_json_success("Passer à la colonne suivante");
+        }
+        $post_ids = get_posts([
+          'meta_key' => '__cv_id_demandeur',
+          'meta_value' => $id_demandeur,
+          'post_status' => ['publish', 'pending'],
+          'post_type' => 'candidate',
+          'fields' => 'ids',
+        ]);
+        if (is_array($post_ids) && !empty($post_ids)) {
+          $candidat_id = $post_ids[count($post_ids) - 1];
+          $jobs = $this->get_jobs(); // Custom WP_term
+          $driveLicences = [
+            ['label' => 'A`', 'value' => 0],
+            ['label' => 'A', 'value' => 1],
+            ['label' => 'B', 'value' => 2],
+            ['label' => 'C', 'value' => 3],
+            ['label' => 'D', 'value' => 4]
+          ];
+
+          update_post_meta($candidat_id, '__id_cv', $id_cv);
+          $dls = explode(",", $drive_licences);
+          $dlValues = [];
+          foreach ($dls as $dl) {
+            if (empty($dl)) {
+              continue;
+            }
+            $result = Arrays::find($driveLicences, function ($licence) use ($dl) {
+              return $licence['label'] == $dl;
+            });
+            $dlValues[] = $result['value'];
+          }
+            // Permis de conduire
+          update_field('itjob_cv_driveLicence', $dlValues, $candidat_id);
+
+            // Emploi recherche
+          $emplois = explode(",", $emploi_rechercher);
+          $term_emploi_ids = [];
+          foreach ($emplois as $emploi) {
+            if (empty($emploi)) {
+              continue;
+            }
+            $jobResult = Arrays::find($jobs, function ($job) use ($emploi, &$term_emploi_ids) {
+              return $job->__old_job_id == (int)$emploi;
+            });
+            if (!empty($jobResult) || !isset($jobResult) || !$jobResult) {
+              $term_emploi_ids[] = $jobResult->term_id;
+            }
+          }
+          wp_set_post_terms($candidat_id, $term_emploi_ids, 'job_sought');
+
+          unset($jobs);
+            // Langue
+          $languages = explode(',', $langues);
+          $languages = Arrays::reject($languages, function ($lang) {
+            return empty($lang) || $lang === '';
+          });
+          $languages = array_map(function ($langue) {
+            return strtolower(trim($langue));
+          }, $languages);
+          $langValues = [];
+          foreach ($languages as $language) {
+            $langTerm = term_exists($language, 'language');
+            if (0 === $langTerm || null === $langTerm || !$langTerm) {
+              $langTerm = wp_insert_term(ucfirst($language), 'language');
+              if (is_wp_error($langTerm)) {
+                $langTerm = get_term_by('name', $language);
+              }
+            }
+            $langValues[] = $langTerm['term_id'];
+          }
+          wp_set_post_terms($candidat_id, $langValues, 'language');
+
+          update_field('itjob_cv_status', (int)$statut, $candidat_id);
+          update_field('activated', 1, $candidat_id);
+          update_field('itjob_cv_hasCV', 1, $candidat_id);
+
+          update_post_meta($candidat_id, '__certification', $certificat);
+          update_post_meta($candidat_id, '__date_publish', $date_publish);
+
+            // Mettre à jour le titre du post
+          $create_date = \DateTime::createFromFormat("d/m/Y H:i", $date_creation);
+          $publish = $create_date->format('Y-m-d H:i:s');
+          $argc = [
+            'ID' => $candidat_id,
+            'post_title' => trim($reference),
+            'post_date' => date($publish),
+            'post_status' => 'publish'
+          ];
+          $update_results = wp_update_post($argc);
+          if (is_wp_error($update_results)) {
+            wp_send_json_error($update_results->get_error_message());
+          }
+
+          wp_send_json_success("CV ajouté avec succès ID:{$candidat_id}");
+        }
+        wp_send_json_success("Utilisateur abscent. Ancien CV:{$id_cv}");
+        break;
+      case 'user_candidate_update_job_sought':
+        list($id_cv, $id_demandeur) = $lines;
+        $id_demandeur = (int)$id_demandeur;
+        $post_ids = get_posts([
+          'meta_key' => '__cv_id_demandeur',
+          'meta_value' => $id_demandeur,
+          'post_status' => ['publish', 'pending'],
+          'post_type' => 'candidate',
+          'fields' => 'ids',
+        ]);
+        if (is_array($post_ids) && !empty($post_ids)) {
+          $candidat_id = $post_ids[ count( $post_ids ) - 1 ];
+          $job_sought_post = wp_get_post_terms($candidat_id, 'job_sought', ['fields' => 'names']);
+          if (!is_wp_error($job_sought_post)) {
+            $old_name = implode(', ',$job_sought_post);
+            update_post_meta($candidat_id, '_old_job_sought', $old_name); //Verifier
+            wp_set_post_terms($candidat_id, '', 'job_sought');
+            wp_send_json_success("Candidate mis à jour avec succès");
+          } else {
+            wp_send_json_error($job_sought_post->get_error_message());
+          }
+        } else {
+          wp_send_json_success("Aucun utilisateur ne correpond à cette identifiant ID:" . $post_ids[0]);
+        }
+        break;
+      case 'update_candidate_language':
+        list(
+          $id_cv,
+          $id_demandeur, // get candidat post with __cv_id_demandeur (meta)
+          $drive_licences,
+          $emploi_rechercher,
+          $langues,
+          $statut,
+          $reference,
+          $certificat,
+          $date_creation,
+          $date_publish
+        ) = $lines;
+        $id_cv = (int)$id_cv;
+        $id_demandeur = (int)$id_demandeur;
+        if (!$id_cv) {
+          wp_send_json_success("Passer à la colonne suivante");
+        }
+        $post_ids = get_posts([
+          'meta_key' => '__cv_id_demandeur',
+          'meta_value' => $id_demandeur,
+          'post_status' => ['publish', 'pending'],
+          'post_type' => 'candidate',
+          'fields' => 'ids',
+        ]);
+        if (is_array($post_ids) && !empty($post_ids)) {
+          $candidat_id = $post_ids[count($post_ids) - 1];
+          $languages = explode(',', $langues);
+          $languages = Arrays::reject($languages, function ($lang) {
+            return empty($lang) || $lang === '';
+          });
+          $languages = array_map(function ($langue) {
+            return strtolower(trim($langue));
+          }, $languages);
+          $langValues = [];
+          foreach ($languages as $language) {
+            $langTerm = term_exists($language, 'language');
+            if (0 === $langTerm || null === $langTerm || !$langTerm) {
+              $langTerm = wp_insert_term(ucfirst($language), 'language');
+              if (is_wp_error($langTerm)) {
+                $langTerm = get_term_by('name', $language);
+              }
+            }
+            $langValues[] = $langTerm['term_id'];
+          }
+
+          wp_set_post_terms($candidat_id, $langValues, 'language');
+          wp_send_json_success($langValues);
+        } else {
+          wp_send_json_success("Mise à jours non reussi");
+        }
+        break;
+
+      case 'user_candidate_experiences':
+        list(
+          $id_experience,
+          $id_demandeur,
+          $id_cvs,
+          $date_begin,
+          $date_end,
+          $ville_id,
+          $pays,
+          $entreprise,
+          $post_occuper,
+          $mission
+        ) = $lines;
+        $id_experience = (int)$id_experience;
+        $id_demandeur = (int)$id_demandeur;
+        if (!$id_demandeur) {
+          wp_send_json_success("Passer à la colonne suivante");
+        }
+        if (empty($entreprise) || empty($date_begin)) {
+          wp_send_json_success("Annuler pour raison de manque d'information");
+        }
+        $post_ids = get_posts([
+          'meta_key' => '__cv_id_demandeur',
+          'meta_value' => $id_demandeur,
+          'post_status' => ['publish', 'pending'],
+          'post_type' => 'candidate',
+          'fields' => 'ids',
+        ]);
+        if (is_array($post_ids) && !empty($post_ids)) {
+          $candidat_id = $post_ids[count($post_ids) - 1];
+          $posts_occuped = $this->get_csv_contents(get_template_directory() . "/includes/class/import/data/postes.csv");
+          $Villes = $this->get_csv_contents(get_template_directory() . '/includes/class/import/data/villes.csv');
+
+          $Experiences = get_field('itjob_cv_experiences', $candidat_id);
+          $listOfExperiences = [];
+          if ($Experiences) {
+            foreach ($Experiences as $Experience) {
+              $listOfExperiences[] = $Experience;
+            }
+          }
+
+          $date_begin = $this->get_format_date($date_begin);
+          $date_end = $date_end == 'null' || !$date_end ? '' : $this->get_format_date($date_end);
+
+            //$entreprise = mb_convert_encoding($entreprise,"ISO-8859-1","auto");
+            //$mission = mb_convert_encoding($mission,"ISO-8859-1","auto");
+
+          if (!empty($ville_id) && (int)$ville_id) {
+            $ville_id = (int)$ville_id;
+            $city = Arrays::find($Villes, function ($ville) use ($ville_id) {
+              return $ville['id'] == $ville_id;
+            });
+            $city = empty($city) || $city == "undefined" ? '' : $city['ville'];
+          } else {
+            $city = '';
+          }
+          update_post_meta($candidat_id, "experience_{$id_experience}_{$id_demandeur}_ville", $ville_id);
+
+            // Récuperer le poste qui correspond à son identifiant
+          if (!empty($posts_occuper) && (int)$post_occuper) {
+            $post_occuper = (int)$post_occuper;
+            $poste = Arrays::find($posts_occuped, function ($occuped) use ($post_occuper) {
+              return $occuped['id'] == $post_occuper;
+            });
+            $poste = empty($poste) || $poste == "undefined" ? '' : $poste['poste'];
+          } else {
+            $poste = '';
+          }
+          update_post_meta($candidat_id, "experience_{$id_experience}_{$id_demandeur}_poste", $post_occuper);
+
+          $state = ucfirst(strtolower($pays));
+          $company = ucfirst($entreprise);
+
+          $listOfExperiences[] = [
+            'exp_dateBegin' => $date_begin,
+            'exp_dateEnd' => $date_end,
+            'exp_city' => $city,
+            'exp_country' => $state,
+            'exp_company' => $company,
+            'exp_positionHeld' => $poste,
+            'exp_mission' => $mission,
+            'validation' => 1
+          ];
+          update_field('itjob_cv_experiences', $listOfExperiences, $candidat_id);
+          wp_send_json_success("Experience ajouter avec succès ID: {$id_experience}");
+        } else {
+          wp_send_json_success("Aucun utilisateur ne correpond à cette identifiant ID:" . $id_demandeur);
+        }
+
+        break;
+
+      case 'user_candidate_trainings':
+        list($id_formation, $id_demandeur, $id_cv, $year, $ville, $pays, $diplome, $universite) = $lines;
+        $id_formation = (int)$id_formation;
+        $year = (int)$year;
+        $ville = (int)$ville;
+        $id_demandeur = (int)$id_demandeur;
+        if (!$id_demandeur) {
+          wp_send_json_success("Passer à la colonne suivante");
+        }
+        if (empty($diplome) || empty($universite) || !$year || !$ville) {
+          wp_send_json_success("Annuler pour raison de manque d'information");
+        }
+        $post_ids = get_posts([
+          'meta_key' => '__cv_id_demandeur',
+          'meta_value' => $id_demandeur,
+          'post_status' => ['publish', 'pending'],
+          'post_type' => 'candidate',
+          'fields' => 'ids',
+        ]);
+        if (is_array($post_ids) && !empty($post_ids)) {
+          $candidat_id = $post_ids[count($post_ids) - 1];
+          $Dilplomes = $this->get_csv_contents(get_template_directory() . "/includes/class/import/data/diplomes.csv");
+          $Villes = $this->get_csv_contents(get_template_directory() . '/includes/class/import/data/villes.csv');
+          $Universitys = $this->get_csv_contents(get_template_directory() . '/includes/class/import/data/universites.csv');
+
+          $Trainings = get_field('itjob_cv_trainings', $candidat_id);
+          $listOfTrainings = [];
+          if ($Trainings) {
+            foreach ($Trainings as $Training) {
+              $listOfTrainings[] = $Training;
+            }
+          }
+
+            // Récuperer le nom de la ville
+          if (!empty($ville) && (int)$ville) {
+            $city = Arrays::find($Villes, function ($el) use ($ville) {
+              return $el['id'] == $ville;
+            });
+            $city = empty($city) || $city == "undefined" ? '' : $city['ville'];
+          } else {
+            $city = '';
+          }
+          update_post_meta($candidat_id, "training_{$id_formation}_{$id_demandeur}_ville", $ville);
+
+            // Récuperer le diplome
+          if (!empty($diplome) && (int)$diplome) {
+            $diploma = Arrays::find($Dilplomes, function ($dipl) use ($diplome) {
+              return $dipl['id'] == (int)$diplome;
+            });
+            $diploma = empty($diploma) || $diploma == "undefined" ? '' : $diploma['diplome'];
+          } else {
+            $diploma = '';
+          }
+          update_post_meta($candidat_id, "training_{$id_formation}_{$id_demandeur}_diplome", $diplome);
+
+            // Récuperer l'université
+          if (!empty($universite) && (int)$universite) {
+            $university = Arrays::find($Universitys, function ($un) use ($universite) {
+              return $un['id'] == (int)$universite;
+            });
+            $university = empty($university) || $university == "undefined" ? '' : $university['universite'];
+          } else {
+            $university = '';
+          }
+          update_post_meta($candidat_id, "training_{$id_formation}_{$id_demandeur}_universite", $university);
+
+          $state = ucfirst(strtolower($pays));
+
+          $listOfTrainings[] = [
+            'training_dateBegin' => $year,
+            'training_dateEnd' => $year,
+            'training_city' => $city,
+            'training_country' => $state,
+            'training_diploma' => $diploma,
+            'training_establishment' => $university,
+            'validation' => 1
+          ];
+          update_field('itjob_cv_trainings', $listOfTrainings, $candidat_id);
+
+            // Ajouter ces formations dans un meta
+          $formations = get_post_meta($candidat_id, '__trainings', true);
+          $formations = empty($formations) || !$formations ? [] : (!is_array($formations) ? [] : $formations);
+          $formations[] = $id_formation;
+          update_post_meta($candidat_id, '__trainings', $formations);
+
+          wp_send_json_success("Experience ajouter avec succès ID: {$id_formation}");
+        } else {
+          wp_send_json_success("Aucun utilisateur ne correpond à cette identifiant ID:" . $post_ids[0]);
+        }
+        break;
+
+      case 'user_company_update_branch_activity':
+        list($id_user, $company_name,,,,,,,,,, $activated, $job_sought,,,,, ) = $lines;
+        $id_user = (int)$id_user;
+        $job_sought = trim($job_sought);
+        if ((int)$id_user === 0) {
+          wp_send_json_success("Passer sur une autre colonne");
+        }
+          // Retourne false or WP_User
+        $User = $Helper->has_user($id_user);
+        if ($User && in_array('company', $User->roles)) {
+          $Company = Company::get_company_by($User->ID);
+          update_field('activated', (int)$activated, $Company->getId());
+
+          $update_post_company = wp_update_post(['ID' => $Company->getId(), 'post_title' => $company_name]);
+
+            // Ajouter le term dans le secteur d'activité
+          $taxonomy = 'branch_activity';
+          delete_post_meta($Company->getId(), "__company_job_sought");
+          if (!$job_sought || $job_sought == null) wp_send_json_success("Secteur d'activité non define");
+          $term = term_exists($job_sought, $taxonomy);
+          if (is_wp_error($term)) {
+            wp_send_json_success("Le term n'existe pas le taxonomie");
+          }
+
+          if (!is_array($term) || !isset($term['term_id'])) {
+            wp_send_json_success("Impossible d'ajouter la categorie car il n'est pas definie");
+          }
+          /**
+           * (array) An array of the terms affected if successful,
+           * (boolean) false if integer value of $post_id evaluates as false (if ( ! (int) $post_id )),
+           * (WP_Error) The WordPress Error object on invalid taxonomy ('invalid_taxonomy').
+           * (string) The first offending term if a term given in the $terms parameter is named incorrectly. (Invalid term ids are accepted and inserted).
+           */
+          $terms = [];
+          $terms[] = $term['term_id'];
+          $insert_result = wp_set_post_terms($Company->getId(), $terms, $taxonomy);
+          if (is_wp_error($insert_result) || !$insert_result) {
+            wp_send_json_error($insert_result->get_error_message());
+          } else {
+            $this->add_offers_branch_activity($Company->getId(), $term);
+            wp_send_json_success("Taxonomie ajouter avec succès, secteur d'activité de l'entreprise mise à jour avec succès");
+          }
+        } else {
+          wp_send_json_success("L'entreprise n'est pas definie dans la liste.");
+        }
+        break;
+    }
+
+  }
+
+    // Mettre à jour la secteur d'activité pour les offres d'une entreprise definie
+  private function add_offers_branch_activity($company_id, $term)
+  {
+    $args = [
+      'post_type' => 'offers',
+      'post_status' => ['publish', 'pending'],
+      'meta_key' => 'itjob_offer_company',
+      'meta_value' => $company_id
+    ];
+    $offers = get_posts($args);
+    foreach ($offers as $offer) {
+      update_field('itjob_offer_abranch', $term['term_id'], $offer->ID);
+    }
+    return true;
+  }
+
+    // Retourne une date formater
+  private function get_format_date($custom_date_format)
+  {
+      //$custom_date_format = mb_convert_encoding($custom_date_format,"ISO-8859-1","auto");
+    if (empty($custom_date_format) || $custom_date_format == "null" || $custom_date_format == null) return '';
+    if (strpos($custom_date_format, '-') === false) return '';
+    $dateTime = \DateTime::createFromFormat("M-y", $custom_date_format);
+    $dateFormat = $dateTime->format('m/d/Y');
+    return $dateFormat;
+  }
+
+    // Retourne les contenues d'un fichier d'extention CSV
+  private function get_csv_contents($file)
+  {
+    if (file_exists($file)) {
+      $Helper = new JHelper();
+
+      return $Helper->parse_csv($file);
+    } else {
+      return false;
+    }
+  }
+
+    // Retourne la listes des emplois
+  private function get_jobs()
+  {
+    $args = ['taxonomy' => 'job_sought', 'hide_empty' => false, 'parent' => 0, 'posts_per_page' => -1];
+    $terms = get_terms($args);
+    foreach ($terms as $term) {
+      $old_job_sought_id = get_term_meta($term->term_id, '__job_id', true);
+      $term->__old_job_id = (int)$old_job_sought_id;
+    }
+
+    return $terms;
+  }
+
+    // Ajouter les anciens offres
+  protected function add_offer()
+  {
+    if (!is_user_logged_in()) {
+      return;
+    }
+    $column = Http\Request::getValue('column');
+    $row = json_decode($column);
+    $Helper = new JHelper();
+    $obj = (object)$row;
+
+    $User = $Helper->has_user((int)$obj->id_user);
+    if (!$User && !in_array('company', $User->roles)) {
+      wp_send_json_success("Utilisateur non inscrit, ID:" . $obj->id_user);
+    }
+
+    $args = [
+      'post_type' => 'offers',
+      'post_status' => ['publish', 'pending'],
+      'meta_query' => array(
+        [
+          'key' => '__id_offer',
+          'value' => (int)$obj->id
+        ]
+      )
+    ];
+      // Verifier si l'offre est déja publier ou ajouter dans le site
+    $offers_exists = get_posts($args);
+    if (is_array($offers_exists) && !empty($offers_exists)) {
+      wp_send_json_success("Offre déja publier");
+    }
+      // Ajouter une offre
+    $publish_date = strtotime($obj->published);
+    $publish = date('Y-m-d H:i:s', $publish_date);
+
+    $args = [
+      "post_type" => 'offers',
+      "post_title" => $obj->poste_a_pourvoir,
+      "post_status" => (int)$obj->status ? 'publish' : 'pending',
+      'post_author' => $User->ID,
+      'post_date' => $publish
+    ];
+    $post_id = wp_insert_post($args);
+    if (!is_wp_error($post_id)) {
+      update_field('itjob_offer_post', $obj->poste_a_pourvoir, $post_id);
+      update_field('itjob_offer_reference', $obj->reference, $post_id);
+
+      $date_limit = new \DateTime($obj->date_limit_candidature);
+      $acfDateLimit = $date_limit->format('Ymd');
+      update_field('itjob_offer_datelimit', $acfDateLimit, $post_id);
+
+      update_field('activated', (int)$obj->status, $post_id);
+      update_field('itjob_offer_contrattype', (int)$obj->type_contrat, $post_id);
+      update_field('itjob_offer_profil', html_entity_decode(htmlspecialchars_decode($obj->profil_recherche)), $post_id);
+      update_field('itjob_offer_mission', html_entity_decode(htmlspecialchars_decode($obj->mission)), $post_id);
+      update_field('itjob_offer_otherinformation', html_entity_decode(htmlspecialchars_decode($obj->autre_info)), $post_id);
+
+      if (in_array('company', $User->roles)) {
+        $Company = Company::get_company_by($User->ID);
+        update_field('itjob_offer_company', $Company->getId(), $post_id);
+        $company_job_sought = get_post_meta($Company->getId(), '__company_job_sought', true);
+      }
+
+      update_post_meta($post_id, '__offer_job_sought', $company_job_sought); // Secteur d'activité
+      update_post_meta($post_id, '__offer_publish_date', $publish);
+
+      $created_date = strtotime($obj->created);
+      $created = date('Y-m-d H:i:s', $created_date);
+      update_post_meta($post_id, '__offer_create_date', $created);
+
+      update_post_meta($post_id, '__offer_count_view', (int)$obj->nbr_vue);
+      update_post_meta($post_id, '__id_offer', (int)$obj->id);
+
+        // Ajouter term region
+      $term = term_exists($obj->poste_base_a, 'region');
+      if (0 === $term && null === $term) {
+        $term = wp_insert_term($obj->poste_base_a, 'region');
+        if (is_wp_error($term)) {
+          $term = get_term_by('name', $obj->poste_base_a);
+        }
+      }
+      wp_set_post_terms($post_id, [$term['term_id']], 'region');
+      wp_send_json_success(['msg' => "Offre ajouter avec succès", 'term' => $term]);
+    } else {
+      wp_send_json_error("Une erreur s'est produite pendant l'ajout :" . $post_id->get_error_message());
+    }
+
+  }
+
+    // Rendre le shortcode HTML
+  public function sc_render_html($atts, $content = "")
+  {
+    global $Engine, $itJob;
+    extract(
+      shortcode_atts(
+        array(
+          'title' => ''
+        ),
+        $atts
+      )
+    );
+    if (!is_user_logged_in()) {
+        // Access refuser au public
+      return "<p class='align-center'>Accès interdit à toute personne non autorisée</p>";
+    }
+    wp_enqueue_script('import-csv', get_template_directory_uri() . '/assets/js/app/import/importcsv.js', [
+      'angular',
+      'angular-ui-route',
+      'angular-messages',
+      'angular-animate',
+      'angular-aria',
+      'papaparse'
+    ], $itJob->version, true);
+    wp_localize_script('import-csv', 'importOptions', [
+      'ajax_url' => admin_url("admin-ajax.php"),
+      'partials_url' => get_template_directory_uri() . '/assets/js/app/import/partials',
+    ]);
+    try {
+      /** @var STRING $title */
+      return $Engine->render('@SC/import-csv.html.twig', [
+        'title' => $title
+      ]);
+    } catch (\Twig_Error_Loader $e) {
+    } catch (\Twig_Error_Runtime $e) {
+    } catch (\Twig_Error_Syntax $e) {
+      return $e->getRawMessage();
+    }
+  }
+}
 endif;
 
 return new scImport();

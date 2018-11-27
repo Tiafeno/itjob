@@ -119,6 +119,11 @@
       color: #ffffff;
       font-size: 11px;
     }
+
+    .container-list-posts tbody {
+      display: inline-table;
+    }
+
     .alert-pink {
       font-size: 11.5px;
       margin-top: 3px;
@@ -183,6 +188,16 @@
   your browser</a> to improve your experience.</p>
 <![endif]-->
 <div class="uk-offcanvas-content">
+
+  <div class="alert alert-info alert-dismissable fade show has-icon mb-0"><i class="la la-info alert-icon"></i>
+    <div class="d-flex align-items-center justify-content-between">
+      <div>Ceci est une version bêta du site ITJobMada. En utilisant ce site, vous acceptez que les cookies soient utilisés à des fins d'analyse, de pertinence et de publicité.</div>
+      <div>
+        <button class="btn btn-sm btn-info btn-rounded" data-dismiss="alert">Fermer</button>
+      </div>
+    </div>
+  </div>
+
 <div class="uk-section uk-section-small uk-padding-remove">
 
   <div class="uk-section uk-section-small uk-padding-remove header-top">

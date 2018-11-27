@@ -22,11 +22,6 @@ if ( ! defined( 'VENDOR_URL' ) ) {
 }
 $theme = wp_get_theme( 'itjob' );
 
-
-const AUTHORIZATION_ENDPOINT = "http://localhost/managna/oauth/authorize";
-const TOKEN_ENDPOINT         = "http://localhost/managna/oauth/token";
-
-
 // Utiliser ces variables apres la fonction: the_post()
 $offers    = null;
 $company   = null;
@@ -39,10 +34,18 @@ require 'includes/itjob-configs.php';
 require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
 
+// Importation dependancy
+require 'includes/class/import/class-import-user.php';
+
 // middlewares
 require 'includes/class/middlewares/OfferHelper.php';
 require 'includes/class/middlewares/Auth.php';
 require 'includes/class/middlewares/Register.php';
+require 'includes/class/middlewares/ModelInterest.php';
+require 'includes/class/middlewares/ModelCVLists.php';
+
+// Model
+require 'includes/class/class-model.php';
 
 // widgets
 require 'includes/class/widgets/widget-publicity.php';
@@ -98,11 +101,17 @@ $elementsVC = (object) [
   'vcRegisterCandidate'  => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
 ];
 
+
 require 'includes/class/class-wp-city.php';
 require 'includes/class/class-http-request.php';
+require 'includes/class/class-jhelper.php';
 require 'includes/class/class-menu-walker.php';
 require 'includes/filters/function-filters.php';
-require 'includes/class/class-mail.php';
+
+$itHelper = (object) [
+  'Mailing' => require 'includes/class/class-mail.php'
+];
+
 require 'api/itjob-api.php';
 require 'jobs/itjob-cron.php';
 
@@ -204,5 +213,23 @@ add_filter( 'wp_nav_menu_args', function ( $args ) {
   return $args;
 } );
 
+
+add_action('init', function () {
+//  header('Content-Type: text/csv');
+//  header('Content-Disposition: attachment; filename="emploi.csv"');
+//  $args = [
+//    'taxonomy' => 'job_sought',
+//    'hide_empty' =>false
+//  ];
+//  $terms = get_terms($args);
+//  $fp = fopen('php://output', 'wb');
+//  fputs($fp, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
+//  foreach ( $terms as $term ) {
+//    $val = [$term->term_id, $term->name];
+//    fputcsv($fp, $val, ';');
+//  }
+//  fclose($fp);
+//  exit;
+});
 
 

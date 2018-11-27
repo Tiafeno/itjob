@@ -106,9 +106,12 @@ if ( ! class_exists( 'vcCandidate' ) ):
 
       /** @var string $position */
       /** @var string $title */
-      $position  = empty($position) ? 'content' : $position;
-      $candidates = $itJob->services->getFeaturedPost( 'candidate' );
-      $args = [
+      $position   = empty($position) ? 'content' : $position;
+      $candidates = $itJob->services->getFeaturedPost( 'candidate', [
+        'key'   => 'itjob_cv_featured',
+        'value' => 1
+      ] );
+      $args       = [
         'title'      => $title,
         'candidates' => $candidates
       ];

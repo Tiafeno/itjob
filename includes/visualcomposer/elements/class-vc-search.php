@@ -10,7 +10,7 @@ if ( ! class_exists( 'vcSearch' ) ):
       add_action( 'wp_enqueue_scripts', function () {
         global $itJob;
         //wp_enqueue_script('multi-select', get_template_directory_uri() . "/assets/vendors/multiselect/js/jquery.multi-select.js", ['jquery'], $itJob->version);
-        wp_enqueue_script( 'select-2', get_template_directory_uri() . "/assets/vendors/select2/dist/js/select2.full.min.js", [ 'jquery' ], $itJob->version );
+        wp_enqueue_script( 'select-2', VENDOR_URL . "/select2/dist/js/select2.full.min.js", [ 'jquery' ], $itJob->version );
       } );
     }
 
@@ -91,12 +91,12 @@ if ( ! class_exists( 'vcSearch' ) ):
         'bg_image' => $bg_image,
         'abranchs' => $abranchs,
         'regions'  => $regions,
-        'home_url' => home_url('/')
+        'home_url' => home_url( '/' )
       ];
 
-      if ( $type === 'default' || empty($type) ) {
+      if ( $type === 'default' || empty( $type ) ) {
         try {
-          $langage         = get_terms( 'language', [
+          $langage  = get_terms( 'language', [
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
@@ -104,12 +104,13 @@ if ( ! class_exists( 'vcSearch' ) ):
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
-          $sub_data        = [
+          $sub_data = [
             'languages' => $langage,
             'softwares' => $software
           ];
 
           $data = array_merge( $data, $sub_data );
+
           return $Engine->render( '@VC/search/search.html.twig', $data );
         } catch ( Twig_Error_Loader $e ) {
         } catch ( Twig_Error_Runtime $e ) {
@@ -118,9 +119,51 @@ if ( ! class_exists( 'vcSearch' ) ):
         }
       } else {
         $func = "vc_search_" . $type . "_tpls";
+
         //return $this->$func( $data );
-        return call_user_func_array(array($this, $func), array($data));
+        return call_user_func_array( array( $this, $func ), array( $data ) );
       }
+    }
+
+    /**
+     * Compter les nombre de secteur d'activité dans le resultat de recherche
+     *
+     * @param $posts
+     *
+     * @return int
+     */
+    private function activity_results( $posts ) {
+      $results = 0;
+      if ( empty( $posts ) ) {
+        return $results;
+      }
+      $post_type       = get_post_type( $posts[0] );
+      $branch_activity = [];
+      if ( $post_type === 'offers' ) {
+        foreach ( $posts as $post ) {
+          // Return object term
+          $term              = get_field( 'itjob_offer_abranch', $post->ID );
+          if ( !empty($term) || !is_null($term) || $term) {
+            $branch_activity[] = $term->term_id;
+          }
+        }
+        $branch_activity = array_unique( $branch_activity );
+
+        return count( $branch_activity );
+      }
+      if ( $post_type === 'candidate' ) {
+        foreach ( $posts as $post ) {
+          $ab = wp_get_post_terms( $post->ID, 'branch_activity', [ "fields" => "ids" ] );
+          if ( ! empty( $ab ) && is_array( $ab ) ) {
+            $branch_activity[] = $ab[0];
+          }
+        }
+        $branch_activity = array_unique( $branch_activity );
+
+        return count( $branch_activity );
+      }
+
+      return $results;
     }
 
     // Invoked in vc_search_template methode
@@ -139,6 +182,15 @@ if ( ! class_exists( 'vcSearch' ) ):
     private function vc_search_offers_tpls( $args ) {
       global $Engine;
       try {
+        global $posts;
+        $activity_count = $this->activity_results( $posts );
+        $search_query   = Http\Request::getValue( 's' );
+        $args           = array_merge( $args, [
+          's'              => $search_query,
+          'search_count'   => count( $posts ),
+          'activity_count' => $activity_count
+        ] );
+
         return $Engine->render( '@VC/search/search-offers.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {
@@ -149,9 +201,9 @@ if ( ! class_exists( 'vcSearch' ) ):
 
     // Invoked in vc_search_template methode
     private function vc_search_candidate_tpls( $args ) {
-      global $Engine;
+      global $Engine, $posts;
       try {
-        $langage         = get_terms( 'language', [
+        $langage   = get_terms( 'language', [
           'hide_empty' => false,
           'fields'     => 'all'
         ] );
@@ -159,12 +211,21 @@ if ( ! class_exists( 'vcSearch' ) ):
           'hide_empty' => false,
           'fields'     => 'all'
         ] );
-        $sub_data        = [
+        $sub_data  = [
           'languages' => $langage,
           'softwares' => $softwares
         ];
 
         $data = array_merge( $args, $sub_data );
+
+        $activity_count = $this->activity_results( $posts );
+        $search_query   = Http\Request::getValue( 's' );
+        $data           = array_merge( $data, [
+          's'              => $search_query,
+          'search_count'   => count( $posts ),
+          'activity_count' => $activity_count
+        ] );
+
         return $Engine->render( '@VC/search/search-cv.html.twig', $data );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {

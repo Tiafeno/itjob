@@ -60,7 +60,7 @@
     <div class="col-sm-6">
       <div class="drivelicence" ng-repeat="driveLicence in driveLicences">
         <label class="checkbox checkbox-grey checkbox-ebony">
-          <input type="checkbox" ng-change="addDriveLicence(driveLicence.slug, driveLicence.label)"
+          <input type="checkbox" ng-change="onSwitchDriveLicence(true)"
            ng-model="formData.driveLicence[driveLicence.slug]">
           <span class="input-span"></span>
           {{driveLicence.label}}
@@ -69,7 +69,7 @@
       <!-- Aucun permis -->
       <div class="drivelicence">
         <label class="checkbox checkbox-grey checkbox-ebony">
-          <input type="checkbox" class="">
+          <input type="checkbox" ng-change="onSwitchDriveLicence(false)" ng-model="driveL" class="">
           <span class="input-span"></span>
           Aucun
         </label>
@@ -81,7 +81,10 @@
   <div class="form-group mt-5" id="language">
     <label class="font-normal">Les langues <span style="color: red">*</span></label>
       <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-    <tags-input ng-model="formData.languages" display-property="name" placeholder="Les langues" replace-spaces-with-dashes="false" required>
+    <tags-input ng-model="formData.languages" display-property="name" placeholder="Les langues"
+                on-tag-adding="onAddingTag($tag)"
+                on-invalid-tag="onTagInvalid($tag)"
+                replace-spaces-with-dashes="false" required>
       <auto-complete source="queryItems($query, 'language')"
                       min-length="0"
                       load-on-focus="true"
@@ -98,20 +101,20 @@
   </div>
 
     <div class="mt-5 form-group" id="software">
-      <label class="font-normal">Outils et technologie</label>
+      <label class="font-normal">Logiciel</label>
       <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-      <tags-input ng-model="formData.softwares" display-property="name" placeholder="Outils et technologie" replace-spaces-with-dashes="false" >
+      <tags-input ng-model="formData.softwares" display-property="name" max-lenght="10" max-tags="10" placeholder="Logiciel" replace-spaces-with-dashes="false" >
         <auto-complete source="queryItems($query, 'software')"
                        min-length="0"
                        load-on-focus="false"
                        load-on-empty="false"
-                       max-results-to-show="10"
+                       max-results-to-show="5"
                        template="auto-complete-template">
         </auto-complete>
       </tags-input>
       <p class="mention-text col-md-8 mt-1">
         S'il ne ﬁgure pas dans la liste, pour ajouter valider par “ENTRER” ou le virgule “,”
-        et <b>éviter les fautes d'orthographe</b>
+        et <b>éviter les fautes d'orthographe. <b>Vous avez droit à seulement dix (10) logiciels</b></b>
       </p>
     </div>
 
@@ -146,7 +149,7 @@
               <div class="form-group">
                 <label class="col-form-label ">Nom de l'entreprise ou société <span style="color: red">*</span></label>
                 <input class="form-control" name="company" ng-model="experience.company" type="text"
-                       placeholder="ex: Google, Miscrosoft ..."
+                       placeholder="ex: Google, Microsoft ..."
                        required>
               </div>
 

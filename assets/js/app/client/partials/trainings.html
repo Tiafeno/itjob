@@ -1,18 +1,23 @@
-<!-- Modal -->
-<div id="modal-add-training-overflow" uk-modal>
+<!-- Modal edit training -->
+<div id="modal-edit-training-overflow" uk-modal>
   <div class="uk-modal-dialog">
     <button class="uk-modal-close-default" type="button" uk-close></button>
     <div class="uk-modal-header">
-      <h2 class="uk-modal-title">Expérience</h2>
+      <h2 class="uk-modal-title">Formation</h2>
     </div>
     <form name="tform" ng-submit="submitForm(tform.$valid)" novalidate>
 
       <div class="uk-modal-body" uk-overflow-auto>
+        <p class="col-sm-12" ng-if="mode === 1">
+          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:
+          032 45 378 60 - 033 82 591 13 - 034 93 962 18.
+        </p>
+
         <div class="col-sm-12">
           <label class="col-form-label ">École <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-model="Train.training_establishment" placeholder="Ex: Université de Majunga" autocomplete="off"
+              <input ng-disabled="mode === 1" ng-model="Train.training_establishment" placeholder="Ex: Université de Majunga" autocomplete="off"
                 name="establishment" class="form-control" required>
             </div>
           </div>
@@ -22,7 +27,7 @@
           <label class="col-form-label ">Diplôme <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-model="Train.training_diploma" placeholder="Ex: Master II" autocomplete="on" name="diploma"
+              <input ng-disabled="mode === 1" ng-model="Train.training_diploma" placeholder="Ex: Master II" autocomplete="on" name="diploma"
                 class="form-control" required>
             </div>
           </div>
@@ -32,7 +37,7 @@
           <label class="col-form-label ">Ville <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-model="Train.training_city" placeholder="Ex: Antananarivo" autocomplete="off" name="city"
+              <input ng-disabled="mode === 1" ng-model="Train.training_city" placeholder="Ex: Antananarivo" autocomplete="off" name="city"
                 class="form-control" required>
             </div>
           </div>
@@ -42,7 +47,7 @@
           <label class="col-form-label ">Pays <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-model="Train.training_country" placeholder="Ex: Madagascar" autocomplete="off" name="country"
+              <input ng-disabled="mode === 1" ng-model="Train.training_country" placeholder="Ex: Madagascar" autocomplete="off" name="country"
                 class="form-control" required>
             </div>
           </div>
@@ -55,7 +60,7 @@
             </div>
             <div class="col-sm-12">
               <div class="form-group">
-                <select class="form-control" name="begin_year" ng-model="Train.training_dateBegin" required>
+                <select ng-disabled="mode === 1" class="form-control" name="begin_year" ng-model="Train.training_dateBegin" required>
                   <option value="">Année</option>
                   <option ng-value="year" ng-repeat="year in years">[[year]]</option>
                 </select>
@@ -69,7 +74,7 @@
             </div>
             <div class="col-sm-12">
               <div class="form-group">
-                <select class="form-control" name="end_year" ng-model="Train.training_dateEnd" required>
+                <select ng-disabled="mode === 1" class="form-control" name="end_year" ng-model="Train.training_dateEnd" required>
                   <option value="">Année</option>
                   <option ng-value="year" ng-repeat="year in years">[[year]]</option>
                 </select>
@@ -87,7 +92,7 @@
           </div>
           <div class="col-sm-8 uk-text-right">
             <button class="btn btn-danger ml-4" ng-show="mode === 1" data-ng-click="onDeleteTraining(Train.id)">Supprimer</button>
-            <button class="btn btn-blue ml-4" type="submit">Enregistrer</button>
+            <button class="btn btn-blue ml-4" ng-if="mode != 1" type="submit">Enregistrer</button>
           </div>
         </div>
       </div>
@@ -102,20 +107,20 @@
   <div class="ibox-head">
     <div class="ibox-title text-uppercase">Formation</div>
     <div class="ibox-tools">
-      <a class="dropdown-toggle font-18" data-toggle="dropdown"><i class="ti-ticket"></i></a>
-      <div class="dropdown-menu dropdown-menu-right">
-        <a class="dropdown-item" ng-click="newTraining()"><i class="ti-pencil mr-2"></i>Ajouter une formation</a>
-      </div>
+      <a class="d-flex" ng-click="newTraining()">
+        <i class="ti-plus"></i>
+        <span class="d-block ml-2 font-13">Ajouter une formation</span>
+      </a>
     </div>
   </div>
   <div class="ibox-body">
     <ul class="media-list media-list-divider scroller mr-2" data-height="470px">
-
       <li class="media" ng-repeat="training in Candidate.trainings">
         <div class="media-body d-flex">
           <div class="flex-1">
             <h5 class="media-heading">
               [[ training.training_establishment ]]
+              <span class="badge badge-pill ng-binding badge-pink" ng-if="!training.validated">En attente de validation</span>
             </h5>
             <h6 class="text-muted">
               [[ training.training_diploma ]]
@@ -134,7 +139,6 @@
           </div>
         </div>
       </li>
-
     </ul>
   </div>
 </div>

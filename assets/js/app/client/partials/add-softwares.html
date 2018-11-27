@@ -1,0 +1,91 @@
+<!-- Modal edit training -->
+<style type="text/css">
+  form[name='softwareform'] .badge:hover {
+    background: rgba(255, 0, 0, 0.6509803921568628);
+    cursor: pointer;
+  }
+</style>
+<div id="modal-software-editor-overflow" uk-modal>
+  <div class="uk-modal-dialog">
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title" style="font-size: 18px; font-family: Poppins, sans-serif;">Ajouter des logiciels</h2>
+    </div>
+    <form name="softwareform" ng-submit="submitForm(softwareform.$valid)" novalidate>
+
+      <div class="uk-modal-body" uk-overflow-auto>
+        <div class="col-sm-12" style="min-height: 245px">
+          <div class="alert alert-pink alert-dismissable fade show alert-outline has-icon" ng-if="status">
+            <i class="la la-info-circle alert-icon"></i>
+            <span ng-bind-html="status"></span>
+          </div>
+          <div ng-show="!loading">
+            <div class="form-group">
+              <tags-input ng-model="tags" max-lenght="1" max-tags="1" on-tag-adding="onAddedTag($tag)" display-property="name"
+                          placeholder="Logiciel (ex: QGIS)" replace-spaces-with-dashes="false">
+                <auto-complete source="querySoftware($query)"
+                               load-on-focus="false"
+                               load-on-empty="false"
+                               max-results-to-show="5"
+
+                               template="software-template">
+                </auto-complete>
+              </tags-input>
+              <script type="text/ng-template" id="software-template">
+                <div class="right-panel">
+                  <span style="font-size: 12px; font-family: Poppins, sans-serif;">{{data.name}}</span>
+                </div>
+              </script>
+              <p class="text-muted">Ajouter un logiciel, s'il ne ﬁgure pas dans la liste valider par “ENTRER” ou le virgule “,” et éviter les fautes d'orthographe.</p>
+            </div>
+
+            <div class="mt-4">
+              <h6>Compétences suggérées en fonction de votre profil :</h6>
+              <span class="badge badge-blue font-14 mr-2 mb-2" data-ng-click="removeInList(soft)" ng-repeat="soft in form.softwares">[[soft.name]]</span>
+            </div>
+            <div><p class="text-description">Cliquer sur le logiciel pour l'effacer dans votre liste</p></div>
+
+          </div>
+          <div ng-show="loading">
+            <div class="preloader-backdrop">
+              <div class="page-preloader">Chargement</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="uk-modal-footer">
+        <div class="row">
+          <div class="col-sm-4 uk-text-left d-flex">
+
+          </div>
+          <div class="col-sm-8 uk-text-right">
+            <button class="btn btn-default uk-modal-close" data-ng-click="abordModification()" type="button">Fermer</button>
+            <button class="btn btn-blue ml-4" ng-disabled="loading" type="submit">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+</div>
+<!-- .end Modal-->
+
+<div class="ibox-body">
+  <h4 class="font-bold">
+    Logiciels
+    <small class="text-muted font-11" style="cursor:pointer; float: right;" ng-click="openEditor()">
+      <i class="fa fa-edit mr-2"></i>Modifier
+    </small>
+  </h4>
+  <ul class="media-list media-list-divider">
+    <li class="media align-items-center" ng-repeat="software in softwareLists | limitTo: 4">
+      <div class="media-body d-flex align-items-center">
+        <div class="flex-1">
+          <div>[[software.name]]</div></div>
+      </div>
+    </li>
+  </ul>
+</div>

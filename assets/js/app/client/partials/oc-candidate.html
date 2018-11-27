@@ -8,6 +8,7 @@
     height: 95px;
     position: relative;
     margin-left: 20px;
+    display: inline-table;
   }
 
   .add-new-picture img {
@@ -16,7 +17,10 @@
     border-radius: 50%;
     margin: auto;
     display: block;
+    height: inherit;
+    width: inherit;
   }
+
   li.timeline-item a:hover {
     font-weight: bold;
   }
@@ -24,41 +28,41 @@
 
 <!-- Modal information -->
 <script type="text/javascript">
-  (function($) {
+  (function ($) {
     var addedCvElement = $('#modal-info-editor').find('#added_cv');
     addedCvElement.attr('href', itOptions.Helper.add_cv);
   })(jQuery)
 </script>
+
+<div class="preloader-backdrop" ng-if="preloader">
+  <div class="page-preloader">Chargement</div>
+</div>
+
 <div id="modal-info-editor" class="modal fade" aria-labelledby="modal-info-editor" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="ibox modal-content">
-        <div class="ibox-head">
-          <div class="ibox-title">Qu'est-ce que vous voulez faire?</div>
-        </div>
-
-        <div class="modal-body">
-          <ul class="timeline scroller">
-            <li class="timeline-item">
-              <span class="timeline-point"></span>
-              <a href="#ajouter_un_cv" id="added_cv" class="flexbox timeline-link">Crée votre CV pour être visible par les recruteurs et Postuler aux offres</a>
-            </li>
-            <li class="timeline-item">
-              <span class="timeline-point"></span>
-              <span class="flexbox">S’inscrire à une formation ou demander une formation</span>
-            </li>
-          </ul>
-        </div>
-
-        <div class="modal-footer">
-          <button class="btn btn-outline-secondary btn-fix btn-thick" data-dismiss="modal" type="button">Fermer
-          </button>
-        </div>
+      <div class="ibox-head">
+        <div class="ibox-title">Qu'est-ce que vous voulez faire?</div>
+      </div>
+      <div class="modal-body">
+        <ul class="timeline scroller">
+          <li class="timeline-item">
+            <span class="timeline-point"></span>
+            <a href="#ajouter_un_cv" id="added_cv" class="flexbox timeline-link">Crée votre CV pour être visible par les
+              recruteurs et Postuler aux offres</a>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary btn-fix btn-thick" data-dismiss="modal" type="button">Fermer
+        </button>
+      </div>
     </div>
   </div>
 </div>
 <!-- .end information -->
 
-<!-- Modal contact -->
+<!-- Modal profil editor -->
 <div id="modal-candidate-profil-editor" uk-modal>
   <div class="uk-modal-dialog">
     <button class="uk-modal-close-default" type="button" uk-close></button>
@@ -90,7 +94,7 @@
           </div>
           <div class="col-md-8 col-sm-8">
 
-            <div class="form-group">
+            <div class="form-group" ng-if="Candidate.has_cv">
               <label class="col-form-label ">Mon status <span style="color: red">*</span></label>
               <select class="form-control" name="status" id="status" ng-model="profilEditor.status"
                       ng-value="profilEditor.status"
@@ -103,23 +107,22 @@
 
             <div class="form-group">
               <label class="col-form-label ">Adresse e-mail</label>
-              <input class="form-control" name="email" id="email" ng-model="Candidate.privateInformations.author.data.user_email" disabled/>
+              <input class="form-control" name="email" id="email"
+                     ng-model="Candidate.privateInformations.author.data.user_email" disabled/>
             </div>
-
             <div class="form-group mt-4">
               <label class="checkbox">
                 <input type="checkbox" name="newsletter" id="newsletter" ng-model="profilEditor.newsletter">
                 <span class="input-span"></span>Est ce que vous voulez recevoir notre newsletter?
               </label>
             </div>
-
           </div>
         </div>
       </div>
       <div class="uk-modal-footer">
         <div class="row">
           <div class="col-sm-12 uk-text-right">
-            <button class="btn btn-blue ml-4" type="submit">Enregistrer</button>
+            <button class="btn btn-blue ml-4" ng-disabled="profilEditor.loading" type="submit">Enregistrer</button>
           </div>
         </div>
       </div>
@@ -139,16 +142,14 @@
           <span aria-hidden="true">×</span>
         </button>
       </div>
-
       <div class="ibox-body">
         <p>
-          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:<br>
+          Pour toutes modifications; Veuillez contacter le service commercial aux numéros suivants:<br>
           <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a
           href="tel:+261349396218">034
           93 962 18</a>.
         </p>
       </div>
-
       <div class="ibox-footer">
         <div class="row">
           <div class="col-sm-12 uk-text-right">
@@ -162,42 +163,142 @@
 </div>
 <!-- .end modal -->
 
+<!-- Modal information editor -->
+<div id="modal-information-editor" uk-modal="esc-close: false; bg-close: false">
+  <div class="uk-modal-dialog">
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Verification des informations</h2>
+    </div>
+    <form name="editInformationProfilForm" id="editInformationProfilForm"
+          ng-submit="onSubmitCandidateInformation(editInformationProfilForm.$valid)">
+      <div class="uk-modal-body" uk-overflow-auto>
+        <div class="row">
+          <div class="col-md-12 col-sm-12">
+
+            <div class="form-group">
+              <div class="row">
+                <div class="col-sm-8">
+                  <label class="col-form-label ">Salutation <span style="color: red">*</span></label>
+                  <div class="form-group">
+                    <select class="form-control" name="greet" ng-model="profilEditor.form.greeting"
+                            title="Salutation" required>
+                      <option value="mr">Monsieur</option>
+                      <option value="mrs">Madame</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <label class="col-form-label">Nom du responsable <span style="color: red">*</span></label>
+                  <input class="form-control" ng-disabled="true" name="name" ng-model="profilEditor.form.name" type="text"
+                         placeholder="Nom du responsable"
+                         required>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" ng-if="Candidate.has_cv">
+              <label class="col-form-label ">Votre secteur d'activité <span style="color: red">*</span></label>
+              <select class="form-control" name="branch_activity" ng-model="profilEditor.form.abranch"
+                      ng-value=""
+                      title="Status" required>
+                <option value=""></option>
+                <option value="[[abranch.term_id]]" ng-value="abranch.term_id"
+                        ng-repeat="abranch in profilEditor.abranchs">
+                  [[abranch.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Adresse <span style="color: red">*</span></label>
+              <input class="form-control" ng-disabled="false" name="address" ng-model="profilEditor.form.address" type="text"
+                     placeholder="Votre adress"
+                     required>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Region <span style="color: red">*</span></label>
+              <select class="form-control" name="region" ng-model="profilEditor.form.region"
+                      ng-value=""
+                      title="Status" required>
+                <option value=""></option>
+                <option value="[[region.term_id]]" ng-value="region.term_id" ng-repeat="region in profilEditor.regions">
+                  [[region.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-control-label ">Code postal ou Ville <span style="color: red">*</span></label>
+              <select class="form-control input-select2" name="country" ng-model="profilEditor.form.country"
+                      title="Selectionner une ville" required>
+                <option value=""></option>
+                <option value="[[city.term_id]]" ng-value="city.term_id"
+                        ng-repeat="city in profilEditor.city|filter:searchCityFn">[[city.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Adresse e-mail</label>
+              <input class="form-control" name="email" ng-model="profilEditor.form.email" disabled/>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="uk-modal-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-blue ml-4" ng-disabled="profilEditor.loading" type="submit">Mettre à jour</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- .end modal -->
+
+
 <div class="row">
   <div class="col-lg-4">
     <div class="card text-center centered mb-4" style="max-width:320px;">
+      <div class="ibox-body alert alert-info alert-dismissable fade show">
+        <!--<button class="close" data-dismiss="alert" aria-label="Close"></button>-->
+        <h4>Bonjour <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</b></h4>
+        <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
+      </div>
       <div class="card-body">
         <span class="badge badge-blue badge-circle float-right" uk-toggle="target: #modal-candidate-profil-editor"
               style="cursor: pointer">
           <i class="ti-pencil"></i>
         </span>
-
-        <div class="card-avatar mt-3 mb-4">
+        <div class="card-avatar mt-3 mb-4" style="display: inline-table;">
           <img class="img-circle" ng-src="[[ Candidate.privateInformations.avatar ]]" alt="image">
         </div>
-        <h4 class="card-title mb-1">[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</h4>
-        <div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Candidate.address.address ]]</div>
+        <h4 class="card-title mb-1">[[Candidate.privateInformations.firstname]] [[
+          Candidate.privateInformations.lastname ]]</h4>
+        <div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Candidate.privateInformations.address.address ]]
+        </div>
         <p class="mt-4 mb-4"> [[biography]] </p>
         <div class="d-flex align-items-center  mb-5">
           <div class="text-center m-auto">
             <h2 class="text-pink m-0">
-              [[ Candidate.postuled ? Candidate.postuled : 0 ]]
+              [[ Candidate.postuled ? Candidate.postuled.length : 0 ]]
             </h2>
             <div class="text-muted text-uppercase">Candidatures envoyés</div>
           </div>
         </div>
-        <div class="d-flex justify-content-around align-items-center">
+        <div class="d-block justify-content-around align-items-center">
           <notifications></notifications>
-
+          <a class="btn btn-secondary mt-2" ng-href="[[Helper.archive_offer_link]]" target="_blank">
+            <span class="btn-icon"><i class="fa fa-link"></i> Les offres d'emplois</span>
+          </a>
         </div>
       </div>
     </div>
   </div>
   <div class="col-lg-8">
-    <div class="ibox-body alert alert-info alert-dismissable fade show">
-      <button class="close" data-dismiss="alert" aria-label="Close"></button>
-      <h4>Bonjour <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</b></h4>
-      <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
-    </div>
     <div class="mt-4">
       <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
         <li class="nav-item">
@@ -208,6 +309,11 @@
         <li class="nav-item">
           <a class="nav-link" data-target="#cv" data-toggle="tab">
             Mon CV
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-target="#candidacy" data-toggle="tab">
+            Candidature(s)
           </a>
         </li>
       </ul>
@@ -240,18 +346,21 @@
             <div class="ibox-body">
               <div class="row">
                 <div class="col-lg-12">
+                  <!-- Le candidat possède un CV-->
                   <div ng-show="cv.hasCV">
+                    <h2 class="font-bold mb-4">REFERENCE <a target="_blank" title="Voir le CV" ng-href="[[Candidate.candidate_url]]" class="text-muted">#[[Candidate.reference]]</a></h2>
+                    <!-- Emploi rechercher -->
+                    <job-search jobs="Candidate.jobSought"></job-search>
                     <!-- Experience directive -->
                     <experiences candidate="Candidate"></experiences>
                     <!-- Formation directive --->
                     <trainings candidate="Candidate"></trainings>
-
                     <div class="col-lg-12">
                       <hr>
                       <div class="row">
                         <!-- langues -->
                         <div class="ibox-body col-lg-6">
-                          <h4>Langues</h4>
+                          <h4 class="font-bold">Langues</h4>
                           <div class="row">
                             <div class="col-11 d-flex align-items-center">
                               <ol class="language-list m-0">
@@ -265,7 +374,7 @@
                         <!-- .end langues -->
                         <!-- Permis de conduire -->
                         <div class="ibox-body col-lg-6">
-                          <h4>Permis de conduire</h4>
+                          <h4 class="font-bold">Permis de conduire</h4>
                           <div class="row">
                             <div class="col-11 d-flex align-items-center">
                               <ol ng-show="Candidate.driveLicences !== ''" class="drivelicence-list m-0 pl-0">
@@ -279,16 +388,28 @@
                         </div>
                         <!-- .end Permis de conduire -->
                       </div>
+                    </div>
 
+                    <div class="col-lg-12">
+                      <hr>
+                      <add-softwares softwares="Candidate.softwares"
+                                     software-terms="asyncTerms('software')"></add-softwares>
                     </div>
                   </div>
+                  <!-- Aucun CV -->
                   <div ng-show="!cv.hasCV">
-                    <p>Nous n'avons trouvé aucun CV.</p>
-                    <a ng-href="[[cv.addCVUrl]]" class="btn btn-outline-blue">Ajouter un CV</a>
+                    <h3 class="font-bold uppercase">Nous n'avons trouvé aucun CV.</h3>
+                    <a ng-href="[[cv.addCVUrl]]" class="btn btn-info">Ajouter un CV</a>
                   </div>
                 </div>
-
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="candidacy">
+          <div class="page-content">
+            <div class="ibox-body">
+              <candidacy></candidacy>
             </div>
           </div>
         </div>

@@ -8,7 +8,6 @@
         En attendant, faites une recherche ou revenez dans quelques temps ;-) Merci de votre compréhension.</p>
       </div>
     {% endif %}
-
     {% for candidate in candidates %}
       <div class="col-md-12">
         <div class="card ibox mb-4">
@@ -25,20 +24,37 @@
                     <tr>
                       <td>L'emploi recherché:</td>
                       <td>
-                        {{ candidate.jobSought|explode_terms }}
+                        {% if candidate.jobSought is not same as(undefined) %}
+                          {{ candidate.jobSought|explode_terms }}
+                        {% else %}
+                          Aucun
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% if candidate.branch_activity.name is not same as(undefined) %}
+                    <tr>
+                      <td>Secteur d'activité:</td>
+                      <td>
+                        {{ candidate.branch_activity.name }}
+                      </td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                      <td>Permis:</td>
+                      <td>
+                        {% if candidate.driveLicences is not empty %}
+                            {{ candidate.driveLicences|explode_array }}
+                          {% else %}
+                            Aucun
+                        {% endif %}
                       </td>
                     </tr>
                     <tr>
-                      <td>Secteur d'activité:</td>
-                      <td>{{ candidate.branch_activity.name }}</td>
-                    </tr>
-                    <tr>
-                      <td>Permis:</td>
-                      <td>{{ candidate.driveLicences|explode_array }}</td>
-                    </tr>
-                    <tr>
                       <td>Langues:</td>
-                      <td>{{ candidate.languages|explode_terms }}</td>
+                      <td>
+                        {% if candidate.languages is empty %} Aucun {% endif %}
+                        {{ candidate.languages|explode_terms }}
+                      </td>
                     </tr>
                     </tbody>
                   </table>
@@ -55,14 +71,7 @@
               </div>
               <div class="row">
                 <div class="col-12">
-                  <table class="table">
-                    <tbody>
-                    <tr>
-                      <td class="no-bold uk-text-bold"></td>
-                      <td class="text-center uk-text-bold"></td>
-                      <td class="text-right">CV ajouté le {{ candidate.dateAdd }}</td>
-                    </tr>
-                  </table>
+                  <div class="text-right">CV ajouté le {{ candidate.dateAdd }}</div>
                 </div>
               </div>
 
