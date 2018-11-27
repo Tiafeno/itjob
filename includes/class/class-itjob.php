@@ -308,7 +308,7 @@ if ( ! class_exists( 'itJob' ) ) {
                                 " ({$wpdb->postmeta}.meta_key = 'itjob_cv_notifEmploi_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%' )) " .
                                 " OR (({$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1) AND " .
                                 "({$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1)) )";
-                      $where .= "  OR (wtt.taxonomy IN ('job_sought') AND wt.name LIKE '{$s}' )";
+                      $where .= "  OR (wtt.taxonomy IN ('job_sought') AND wt.name LIKE '%{$s}%' )";
                     }
 
                     return $where;
