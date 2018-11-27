@@ -233,10 +233,6 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 if ( ! empty( $s ) ) {
-                  if ( ! isset( $meta_query ) ) {
-                    $meta_query = $query->get( 'meta_query' );
-                  }
-
                   $searchs = explode(' ', $s);
                   // Rechercher les mots dans les emplois
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
@@ -246,6 +242,9 @@ if ( ! class_exists( 'itJob' ) ) {
                     'terms' => $searchs
                   ];
 
+                  if ( ! isset( $meta_query ) ) {
+                    $meta_query = $query->get( 'meta_query' );
+                  }
                   foreach ($searchs as $search) {
                     if (empty($search)) continue;
                     // TODO: Corriger la cherche pour tout les experiences et les formations
@@ -310,6 +309,8 @@ if ( ! class_exists( 'itJob' ) ) {
                   $query->set( 'tax_query', $tax_query );
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
                 }
+
+                print_r($query);
                 BREAK;
             } // .end switch
 
