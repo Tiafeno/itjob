@@ -326,7 +326,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     }
     $resolve = [];
     $rows    = get_field( $repeaterField, $this->getId() );
-    if ( $rows ) {
+    if ( $rows && is_array($rows) ) {
       foreach ( $rows as $row ) {
         array_push( $resolve, (object) $row );
       }
