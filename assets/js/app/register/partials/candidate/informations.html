@@ -4,16 +4,16 @@
       <div class="col-md-6 col-sm-6">
         <div class="form-group">
           <label class="col-form-label ">Status <span style="color: red">*</span></label>
-          <select class="form-control" name="status" ng-model="formData.status"
-                  title="Status du candidat" required>
+          <select class="form-control" ui-select2="select2Options" name="status" ng-model="formData.status"
+                  data-placeholder="Status du candidat" ng-required="true">
             <option></option>
             <option ng-value="st._id" ng-repeat="st in status">{{st.label}}</option>
           </select>
         </div>
         <div ng-form="abForm" class="form-group">
           <label class="col-form-label ">Secteur d’activité <span style="color: red">*</span></label>
-          <select class="form-control" name="abranch" ng-model="formData.abranch"
-                  title="Secteur d’activité" required>
+          <select class="form-control" name="abranch" ui-select2="select2Options" data-placeholder="Secteur d’activité" ng-model="formData.abranch"
+                  ng-required="true">
             <option></option>
             <option ng-value="abranch.term_id" ng-repeat="abranch in abranchs">{{abranch.name}}</option>
           </select>
@@ -71,7 +71,7 @@
         <p class="text-muted">Tous les champs marqués d'un <span style="color: red">*</span> sont obligatoires</p>
       </div>
       <div class="col-md-6">
-        <button class="btn btn-outline-blue btn-icon btn-fix float-right" type="button" ng-disabled="!isValidTag || cvForm.$invalid" data-ng-click="next('form.career')">
+        <button class="btn btn-outline-blue btn-icon btn-fix float-right" type="button" ng-disabled="" data-ng-click="next('form.career')">
           Suivant
         </button>
       </div>

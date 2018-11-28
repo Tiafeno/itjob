@@ -127,6 +127,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       wp_enqueue_style( 'ng-tags-bootstrap' );
       wp_enqueue_script( 'form-candidate', get_template_directory_uri() . '/assets/js/app/register/form-candidate.js', [
         'angular',
+        'angular-ui-select2',
         'angular-ui-route',
         'angular-sanitize',
         'angular-messages',

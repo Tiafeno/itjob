@@ -1,6 +1,6 @@
 const API_COUNTRY_URL = 'https://restcountries.eu';
 
-angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.router', 'ngTagsInput', 'ngFileUpload'])
+angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui.router', 'ngTagsInput', 'ngFileUpload'])
   .config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
       .state('form', {
@@ -316,8 +316,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.router', 'ngT
              * @param {path} state 
              */
             $rootScope.next = (state) => {
-              if (!$rootScope.isValidTag) {
-                alertify.error("Veillez remplir correctement le champ 'Emploi recherché ou vouex'");
+              if (!$rootScope.formData.abranch) {
+                alertify.error("Veillez remplir correctement les champs obligatoire");
                 return false;
               }
               if (typeof $rootScope.formData.featuredImage === 'undefined') {
@@ -354,57 +354,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.router', 'ngT
           keyboardNavigation: true,
           forceParse: false,
           autoclose: true
-        });
-
-        var jqSelects = jQuery("select.form-control");
-        jQuery.each(jqSelects, (index, element) => {
-          var selectElement = jQuery(element);
-          var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
-          jQuery(element).select2({
-            placeholder: placeholder,
-            allowClear: true,
-            width: '100%',
-            matcher: function (params, data) {
-              var inTerm = [];
-
-              // If there are no search terms, return all of the data
-              if (jQuery.trim(params.term) === '') {
-                return data;
-              }
-
-              // Do not display the item if there is no 'text' property
-              if (typeof data.text === 'undefined') {
-                return null;
-              }
-
-              // `params.term` should be the term that is used for searching
-              // `data.text` is the text that is displayed for the data object
-              var dataContains = data.text.toLowerCase();
-              var paramTerms = jQuery.trim(params.term).split(' ');
-              jQuery.each(paramTerms, (index, value) => {
-                if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
-                  inTerm.push(true);
-                } else {
-                  inTerm.push(false);
-                }
-              });
-              var isEveryTrue = _.every(inTerm, (boolean) => {
-                return boolean === true;
-              });
-              if (isEveryTrue) {
-                var modifiedData = jQuery.extend({}, data, true);
-                //modifiedData.text += ' (Trouver)';
-                return modifiedData;
-              } else {
-                // Return `null` if the term should not be displayed
-                return null;
-              }
-            }
-          });
-          jQuery(element).on('select2:opening', function (e) {
-            var data = e.params.data;
-            jQuery(element).val('');
-          })
         });
       }
     }
@@ -499,6 +448,47 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.router', 'ngT
     $rootScope.jobSougths = _.clone(jobSougths);
     $rootScope.formData = {};
     $rootScope.isValidTag = true;
+    $rootScope.select2Options = {
+      allowClear:true,
+      placeholder: "Selectionner",
+      width: '100%',
+      matcher: function (params, data) {
+        var inTerm = [];
+
+        // If there are no search terms, return all of the data
+        if (jQuery.trim(params.term) === '') {
+          return data;
+        }
+
+        // Do not display the item if there is no 'text' property
+        if (typeof data.text === 'undefined') {
+          return null;
+        }
+
+        // `params.term` should be the term that is used for searching
+        // `data.text` is the text that is displayed for the data object
+        var dataContains = data.text.toLowerCase();
+        var paramTerms = jQuery.trim(params.term).split(' ');
+        jQuery.each(paramTerms, (index, value) => {
+          if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
+            inTerm.push(true);
+          } else {
+            inTerm.push(false);
+          }
+        });
+        var isEveryTrue = _.every(inTerm, (boolean) => {
+          return boolean === true;
+        });
+        if (isEveryTrue) {
+          var modifiedData = jQuery.extend({}, data, true);
+          //modifiedData.text += ' (Trouver)';
+          return modifiedData;
+        } else {
+          // Return `null` if the term should not be displayed
+          return null;
+        }
+      }
+    };
 
     $rootScope.onAddingLangTag = ($tag) => {
       return $rootScope.onAddingTag($tag);
