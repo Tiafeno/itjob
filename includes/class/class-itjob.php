@@ -81,7 +81,9 @@ if ( ! class_exists( 'itJob' ) ) {
       } );
 
       add_action( 'user_register', function ( $user_id ) {
-        // Ajouter le mot de passe de l'utilisateur
+        // Ajouter le mot de passe de l'utilisateur...
+        // Cette instruction est important car il enregistre les mot de passe des utilisateurs (particulier & entreprise)
+        // qui s'inscrivent dans le site ITJOBMada
         if ( isset( $_POST['pwd'] ) || ! empty( $_POST['pwd'] ) ) {
           $user       = get_userdata( $user_id );
           $user_roles = $user->roles;
@@ -91,16 +93,15 @@ if ( ! class_exists( 'itJob' ) ) {
             if ( isset( $pwd ) ) {
               $id = wp_update_user( [ 'ID' => $user_id, 'user_pass' => trim( $pwd ) ] );
               if ( is_wp_error( $id ) ) {
-                return true;
+                return false;
               } else {
                 // Mot de passe utilisateur à etes modifier avec success
-                return false;
+                do_action( "new_register_user", $user_id );
+                return true;
               }
             }
           }
         }
-
-        do_action( "new_register_user", $user_id );
 
       }, 10, 1 );
 
