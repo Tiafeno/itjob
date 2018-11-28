@@ -80,7 +80,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
      * @return string
      */
     public function register_render_html( $attrs ) {
-      global $Engine, $itJob;
+      global $Engine, $itJob, $theme;
 
       $message_access_refused = '<div class="d-flex align-items-center">';
       $message_access_refused .= '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Access refuser</div></div>';
@@ -143,6 +143,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       // Verifier si l'ajout du CV consiste à postuler sur une offre
       wp_localize_script( 'form-candidate', 'itOptions', [
+        'version'      => $theme->get('Version'),
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),

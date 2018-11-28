@@ -72,7 +72,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .directive('changePassword', ['$http', function ($http) {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/change-password.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/change-password.html?ver='+itOptions.version,
       scope: {},
       link: function (scope, element, attrs) {
         scope.password = {};
@@ -155,7 +155,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .directive('alerts', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/alert.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/alert.html?version='+itOptions.version,
       scope: {
         onSave: '&', // Function pass
         alerts: '=', // Two way variable pass
@@ -167,7 +167,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .directive('experiences', ['clientService', function (clientService) {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html?ver='+itOptions.version,
       scope: {
         Candidate: "=candidate",
       },
@@ -420,7 +420,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .directive('trainings', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/trainings.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/trainings.html?ver='+itOptions.version,
       scope: {
         Candidate: "=candidate",
       },
@@ -576,7 +576,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .directive('notifications', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/notifications.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/notifications.html?ver='+itOptions.version,
       scope: {},
       controller: ['$scope', function ($scope) {
 

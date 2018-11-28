@@ -70,7 +70,7 @@ if ( ! class_exists( 'scClient' ) ) :
      * Afficher l'espace client
      */
     public function sc_render_html( $attrs, $content = '' ) {
-      global $Engine, $itJob;
+      global $Engine, $itJob, $theme;
       if ( ! is_user_logged_in() ) {
         $customer_area_url = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : get_permalink();
 
@@ -115,7 +115,8 @@ if ( ! class_exists( 'scClient' ) ) :
       try {
         do_action( 'get_notice' );
         $wp_localize_script_args = [
-          'Helper' => [
+          'version' => $theme->get('Version'),
+          'Helper'  => [
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
             'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
             'img_url'       => get_template_directory_uri() . '/img',

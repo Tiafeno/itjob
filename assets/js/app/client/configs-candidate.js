@@ -2,7 +2,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
   $interpolateProvider.startSymbol('[[').endSymbol(']]');
   $routeProvider
     .when('/oc-candidate', {
-      templateUrl: itOptions.Helper.tpls_partials + '/oc-candidate.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/oc-candidate.html?version=' + itOptions.version,
       controller: 'clientCtrl',
       resolve: {
         Client: ['$http', '$q', function ($http, $q) {
@@ -38,7 +38,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
   .directive('generalInformationCandidate', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/general-information-candidate.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/general-information-candidate.html?version=' + itOptions.version,
       scope: {
         Candidate: '=candidate',
         regions: '&',
@@ -107,7 +107,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
   .directive('jobSearch', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/job-search.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/job-search.html?version=' + itOptions.version,
       scope: {
         inJobs: "=jobs"
       },
@@ -121,7 +121,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         // Call before added tag
         $scope.onAddingTag = ($tag) =>
         {
-          if ($scope.jobs.length >= 2) return false;
+          if (_.isArray($scope.jobs) && $scope.jobs.length >= 2) return false;
           let isValid = true;
           let splitTag = '|;_\/*';
           for (let i in splitTag) {
@@ -185,7 +185,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
   .directive('addSoftwares', [function () {
     return {
       restrict: "E",
-      templateUrl: itOptions.Helper.tpls_partials + '/add-softwares.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/add-softwares.html?version=' + itOptions.version,
       scope: {
         softwares: "=",
         softwareTerms: "&softwareTerms"
@@ -289,7 +289,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
   .directive('candidacy', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/candidacy.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/candidacy.html?version='+itOptions.version,
       scope: {},
       link: function (scope, element, attr) {
         scope.fireData = false;

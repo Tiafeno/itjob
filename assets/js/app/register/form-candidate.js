@@ -29,7 +29,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       // url will be nested (/form/career)
       .state('form.career', {
         url: '/career',
-        templateUrl: itOptions.partials_url + '/candidate/career.html',
+        templateUrl: itOptions.partials_url + '/candidate/career.html?version=' + itOptions.version,
         resolve: {
           access: ['$q', '$rootScope', function ($q, $rootScope) {
 
@@ -191,7 +191,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       // url will be /form/interests
       .state('form.interests', {
         url: '/interests',
-        templateUrl: itOptions.partials_url + '/candidate/Interests.html',
+        templateUrl: itOptions.partials_url + '/candidate/Interests.html?version=' + itOptions.version,
         resolve: {
           access: ['$q', '$rootScope', function ($q, $rootScope) {
             if (typeof $rootScope.formData === 'undefined') {
@@ -244,7 +244,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
       // Default route (/form/informations)
       .state('form.informations', {
         url: '/informations',
-        templateUrl: itOptions.partials_url + '/candidate/informations.html',
+        templateUrl: itOptions.partials_url + '/candidate/informations.html?version=' + itOptions.version,
         controller: ['$rootScope', '$http', '$state', 'initScripts',
           function ($rootScope, $http, $state, initScripts) {
             const fileFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
@@ -516,7 +516,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     // Call before added tag
     $rootScope.onAddingTag = ($tag) =>
     {
-      if ($rootScope.formData.jobSougths.length >= 2) return false;
+      if (_.isArray($rootScope.formData.jobSougths) && $rootScope.formData.jobSougths.length >= 2)
+        return false;
       let isValid = true;
       let splitTag = '|;_\/*';
       for (let i in splitTag) {
