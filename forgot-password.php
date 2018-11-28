@@ -293,7 +293,7 @@ $forgot_password = Http\Request::getValue( 'forgot_password', 0 );
               <h4>Félicitation!</h4>
               <p>Votre mot de passe a été réinitialisé.</p>
               <p>
-                <a href="<?= $login_url ?>" class="btn btn-secondary btn-sm mr-2">Espace client</a>
+                <a href="<?= $login_url ?>" class="btn btn-secondary btn-sm mr-2">Se connecter</a>
               </p>
             </div>
           </div>
