@@ -72,6 +72,12 @@ trait ModelInterest {
       return false;
     }
     $results = $wpdb->update( $this->requestTable, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%s' ], [ '%d' ] );
+    if ($results && $status === 'validated') {
+      // TODO: Envoyer un mail de confirmation que le demande est validé
+      $request = self::get_request($id_request);
+      if (null === $request) return false;
+      do_action("email_application_validation", $request);
+    }
     return $results;
   }
 
@@ -210,6 +216,14 @@ trait ModelInterest {
   public static function get_all() {
     global $wpdb;
     $interests = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cv_request" );
+
+    return $interests;
+  }
+
+  public static function get_request($id_request) {
+    global $wpdb;
+    if (!is_numeric($id_request)) return false;
+    $interests = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cv_request WHERE {$wpdb->prefix}cv_request.id_cv_request = {$id_request}" );
 
     return $interests;
   }
