@@ -121,6 +121,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         // Call before added tag
         $scope.onAddingTag = ($tag) =>
         {
+          if ($scope.jobs.length >= 2) return false;
           let isValid = true;
           let splitTag = '|;_\/*';
           for (let i in splitTag) {
