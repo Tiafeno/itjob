@@ -103,6 +103,10 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
 
           };
 
+          $rootScope.$watch('company', (value) => {
+            console.log(value);
+          }, true);
+
           $rootScope.searchCityFn = (city) => {
             if (!_.isUndefined($rootScope.company.region)) {
               let region = parseInt($rootScope.company.region);
