@@ -253,7 +253,6 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 if ( ! empty( $s ) ) {
-
                   add_filter('posts_where', function ( $where ) {
                     global $wpdb;
                     //global $wp_query;
@@ -280,13 +279,12 @@ if ( ! class_exists( 'itJob' ) ) {
                                         )
                                         AND (pt.ID IN(
                                           SELECT trs.object_id as post_id
-                                          FROM {$wpdb->terms} as tr
+                                          FROM {$wpdb->terms} as terms
                                             INNER JOIN {$wpdb->term_relationships} as trs
-                                            INNER JOIN {$wpdb->term_taxonomy} as ttx
-                                          WHERE tr.term_id = ttx.term_id
-                                          AND trs.term_taxonomy_id =  ttx.term_taxonomy_id
+                                            INNER JOIN {$wpdb->term_taxonomy} as ttx ON (trs.term_taxonomy_id = ttx.term_taxonomy_id)
+                                          WHERE terms.term_id = ttx.term_id
                                           AND ttx.taxonomy = 'job_sought'
-                                          AND tr.name LIKE '%{$s}%'
+                                          AND terms.name LIKE '%{$s}%'
                                         ))
                                         OR (pt.ID IN (
                                           SELECT {$wpdb->postmeta}.post_id
