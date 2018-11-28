@@ -254,72 +254,65 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( ! empty( $s ) ) {
 
-                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
-                  $tax_query[] = [
-                    'taxonomy' => 'job_sought',
-                    'field'    => 'name',
-                    'terms'    => $s,
-                    'operator' => "EXISTS"
-                  ];
+                  add_filter('posts_where', function ( $where ) {
+                    global $wpdb;
+                    //global $wp_query;
+                    $s = isset($_GET['s']) ? $_GET['s'] : '';
+                    if (!is_admin()) {
+                      $where .= " AND {$wpdb->posts}.ID IN (
+                                      SELECT
+                                        pt.ID
+                                      FROM {$wpdb->posts} as pt
+                                      INNER JOIN {$wpdb->postmeta} as pm1 ON (pt.ID = pm1.post_id)
+                                      WHERE pt.post_type = 'candidate'
+                                        AND pt.post_status = 'publish'
+                                        AND (pt.ID IN (
+                                          SELECT {$wpdb->postmeta}.post_id as post_id
+                                          FROM {$wpdb->postmeta}
+                                          WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+                                          )
+                                        )
+                                        AND (pt.ID IN (
+                                          SELECT {$wpdb->postmeta}.post_id as post_id
+                                          FROM {$wpdb->postmeta}
+                                          WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+                                          )
+                                        )
+                                        AND (pt.ID IN(
+                                          SELECT trs.object_id as post_id
+                                          FROM {$wpdb->terms} as tr
+                                            INNER JOIN {$wpdb->term_relationships} as trs
+                                            INNER JOIN {$wpdb->term_taxonomy} as ttx
+                                          WHERE tr.term_id = ttx.term_id
+                                          AND trs.term_taxonomy_id =  ttx.term_taxonomy_id
+                                          AND ttx.taxonomy = 'job_sought'
+                                          AND tr.name LIKE '%{$s}%'
+                                        ))
+                                        OR (pt.ID IN (
+                                          SELECT {$wpdb->postmeta}.post_id
+                                          FROM {$wpdb->postmeta}
+                                          WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
+                                          )
+                                        )
+                                    )";
 
-                  // Rechercher les mots dans les emplois
-                  if (false):
-                    if ( ! isset( $meta_query ) ) {
-                      $meta_query = $query->get( 'meta_query' );
+                      $where .= "  OR (
+                                      {$wpdb->posts}.post_title LIKE  '%{$s}%'
+                                      AND {$wpdb->posts}.post_type = 'candidate'
+                                      AND {$wpdb->posts}.post_status = 'publish'
+                                      AND ({$wpdb->posts}.ID IN (
+                                        SELECT {$wpdb->postmeta}.post_id as post_id
+                                        FROM {$wpdb->postmeta}
+                                        WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+                                      ))
+                                    )";
                     }
-                    $meta_query = [
-                      "relation" => "OR",
-                      [
-                        'relation' => 'OR',
-                        [
-                          'key'     => '_old_job_sought',
-                          'value'   => $s,
-                          'compare' => 'LIKE',
-                        ],
-                        [
-                          'key'     => 'itjob_cv_notifEmploi_job_sought',
-                          'value'   => $s,
-                          'compare' => 'LIKE',
-                        ]
-                      ],
-                      [
-                        'relation' => 'AND',
-                        [
-                          'key'     => 'activated',
-                          'value'   => 1,
-                          'compare' => '=',
-                          'type'    => 'NUMERIC'
-                        ],
-                        [
-                          'key'     => 'itjob_cv_hasCV',
-                          'value'   => 1,
-                          'compare' => '=',
-                          'type'    => 'NUMERIC'
-                        ]
-                      ]
 
-                    ];
-                   endif;
+                    return $where;
+                  });
 
                 }
 
-                if ( ! isset( $meta_query ) ) {
-                  $meta_query = $query->get( 'meta_query' );
-                }
-                $meta_query[] = [
-                  [
-                    'key'     => 'activated',
-                    'value'   => 1,
-                    'compare' => '=',
-                    'type'    => 'NUMERIC'
-                  ],
-                  [
-                    'key'     => 'itjob_cv_hasCV',
-                    'value'   => 1,
-                    'compare' => '=',
-                    'type'    => 'NUMERIC'
-                  ]
-                ];
 
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
