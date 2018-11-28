@@ -271,7 +271,7 @@ class Mailing {
   }
 
   /**
-   * Récuperer les adresses email de l'administrateur
+   * Récuperer les adresses email de l'administrateur ou les moderateurs
    * @return array|string - Array of email string or empty content
    */
   protected function getModeratorEmail() {
@@ -608,12 +608,14 @@ class Mailing {
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = '';
     try {
+      $Candidate = new Candidate((int)$candidat_id);
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/confirm-validate-candidate.html.twig', [
+        'greeting'           => isset($Candidate->greeting['value']) ? $Candidate->greeting['value'] : "Mr/Mme/Mlle",
         'user'               => $author,
         'home_url'           => home_url( '/' ),
-        'logo'               => esc_url( $logo[0] ),
+        'logo'               => $logo[0] ,
         'archive_offer_link' => get_post_type_archive_link( 'offers' )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
