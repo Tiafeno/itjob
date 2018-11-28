@@ -346,7 +346,7 @@ APPOC
         $scope.addList = (id_candidate, $event) => {
           $scope.error = '';
           if (!_.isNumber(id_candidate)) return;
-          var el = $event.currentTarget;
+          let el = $event.currentTarget;
           angular.element(el).text("Patienter ...");
           const request = _.find($scope.interestCandidats, (it) => it.candidate.ID === id_candidate);
           $http.get(`${itOptions.Helper.ajax_url}?action=add_cv_list&id_candidate=${request.candidate.ID}&id_request=${request.id_request}`, {
@@ -364,6 +364,7 @@ APPOC
                 });
               } else {
                 $scope.error = query.data;
+                angular.element(el).text("Ajouter & Voir");
               }
             });
         };
