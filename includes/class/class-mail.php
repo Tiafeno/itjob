@@ -97,6 +97,8 @@ class Mailing {
       $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
       $content   = '';
       try {
+        $Company = Company::get_company_by($User->ID);
+        $greeting = isset($Company->greeting['value']) ? $Company->greeting['value'] : "Mr/Mme/Mlle";
         $con_query = add_query_arg( [
           'action' => "rp",
           "token"  => $User->user_pass,
@@ -104,6 +106,7 @@ class Mailing {
           "redir"  => $this->espace_client
         ], home_url( "/connexion/company/" ) );
         $content   .= $Engine->render( '@MAIL/confirm-register-company.html.twig', [
+          'greeting'      => $greeting,
           'company'       => $Company,
           'connexion_url' => $con_query,
           'home_url'      => home_url( "/" )
@@ -146,6 +149,8 @@ class Mailing {
       $content   = '';
       try {
         $reset_key = get_password_reset_key( $User );
+        $Candidate = Candidate::get_candidate_by($User->ID);
+        $greeting = isset($Candidate->greeting['value']) ? $Candidate->greeting['value'] : "Mr/Mme/Mlle";
         $con_query = add_query_arg( [
           'action' => "validation",
           "key"    => $reset_key,
@@ -153,6 +158,7 @@ class Mailing {
           "redir"  => $this->espace_client
         ], home_url( "/connexion/candidate/" ) );
         $content   .= $Engine->render( '@MAIL/confirm-register-particular.html.twig', [
+          'greeting'      => $greeting,
           'user_data'     => get_userdata( $user_id ),
           'connexion_url' => $con_query,
           'home_url'      => home_url( "/" )
