@@ -516,6 +516,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     // Call before added tag
     $rootScope.onAddingTag = ($tag) =>
     {
+      if ($rootScope.formData.jobSougths.length >= 2) return false;
       let isValid = true;
       let splitTag = '|;_\/*';
       for (let i in splitTag) {
