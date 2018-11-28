@@ -72,7 +72,7 @@ trait ModelInterest {
       return false;
     }
     $results = $wpdb->update( $this->requestTable, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%s' ], [ '%d' ] );
-    return !!$results;
+    return $results;
   }
 
   /**

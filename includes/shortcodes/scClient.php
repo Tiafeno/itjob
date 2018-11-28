@@ -794,12 +794,14 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( $id_candidate ) {
         $id_candidate  = (int) $id_candidate;
         $response      = $itModel->add_list( $id_candidate );
-        $change_status = $itModel->update_interest_status( $id_request, 'validated' );
-        if ( $response && $change_status ) {
+        if ( $response ) {
+          $itModel->update_interest_status( $id_request, 'validated' );
           wp_send_json_success( "Le candidat a bien étés valider avec succès." );
         }
+      } else {
+        wp_send_json_error( "Paramètre invalide" );
       }
-      wp_send_json_error( "Paramètre invalide" );
+
     }
 
     /**
