@@ -1,6 +1,6 @@
 const API_COUNTRY_URL = 'https://restcountries.eu';
 
-angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ngFileUpload'])
+angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.router', 'ngTagsInput', 'ngFileUpload'])
   .config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
       .state('form', {
@@ -312,23 +312,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
             };
 
             /**
-             * Recuperer les emplois et les filtres
-             * @param {string} $query 
-             * @param {string} taxonomy 
-             */
-            $rootScope.queryJobs = function ($query, taxonomy) {
-              return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
-                cache: true
-              })
-                .then(function (response) {
-                  const jobs = response.data;
-                  return jobs.filter(function (job) {
-                    return job.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
-                  });
-                });
-            };
-
-            /**
              * Page suivante
              * @param {path} state 
              */
@@ -418,6 +401,10 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
               }
             }
           });
+          jQuery(element).on('select2:opening', function (e) {
+            var data = e.params.data;
+            jQuery(element).val('');
+          })
         });
       }
     }
@@ -498,8 +485,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     };
   }])
   .controller('formController',[
-    "$scope", "$rootScope", "Services", "abranchs", "candidate", "languages", "jobSougths", "Upload",
-    function ($scope, $rootScope, Services, abranchs, candidate, languages, jobSougths, Upload) {
+    "$scope", "$http", "$rootScope", "Services", "abranchs", "candidate", "languages", "jobSougths", "Upload",
+    function ($scope, $http, $rootScope, Services, abranchs, candidate, languages, jobSougths, Upload) {
     let training_id = 0;
     let experience_id = 0;
 
@@ -513,11 +500,17 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
     $rootScope.formData = {};
     $rootScope.isValidTag = true;
 
+    $rootScope.onAddingLangTag = ($tag) => {
+      return $rootScope.onAddingTag($tag);
+    };
+    $rootScope.onAddingJobTag = ($tag) => {
+      if (_.isArray($rootScope.formData.jobSougths) && $rootScope.formData.jobSougths.length >= 2)
+        return false;
+      return $rootScope.onAddingTag($tag);
+    };
     // Call before added tag
     $rootScope.onAddingTag = ($tag) =>
     {
-      if (_.isArray($rootScope.formData.jobSougths) && $rootScope.formData.jobSougths.length >= 2)
-        return false;
       let isValid = true;
       let splitTag = '|;_\/*';
       for (let i in splitTag) {
@@ -530,6 +523,23 @@ angular.module('formCandidateApp', ['ngAnimate', 'ui.router', 'ngTagsInput', 'ng
 
     // Call if tag in invalid
     $rootScope.onTagInvalid = ($tag) => { $rootScope.isValidTag = false; };
+
+      /**
+       * Recuperer les emplois et les filtres
+       * @param {string} $query
+       * @param {string} taxonomy
+       */
+      $rootScope.queryJobs = function ($query, taxonomy) {
+        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
+          cache: true
+        })
+          .then(function (response) {
+            const jobs = response.data;
+            return jobs.filter(function (job) {
+              return job.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+            });
+          });
+      };
 
     this.$onInit = () => {
       $rootScope.formData.featuredImage = {};
