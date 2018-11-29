@@ -105,7 +105,7 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
                           }
 
                         } else {
-                          echo "Non defini";
+                          echo "Non renseigné";
                         }
 
                         ?>
@@ -188,10 +188,13 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
                       <div class="cd-timeline-block">
                         <div class="cd-timeline-icon bg-primary text-white"><i class="fa fa-user"></i></div>
                         <div class="cd-timeline-content">
-                          <h5><?= $experience->exp_positionHeld ?></h5>
-                          <h6 class="text-muted"><?= $experience->exp_company ?></h6>
+                          <h5>Poste occupé: <span class="font-bold"><?= $experience->exp_positionHeld ?></span></h5>
+<!--                          <h6 class="text-muted">--><?//= $experience->exp_company ?><!--</h6>-->
                           <p><?= $experience->exp_city . ', ' . $experience->exp_country ?></p>
-                          <?php if ($experience->exp_mission) : ?> <p><?= $experience->exp_mission ?></p> <?php endif; ?>
+                          <?php if ($experience->exp_mission) : ?>
+                            <h6 class="text-muted">Missions et tâches realisées: </h6>
+                            <p><?= $experience->exp_mission ?></p>
+                          <?php endif; ?>
                           <span class="cd-date badge badge-primary"><?= date_i18n("F, Y", strtotime($experience->exp_dateBegin)) ?> <b>-</b>
                             <?= $experience->exp_dateEnd ? date_i18n("F, Y", strtotime($experience->exp_dateEnd)) : 'Aujourd’hui' ?></span>
                         </div>
