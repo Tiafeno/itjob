@@ -292,7 +292,7 @@ if ( ! class_exists( 'scClient' ) ) :
     /**
      * Function ajax
      * Mettre à jours le status d'un requete (postulant ou interesser) dans la base de donnée
-     * @request wp-admin/admin-ajax.php?action=update_request_status&candidate_id=<int>&offer_id=<int>
+     * @request wp-admin/admin-ajax.php?action=update_request_status&candidate_id=<int>&offer_id=<int>&status=validated|[reject, pending]
      */
     public function update_request_status() {
       if ( ! is_user_logged_in() ) {

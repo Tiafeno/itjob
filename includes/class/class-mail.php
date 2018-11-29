@@ -36,7 +36,7 @@ class Mailing {
     add_action( 'alert_admin_postuled_offer', [ &$this, 'alert_admin_postuled_offer' ], 10, 1 );
     add_action( 'alert_when_company_interest', [ &$this, 'alert_when_company_interest' ], 10, 2 );
     add_action( 'new_validate_term', [ &$this, 'notif_admin_new_validate_term' ], 10, 1 );
-    add_action( 'email_application_validation', [ &$this, 'email_application_validation' ], 10, 1);
+    add_action( 'email_application_validation', [ &$this, 'email_application_validation' ], 10, 1 );
 
     // Envoyer une email au commercial et a l'administrateur
     // pour notifier une inscription ou un nouveau utilisateur
@@ -98,8 +98,8 @@ class Mailing {
       $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
       $content   = '';
       try {
-        $Company = Company::get_company_by($User->ID);
-        $greeting = isset($Company->greeting['value']) ? $Company->greeting['value'] : "Mr/Mme/Mlle";
+        $Company   = Company::get_company_by( $User->ID );
+        $greeting  = isset( $Company->greeting['value'] ) ? $Company->greeting['value'] : "Mr/Mme/Mlle";
         $con_query = add_query_arg( [
           'action' => "rp",
           "token"  => $User->user_pass,
@@ -150,8 +150,8 @@ class Mailing {
       $content   = '';
       try {
         $reset_key = get_password_reset_key( $User );
-        $Candidate = Candidate::get_candidate_by($User->ID);
-        $greeting = isset($Candidate->greeting['value']) ? $Candidate->greeting['value'] : "Mr/Mme/Mlle";
+        $Candidate = Candidate::get_candidate_by( $User->ID );
+        $greeting  = isset( $Candidate->greeting['value'] ) ? $Candidate->greeting['value'] : "Mr/Mme/Mlle";
         $con_query = add_query_arg( [
           'action' => "validation",
           "key"    => $reset_key,
@@ -540,8 +540,58 @@ class Mailing {
   // Envoyer un email au candidat et a l'entreprise pour informer que la requete sur l'offre a bien ete valider
   public function email_application_validation( $request ) {
     global $Engine;
-    if ( ! is_user_logged_in() ) return false;
-    
+    if ( ! is_user_logged_in() ) {
+      return false;
+    }
+    if ( is_object( $request ) && isset( $request->type ) ) {
+      $Company   = new Company( (int) $request->id_company );
+      $Offre     = new Offers( (int) $request->id_offer );
+      $Candidate = new Candidate( $request->id_candidate );
+      switch ( $request->type ) {
+        case 'apply':
+          // Ici le candidat à postuler
+          // Envoyer un mail pour le candidat seulement
+        case 'interested':
+          // Ici l'entreprise à selectionner un candidat
+          // Envoyer un mail pour le candidat et l'entreprise
+
+          $candidate_author = $Candidate->getAuthor();
+          if ( ! isset( $candidate_author->user_email ) || empty( $candidate_author->user_email ) ) {
+            return false;
+          }
+          $to        = $candidate_author->user_email;
+          $subject   = 'Votre CV a été consulté sur ITJobMada';
+          $headers   = [];
+          $headers[] = 'Content-Type: text/html; charset=UTF-8';
+          $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+          $content   = 'Bonjour, <br/>';
+          $content   .= "Votre CV a été consulté par <b>{$Company->title}</b>, sur l'offre « {$Offre->title} » <br/>";
+          $content   .= "Voir l'offre: {$Offre->offer_url} <br/> <br/>";
+          $content   .= 'A bientôt. <br/><br/><br/>';
+          $content   .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+          // Envoyer un mail pour le candidat
+          wp_mail( $to, $subject, $content, $headers );
+
+          if ( $request->type === 'requested' ):
+            $to        = $Company->author->user_email;
+            $subject   = 'CV disponible sur ITJobMada';
+            $headers   = [];
+            $headers[] = 'Content-Type: text/html; charset=UTF-8';
+            $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+            $content   = 'Bonjour, <br/>';
+            $content   .= "<p>Le CV portant la référence « {$Candidate->title} » que vous avez sélectionner pour l'offre " .
+                          "« {$Offre->title} » est maintenant disponible " .
+                          "et vous pouvez le consulter dans votre espace client sur ITJobMada.</p>";
+            $content   .= "<p>Espace client: {$this->espace_client}</p> <br/>";
+            $content   .= 'A bientôt. <br/><br/><br/>';
+            $content   .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+            // Envoyer un mail à l'entreprise
+            wp_mail( $to, $subject, $content, $headers );
+          endif;
+
+          BREAK;
+      }
+    }
   }
 
 
@@ -576,7 +626,7 @@ class Mailing {
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       // New template...
-      $content        .= $Engine->render( '@MAIL/admin/notification-admin-for-company-interest.html.twig', [
+      $content .= $Engine->render( '@MAIL/admin/notification-admin-for-company-interest.html.twig', [
         'company_name'       => $current_company->title,
         'candidat_firstname' => $Candidat->privateInformations->firstname,
         'candidat_reference' => $Candidat->title,
@@ -620,14 +670,14 @@ class Mailing {
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = '';
     try {
-      $Candidate = new Candidate((int)$candidat_id);
+      $Candidate      = new Candidate( (int) $candidat_id );
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/confirm-validate-candidate.html.twig', [
-        'greeting'           => isset($Candidate->greeting['value']) ? $Candidate->greeting['value'] : "Mr/Mme/Mlle",
+        'greeting'           => isset( $Candidate->greeting['value'] ) ? $Candidate->greeting['value'] : "Mr/Mme/Mlle",
         'user'               => $author,
         'home_url'           => home_url( '/' ),
-        'logo'               => $logo[0] ,
+        'logo'               => $logo[0],
         'archive_offer_link' => get_post_type_archive_link( 'offers' )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
@@ -1021,6 +1071,7 @@ class Mailing {
 
   /**
    * Envoyer un mail de recuperation de mot de passe
+   *
    * @param string $email
    * @param string $key - An generate reset key
    */
