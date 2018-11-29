@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Mailing {
   public $espace_client;
+  public $logo;
   private $no_reply_email = "no-reply@itjobmada.com>";
   private $no_reply_notification_email = "no-reply-notification@itjobmada.com";
   private $dashboard_url = "http://itjob.falicrea.com/wp-admin";
@@ -24,7 +25,10 @@ class Mailing {
 
   public function onInit() {
     $oc_id               = jobServices::page_exists( 'Espace client' );
+    $custom_logo_id = get_theme_mod( 'custom_logo' );
+    $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
     $this->espace_client = get_the_permalink( $oc_id );
+    $this->logo = $logo;
 
     // Uses: do_action() Calls 'user_register' hook when creating a new user giving the user's ID
     //add_action( 'user_register', [ &$this, 'register_user' ], 10, 1 );
@@ -110,7 +114,8 @@ class Mailing {
           'greeting'      => $greeting,
           'company'       => $Company,
           'connexion_url' => $con_query,
-          'home_url'      => home_url( "/" )
+          'home_url'      => home_url( "/" ),
+          'logo' => $this->logo[0]
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
@@ -162,7 +167,8 @@ class Mailing {
           'greeting'      => $greeting,
           'user_data'     => get_userdata( $user_id ),
           'connexion_url' => $con_query,
-          'home_url'      => home_url( "/" )
+          'home_url'      => home_url( "/" ),
+          'logo' => $this->logo[0]
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
@@ -212,6 +218,7 @@ class Mailing {
         ],
         'oc_url'             => $oc_url,
         'home_url'           => home_url( "/" ),
+        'logo' => $this->logo[0],
         'archive_offers_url' => get_post_type_archive_link( 'offers' )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
@@ -234,7 +241,7 @@ class Mailing {
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $args           = [
-        'logo_url' => esc_url( $logo[0] )
+        'logo_url' => $logo[0]
       ];
       $to             = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
       $headers        = [];
@@ -332,7 +339,7 @@ class Mailing {
       $subject  = "Inscription d'une nouvelle entreprise - ItJobMada";
       $Company  = Company::get_company_by( $User->ID );
       $args     = [
-        'logo_url'  => esc_url( $logo[0] ),
+        'logo_url'  => $logo[0],
         'reference' => $User->user_login,
         'name'      => $Company->name,
         'email'     => $Company->email
@@ -430,7 +437,7 @@ class Mailing {
       $content        .= $Engine->render( '@MAIL/admin/notification-admin-for-postuled-offer.html.twig', [
         'candidate_name' => $current_candidate->title,
         'offer_name'     => $offer->postPromote,
-        'logo'           => esc_url( $logo[0] ),
+        'logo'           => $logo[0],
         'dashboard_url'  => $this->dashboard_url
       ] );
     } catch ( \Twig_Error_Loader $e ) {
@@ -467,7 +474,7 @@ class Mailing {
         $custom_logo_id = get_theme_mod( 'custom_logo' );
         $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
         $content        .= $Engine->render( '@MAIL/notification-company-when-candidate-postuled.html.twig', [
-          'logo'      => $logo,
+          'logo'      => $logo[0],
           'oc_url'    => $this->espace_client,
           'candidate' => $Candidate,
           'offer'     => $Offer
@@ -515,7 +522,7 @@ class Mailing {
         $custom_logo_id = get_theme_mod( 'custom_logo' );
         $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
         $content        .= $Engine->render( '@MAIL/notification-candidate-confirm-postuled.html.twig', [
-          'logo'      => $logo,
+          'logo'      => $logo[0],
           'admin_url' => admin_url( '/' ),
           'offer'     => $Offer
         ] );
