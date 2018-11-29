@@ -188,7 +188,7 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
                       <div class="cd-timeline-block">
                         <div class="cd-timeline-icon bg-primary text-white"><i class="fa fa-user"></i></div>
                         <div class="cd-timeline-content">
-                          <h5><span class="font-bold"><?= $experience->exp_positionHeld ?></span></h5>
+                          <h5><span class="font-bold"><?= ucfirst($experience->exp_positionHeld) ?></span></h5>
 <!--                          <h6 class="text-muted">--><?//= $experience->exp_company ?><!--</h6>-->
                           <p><?= $experience->exp_city . ', ' . $experience->exp_country ?></p>
                           <?php if ($experience->exp_mission) : ?>
