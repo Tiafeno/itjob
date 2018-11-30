@@ -384,15 +384,15 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
       getStatus: function () {
         const status = [
           {
-            _id: 0,
+            _id: 1,
             label: 'Je cherche un emploi'
           },
           {
-            _id: 1,
+            _id: 2,
             label: 'Je souhaite entretenir mon réseau'
           },
           {
-            _id: 2,
+            _id: 3,
             label: 'Je cherche un stage'
           }
         ];
