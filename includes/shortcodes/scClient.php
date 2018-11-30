@@ -97,6 +97,7 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
       wp_register_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
         'angular',
+        'angular-ui-select2',
         'angular-aria',
         'angular-messages',
         'angular-sanitize',
@@ -624,6 +625,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'exp_city'         => $experience->exp_city,
           'exp_company'      => $experience->exp_company,
           'exp_positionHeld' => $experience->exp_positionHeld,
+          'exp_branch_activity' => (int)$experience->abranch,
           'exp_mission'      => $experience->exp_mission,
           'validated'        => $experience->validated
         ];

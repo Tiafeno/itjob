@@ -79,7 +79,7 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
               }
             ];
             return $q.resolve(licences);
-          }]
+          }],
         },
         controller: function ($rootScope, $scope, $http, driveLicences) {
           $scope.driveL = false;
@@ -440,9 +440,9 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
     let experience_id = 0;
 
     // we will store all of our form data in this object
-    $scope.abranchs = _.clone(abranchs);
     $scope.languages = _.clone(languages);
     $scope.status = Services.getStatus();
+    $rootScope.abranchs = _.clone(abranchs);
     $rootScope.Candidate = _.clone(candidate);
     $rootScope.loading = false;
     $rootScope.jobSougths = _.clone(jobSougths);

@@ -1,4 +1,4 @@
-const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
+const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
   .value('froalaConfig', {
     toolbarInline: false,
     quickInsertTags: null,
@@ -170,6 +170,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       templateUrl: itOptions.Helper.tpls_partials + '/experiences.html?ver='+itOptions.version,
       scope: {
         Candidate: "=candidate",
+        abranchFn: '&abranchFn' // Function pass
       },
       controller: ['$scope', '$http', '$q', function ($scope, $http, $q) {
         const self = this;
@@ -180,19 +181,28 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
          */
         $scope.mode = null;
         $scope.Exp = {};
+        $scope.abranchs = [];
         $scope.newExperience = {};
         $scope.months = clientService.months;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
         $scope.dateEndRange = [];
 
+        this.$onInt = () => {$
+        };
+
         /**
          * Ajouter une nouvelle expérience
          */
         $scope.addNewExperience = () => {
+          console.info("Model new experience init");
           $scope.mode = 0;
           $scope.newExperience.position_currently_works = true;
           $scope.newExperience.validated = false;
-          UIkit.modal('#modal-new-experience-overflow').show();
+          $q.all([$scope.abranchFn()]).then(data => {
+            $scope.abranchs = _.clone(data[0]);
+            UIkit.modal('#modal-new-experience-overflow').show();
+          });
+
         };
 
         /**
@@ -409,11 +419,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.status = '';
         });
 
-        $scope.$watch('Exp', experience => {
-        });
-
-        $scope.$watch('newExperienceForm', experience => {
-        });
       }]
     }
   }])
@@ -595,6 +600,48 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.jobSearchs = [];
       $scope.Helper = {};
       $scope.preloader = false;
+      $scope.select2Options = {
+        allowClear:true,
+        placeholder: "Selectionner",
+        width: 'resolve',
+        matcher: function (params, data) {
+          var inTerm = [];
+
+          // If there are no search terms, return all of the data
+          if (jQuery.trim(params.term) === '') {
+            return data;
+          }
+
+          // Do not display the item if there is no 'text' property
+          if (typeof data.text === 'undefined') {
+            return null;
+          }
+
+          // `params.term` should be the term that is used for searching
+          // `data.text` is the text that is displayed for the data object
+          var dataContains = data.text.toLowerCase();
+          var paramTerms = jQuery.trim(params.term).split(' ');
+          jQuery.each(paramTerms, (index, value) => {
+            if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
+              inTerm.push(true);
+            } else {
+              inTerm.push(false);
+            }
+          });
+          var isEveryTrue = _.every(inTerm, (boolean) => {
+            return boolean === true;
+          });
+          if (isEveryTrue) {
+            var modifiedData = jQuery.extend({}, data, true);
+            //modifiedData.text += ' (Trouver)';
+            return modifiedData;
+          } else {
+            // Return `null` if the term should not be displayed
+            return null;
+          }
+        }
+      };
+
       // Contient l'image par default de l'OC
       $scope.featuredImage = '';
       // La valeur reste `false` si la photo de profil n'est pas toucher

@@ -321,6 +321,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           'exp_city'         => $experience->city,
           'exp_company'      => $experience->company,
           'exp_positionHeld' => $experience->positionHeld,
+          'exp_branch_activity' => (int)$experience->abranch,
           'exp_mission'      => $experience->mission
         ];
       }

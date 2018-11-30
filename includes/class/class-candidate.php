@@ -143,24 +143,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     }
     $this->activated   = get_field( 'activated', $this->getId() );
     $this->status      = get_field( 'itjob_cv_status', $this->getId() );
-    $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [
-      'training_dateBegin',
-      'training_dateEnd',
-      'training_country',
-      'training_city',
-      'training_diploma',
-      'training_establishment',
-      'validated'
-    ] );
-    $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [
-      'exp_dateBegin',
-      'exp_dateEnd',
-      'exp_city',
-      'exp_country',
-      'exp_company',
-      'exp_mission',
-      'validated'
-    ] );
+    $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [] );
+    $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [] );
 
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
     $this->newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );

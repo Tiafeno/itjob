@@ -51,6 +51,9 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
     .candidate-content .informations p {
       display: flex;
     }
+    .cd-timeline-block .cd-timeline-content {
+      max-width: 510px;
+    }
   </style>
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
