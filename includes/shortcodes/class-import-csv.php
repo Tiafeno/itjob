@@ -284,18 +284,6 @@ if (!class_exists('scImport')) :
           return trim($row);
         }, $rows);
         $rows_object = (object)$rows;
-        $Helper = new JHelper();
-        if (!$rows_object->status) {
-          $user = $Helper->has_user($rows_object->id_user);
-          if ($user) {
-            $objPost = in_array('company', $user->roles) ? Company::get_company_by($user->ID) : Candidate::get_candidate_by($user->ID);
-            wp_delete_post($objPost->getId());
-            wp_delete_user($user->ID);
-
-            wp_send_json_success("Mise à jours de la base de donnée avec succès");
-          }
-          wp_send_json_success("Passer sur une autres colonne, utilisateur pour status désactiver");
-        }
         if (!$rows_object->id_role) {
           wp_send_json_success("Passer sur une autres colonne");
         }
