@@ -495,7 +495,7 @@ if ( ! class_exists( 'scImport' ) ) :
             // Ajouter le term dans le secteur d'activité
             $taxonomy = 'branch_activity';
             if ( ! $branch_activity || $branch_activity == null || empty( $branch_activity ) ) {
-              wp_send_json_success( "Secteur d'activité non define" );
+              wp_send_json_success( "Entreprise mis a jour avec succes, Secteur d'activité non define" );
             }
             $term = term_exists( $branch_activity, $taxonomy );
             if ( null === $term || 0 === $term || ! $term ) {
