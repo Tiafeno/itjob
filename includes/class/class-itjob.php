@@ -20,6 +20,8 @@ if ( ! class_exists( 'itJob' ) ) {
         $this->initRegister();
       } );
 
+      
+
       /**
        * Activer l'offre.
        * Cette evenement ce declanche quand l'administrateur publie une offre

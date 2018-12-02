@@ -111,7 +111,7 @@ final class Company implements \iCompany {
 
       // Récuperer le secteur d'activité
       $abranch               = wp_get_post_terms( $this->ID, 'branch_activity' );
-      $this->branch_activity = is_array ($abranch) && !empty($abranch)  ? $abranch[0] : null;
+      $this->branch_activity = is_array($abranch) && !empty($abranch)  ? $abranch[0] : null;
 
       $this->init();
     }
