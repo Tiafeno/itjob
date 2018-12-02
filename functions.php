@@ -35,7 +35,7 @@ require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
 
 // Importation dependancy
-require 'includes/class/import/class-import-user.php';
+require 'includes/import/class-import-user.php';
 
 // middlewares
 require 'includes/class/middlewares/OfferHelper.php';

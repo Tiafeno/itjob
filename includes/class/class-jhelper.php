@@ -7,17 +7,17 @@ class JHelper {
   }
 
   public function get_candidate_by_email( $email ) {
-    if ( empty( $email ) || is_null( $email ) || !email_exists($email)) {
+    if ( empty( $email ) || is_null( $email ) || ! email_exists( $email ) ) {
       return false;
     }
     $candidate_query = get_posts( [
       'post_type'    => 'candidate',
-      'post_status'  => ['pending', 'publish'],
+      'post_status'  => 'any',
       'meta_key'     => 'itjob_cv_email',
       'meta_value'   => $email,
       'meta_compare' => '='
     ] );
-    if ( is_array($candidate_query) && ! empty( $candidate_query ) ) {
+    if ( is_array( $candidate_query ) && ! empty( $candidate_query ) ) {
       return $candidate_query[0];
     }
 
@@ -52,13 +52,69 @@ class JHelper {
     }
   }
 
+  public function is_cv( $cv_id ) {
+    if ( empty( $cv_id ) || ! isset( $cv_id ) || ! is_numeric( $cv_id ) ) {
+      return false;
+    }
+    $candidat_post = get_posts( [
+        'post_type'   => 'candidate',
+        'post_status' => 'any',
+        'fields'      => 'ids',
+        'meta_key'    => '__id_cv',
+        'meta_value'  => $cv_id
+      ]
+    );
+    if ( is_array( $candidat_post ) && ! empty( $candidat_post ) ) {
+      return $candidat_post[0];
+    }
+    return false;
+  }
+
+  public function is_applicant( $id_demandeur ) {
+    if ( empty( $id_demandeur ) || ! isset( $id_demandeur ) || ! is_numeric( $id_demandeur ) ) {
+      return false;
+    }
+    $candidat_post = get_posts( [
+        'post_type'   => 'candidate',
+        'post_status' => 'any',
+        'fields'      => 'ids',
+        'meta_key'    => '__cv_id_demandeur',
+        'meta_value'  => $id_demandeur
+      ]
+    );
+    if ( is_array( $candidat_post ) && ! empty( $candidat_post ) ) {
+      return $candidat_post[0];
+    }
+
+    return false;
+  }
+
+  public function has_old_offer_exist( $old_id_offer = 0 ) {
+    global $wpdb;
+    $sql = "SELECT COUNT(*)
+            FROM {$wpdb->posts} pst
+            WHERE
+              pst.post_type = 'offers'
+              AND pst.ID IN (
+                SELECT pmt.post_id
+                FROM {$wpdb->postmeta} pmt
+                WHERE pmt.meta_key = '__id_offer' AND pmt.meta_value = %d)";
+    $prepare = $wpdb->prepare($sql, (int)$old_id_offer);
+    $rows = $wpdb->get_var($prepare);
+    return $rows ? true : false;
+  }
+
+
   public function parse_csv( $file ) {
-    $csv = array_map(function ($f) { return str_getcsv(mb_convert_encoding($f,"UTF-8","auto"), ';'); }, file($file));
+    $csv    = array_map( function ( $f ) {
+      return str_getcsv( mb_convert_encoding( $f, "UTF-8", "auto" ), ';' );
+    }, file( $file ) );
     $header = &$csv[0];
-    array_walk($csv, function(&$el) use ($header) {
-      $el = array_combine($header, $el);
-    });
-    array_shift($csv); # remove column header
+    array_walk( $csv, function ( &$el ) use ( $header ) {
+      $el = array_combine( $header, $el );
+    } );
+    array_shift( $csv ); # remove column header
+
     return $csv;
   }
 }

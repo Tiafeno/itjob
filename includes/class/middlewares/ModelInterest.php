@@ -105,6 +105,17 @@ trait ModelInterest {
     return $rows;
   }
 
+  // Cette fonction permet d'effacer les requetes sur une offre
+  public function remove_interest( $id_offer ) {
+    global $wpdb;
+    if (!is_user_logged_in() || !$id_offer) {
+      return false;
+    }
+    $prepare = $wpdb->prepare("DELETE FROM {$this->requestTable} WHERE id_offer = %d", $id_offer);
+    $rows = $wpdb->get_results($prepare);
+    return $rows;
+  }
+
   /**
    * Cette fonction permet de retourner une requete
    *

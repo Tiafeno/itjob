@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Http;
+use includes\model\itModel;
 use includes\post as Post;
 
 if ( ! class_exists( 'itJob' ) ) {
@@ -70,13 +71,34 @@ if ( ! class_exists( 'itJob' ) ) {
         $user_obj = get_userdata( $user_id );
         if ( in_array( 'company', $user_obj->roles ) ) {
           $Company = Post\Company::get_company_by( $user_id );
-          // TODO: Effacer les offres
-          wp_delete_post( $Company->getId() );
+          // FEATURED: Effacer les offres de l'entreprise
+          $argOffers = [
+            'post_type' => 'offers',
+            'post_type' => 'any',
+            'meta_query' => [
+              [
+                'key' => 'itjob_offer_company',
+                'value' => $Company->getId(),
+                'compare' => '='
+              ]
+            ]
+          ];
+          // Récuperer tous les offres de l'entreprise
+          $offers = get_posts($argOffers);
+          $Model = new itModel();
+          foreach ($offers as $offer):
+            // Effacer l'offre
+            $deleted = wp_delete_post($offer->ID, true);
+          if ( ! is_wp_error($deleted) )
+            $Model->remove_interest($offer->ID);
+          endforeach;
+          wp_delete_post( $Company->getId(), true);
+
         }
 
         if ( in_array( 'candidate', $user_obj->roles ) ) {
           $Candidate = Post\Candidate::get_candidate_by( $user_id );
-          wp_delete_post( $Candidate->getId() );
+          wp_delete_post( $Candidate->getId(), true);
         }
       } );
 
@@ -273,7 +295,10 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 if ( ! empty( $s ) ) {
-                  add_filter('posts_where', function ( $where ) {
+                  // Si une taxonomie n'st pas definie dans la recherche on ajoute du vide dans ce variable
+                  $tax_query = isset($tax_query) ? $tax_query : '';
+                  // Appliquer une filtre dans la recherche
+                  add_filter('posts_where', function ( $where ) use ($tax_query) {
                     global $wpdb;
                     //global $wp_query;
                     $s = isset($_GET['s']) ? $_GET['s'] : '';
@@ -289,14 +314,12 @@ if ( ! class_exists( 'itJob' ) ) {
                                           SELECT {$wpdb->postmeta}.post_id as post_id
                                           FROM {$wpdb->postmeta}
                                           WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
-                                          )
-                                        )
+                                        ))
                                         AND (pt.ID IN (
                                           SELECT {$wpdb->postmeta}.post_id as post_id
                                           FROM {$wpdb->postmeta}
                                           WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
-                                          )
-                                        )
+                                        ))
                                         AND (pt.ID IN(
                                           SELECT trs.object_id as post_id
                                           FROM {$wpdb->terms} as terms
@@ -310,20 +333,35 @@ if ( ! class_exists( 'itJob' ) ) {
                                           SELECT {$wpdb->postmeta}.post_id
                                           FROM {$wpdb->postmeta}
                                           WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                                          )
-                                        )
-                                    )";
-
-                      $where .= "  OR (
-                                      {$wpdb->posts}.post_title LIKE  '%{$s}%'
-                                      AND {$wpdb->posts}.post_type = 'candidate'
-                                      AND {$wpdb->posts}.post_status = 'publish'
-                                      AND ({$wpdb->posts}.ID IN (
-                                        SELECT {$wpdb->postmeta}.post_id as post_id
-                                        FROM {$wpdb->postmeta}
-                                        WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
-                                      ))
-                                    )";
+                                        ))";
+                      /**
+                       * Si une taxonomie est definie on effectuer une recherche sur le titre de l'article seulement si on
+                       * le trouve pas dans l'emploi (job_sought) et l'ancien empoi rechercher.
+                       */
+                      if (!empty($tax_query)) {
+                        $where .= " OR (pt.ID IN (SELECT {$wpdb->posts}.ID FROM {$wpdb->posts} 
+                          WHERE {$wpdb->posts}.post_title LIKE '%{$s}%'
+                          AND {$wpdb->posts}.ID IN (
+                            SELECT {$wpdb->postmeta}.post_id
+                            FROM {$wpdb->postmeta}
+                            WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+                          )
+                        ) )";
+                      }
+                      $where .= ")"; //  .end AND
+                      if (empty($tax_query)):
+                        // Si une taxonomie n'est pas definie on ajoute cette condition dans la recherche
+                        $where .= "  OR (
+                                        {$wpdb->posts}.post_title LIKE  '%{$s}%'
+                                        AND {$wpdb->posts}.post_type = 'candidate'
+                                        AND {$wpdb->posts}.post_status = 'publish'
+                                        AND ({$wpdb->posts}.ID IN (
+                                          SELECT {$wpdb->postmeta}.post_id as post_id
+                                          FROM {$wpdb->postmeta}
+                                          WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+                                        ))
+                                      )";
+                      endif;
                     }
 
                     return $where;

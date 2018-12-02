@@ -6,11 +6,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 trait Types {
   public $lists = [
-    ['code' => 0, 'value' => 'confirmation'], // Confirmation de publication de votre articles (offre, travail etc...)
-    ['code' => 1, 'value' => 'candidate'], // Notification sur un candidat publier qui correspond à la demande
-    ['code' => 2, 'value' => 'account'], // Offre d'abonnement
-    ['code' => 3, 'value' => 'update'], // Changement d'adresse etc...
-    ['code' => 4, 'value' => 'alert'],
+    "confirmation_publish_offer", // Confirmation de publication d'offre
+    "upgrade_account", // Notification pour la nature du compte
+    "alert_new_user", // Alert si un utlisateur vient d'etre publier sur la même secteur d'activité que cette entreprise
+    "alert_publication", // Alerte en générale (offre, candidat, etc..)
+    "candidate_postuled" // Si un candiat à postuler
   ];
 }
 

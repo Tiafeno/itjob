@@ -1,5 +1,5 @@
 <?php
-namespace includes\classes\import;
+namespace includes\import;
 
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
@@ -24,6 +24,7 @@ class importUser {
     update_user_meta($this->user_id, '__password', $rows->password);
     update_user_meta($this->user_id, '__last_login', $rows->last_login);
     update_user_meta($this->user_id, '__description', $rows->description === 'NULL' ? '' : $rows->description);
+    update_user_meta($this->user_id, '__role', $rows->id_role );
     // Ce champ definie si l'utilisateur doit changer son mot de passe
     update_user_meta($this->user_id, '__recovery_password', 1);
 

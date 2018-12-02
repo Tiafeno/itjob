@@ -280,24 +280,19 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Tout les utilisateurs"
       },
       {
+        _id: 7,
+        slug: 'user_company',
+        label: 'Utilisateurs - Ajouter les entreprises'
+      },
+      {
         _id: 4,
         slug: 'user_candidate_cv',
-        label: "Demandeur emploi - CV"
-      },
-      {
-        _id: 13,
-        slug: 'user_candidate_update_job_sought',
-        label: "Demandeur emploi - Ajouter l'emploi dans un meta"
-      },
-      {
-        _id: 10,
-        slug: 'update_candidate_language',
-        label: "Demandeur emploi - Mettre à jour les langues"
+        label: "Utilisateurs - Candidat CV"
       },
       {
         _id: 5,
-        slug: 'user_candidate_information',
-        label: "Demandeur emploi - Information"
+        slug: 'user_candidate_informations',
+        label: "Utilisateurs - Candidat Information"
       },
       {
         _id: 3,
@@ -309,16 +304,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         slug: 'user_candidate_trainings',
         label: "Demandeur emploi - Formation"
       },
-      {
-        _id: 7,
-        slug: 'user_company',
-        label: 'Utilisateurs - Ajouter les entreprises'
-      },
-      {
-        _id: 11,
-        slug: 'user_company_update_branch_activity',
-        label: 'Entreprise - Mise à jour du secteur d\'activité'
-      }
+
     ];
     self.getColumns = (typeofFileId) => {
       if (typeofFileId === 1) {
