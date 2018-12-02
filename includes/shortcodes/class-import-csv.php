@@ -724,7 +724,7 @@ if ( ! class_exists( 'scImport' ) ) :
             $argc           = [
               'ID'          => $candidat_id,
               'post_title'  => strtoupper(trim( $reference )),
-              'post_date'   => $date_creation,
+              'post_date'   => date($publish),
               'post_status' => 'publish'
             ];
             $update_results = wp_update_post( $argc );
