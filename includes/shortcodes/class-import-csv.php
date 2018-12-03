@@ -539,7 +539,6 @@ if ( ! class_exists( 'scImport' ) ) :
           // Retourne false or WP_User
           $User = $Helper->has_user( $old_user_id );
           if ( $User && in_array( 'candidate', $User->roles ) ) {
-            print_r($User);
             $candidatePost = $Helper->get_candidate_by_email( $User->user_email );
             if ( ! $candidatePost instanceof \WP_Post ) wp_send_json_error("Candidat introuvable");
             if ( ! $candidatePost ) {
@@ -554,7 +553,7 @@ if ( ! class_exists( 'scImport' ) ) :
             update_field( 'itjob_cv_lastname', $lastname, $candidatePost->ID );
             update_field( 'itjob_cv_address', $address, $candidatePost->ID );
 
-            $birthday         = \DateTime::createFromFormat( "d/m/Y", $birthday );
+            $birthday         = \DateTime::createFromFormat( "Y-m-d", $birthday );
             $acfBirthdayValue = $birthday->format( 'Ymd' );
             update_field( 'itjob_cv_birthdayDate', $acfBirthdayValue, $candidatePost->ID );
 
