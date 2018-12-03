@@ -539,8 +539,9 @@ if ( ! class_exists( 'scImport' ) ) :
           // Retourne false or WP_User
           $User = $Helper->has_user( $old_user_id );
           if ( $User && in_array( 'candidate', $User->roles ) ) {
+            print_r($User);
             $candidatePost = $Helper->get_candidate_by_email( $User->user_email );
-            if (! $candidatePost instanceof \WP_Post) wp_send_json_error("Candidat introuvable");
+            if ( ! $candidatePost instanceof \WP_Post ) wp_send_json_error("Candidat introuvable");
             if ( ! $candidatePost ) {
               wp_send_json_error( "Le candidat n'existe pas email: {$User->user_email}" );
             }
