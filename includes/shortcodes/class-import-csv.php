@@ -103,7 +103,7 @@ if ( ! class_exists( 'scImport' ) ) :
         }
       }
       
-      wp_send_json_success( "Tous les experiences sont effacer, nombre de candidat: {$rows}" );
+      wp_send_json_success( "Tous les experiences sont effacer, nombre de candidat: {$rows}, paged number: {$paged}" );
     }
 
     // Function ajax
