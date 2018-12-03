@@ -89,7 +89,7 @@ if ( ! class_exists( 'scImport' ) ) :
       $rows = $wpdb->get_var($prepare);
       $posts_per_page = 50;
       $paged = $rows/$posts_per_page;
-      for ($i = $paged; $i <= $paged; $i++) {
+      for ($i = 1; $i <= $paged; $i++) {
         $argc  = [
           'post_type'      => 'candidate',
           'post_status'    => 'any',
