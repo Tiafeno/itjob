@@ -206,10 +206,9 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
                             </span>
                             <?php
                           else:
-                            print_r($experience);
-                            $message = sprintf("<span class=\"cd-date badge badge-primary\">%s", $experience->old_value->exp_dateBegin);
-                            if (!empty($experience->old_value->exp_dateEnd)) {
-                              $message .= sprintf(" <b>-</b> $experience->old_value->exp_dateEnd");
+                            $message = sprintf("<span class=\"cd-date badge badge-primary\">%s", $experience->old_value['exp_dateBegin']);
+                            if (!empty($experience->old_value['exp_dateBegin'])) {
+                              $message .= sprintf(" <b>-</b> %s", $experience->old_value['exp_dateEnd']);
                             }
                             $message .= "</span>";
                             echo $message;
