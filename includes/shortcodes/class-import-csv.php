@@ -87,12 +87,15 @@ if ( ! class_exists( 'scImport' ) ) :
       $sql = "SELECT COUNT(*) FROM {$wpdb->posts} WHERE {$wpdb->posts}.post_type = 'candidate'";
       $prepare = $wpdb->prepare($sql);
       $rows = $wpdb->get_var($prepare);
-      for ($ct = 50; $ct <= $rows; $ct += 50) {
+      $posts_per_page = 50;
+      $paged = $rows/$posts_per_page;
+      for ($i = $paged; $i <= $paged; $i++) {
         $argc  = [
           'post_type'      => 'candidate',
           'post_status'    => 'any',
           'fields'         => 'ids',
-          'posts_per_page' => $ct
+          'paged'          => $i,
+          'posts_per_page' => $posts_per_page
         ];
         $post_ids = get_posts( $argc );
         foreach ( $post_ids as $post_id ) {
