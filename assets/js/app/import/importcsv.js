@@ -219,6 +219,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
                     parser.abort();
                     $scope.chargement = false;
                   }
+                }, (error) => {
+                  console.error(error);
+                  setTimeout(() => {
+                    parser.resume();
+                  }, 5000)
                 })
             }
           };
