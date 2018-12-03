@@ -542,6 +542,7 @@ if ( ! class_exists( 'scImport' ) ) :
             $candidatePost = $Helper->get_candidate_by_email( $User->user_email );
             if ( ! $candidatePost ) {
               wp_send_json_error( "Le candidat n'existe pas email: {$User->user_email}" );
+
             }
 
             // Update ACF field
