@@ -441,7 +441,6 @@ if ( ! class_exists( 'scImport' ) ) :
               break;
 
             default:
-
               wp_send_json_success( "Impossible d'ajouter ce type de compte: " . $rows_object->id_role );
               break;
           endswitch;
@@ -533,16 +532,17 @@ if ( ! class_exists( 'scImport' ) ) :
             $choice_job, $choice_training, $notif_job, $notif_training, $activated, $newsletter ) = $lines;
 
           $old_user_id = (int) $id_user;
-          // Retourne false or WP_User
+
           if ( ! $old_user_id ) {
             wp_send_json_success( "Passer à la colonne suivante" );
           }
+          // Retourne false or WP_User
           $User = $Helper->has_user( $old_user_id );
           if ( $User && in_array( 'candidate', $User->roles ) ) {
             $candidatePost = $Helper->get_candidate_by_email( $User->user_email );
+            if (! $candidatePost instanceof \WP_Post) wp_send_json_error("Candidat introuvable");
             if ( ! $candidatePost ) {
               wp_send_json_error( "Le candidat n'existe pas email: {$User->user_email}" );
-
             }
 
             // Update ACF field

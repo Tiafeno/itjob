@@ -20,7 +20,6 @@ class JHelper {
     if ( is_array( $candidate_query ) && ! empty( $candidate_query ) ) {
       return $candidate_query[0];
     }
-
     return false;
   }
 
