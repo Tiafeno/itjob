@@ -214,11 +214,11 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                           <?php
                           if ( $experience->exp_branch_activity && isset($experience->exp_branch_activity->name)) :
                             ?>
-                            <div><?= $experience->exp_branch_activity->name ?></div>
+                            <div class="mb-3"><?= $experience->exp_branch_activity->name ?></div>
                           <?php
                           else:
                             $abranch = $experience->old_value['exp_branch_activity'];
-                            echo sprintf( "<div>%s</div>", $abranch ? $abranch : "Non renseigné" );
+                            echo sprintf( "<div class='mb-3'>%s</div>", $abranch ? $abranch : "Non renseigné" );
                           endif;
                           ?>
 
