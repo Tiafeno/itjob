@@ -132,8 +132,8 @@ if ( ! class_exists( 'scImport' ) ) :
         wp_send_json_success( "Passer à la colonne suivante" );
       }
       if ( current_user_can( "remove_users" ) ) {
-        $Helper = new JHelper();
-        $Candidate_post_id = $Helper->is_cv( (int)$id_cv );
+        $Helper            = new JHelper();
+        $Candidate_post_id = $Helper->is_cv( (int) $id_cv );
         if ( $Candidate_post_id ) {
           $candidate_id = (int) $Candidate_post_id;
           $Experiences  = get_field( 'itjob_cv_experiences', $candidate_id );
@@ -174,7 +174,7 @@ if ( ! class_exists( 'scImport' ) ) :
       switch ( $taxonomy ) {
         // Ajouter la ville d'une code postal
         case 'city':
-          list($parent, $child) = $row;
+          list( $parent, $child ) = $row;
           $parent_term = term_exists( trim( $parent ), 'city' );
           if ( 0 === $parent_term || null === $parent_term || ! $parent_term ) {
             $parent_term = wp_insert_term( $parent, $taxonomy, [ 'slug' => $parent ] );
@@ -318,7 +318,7 @@ if ( ! class_exists( 'scImport' ) ) :
                 $importUser->update_user_meta( $rows_object );
 
                 // Ajouter une post type 'company'
-                $status = $rows_object->status ? 'publish' : 'pending';
+                $status         = $rows_object->status ? 'publish' : 'pending';
                 $argc           = [
                   'post_title'  => $rows_object->name,
                   'post_status' => $status,
@@ -489,7 +489,7 @@ if ( ! class_exists( 'scImport' ) ) :
             // Enregistrer la date de creation original & l'ancienne secteur d'activité
             update_post_meta( $Company->getId(), '__create', $create );
             update_post_meta( $Company->getId(), '__company_branch_activity', $old_branch_activity );
-            update_post_meta( $Company->getId(), '__id_company', (int)$id_entreprise );
+            update_post_meta( $Company->getId(), '__id_company', (int) $id_entreprise );
 
             // Ajouter le term dans le secteur d'activité
             $taxonomy = 'branch_activity';
@@ -540,7 +540,9 @@ if ( ! class_exists( 'scImport' ) ) :
           $User = $Helper->has_user( $old_user_id );
           if ( $User && in_array( 'candidate', $User->roles ) ) {
             $candidatePost = $Helper->get_candidate_by_email( $User->user_email );
-            if ( ! $candidatePost instanceof \WP_Post ) wp_send_json_error("Candidat introuvable");
+            if ( ! $candidatePost instanceof \WP_Post ) {
+              wp_send_json_error( "Candidat introuvable" );
+            }
             if ( ! $candidatePost ) {
               wp_send_json_error( "Le candidat n'existe pas email: {$User->user_email}" );
             }
@@ -685,7 +687,7 @@ if ( ! class_exists( 'scImport' ) ) :
             // Langue
             $languages  = explode( ',', $langues );
             $languages  = Arrays::reject( $languages, function ( $lang ) {
-              return empty( $lang ) || $lang === '' || !$lang;
+              return empty( $lang ) || $lang === '' || ! $lang;
             } );
             $languages  = array_map( function ( $langue ) {
               return strtolower( trim( $langue ) );
@@ -710,7 +712,7 @@ if ( ! class_exists( 'scImport' ) ) :
             update_field( 'itjob_cv_hasCV', 1, $candidat_id );
             update_field( 'itjob_cv_centerInterest', [
               'projet'  => $interets,
-              'various' => isset( $certificat_values ) && !empty($certificat_values) ? implode( ', ', $certificat_values ) : ''
+              'various' => isset( $certificat_values ) && ! empty( $certificat_values ) ? implode( ', ', $certificat_values ) : ''
             ], $candidat_id );
 
             update_post_meta( $candidat_id, '__date_publish', $date_publish );
@@ -720,12 +722,14 @@ if ( ! class_exists( 'scImport' ) ) :
             update_post_meta( $candidat_id, '__id_cv', $id_cv );
 
             // Mettre à jour le titre du post ou ajouter le titre du CV
-            $create_date    = \DateTime::createFromFormat( "Y-m-d H:i:s", $date_creation );
-            $publish        = $create_date->format( 'Y-m-d H:i:s' );
+            // $create_date    = \DateTime::createFromFormat( "Y-m-d H:i:s", $date_creation );
+            // $publish        = $create_date->format( 'Y-m-d H:i:s' );
+            $create_date    = strtotime( $date_creation );
+            $publish        = date( 'Y-m-d H:i:s', $create_date );
             $argc           = [
               'ID'          => $candidat_id,
-              'post_title'  => strtoupper(trim( $reference )),
-              'post_date'   => date($publish),
+              'post_title'  => strtoupper( trim( $reference ) ),
+              'post_date'   => $publish,
               'post_status' => 'publish'
             ];
             $update_results = wp_update_post( $argc );
@@ -753,8 +757,8 @@ if ( ! class_exists( 'scImport' ) ) :
             $mission
             ) = $lines;
           $data_import_dir = get_template_directory() . "/includes/import/data";
-          $id_experience = (int) $id_experience;
-          $id_cv = (int) $id_cv;
+          $id_experience   = (int) $id_experience;
+          $id_cv           = (int) $id_cv;
           if ( ! $id_cv ) {
             wp_send_json_success( "Passer à la colonne suivante" );
           }
@@ -762,7 +766,7 @@ if ( ! class_exists( 'scImport' ) ) :
             wp_send_json_success( "Annuler pour raison de manque d'information" );
           }
 
-          $candidat_id = $Helper->is_cv($id_cv);
+          $candidat_id = $Helper->is_cv( $id_cv );
           if ( $candidat_id ) {
             $Experiences       = get_field( 'itjob_cv_experiences', $candidat_id );
             $listOfExperiences = [];
@@ -776,7 +780,7 @@ if ( ! class_exists( 'scImport' ) ) :
             //$mission = mb_convert_encoding($mission,"ISO-8859-1","auto");
 
             if ( ! empty( $ville_id ) && (int) $ville_id ) {
-              $VILLES = self::get_csv_contents( "{$data_import_dir}/villes.csv" );
+              $VILLES   = self::get_csv_contents( "{$data_import_dir}/villes.csv" );
               $ville_id = (int) $ville_id;
               $city     = Arrays::find( $VILLES, function ( $ville ) use ( $ville_id ) {
                 return $ville['id'] == $ville_id;
@@ -789,12 +793,12 @@ if ( ! class_exists( 'scImport' ) ) :
 
             // Récuperer le poste qui correspond à son identifiant
             if ( ! empty( $postoccuper_id ) && (int) $postoccuper_id ) {
-              $POSTES = self::get_csv_contents( "{$data_import_dir}/emplois.csv" );
+              $POSTES         = self::get_csv_contents( "{$data_import_dir}/emplois.csv" );
               $postoccuper_id = (int) $postoccuper_id;
-              $poste        = Arrays::find( $POSTES, function ( $occuped ) use ( $postoccuper_id ) {
+              $poste          = Arrays::find( $POSTES, function ( $occuped ) use ( $postoccuper_id ) {
                 return $occuped['id'] == $postoccuper_id;
               } );
-              $poste        = empty( $poste ) || $poste == "undefined" ? '' : $poste['value'];
+              $poste          = empty( $poste ) || $poste == "undefined" ? '' : $poste['value'];
             } else {
               $poste = '';
             }
@@ -804,14 +808,14 @@ if ( ! class_exists( 'scImport' ) ) :
             // SECTEUR D'ACTIVITES
             $secteuractivite_id = (int) $secteuractivite_id;
             if ( $secteuractivite_id ) :
-              $BRANCHACTIVITY       = self::get_csv_contents("{$data_import_dir}/secteur_activites.csv" );
+              $BRANCHACTIVITY = self::get_csv_contents( "{$data_import_dir}/secteur_activites.csv" );
               $abranch_ids    = [];
               $abranch_ids[]  = (int) $secteuractivite_id;
               $abranch_values = self::collect_data_from_array( $BRANCHACTIVITY, $abranch_ids );
               unset( $BRANCHACTIVITY );
             endif;
 
-            $state   = ucfirst( strtolower( $pays ) );
+            $state               = ucfirst( strtolower( $pays ) );
             $listOfExperiences[] = [
               'exp_city'         => $city,
               'exp_country'      => $state,
@@ -819,11 +823,12 @@ if ( ! class_exists( 'scImport' ) ) :
               'exp_positionHeld' => $poste,
               'exp_mission'      => $mission,
               'old_value'        => [
-                'exp_dateBegin' => $date_begin,
-                'exp_dateEnd' => $date_end,
-                'exp_branch_activity' => isset($abranch_values) && is_array($abranch_values) ? implode(', ', $abranch_values) : '' // Secteur d'activité
+                'exp_dateBegin'       => $date_begin,
+                'exp_dateEnd'         => $date_end,
+                'exp_branch_activity' => isset( $abranch_values ) && is_array( $abranch_values ) ? implode( ', ', $abranch_values ) : ''
+                // Secteur d'activité
               ],
-              'validated'       => 1
+              'validated'        => 1
             ];
             update_field( 'itjob_cv_experiences', $listOfExperiences, $candidat_id );
             wp_send_json_success( "Experience ajouter avec succès ID: {$id_experience}" );
@@ -835,10 +840,10 @@ if ( ! class_exists( 'scImport' ) ) :
 
         case 'user_candidate_trainings':
           list( $id_formation, $id_demandeur, $id_cv, $year, $ville_id, $pays, $diplome_id, $universite_id ) = $lines;
-          $id_formation = (int) $id_formation;
-          $year         = (int) $year;
+          $id_formation    = (int) $id_formation;
+          $year            = (int) $year;
           $ville_id        = (int) $ville_id;
-          $id_cv = (int) $id_cv;
+          $id_cv           = (int) $id_cv;
           $data_import_dir = get_template_directory() . "/includes/import/data";
           if ( ! $id_cv ) {
             wp_send_json_success( "Passer à la colonne suivante" );
@@ -846,7 +851,7 @@ if ( ! class_exists( 'scImport' ) ) :
           if ( empty( $diplome_id ) || empty( $universite_id ) || ! $ville_id ) {
             wp_send_json_success( "Annuler pour raison de manque d'information" );
           }
-          $candidat_id = $Helper->is_cv($id_cv);
+          $candidat_id = $Helper->is_cv( $id_cv );
           if ( $candidat_id ) {
             $Trainings       = get_field( 'itjob_cv_trainings', $candidat_id );
             $listOfTrainings = [];
@@ -859,39 +864,39 @@ if ( ! class_exists( 'scImport' ) ) :
             // Récuperer le nom de la ville
             $city = '';
             if ( ! empty( $ville_id ) && (int) $ville_id ) {
-              $VILLES      = self::get_csv_contents("{$data_import_dir}/villes.csv" );
-              $city = Arrays::find( $VILLES, function ( $el ) use ( $ville_id ) {
-                return $el['id'] == (int)$ville_id;
+              $VILLES = self::get_csv_contents( "{$data_import_dir}/villes.csv" );
+              $city   = Arrays::find( $VILLES, function ( $el ) use ( $ville_id ) {
+                return $el['id'] == (int) $ville_id;
               } );
-              $city = empty( $city ) || $city == "undefined" ? '' : $city['value'];
-              unset($VILLES);
+              $city   = empty( $city ) || $city == "undefined" ? '' : $city['value'];
+              unset( $VILLES );
             }
             update_post_meta( $candidat_id, "training_{$id_formation}_{$id_demandeur}_ville", $ville_id );
 
             // Récuperer le diplome
             $diploma = '';
             if ( ! empty( $diplome_id ) && (int) $diplome_id ) {
-              $DIPLOMES   = self::get_csv_contents("{$data_import_dir}/diplomes.csv" );
-              $diploma = Arrays::find( $DIPLOMES, function ( $el ) use ( $diplome_id ) {
+              $DIPLOMES = self::get_csv_contents( "{$data_import_dir}/diplomes.csv" );
+              $diploma  = Arrays::find( $DIPLOMES, function ( $el ) use ( $diplome_id ) {
                 return $el['id'] == (int) $diplome_id;
               } );
-              $diploma = empty( $diploma ) || $diploma == "undefined" || !$diploma ? '' : ucfirst($diploma['value']);
-              unset($DIPLOMES);
+              $diploma  = empty( $diploma ) || $diploma == "undefined" || ! $diploma ? '' : ucfirst( $diploma['value'] );
+              unset( $DIPLOMES );
             }
             update_post_meta( $candidat_id, "training_{$id_formation}_{$id_demandeur}_diplome", $diplome_id );
 
             // Récuperer l'université
             $university = '';
             if ( ! empty( $universite_id ) && (int) $universite_id ) {
-              $UNIVERSITE = self::get_csv_contents("{$data_import_dir}/universites.csv" );
+              $UNIVERSITE = self::get_csv_contents( "{$data_import_dir}/universites.csv" );
               $university = Arrays::find( $UNIVERSITE, function ( $el ) use ( $universite_id ) {
                 return $el['id'] == (int) $universite_id;
               } );
               $university = empty( $university ) || $university == "undefined" ? '' : $university['value'];
-              unset($UNIVERSITE);
+              unset( $UNIVERSITE );
             }
             update_post_meta( $candidat_id, "training_{$id_formation}_{$id_demandeur}_universite", $universite_id );
-            $state = ucfirst( strtolower( $pays ) );
+            $state             = ucfirst( strtolower( $pays ) );
             $listOfTrainings[] = [
               'training_dateBegin'     => $year,
               'training_dateEnd'       => $year,
@@ -1007,7 +1012,7 @@ if ( ! class_exists( 'scImport' ) ) :
 
 
       // Verifier si l'offre est déja publier ou ajouter dans le site
-      $offers_exists = $Helper->has_old_offer_exist($obj->id);
+      $offers_exists = $Helper->has_old_offer_exist( $obj->id );
       if ( $offers_exists ) {
         wp_send_json_success( "Offre déja publier" );
       }
@@ -1028,7 +1033,8 @@ if ( ! class_exists( 'scImport' ) ) :
         update_field( 'itjob_offer_post', $obj->poste_a_pourvoir, $post_id );
         update_field( 'itjob_offer_reference', $obj->reference, $post_id );
 
-        $acfDateLimit = date('Y-m-d', $obj->date_limit_candidature);
+        $dateLimit    = \DateTime::createFromFormat( "Y-m-d", $obj->date_limit_candidature );
+        $acfDateLimit = $dateLimit->format( 'Ymd' );
         update_field( 'itjob_offer_datelimit', $acfDateLimit, $post_id );
 
         update_field( 'activated', (int) $obj->status, $post_id );
@@ -1050,20 +1056,22 @@ if ( ! class_exists( 'scImport' ) ) :
         update_post_meta( $post_id, '__id_offer', (int) $obj->id );
 
         // Ajouter le term region
-        $term = term_exists( trim($obj->poste_base_a), 'region' );
-        if ( 0 === $term || null === $term || !$term ) {
-          $term = wp_insert_term( trim($obj->poste_base_a), 'region' );
+        $term = term_exists( trim( $obj->poste_base_a ), 'region' );
+        if ( 0 === $term || null === $term || ! $term ) {
+          $term = wp_insert_term( trim( $obj->poste_base_a ), 'region' );
           if ( is_wp_error( $term ) ) {
             $term = get_term_by( 'name', $obj->poste_base_a );
           }
         }
-        if (isset($term['term_id']))
+        if ( isset( $term['term_id'] ) ) {
           wp_set_post_terms( $post_id, [ $term['term_id'] ], 'region' );
+        }
 
         // Ajouter une secteur d'activité à cette offre
-        if ($Company->branch_activity !== null || !empty($Company->branch_activity)) {
-          if (isset($Company->branch_activity->term_id))
-            wp_set_post_terms($post_id, [ $Company->branch_activity->term_id ], 'branch_activity');
+        if ( $Company->branch_activity !== null || ! empty( $Company->branch_activity ) ) {
+          if ( isset( $Company->branch_activity->term_id ) ) {
+            wp_set_post_terms( $post_id, [ $Company->branch_activity->term_id ], 'branch_activity' );
+          }
         }
         wp_send_json_success( [ 'msg' => "Offre ajouter avec succès", 'term' => $term ] );
       } else {
