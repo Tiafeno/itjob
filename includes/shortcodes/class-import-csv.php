@@ -828,7 +828,7 @@ if ( ! class_exists( 'scImport' ) ) :
               $poste          = Arrays::find( $POSTES, function ( $occuped ) use ( $postoccuper_id ) {
                 return (int)$occuped['id'] == $postoccuper_id;
               } );
-              $poste          = empty( $poste ) || !isset($poste['value']) ? "" : $poste['value'];
+              $poste          = !isset($poste['value']) ? "" : $poste['value'];
             }
             update_post_meta( $candidat_id, "experience_{$id_experience}_{$id_cv}_poste", $postoccuper_id );
 
