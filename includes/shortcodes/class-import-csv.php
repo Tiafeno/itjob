@@ -17,6 +17,9 @@ if ( ! class_exists( 'scImport' ) ) :
     public function __construct() {
 
       add_action( 'init', function () {
+        add_action('wp_ajax_get_latest_update_experience', [&$this, 'get_latest_update_experience']);
+        add_action('wp_ajax_noprivget_latest_update_experience', [&$this, 'get_latest_update_experience']);
+
         if ( current_user_can( "remove_users" ) ) {
           add_shortcode( 'itjob_import_csv', [ $this, 'sc_render_html' ] );
           add_action( 'wp_ajax_import_csv', [ &$this, 'import_csv' ] );
@@ -56,6 +59,11 @@ if ( ! class_exists( 'scImport' ) ) :
           $this->add_offer();
           break;
       }
+    }
+
+    public function  get_latest_update_experience() {
+      $id_experience_latest = get_option("last_added_experience_id");
+      var_dump($id_experience_latest);
     }
 
     /**
