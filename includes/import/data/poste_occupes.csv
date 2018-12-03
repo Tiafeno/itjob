@@ -112,14 +112,14 @@ id;value
 113;Consultant
 114;superviseur
 115;Informaticien polyvalent
-116;Developper 
+116;Développer 
 117;informatique
 118;PAO-iste, infographiste
 119;Participant
 120;"Agent de production;agent administratif;vendeuse"
 121;RESPONSABLE BOUTIQUE
 122;WEB Designer
-123;receptioniste, femme de chambre
+123;réceptionniste, femme de chambre
 124;Responsable Commercial
 125;Directeur Commercial
 126;Chef de Produit HYUNDAI
@@ -132,11 +132,11 @@ id;value
 133;Professeur informatique et Bibliothècaires
 134;Caissier, Aide comptable, Secretaire
 135;IT Officer
-136;caissiere
+136;caissière
 137;responsable d approvisionnement
 138;Stagiaire en gestion
 139;Enseignante de la langue anglaise
-140;couturiere
+140;couturière
 141;Comptable Stagiaire
 142;Agent Hotliner
 143;Enseignant
@@ -145,12 +145,12 @@ id;value
 146;accueil
 147;Stagiaire en Administration Réseau et Programmation
 148;Chef de distribution 
-149;x
+149;
 150;Magasinier
 151;Agent technique 
 152;Gestionnaire
 153;Assistante Administrative et Financière 
-154;Secretaire de direction 
+154;Secrétaire de direction 
 155;Agent de Méthode
 156;rédactrice web
 157;Stagiaire approvisionnement
@@ -159,20 +159,20 @@ id;value
 160;Assistant administratif et comptable
 161;Contrôleur d’enquête 
 162;vulgarisateur, contrôleur qualité, conseiller agricole, 
-163;Ouivrier spécialisé
+163;Ouvrier spécialisé
 164;Chef d'équipe
 165;Accueil et comptable
 166;Conseiller Client
 167;Agent commercial
-168;animateur et gerante du projet tanora garanteen's
+168;animateur et gérante du projet tanora garanteen's
 169;Graphiste
 170;Développeur Windev
 171;Développeur d'application et DBA Oracle
-172;Préstataire specialiste Informatique
-173;Cnsultant IT
+172;Prestataire spécialiste Informatique
+173;Consultant IT
 174;Consultant IT
 175;Opérateur web
-176;Stagiaire récéptionniste et serveuse 
+176;Stagiaire réceptionniste et serveuse 
 177;Surveillante
 178;Stagiaire étalagiste au magasin de jouets
 179;Responsable des affaires commerciales
@@ -228,7 +228,7 @@ id;value
 229;cadre
 230;Conseiller juridique et Personnel administratif
 231;assistant au responsable de la comptabilité
-232;a
+232;
 233;téléopérateur
 234;Responsable production
 235;Technicien en Informatique
@@ -478,7 +478,7 @@ id;value
 479;Pair éducateur chez  PSI Madagascar  TOP RESEAU : sensibilisation sur la santé reproductive des jeunes (dans les quartiers vulnérables de Tana et périphéries)
 480;Stagiaire Déclarant, facturier, agent d’enlèvement, passeur de pièces, secrétaire, 
 481;Commerciale grands comptes
-482;Electromecanicien
+482;Électromécanicien
 483;gestion de stock et commande magasin
 484;Agent de saisie Logistique 
 485;Consultant  Vérificateur  Suivi-évaluation  sur la campagne de lutte contre le paludisme (sur Tana et toutes les provinces)
@@ -527,7 +527,7 @@ id;value
 528;Gestionnaire et Agent de liaison Hk Service
 529;Consultante  Vérificateur  Suivi-évaluation  sur la campagne de lutte contre le paludisme (sur Tana et toutes les provinces)
 530;Hôtesse d'accueil/Animatrice
-531;-
+531;
 532;QHSE SUPERVISEUR
 533;HSE SUPERVISEUR
 534;Stagiaire Assistant de conducteur de travaux
@@ -536,7 +536,7 @@ id;value
 537;Stagiaire Assistant d'ingénieur et chef de chantier
 538;Stagiaire: conception éléctronique, installation caméra de survéillance et système d'alarme
 539;Web designer et Installateur de caméra de surveillance
-540;Maintenancier et programmeur
+540;Maintenance et programmeur
 541;Collaborateur comptable privé
 542;Consultant privé
 543;Responsable Comptable
@@ -547,13 +547,13 @@ id;value
 548;Assistant au service comptabilité
 549;Chef Comptable
 550;Développeur web front-end et back-end
-551;Inntégrateur web et maintenances des sites en wordpress
+551;Intégrateur web et maintenances des sites en wordpress
 552;Développeur full stack (front-back)
 553;Intégrateur web et maintenances des sites en wordpress
 554;Cuisinier
-555;Aide cuisinier/Patissier
+555;Aide cuisinier/Pâtissier
 556;Cuisinier/Pâtissier/Pizzaiolo
-557;Réceptionnsiste
+557;Réceptionniste
 558;RESPONSABLE AGENCE
 559;Agent mapping
 560;Responsable marketing et commercial

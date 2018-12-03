@@ -103,25 +103,36 @@ if ( ! class_exists( 'scImport' ) ) :
         }
       }
       
-      wp_send_json_success( "Tous les experiences sont effacer, nombre de candidat: {$rows}, paged number: {$paged}" );
+      wp_send_json_success( "Tous les experiences sont effacer; Nombre des candidats: {$rows}" );
     }
 
     // Function ajax
     public function delete_post() {
+      global $wpdb;
       $post_type = Http\Request::getValue( 'post_type' );
       if ( ! post_type_exists( $post_type ) ) {
         wp_send_json_error( "Le post type n'existe pas" );
       }
-      $args    = [
-        'posts_per_page' => - 1,
-        'post_type'      => $post_type,
-        'post_status'    => [ 'pending', 'publish' ]
-      ];
-      $posts   = get_posts( $args );
       $results = [];
-      foreach ( $posts as $post ) {
-        $response = wp_delete_post( $post->ID );
-        array_push( $results, $response );
+      
+      $sql = "SELECT COUNT(*) FROM {$wpdb->posts} WHERE {$wpdb->posts}.post_type = '%s'";
+      $prepare = $wpdb->prepare($sql, $post_type);
+      $rows = $wpdb->get_var($prepare);
+      $posts_per_page = 20;
+      $paged = $rows/$posts_per_page;
+      for ($i = 1; $i <= $paged; $i++) {
+        $args    = [
+          'paged'          => $i,
+          'posts_per_page' => $posts_per_page,
+          'post_type'      => $post_type,
+          'fields'         => 'ids',
+          'post_status'    => 'any'
+        ];
+        $post_ids   = get_posts( $args );
+        foreach ( $post_ids as $post_id ) {
+          $response = wp_delete_post( $post_id );
+          array_push( $results, $response );
+        }
       }
 
       wp_send_json_success( $results );
