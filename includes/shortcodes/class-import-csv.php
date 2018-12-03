@@ -800,11 +800,6 @@ if ( ! class_exists( 'scImport' ) ) :
           if ( $candidat_id ) {
             $Experiences       = get_field( 'itjob_cv_experiences', $candidat_id );
             $listOfExperiences = [];
-            if ( $Experiences ) {
-              foreach ( $Experiences as $Experience ) {
-                $listOfExperiences[] = $Experience;
-              }
-            }
 
             //$entreprise = mb_convert_encoding($entreprise,"ISO-8859-1","auto");
             //$mission = mb_convert_encoding($mission,"ISO-8859-1","auto");
@@ -841,6 +836,15 @@ if ( ! class_exists( 'scImport' ) ) :
               $abranch_values = self::collect_data_from_array( $BRANCHACTIVITY, $abranch_ids );
               unset( $BRANCHACTIVITY );
             endif;
+
+            if ( $Experiences ) {
+              foreach ( $Experiences as $Experience ) {
+                $listOfExperiences[] = $Experience;
+              }
+            }
+            $listOfExperiences = Arrays::filter($listOfExperiences, function ($Experience) use ($poste, $date_begin) {
+              return $Experience['exp_positionHeld'] != $poste;
+            });
 
             $state               = ucfirst( strtolower( $pays ) );
             $listOfExperiences[] = [

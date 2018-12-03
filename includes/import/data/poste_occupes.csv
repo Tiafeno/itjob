@@ -1,10 +1,10 @@
 id;value
 5;Développeur mobile
-2;Intégrateur
+2;Integrateur
 3;Commercial
 6;Développeur
 7;Directeur Informatique
-8;Opérateur Machine
+8;Operateur Machine
 9;Chef CID (Centre Informatique de District) 
 10;Technicien d’Appui  
 11;Technicien accompagnateur  
@@ -17,7 +17,7 @@ id;value
 18;Direction de production
 19;Technicien
 20;Mécanicien
-21;Électronicien
+21;Electronicien
 22;Enquêteur
 23;Répétiteur
 24;maintenance et réseau
@@ -26,11 +26,11 @@ id;value
 27;chef de chantier
 28;responsable informatique
 29;INFORMATICIEN DE MAINTENANCE
-30;ADMINISTRATEUR RÉSEAU
-31;INGÉNIEUR FORMATEUR ET ÉLECTRONICIEN
+30;ADMINISTRATEUR RESEAU
+31;INGENIEUR FORMATEUR ET ELECTRONICIEN
 32;FORMATEUR
 33;Professeur en Maintenance et Réseau Informatiques
-34;Prestataire de service informatique (Sous traitance avec Sté Appolonia - Toulon, France)
+34;Préstatire de service informatique (Sous traitance avec Sté Appolonia - Toulon, France)
 35;Stagiaire en Administration Réseau et Sécurité
 36;Développeur (free-lance)
 37;Stagiaire en Analyse et Programmation
@@ -49,8 +49,8 @@ id;value
 50;Responsable maintenance et travaux
 51;Reeponsable Maintenance et Assurence qualité
 52;CHEF D'USINE
-53;Énergéticien
-54;Technicien en Énergie
+53;Energéticien
+54;Technicien en Energie
 55;INFORMATICIEN 
 56;Assistant de direction
 57;"Technicien Informatique ; Commercial"
@@ -112,14 +112,14 @@ id;value
 113;Consultant
 114;superviseur
 115;Informaticien polyvalent
-116;Développer 
+116;Developper 
 117;informatique
 118;PAO-iste, infographiste
 119;Participant
 120;"Agent de production;agent administratif;vendeuse"
 121;RESPONSABLE BOUTIQUE
 122;WEB Designer
-123;réceptionniste, femme de chambre
+123;receptioniste, femme de chambre
 124;Responsable Commercial
 125;Directeur Commercial
 126;Chef de Produit HYUNDAI
@@ -132,11 +132,11 @@ id;value
 133;Professeur informatique et Bibliothècaires
 134;Caissier, Aide comptable, Secretaire
 135;IT Officer
-136;caissière
+136;caissiere
 137;responsable d approvisionnement
 138;Stagiaire en gestion
 139;Enseignante de la langue anglaise
-140;couturière
+140;couturiere
 141;Comptable Stagiaire
 142;Agent Hotliner
 143;Enseignant
@@ -150,7 +150,7 @@ id;value
 151;Agent technique 
 152;Gestionnaire
 153;Assistante Administrative et Financière 
-154;Secrétaire de direction 
+154;Secretaire de direction 
 155;Agent de Méthode
 156;rédactrice web
 157;Stagiaire approvisionnement
@@ -159,20 +159,20 @@ id;value
 160;Assistant administratif et comptable
 161;Contrôleur d’enquête 
 162;vulgarisateur, contrôleur qualité, conseiller agricole, 
-163;Ouvrier spécialisé
+163;Ouivrier spécialisé
 164;Chef d'équipe
 165;Accueil et comptable
 166;Conseiller Client
 167;Agent commercial
-168;animateur et gérante du projet tanora garanteen's
+168;animateur et gerante du projet tanora garanteen's
 169;Graphiste
 170;Développeur Windev
 171;Développeur d'application et DBA Oracle
-172;Prestataire spécialiste Informatique
-173;Consultant IT
+172;Préstataire specialiste Informatique
+173;Cnsultant IT
 174;Consultant IT
 175;Opérateur web
-176;Stagiaire réceptionniste et serveuse 
+176;Stagiaire récéptionniste et serveuse 
 177;Surveillante
 178;Stagiaire étalagiste au magasin de jouets
 179;Responsable des affaires commerciales
@@ -228,7 +228,7 @@ id;value
 229;cadre
 230;Conseiller juridique et Personnel administratif
 231;assistant au responsable de la comptabilité
-232;
+232;a
 233;téléopérateur
 234;Responsable production
 235;Technicien en Informatique
@@ -376,7 +376,7 @@ id;value
 377;Responsable en tant que structure adhoc
 378;Stagiaire dans le département vente de produits et services
 379;Stagiaire en tant qu'Agent d'accueil 
-380;Nul
+380;
 381;Scrum Master
 382;Projet RSS/GAVI
 383;Projet PURPIV
@@ -450,7 +450,7 @@ id;value
 451; Enseignant
 452;Stagiaire  en tant que Chargée de clientèle
 453;Agent de comptoir 
-454;Operateur Clichage
+454;Opérateur Clichage
 455;webmaster
 456;Technicien Flexible - Responsable Magasin 
 457;RESPONSABLE DE PRODUCTION
@@ -478,7 +478,7 @@ id;value
 479;Pair éducateur chez  PSI Madagascar  TOP RESEAU : sensibilisation sur la santé reproductive des jeunes (dans les quartiers vulnérables de Tana et périphéries)
 480;Stagiaire Déclarant, facturier, agent d’enlèvement, passeur de pièces, secrétaire, 
 481;Commerciale grands comptes
-482;Électromécanicien
+482;Electromecanicien
 483;gestion de stock et commande magasin
 484;Agent de saisie Logistique 
 485;Consultant  Vérificateur  Suivi-évaluation  sur la campagne de lutte contre le paludisme (sur Tana et toutes les provinces)
@@ -536,7 +536,7 @@ id;value
 537;Stagiaire Assistant d'ingénieur et chef de chantier
 538;Stagiaire: conception éléctronique, installation caméra de survéillance et système d'alarme
 539;Web designer et Installateur de caméra de surveillance
-540;Maintenance et programmeur
+540;Maintenancier et programmeur
 541;Collaborateur comptable privé
 542;Consultant privé
 543;Responsable Comptable
@@ -547,13 +547,13 @@ id;value
 548;Assistant au service comptabilité
 549;Chef Comptable
 550;Développeur web front-end et back-end
-551;Intégrateur web et maintenances des sites en wordpress
+551;Inntégrateur web et maintenances des sites en wordpress
 552;Développeur full stack (front-back)
 553;Intégrateur web et maintenances des sites en wordpress
 554;Cuisinier
-555;Aide cuisinier/Pâtissier
+555;Aide cuisinier/Patissier
 556;Cuisinier/Pâtissier/Pizzaiolo
-557;Réceptionniste
+557;Réceptionnsiste
 558;RESPONSABLE AGENCE
 559;Agent mapping
 560;Responsable marketing et commercial
@@ -688,7 +688,7 @@ id;value
 689;Génie Logiciel et Base de données
 690;Administration des systèmes et réseaux
 691;agent de saisie
-692;AAAA
+692;AAA
 693;Responsable
 694;PAO
 695;Responsable d'édition Multimédia
@@ -2174,3 +2174,378 @@ id;value
 2175;Gérant de Cyber café 
 2176;Animateur événement
 2177;COORDINATEUR PROJET
+2178;gouvernante d'étage
+2179;Gérante de l'hôtel
+2180;Responsable logistique et services généraux
+2181;CONTROLEUR COMPTABLE
+2182;Intégrateur de données 
+2183;Comptable et responsable RH
+2184;chef de volet administratif et financier
+2185;Caissière, Aide comptable, Secretaire
+2186;Assistante Responsable Financière
+2187;DECLARANT SIGNATAIRE ET PASSEUR DES PIECES EN DOUANES
+2188;ASSISANT TRANSIT
+2189;Stagiaire en Analyse Financière 
+2190;GESTION DE PAIE ET RH
+2191;Responsable zone
+2192;Chargée de Projet
+2193;Testeur QA
+2194;Assistant trésorerie et Fond à vérifier
+2195;Consultante en RH
+2196;consltant
+2197;Renfort du personnel 
+2198;Assistant  Administratif et financier 
+2199;ANIMATEUR de Volet Socio-économiques de PROJET 
+2200;Stagiaire qualité
+2201;Developpeur mobile et Web
+2202;Stagiaire en developpement rural
+2203;Opératrice Online
+2204;responsable communication club d'anglais
+2205; Stagiaire Marketing
+2206;Assistante Merchandiser
+2207;Data Manager, it Manager
+2208;stagiaire en service informatique
+2209;Stagiaire en Administration Réseau 
+2210;Commercial/ Technicien d'intervention Client Et Installateur
+2211;technicien de maintenance general 
+2212;Moramanga
+2213;Serveur/Pointeur
+2214;Gestionnaire en assurance
+2215;Graveur
+2216;Responsable de paie
+2217;Moniteur des TP
+2218;Maquettiste publicitaire
+2219;stagiaire - aide aux gestionnaires
+2220;Conseiller Chat Technique
+2221;assistant responsable import
+2222;Agent Mailing(Teleconseiller)
+2223;stagiere dans la direction des etudes et affaires juridiques
+2224;HSE Manager
+2225;Responsable de suivi environnemental du projet
+2226;STAGIAIRE BENEVOLE COMPTABLE
+2227;Chargée back office
+2228;opératrice de saisie à domicile
+2229;Facturier et Cotateur
+2230;assisant recherche et  développement
+2231;Assistant du Responsable Import
+2232;Animateur et Facilitateur, Chef d'équipe des agents recenseurs
+2233;Administrateur Système et Reseaux
+2234;Technicien Activation SI
+2235;Comptable Senior
+2236;Gestionnaire clientele / superviseur clientele
+2237;Agent commercial - Agent administratif -  chauffeur et aide mécanicien
+2238;Formatrice Anglais
+2239;Stage de formation en pédagogie
+2240;Superviseur des animations commerciales
+2241;PACES
+2242;Secrétaire Commerciale
+2243;Responsable Pharmacie
+2244;Chauffeur Mecanicien
+2245;Ouvrier en ouvrage métallique
+2246;Assistant Merchandiser
+2247;Chauffeur-commercial 
+2248;Technicien mécanique
+2249;Superviseur clientele
+2250;Lecteur et correcteur
+2251;Assistant/Télé-secretaire Expertise Automobile
+2252;Logisticien, operateur de saisie et chargé de communication interne
+2253;Protocole
+2254;CHEF DE DEPARTEMENT
+2255;Expert en conduite de culture et d’élevage
+2256;assistante commerciale et logistique
+2257;Analyst Crawling
+2258;assistant stock
+2259;Assistante de Direction par intérim
+2260;Récolte de bases de données pour le suivi du flux bois-Energie entrant dans la zone Analamanga. -Enquêtes réalisées avec des logiciels et applications sur des Smartphones. -Adjoint dans la coordination des marches à suivre pour l’interprétation des résult
+2261;Stage mémoire de fin d'études
+2262;RH&transit&comptable
+2263;Ingénieur Système de Sureté
+2264;Chef Magasinier et Responsable approvisionnement local
+2265;Assistance de direction 
+2266;Magasinier de chantier 
+2267;Assistant service généraux, logistique  et stock 
+2268;Agent informatique 
+2269;conducteur et superviseur de travaux de pylone
+2270;Formation en Génie civil - télécom - système DC 48V - TGBT
+2271;Vice president
+2272;TERRITORY SALES MANAGER
+2273;Assistante des CCL
+2274;volontariat
+2275;Responsable Laboratoire, Responsable du Travaux Pratique (TP) Thermodynamique Chimique
+2276;Assistant de production
+2277;Aide maintenancier
+2278;Technicien de Son
+2279; Agent Ticketing
+2280;Responsable de projet
+2281;Gestionneur de projet
+2282;Veilleur média
+2283;Enquêteur/Superviseur d'enquête
+2284;enseignant en mathématiques
+2285;moniteurs travaux pratiques
+2286;Stagiaire en conservation environnementale
+2287;TECHNICO-COMMERCIALE
+2288;Responsable laboratoire et qualité 
+2289;Magasinier et référencier
+2290;Ingénieur de Projet
+2291;Ingénieur de Contrôle
+2292;Superviseur en Infrastructure
+2293; stagiaire SIG
+2294;Responsable de Distribution
+2295;Formateur commercial
+2296;Responsable de projets Franco - Américain
+2297;Responsable des  projets commerciaux
+2298;Responsable Mobile Money 
+2299;Responsable des opérations et de développement 
+2300;Chef Opérateur/Chef contrôleur/Coordonnateur de permis de travail
+2301;consulant enquêteur
+2302;Assistant Chef de division Base de données
+2303;Missionnaire en plein temps avec le projet ARSF
+2304;Stagiaire : Assistant du Chef de Division Base de Données
+2305;ASSISTANT DE SERVICE ACHATS ET ADMINISTRATIFS 
+2306;Stagiaire en système d’information en Ressources Humaines,
+2307;Stagiaire en Ressources Humaines et Administration
+2308;Contrôleur de Gestion Junior 
+2309;Stagiaire en Administration-Finance
+2310;Superviseur temporaire
+2311;Préparateur metteur en page
+2312;Téléopérateur et Superviseur
+2313;Commerçant
+2314;programmeur informatique
+2315;programmeur php
+2316;Technicien supérieur
+2317;Administrateur réseaux
+2318;Technicien en maintenance 
+2319;Enseignante de science de la vie et de la terre
+2320;Chef de centre
+2321;Président du réseau
+2322;Chef d'Equipe Cartographe
+2323;Superviseur RGPH 3
+2324;cadre biologiste
+2325;Economiste chargé d'étude des impacts économiques des projets d'investissements
+2326;Stagiaire, Economiste chargé d'étude des impacts des projets d'investissements
+2327;Stagiaire, aide aux gestionnaires
+2328;Operateur ONELINE
+2329;Professeur de Mathematique financiere
+2330;Chef d'équipe RGPH 3
+2331;Chronometreur
+2332;Enseignant de Mathématique 
+2333; Technicien Supérieur En Systèmes Et Réseaux Informatique 
+2334;Responsable commercial et Technique
+2335;Etude et Installation projet VSAT
+2336;Enseignant non permanent
+2337;operateur maquettiste publicitaire
+2338;Stage en de l'obtention Master I
+2339;technicien  free lance en informatique
+2340;créateur de projet d'automatisation des habitats
+2341;Stagiaire temporaire (interim)
+2342;gestinnaire des stock
+2343;Archiviste
+2344;Intégrateur-Développeur Web
+2345;Stagiaire en développement Web
+2346;Opérateur de saisie de base de données
+2347;TELECONSEILLER, caissière, animatrice
+2348;Maintenancier Electromécanique
+2349;Ingénieur Méthode
+2350;Chef de projet ERP ODOO - Analyste Fonctionnel
+2351;Responsable des études et Projet IT
+2352;Responsable Pépinière
+2353;Ingénieur d'étude bénévole
+2354;Coach
+2355;Responsable de production - Formateur métier
+2356;Chargée d’expérimentation et Assistante aux conseillers maraîchers
+2357;AGENT D’EXPLOITATION- ASSISTANT DU RESPONSABLE D’EXPLOITATION
+2358;Adjoint chef de service
+2359;Outsourcer Specialist (opérateur dédié) 
+2360;Aide assistance
+2361;Facilitateur
+2362;Responsable Commande client
+2363;Manager opérationnel
+2364;Consultant en marketing
+2365;Superviseur de cantine
+2366;Chargé reporting
+2367;Secrétaire Chargée d'accueil
+2368;Commaerciale Distributeur des produits cosmetiques et jouets
+2369;Commerciale boutique
+2370;Professeur de Malagasy
+2371;Conseillère clientèle ADSL
+2372;Conseillère clientèle Mobile
+2373;CONTROLEUR DE GESTION GROUPE
+2374;MPORT : •	Suivi des BSC sur système MIDAC •	Préparation Annexe I •	Préparation Annexe VI •	Préparation Ordre de Transit -	EXPORT : •	Préparation fiche d’apurement ou Annexe II •	Préparation packing list •	Préparation fiche de production •	Préparation fact
+2375;Préparation de salaire pour les employés Envoie de l’ordre de virement salaire auprès de la banque   Saisies des factures : charges, banque Paiement des fournisseurs Rapprochement bancaire Suivi trésorerie Confection état financier
+2376;Responsable paie
+2377;Assistant Paie et Personnel 
+2378;Assistant paie
+2379;outsourcer senior
+2380;GESTIONNAIRE DE PROJET
+2381;CHARGEE DE SUIVI EVALUATION
+2382;Support au gestionnaire de grand projet MVOLA
+2383;Cameraman
+2384;tele-secretaire
+2385;CONTROLEUR INTERNE
+2386;CONTROLEUR DE GESTION ET CHARGE D’ADMINISTRATION SITE ECLOSERIE
+2387;Conseiller Client et Western Union
+2388;Gestionnaire parc auto
+2389;Superviseur flotte
+2390;Prospection client
+2391;Professeur de droit de la famille, commercial droit de la famille, commercial, mathematique financière et organisation des entreprises
+2392;secretaire juridique
+2393;Chef d’équipe recensement 
+2394;Technicien Informatique, Technicien de Laboratoire
+2395;Technicien Informatique et Pharmacien
+2396;Stagiaire en Opération et Administration 
+2397;Conseiller Relation Client
+2398;Responsable littérature 
+2399;COMERCIAL
+2400;Coordinateur de production
+2401;Agent de Qaurt
+2402;ADMINISTRATEUR DE VENTE ET DE CAISSE
+2403;stage en vue de l'obtention du Diplôme de Master 2 en Management
+2404;Chargé d'apurement en douanes
+2405;Stagiaire pour l'obtention du DTS
+2406;Stagiaire pour stage d'imprégnation
+2407;Comptable Trésorerie
+2408;Consultant en comptabilité
+2409;Moderatrice skyblog
+2410;Chargée de referencement du site de voyage
+2411;Surveillant Général
+2412;Responsable QHSE
+2413;Coach de danse
+2414;Commercial HC
+2415;Adjoint responsable Informatique
+2416;Assistante Ressources humaines et logistiques
+2417;ADJOINT DE DIRECTION 
+2418;Superviser Housekeeping
+2419;RÉCEPTIONNISTE/  hébergement/ cuisine
+2420;stagiaire en écotourisme
+2421;Monteur
+2422;Stagiaire en e-assistance
+2423;Chargé Middle Office
+2424;KEY ACCOUNT MANAGER
+2425;Stagiaire en Assistante de Suivi et Evaluation
+2426;Administrations et Engagements
+2427;CASSIER
+2428;Stagiaire RH-HSE
+2429;Responsable administration
+2430;Prestataire/ assistant logistique
+2431;Prestataire/Assistant financier
+2432;AGENT RECCENSEUR , Télé enquêteur 
+2433;Encaisseur-facturière
+2434;Assistante Paiement Mobile et téléphonie
+2435;COMPTABLE FISCALITE 
+2436;réceptionniste standardiste
+2437;Attachée commerciale et chargée de la tenue de caisse 
+2438;Ingénieur de conception
+2439;Assistante Service Client
+2440;Chauffeur Location de voiture 4*4 / 
+2441;chauffeur prestataire
+2442;STAGIAIRE EN COMMUNICATION
+2443;Coordinatrice régionale de la région Moyen Ouest (Menabe/Melaky)
+2444;Assistante du Directeur Général de l’Aménagement du Territoire
+2445;Co-gerant
+2446;Traffic Manager
+2447;Directeur admnistratif et financier
+2448;ASSISTANTE AU RRH
+2449;Stagiaire - Assistante Service Client
+2450;Contrôleur de gestion et audit
+2451;Stagiaire flotte véhicules
+2452;RESPONSABLE MAGASIN DUTY FREE A L'AEROPORT
+2453;responsable achat local
+2454;GESTIONNAIRE DE PATRIMOINE
+2455;Chef technicien en Informatique
+2456;Technicien en hygiène public 
+2457;Conseillère commerciale en assurance
+2458;Enquêteurs
+2459;Auditeur/Evaluateur
+2460;chargé de sions
+2461;thérapeute 
+2462;Administrateur des documents de Projet 
+2463;Assistante d’Exploitation
+2464;Assistante de dépôt 
+2465;Stagiaire en administration du personnel 
+2466;Stagiaire Assistante dépôt
+2467;Stagiaire Assistante contrôleur de gestion des stocks
+2468;Stagiaire Assistante contrôleur de gestion des combustibles
+2469;Maintenancier Industriel 
+2470;Responsable Production mélange
+2471;Concepteur et Reporteur Photo Vidéo
+2472;Chef d’agent de traitement
+2473;Secrétaire en Informatique
+2474;Commerciale personnalisé
+2475;Junior Merchandiser
+2476;Superviseur de reboisement
+2477;Surveillante Media
+2478;Ingénieur 5S
+2479;Stagiaire en tant que technicien de laboratoire
+2480;stagiaire en tant assistant ingénieur
+2481;Chargée de renseignement de base client
+2482;Archiviste et agent de transit
+2483;Agent d'exploitation maritime
+2484;Responsable Import
+2485;Assistante de direction technique
+2486;Resposable informatique et technique administateur
+2487;Chargé de Projets
+2488;Responsable de personnel
+2489;Machiniste (conducteur de machine)
+2490;stagiaire réceptionniste,serveur, barman, et agent étage
+2491;Inventoriste
+2492;Responsable base de données
+2493;Sales, Booking, Logistique
+2494;stagiaire d'appui en Comptabilité et en Gestion de procédure
+2495;Sénior des opérations Crédit et relation Clientèle
+2496;Chef d'Agence
+2497;Assistant achat
+2498;Relation , Service professionnelle et Cellule Social / Départemant Administration Personnel
+2499;RESPONSABLE RECEPTION ET EVENEMENTIEL
+2500;secretaire polyvalente
+2501;responsable sorties natures
+2502;Téléopératrice francophone
+2503;Stagiaire en Géomarketing
+2504;Responsable administrative - Secrétaire - Traductrice/Interprète
+2505;Formateur en Langues Anglaise et Française
+2506;Assistante au service personnel
+2507;Aide recruteur - Superviseur - Responsable commercial
+2508;Responsable d’Agence
+2509;Gérant d'une pharmacie
+2510;Stagiaire (stage pratique en fin d'étude)
+2511;Commercial et mecano
+2512;Enseignante vacataire de l'enseignement secondaire
+2513;Gestionnaire Comptable
+2514;Administration et operations
+2515;Assistante Personnelle à distance
+2516;secrétaire comptable et tresorière
+2517;Assistante ressource humaine
+2518;Customer Service Executive
+2519;Responsable de T.I.C
+2520;Technical Support Group Engineer
+2521;Technical customer Care
+2522;Assistante de projet
+2523;Responsable Administrative et Financière
+2524;sécretaire bénévolat
+2525;assistante sociale
+2526;Matcheur
+2527;Commercial Entreprise
+2528;Stagiaire et Intérimaire
+2529;Téléconseillère en technique mobile
+2530;Responsable du Personnel
+2531;Enqueteur/superviseur
+2532;Vendeur et caissier
+2533;cherche de client et vente de produit
+2534;Dirigeante
+2535;Employée administrative
+2536;Agent de renfort
+2537;Stagiaire récéptionniste et serveuse et cuisinière
+2538;QSSHE
+2539;Hygieniste et ambulancier pendant la saison pesteux 
+2540;Igenieur mecanique/maintenance
+2541;Directeur adjoint de magasin
+2542;Assistante contrôleur de gestion
+2543;Technicien polyvalent
+2544;Référenceur d'un site voyage,location de voiture et BTP (SEO)
+2545;Assistante responsable traitement informatique
+2546;secrétaire tresorière comptable
+2547;Assistante Ressources humaines
+2548;Assistan approvisionnement et agent de transit 
+2549;Caissier, Aide comptable, Magasinier,Responsable de vente
+2550;Professeur en Economie et Mathematique Generale
+2551;Agent d'usine
+2552;Gestionnaire voucher et Agent payeur
