@@ -87,15 +87,16 @@ if ( ! class_exists( 'scImport' ) ) :
       $sql = "SELECT COUNT(*) FROM {$wpdb->posts} WHERE {$wpdb->posts}.post_type = 'candidate'";
       $prepare = $wpdb->prepare($sql);
       $rows = $wpdb->get_var($prepare);
-      for ($ct = 100; $ct <= $rows; $ct += 100) {
+      for ($ct = 50; $ct <= $rows; $ct += 50) {
         $argc  = [
           'post_type'      => 'candidate',
           'post_status'    => 'any',
+          'fields'         => 'ids',
           'posts_per_page' => $ct
         ];
-        $posts = get_posts( $argc );
-        foreach ( $posts as $post ) {
-          delete_field( 'itjob_cv_experiences', $post->ID );
+        $post_ids = get_posts( $argc );
+        foreach ( $post_ids as $post_id ) {
+          delete_field( 'itjob_cv_experiences', $post_id );
         }
       }
       
