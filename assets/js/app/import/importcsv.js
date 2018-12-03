@@ -207,7 +207,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               console.log($scope.formData.fileContent);
               form.append('action', 'import_csv');
               form.append('entry_type', $scope.formData.entryType);
-              form.append('order', $scope.columns);
               form.append('column', JSON.stringify(column[0]));
               importService
                 .sendform(form)
