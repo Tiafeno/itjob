@@ -842,9 +842,10 @@ if ( ! class_exists( 'scImport' ) ) :
                 $listOfExperiences[] = $Experience;
               }
             }
-            $listOfExperiences = Arrays::filter($listOfExperiences, function ($Experience) use ($poste, $date_begin) {
-              return $Experience['exp_positionHeld'] != $poste;
-            });
+
+//            $listOfExperiences = Arrays::filter($listOfExperiences, function ($Experience) use ($poste, $date_begin) {
+//              return $Experience['exp_positionHeld'] != $poste;
+//            });
 
             $state               = ucfirst( strtolower( $pays ) );
             $listOfExperiences[] = [
@@ -860,6 +861,7 @@ if ( ! class_exists( 'scImport' ) ) :
               ],
               'validated'        => 1
             ];
+
             update_field( 'itjob_cv_experiences', $listOfExperiences, $candidat_id );
             update_option('last_added_experience_id', $id_experience);
             wp_send_json_success( "Experience ajouter avec succès ID: {$id_experience}" );
