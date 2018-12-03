@@ -64,6 +64,7 @@ if ( ! class_exists( 'scImport' ) ) :
     public function  get_latest_update_experience() {
       $id_experience_latest = get_option("last_added_experience_id");
       var_dump($id_experience_latest);
+      exit;
     }
 
     /**
