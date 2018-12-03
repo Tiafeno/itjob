@@ -210,11 +210,6 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                           ?><!--</h6>-->
                           <p><?= $experience->exp_city . ', ' . $experience->exp_country ?></p>
 
-                          <?php if ( $experience->exp_mission ) : ?>
-                            <h6 class="text-muted">Missions et tâches realisées: </h6>
-                            <div><?= $experience->exp_mission ?></div>
-                          <?php endif; ?>
-
                           <h6 class="text-muted">Secteur d'activité: </h6>
                           <?php
                           if ( $experience->exp_branch_activity && isset($experience->exp_branch_activity->name)) :
@@ -226,6 +221,11 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                             echo sprintf( "<div>%s</div>", $abranch ? $abranch : "Non renseigné" );
                           endif;
                           ?>
+
+                          <?php if ( $experience->exp_mission ) : ?>
+                            <h6 class="text-muted">Missions et tâches realisées: </h6>
+                            <div><?= $experience->exp_mission ?></div>
+                          <?php endif; ?>
 
                           <?php
                           if ( ! empty( $experience->exp_dateBegin ) ):
