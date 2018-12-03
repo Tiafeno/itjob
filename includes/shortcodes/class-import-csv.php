@@ -754,8 +754,7 @@ if ( ! class_exists( 'scImport' ) ) :
             $entreprise,
             $secteuractivite_id,
             $postoccuper_id,
-            $mission
-            ) = $lines;
+            $mission ) = $lines;
           $data_import_dir = get_template_directory() . "/includes/import/data";
           $id_experience   = (int) $id_experience;
           $id_cv           = (int) $id_cv;
