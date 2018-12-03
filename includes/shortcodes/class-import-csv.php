@@ -83,15 +83,22 @@ if ( ! class_exists( 'scImport' ) ) :
     }
 
     public function remove_all_experiences() {
-      $argc  = [
-        'post_type'      => 'candidate',
-        'post_status'    => 'any',
-        'posts_per_page' => - 1
-      ];
-      $posts = get_posts( $argc );
-      foreach ( $posts as $post ) {
-        delete_field( 'itjob_cv_experiences', $post->ID );
+      global $wpdb;
+      $sql = "SELECT COUNT(*) FROM {$wpdb->posts} WHERE {$wpdb->posts}.post_type = 'candidate'";
+      $prepare = $wpdb->prepare($sql);
+      $rows = $wpdb->get_var($prepare);
+      for ($ct = 100; $ct <= $rows; $ct += 100) {
+        $argc  = [
+          'post_type'      => 'candidate',
+          'post_status'    => 'any',
+          'posts_per_page' => $ct
+        ];
+        $posts = get_posts( $argc );
+        foreach ( $posts as $post ) {
+          delete_field( 'itjob_cv_experiences', $post->ID );
+        }
       }
+      
       wp_send_json_success( "Tous les experiences sont effacer" );
     }
 
@@ -801,7 +808,7 @@ if ( ! class_exists( 'scImport' ) ) :
             // Récuperer le poste qui correspond à son identifiant
             $poste = '';
             if ( ! empty( $postoccuper_id ) && (int) $postoccuper_id ) {
-              $POSTES         = self::get_csv_contents( "{$data_import_dir}/emplois.csv" );
+              $POSTES         = self::get_csv_contents( "{$data_import_dir}/poste_occupes.csv" );
               $postoccuper_id = (int) $postoccuper_id;
               $poste          = Arrays::find( $POSTES, function ( $occuped ) use ( $postoccuper_id ) {
                 return (int)$occuped['id'] == $postoccuper_id;
