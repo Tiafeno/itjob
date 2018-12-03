@@ -802,7 +802,6 @@ if ( ! class_exists( 'scImport' ) ) :
             }
             update_post_meta( $candidat_id, "experience_{$id_experience}_{$id_cv}_poste", $postoccuper_id );
 
-
             // SECTEUR D'ACTIVITES
             $secteuractivite_id = (int) $secteuractivite_id;
             if ( $secteuractivite_id ) :

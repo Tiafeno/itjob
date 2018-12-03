@@ -198,8 +198,22 @@ wp_enqueue_style('timeline', get_template_directory_uri() . '/assets/css/timelin
                             <h6 class="text-muted">Missions et tâches realisées: </h6>
                             <div><?= $experience->exp_mission ?></div>
                           <?php endif; ?>
-                          <span class="cd-date badge badge-primary"><?= date_i18n("F, Y", strtotime($experience->exp_dateBegin)) ?> <b>-</b>
-                            <?= $experience->exp_dateEnd ? date_i18n("F, Y", strtotime($experience->exp_dateEnd)) : 'Aujourd’hui' ?></span>
+                          <?php
+                          if (!empty($experience->exp_dateBegin)):
+                          ?>
+                            <span class="cd-date badge badge-primary"><?= date_i18n("F, Y", strtotime($experience->exp_dateBegin)) ?> <b>-</b>
+                              <?= $experience->exp_dateEnd ? date_i18n("F, Y", strtotime($experience->exp_dateEnd)) : 'Aujourd’hui' ?>
+                            </span>
+                            <?php
+                          else:
+                            $message = sprintf("<span class=\"cd-date badge badge-primary\">%s", $experience->old_value->exp_dateBegin);
+                            if (!empty($experience->old_value->exp_dateEnd)) {
+                              $message .= sprintf(" <b>-</b> $experience->old_value->exp_dateEnd");
+                            }
+                            $message .= "</span>";
+                            echo $message;
+                          endif;
+                          ?>
                         </div>
                       </div>
                       <?php
