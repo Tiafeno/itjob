@@ -779,28 +779,26 @@ if ( ! class_exists( 'scImport' ) ) :
             //$entreprise = mb_convert_encoding($entreprise,"ISO-8859-1","auto");
             //$mission = mb_convert_encoding($mission,"ISO-8859-1","auto");
 
+            $city = '';
             if ( ! empty( $ville_id ) && (int) $ville_id ) {
               $VILLES   = self::get_csv_contents( "{$data_import_dir}/villes.csv" );
               $ville_id = (int) $ville_id;
               $city     = Arrays::find( $VILLES, function ( $ville ) use ( $ville_id ) {
-                return $ville['id'] == $ville_id;
+                return (int)$ville['id'] == $ville_id;
               } );
-              $city     = empty( $city ) || $city == "undefined" ? '' : $city['value'];
-            } else {
-              $city = '';
+              $city     = !isset($city['value']) || empty( $city ) ? '' : $city['value'];
             }
             update_post_meta( $candidat_id, "experience_{$id_experience}_{$id_cv}_ville", $ville_id );
 
             // Récuperer le poste qui correspond à son identifiant
+            $poste = '';
             if ( ! empty( $postoccuper_id ) && (int) $postoccuper_id ) {
               $POSTES         = self::get_csv_contents( "{$data_import_dir}/emplois.csv" );
               $postoccuper_id = (int) $postoccuper_id;
               $poste          = Arrays::find( $POSTES, function ( $occuped ) use ( $postoccuper_id ) {
-                return $occuped['id'] == $postoccuper_id;
+                return (int)$occuped['id'] == $postoccuper_id;
               } );
-              $poste          = empty( $poste ) || $poste == "undefined" ? '' : $poste['value'];
-            } else {
-              $poste = '';
+              $poste          = empty( $poste ) || !isset($poste['value']) ? "" : $poste['value'];
             }
             update_post_meta( $candidat_id, "experience_{$id_experience}_{$id_cv}_poste", $postoccuper_id );
 
@@ -826,7 +824,6 @@ if ( ! class_exists( 'scImport' ) ) :
                 'exp_dateBegin'       => $date_begin,
                 'exp_dateEnd'         => $date_end,
                 'exp_branch_activity' => isset( $abranch_values ) && is_array( $abranch_values ) ? implode( ', ', $abranch_values ) : ''
-                // Secteur d'activité
               ],
               'validated'        => 1
             ];
@@ -947,7 +944,7 @@ if ( ! class_exists( 'scImport' ) ) :
           continue;
         }
         $results = Arrays::find( $handlers, function ( $handler ) use ( $find ) {
-          return $handler['id'] == (int) $find;
+          return (int)$handler['id'] == (int) $find;
         } );
         if ( ! empty( $results ) || $results == 'undefined' || ! $results ) {
           $contents[] = $results['value'];
@@ -1009,7 +1006,6 @@ if ( ! class_exists( 'scImport' ) ) :
       if ( ! $User && ! in_array( 'company', $User->roles ) ) {
         wp_send_json_success( "Utilisateur non inscrit, ID:" . $obj->id_user );
       }
-
 
       // Verifier si l'offre est déja publier ou ajouter dans le site
       $offers_exists = $Helper->has_old_offer_exist( $obj->id );
