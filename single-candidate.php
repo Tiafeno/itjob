@@ -110,7 +110,7 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                             endforeach;
                           } else {
                             $job = $candidate->jobSought->name;
-                            $values = strpos(',', $job) ? explode(',', $job) : [$job];
+                            $values = strpos($job, ',') ? explode(',', $job) : [$job];
                             foreach ($values as $value)
                               echo sprintf( '<span class="badge badge-blue mr-2 mt-1" style="white-space: pre-line;">%s</span>',
                                 ucfirst( $value ) );
