@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Http;
 use includes\import\importUser;
 use includes\object\JHelper;
+use includes\post\Candidate;
 use includes\post\Company;
 use Underscore\Types\Arrays;
 
@@ -979,7 +980,35 @@ if ( ! class_exists( 'scImport' ) ) :
           } else {
             wp_send_json_error("Utilisateur n'existe pas");
           }
-        BREAK;
+
+          BREAK;
+
+        case 'user_update_publish_date':
+          // User content type
+          list( $id_user, , , , , , , , , $created, , ) = $lines;
+          $id_user = (int) $id_user;
+          if ( ! $id_user ) {
+            wp_send_json_success( "Passer la ligne" );
+          }
+          if ( $current_user_id = username_exists( "user-{$id_user}" ) ) {
+            $User = new \WP_User( $current_user_id );
+            if ( in_array( 'candidate', $User->roles ) ) {
+              $Candidate = Candidate::get_candidate_by( $User->ID );
+
+              $create_date = strtotime( $created );
+              $publish     = date( 'Y-m-d H:i:s', $create_date );
+              wp_update_post( [
+                'ID'        => $Candidate->getId(),
+                'post_date' => $publish
+              ] );
+              wp_send_json_success( "Candidat mise à jour avec succès" );
+            } else {
+              wp_send_json_success( "L'utilisateur n'est pas un cnadidat" );
+            }
+          } else {
+            wp_send_json_success( "Utilisateur n'existe pas" );
+          }
+          BREAK;
       }
     }
 

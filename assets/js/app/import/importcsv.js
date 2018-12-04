@@ -313,6 +313,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         slug: 'user_candidate_trainings',
         label: "Demandeur emploi - Formation"
       },
+      {
+        _id: 11,
+        slug: 'user_update_publish_date',
+        label: "Demandeur emploi - Update date publish"
+      },
 
     ];
     self.getColumns = (typeofFileId) => {
