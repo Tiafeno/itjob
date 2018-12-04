@@ -802,7 +802,6 @@ if ( ! class_exists( 'scImport' ) ) :
           $candidat_id = $Helper->is_cv( $id_cv );
 
           if (is_array($listUpdateExperiences) && !in_array($candidat_id, $listUpdateExperiences)) {
-            $sub_fields = get_field('itjob_cv_experiences', $candidat_id);
             delete_field('itjob_cv_experiences', $candidat_id);
           }
 
