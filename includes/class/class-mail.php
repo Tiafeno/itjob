@@ -47,6 +47,8 @@ class Mailing {
     add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
 
     add_action( 'acf/save_post', function ( $post_id ) {
+      $option_mailing = get_field('save_post_mailing', 'option');
+      if ($option_mailing) return true;
       $post_type   = get_post_type( $post_id );
       $post_status = get_post_status( $post_id );
       switch ( $post_type ):
@@ -64,7 +66,7 @@ class Mailing {
         case 'candidate':
           switch ( $post_status ) {
             case 'publish':
-              //$this->confirm_validate_candidate( $post_id );
+              $this->confirm_validate_candidate( $post_id );
               // $this->alert_for_new_candidate( $post_id );
               break;
           }
