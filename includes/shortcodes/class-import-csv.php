@@ -862,6 +862,8 @@ if ( ! class_exists( 'scImport' ) ) :
               'validated'        => 1
             ];
 
+            print_r($listOfExperiences);
+
             update_field( 'itjob_cv_experiences', $listOfExperiences, $candidat_id );
             update_option('last_added_experience_id', $id_experience);
             wp_send_json_success( "Experience ajouter avec succès ID: {$id_experience}" );
