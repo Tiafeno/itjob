@@ -798,8 +798,14 @@ if ( ! class_exists( 'scImport' ) ) :
           if ( empty( $entreprise ) ) {
             wp_send_json_success( "Annuler pour raison de manque d'information" );
           }
-
+          $listUpdateExperiences = get_option('listUpdateExperiences', []);
           $candidat_id = $Helper->is_cv( $id_cv );
+
+          if (is_array($listUpdateExperiences) && !in_array($candidat_id, $listUpdateExperiences)) {
+            $sub_fields = get_field('itjob_cv_experiences', $candidat_id);
+            delete_field('itjob_cv_experiences', $candidat_id);
+          }
+
           if ( $candidat_id ) {
             $Experiences       = get_field( 'itjob_cv_experiences', $candidat_id );
             $listOfExperiences = [];
@@ -859,6 +865,12 @@ if ( ! class_exists( 'scImport' ) ) :
             ];
 
             update_field( 'itjob_cv_experiences', $listOfExperiences, $candidat_id );
+
+            if (is_array($listUpdateExperiences)) {
+              $listUpdateExperiences[] = $candidat_id;
+              update_option('listUpdateExperiences', $listUpdateExperiences);
+            }
+
             update_option('last_added_experience_id', $id_experience);
             wp_send_json_success( "Experience ajouter avec succès ID: {$id_experience}" );
           } else {
