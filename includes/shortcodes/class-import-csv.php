@@ -1138,6 +1138,11 @@ if ( ! class_exists( 'scImport' ) ) :
       $post_id = wp_insert_post( $args );
       if ( ! is_wp_error( $post_id ) ) {
         $Company = Company::get_company_by( $User->ID );
+        // Ajouter une secteur d'activité à cette offre
+        if ( ( $Company->branch_activity !== null && is_object( $Company->branch_activity ) ) && isset( $Company->branch_activity->term_id ) ) {
+          wp_set_post_terms( $post_id, [ $Company->branch_activity->term_id ], 'branch_activity' );
+        }
+
         update_field( 'itjob_offer_post', $obj->poste_a_pourvoir, $post_id );
         update_field( 'itjob_offer_reference', $obj->reference, $post_id );
 
@@ -1175,10 +1180,6 @@ if ( ! class_exists( 'scImport' ) ) :
           wp_set_post_terms( $post_id, [ $term['term_id'] ], 'region' );
         }
 
-        // Ajouter une secteur d'activité à cette offre
-        if ( ( $Company->branch_activity !== null && is_object( $Company->branch_activity ) ) && isset( $Company->branch_activity->term_id ) ) {
-            wp_set_post_terms( $post_id, [ $Company->branch_activity->term_id ], 'branch_activity' );
-        }
         wp_send_json_success( [ 'msg' => "Offre ajouter avec succès", 'term' => $term ] );
       } else {
         wp_send_json_error( "Une erreur s'est produite pendant l'ajout :" . $post_id->get_error_message() );
