@@ -64,7 +64,7 @@ class Mailing {
         case 'candidate':
           switch ( $post_status ) {
             case 'publish':
-              $this->confirm_validate_candidate( $post_id );
+              //$this->confirm_validate_candidate( $post_id );
               // $this->alert_for_new_candidate( $post_id );
               break;
           }

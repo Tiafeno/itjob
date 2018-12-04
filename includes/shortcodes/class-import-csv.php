@@ -838,7 +838,7 @@ if ( ! class_exists( 'scImport' ) ) :
             endif;
 
             if ( $Experiences ) {
-              foreach ( $Experiences as $Experience ) {
+              foreach ( $Experiences as $Experience ) {²
                 $listOfExperiences[] = $Experience;
               }
             }
