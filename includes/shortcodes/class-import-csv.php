@@ -897,7 +897,7 @@ if ( ! class_exists( 'scImport' ) ) :
               $city   = Arrays::find( $VILLES, function ( $el ) use ( $ville_id ) {
                 return $el['id'] == (int) $ville_id;
               } );
-              $city   = empty( $city ) || $city == "undefined" ? '' : $city['value'];
+              $city   = empty( $city ) || !isset($city['value']) ? '' : $city['value'];
               unset( $VILLES );
             }
             update_post_meta( $candidat_id, "training_{$id_formation}_{$id_demandeur}_ville", $ville_id );
@@ -909,7 +909,7 @@ if ( ! class_exists( 'scImport' ) ) :
               $diploma  = Arrays::find( $DIPLOMES, function ( $el ) use ( $diplome_id ) {
                 return $el['id'] == (int) $diplome_id;
               } );
-              $diploma  = empty( $diploma ) || $diploma == "undefined" || ! $diploma ? '' : ucfirst( $diploma['value'] );
+              $diploma  = empty( $diploma ) || !isset($diploma['value']) ? '' : ucfirst( $diploma['value'] );
               unset( $DIPLOMES );
             }
             update_post_meta( $candidat_id, "training_{$id_formation}_{$id_demandeur}_diplome", $diplome_id );
@@ -921,10 +921,15 @@ if ( ! class_exists( 'scImport' ) ) :
               $university = Arrays::find( $UNIVERSITE, function ( $el ) use ( $universite_id ) {
                 return $el['id'] == (int) $universite_id;
               } );
-              $university = empty( $university ) || $university == "undefined" ? '' : $university['value'];
+              $university = empty( $university ) || !isset($university['value']) ? '' : $university['value'];
               unset( $UNIVERSITE );
             }
             update_post_meta( $candidat_id, "training_{$id_formation}_{$id_demandeur}_universite", $universite_id );
+
+            if (empty($diploma) || empty($university)) {
+              wp_send_json_success("Impossible d'ajouter cette formation pour une raison de manque d'information");
+            }
+
             $state             = ucfirst( strtolower( $pays ) );
             $listOfTrainings[] = [
               'training_dateBegin'     => $year,
@@ -936,7 +941,8 @@ if ( ! class_exists( 'scImport' ) ) :
               'validated'              => 1
             ];
             update_field( 'itjob_cv_trainings', $listOfTrainings, $candidat_id );
-            wp_send_json_success( "Experience ajouter avec succès ID: {$id_formation}" );
+            update_option('last_added_training_id', $id_formation);
+            wp_send_json_success( "Formation ajouter avec succès ID: {$id_formation}" );
           } else {
             wp_send_json_success( "Aucun utilisateur ne correpond à cette identifiant ID:" . $candidat_id );
           }
