@@ -997,10 +997,15 @@ if ( ! class_exists( 'scImport' ) ) :
 
               $create_date = strtotime( $created );
               $publish     = date( 'Y-m-d H:i:s', $create_date );
-              wp_update_post( [
-                'ID'        => $Candidate->getId(),
-                'post_date' => $publish
-              ] );
+              if ( get_post_type( $Candidate->getId() ) == 'candidate' ) {
+                wp_update_post( [
+                  'ID'        => $Candidate->getId(),
+                  'post_date' => $publish
+                ] );
+              } else {
+                wp_send_json_success( "Le post candidat n'existe pas" );
+              }
+
               wp_send_json_success( "Candidat mise à jour avec succès. Date: {$publish}" );
             } else {
               wp_send_json_success( "L'utilisateur n'est pas un candidat" );
