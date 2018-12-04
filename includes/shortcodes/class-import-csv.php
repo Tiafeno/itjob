@@ -1001,9 +1001,9 @@ if ( ! class_exists( 'scImport' ) ) :
                 'ID'        => $Candidate->getId(),
                 'post_date' => $publish
               ] );
-              wp_send_json_success( "Candidat mise à jour avec succès" );
+              wp_send_json_success( "Candidat mise à jour avec succès. Date: {$publish}" );
             } else {
-              wp_send_json_success( "L'utilisateur n'est pas un cnadidat" );
+              wp_send_json_success( "L'utilisateur n'est pas un candidat" );
             }
           } else {
             wp_send_json_success( "Utilisateur n'existe pas" );
