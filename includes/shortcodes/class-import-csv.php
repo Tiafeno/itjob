@@ -853,7 +853,7 @@ if ( ! class_exists( 'scImport' ) ) :
               'exp_country'      => $state,
               'exp_company'      => $entreprise,
               'exp_positionHeld' => $poste,
-              'exp_mission'      => $mission,
+              'exp_mission'      => nl2br($mission),
               'old_value'        => [
                 'exp_dateBegin'       => $date_begin,
                 'exp_dateEnd'         => $date_end,
