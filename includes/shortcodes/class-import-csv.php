@@ -592,6 +592,7 @@ if ( ! class_exists( 'scImport' ) ) :
 
             update_field( 'itjob_cv_notifEmploi', [ 'notification' => (int) $notif_job ], $candidatePost->ID );
             update_field( 'itjob_cv_notifFormation', [ 'notification' => (int) $notif_training ], $candidatePost->ID );
+            // Ici on active ou désactive un CV
             update_field( 'activated', (int) $activated, $candidatePost->ID );
             update_field( 'itjob_cv_newsletter', (int) $newsletter, $candidatePost->ID );
 
@@ -739,7 +740,8 @@ if ( ! class_exists( 'scImport' ) ) :
             wp_set_post_terms( $candidat_id, $langValues, 'language' );
 
             update_field( 'itjob_cv_status', (int) $statut, $candidat_id );
-            update_field( 'activated', 1, $candidat_id );
+            // L'activation des CV sont déja ajouter pendant l'ajout d'information
+            //update_field( 'activated', 1, $candidat_id );
             update_field( 'itjob_cv_hasCV', 1, $candidat_id );
             update_field( 'itjob_cv_centerInterest', [
               'projet'  => $interets,
@@ -747,6 +749,7 @@ if ( ! class_exists( 'scImport' ) ) :
             ], $candidat_id );
 
             update_post_meta( $candidat_id, '__date_publish', $date_publish );
+            update_post_meta( $candidat_id, '__date_create', $date_creation );
             /**
              * Ce champ est utiliser pour ajouter les expériences et les formations
              */
@@ -801,9 +804,6 @@ if ( ! class_exists( 'scImport' ) ) :
             $Experiences       = get_field( 'itjob_cv_experiences', $candidat_id );
             $listOfExperiences = [];
 
-            //$entreprise = mb_convert_encoding($entreprise,"ISO-8859-1","auto");
-            //$mission = mb_convert_encoding($mission,"ISO-8859-1","auto");
-
             $city = '';
             if ( ! empty( $ville_id ) && (int) $ville_id ) {
               $VILLES   = self::get_csv_contents( "{$data_import_dir}/villes.csv" );
@@ -842,10 +842,6 @@ if ( ! class_exists( 'scImport' ) ) :
                 $listOfExperiences[] = $Experience;
               }
             }
-
-//            $listOfExperiences = Arrays::filter($listOfExperiences, function ($Experience) use ($poste, $date_begin) {
-//              return $Experience['exp_positionHeld'] != $poste;
-//            });
 
             $state               = ucfirst( strtolower( $pays ) );
             $listOfExperiences[] = [
@@ -945,6 +941,28 @@ if ( ! class_exists( 'scImport' ) ) :
             wp_send_json_success( "Aucun utilisateur ne correpond à cette identifiant ID:" . $candidat_id );
           }
           BREAK;
+        
+        case 'user_candidate_status':
+          // Candidate informations content type
+          list( , $id_user, , , , , , , , , , , , , , , $activated, ) = $lines;
+
+          $old_user_id = (int) $id_user;
+
+          if ( ! $old_user_id ) {
+            wp_send_json_success( "Passer à la colonne suivante" );
+          }
+          // Retourne false or WP_User
+          $User = $Helper->has_user( $old_user_id );
+          if ( $User && in_array( 'candidate', $User->roles ) ) {
+            $candidate = $Helper->get_candidate_by_email( $User->user_email );
+            $activated = (int) $activated;
+            update_field( 'activated', $activated, $candidate->ID );
+            $message = $activated ? "activé" : "désactivé";
+            wp_send_json_success("Utilisateur {$message} avec succès");
+          } else {
+            wp_send_json_error("Utilisateur n'existe pas");
+          }
+        BREAK;
       }
     }
 

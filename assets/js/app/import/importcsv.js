@@ -299,6 +299,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Utilisateurs - Candidat Information"
       },
       {
+        _id: 10,
+        slug: 'user_candidate_status',
+        label: "Utilisateurs - Candidat Status (information)"
+      },
+      {
         _id: 3,
         slug: 'user_candidate_experiences',
         label: "Demandeur emploi - Experience"
