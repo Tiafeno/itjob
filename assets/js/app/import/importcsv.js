@@ -71,39 +71,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
           /**
            * @event ngClick
            */
-          $scope.addedOfferForm = () => {
-            const Form = new FormData();
-            Form.append('action', 'get_offer_data');
-            $scope.chargement = true;
-            importService
-              .sendform(Form)
-              .then(resp => {
-                let query = resp.data;
-                if (query.success) {
-                  let inputs = query.data;
-                  let response = [];
-
-                  async function loopOffers(inputs) {
-                    for (const input of inputs) {
-                      await self.sendEntryContent(input, 'offers')
-                        .then(resp => {
-                          response.push(resp);
-                        });
-                    }
-                    $scope.chargement = false;
-                  }
-
-                  loopOffers(inputs);
-                } else {
-                  $scope.chargement = false;
-                }
-
-              })
-          };
-
-          /**
-           * @event ngClick
-           */
           $scope.activeCandidateCareer = () => {
             const inputCSV = jQuery('input#files');
             if (!inputCSV[0].files.length) {
@@ -318,6 +285,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         slug: 'user_update_publish_date',
         label: "Demandeur emploi - Update date publish"
       },
+      {
+        _id: 13,
+        slug: 'add_offers',
+        label: "Offers - Ajouter"
+      }
 
     ];
     self.getColumns = (typeofFileId) => {

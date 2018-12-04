@@ -57,7 +57,7 @@ if ( ! class_exists( 'scImport' ) ) :
           $this->add_user( $content_type );
           break;
         case 'offers':
-          $this->add_offer();
+          $this->add_offer( $content_type );
           break;
       }
     }
@@ -799,9 +799,13 @@ if ( ! class_exists( 'scImport' ) ) :
           if ( empty( $entreprise ) ) {
             wp_send_json_success( "Annuler pour raison de manque d'information" );
           }
-          $listUpdateExperiences = get_option('listUpdateExperiences', []);
           $candidat_id = $Helper->is_cv( $id_cv );
+          // Réinitialiser cette post meta 'listUpdateExperiences' avant d'ajouter à nouveaux des experiences
+          // Cette variable ou ce champ est utiliser pour réinitaliser les experiences d'une utilisateur
+          // si son identifiant ne figure pas dans la liste.
 
+          // Pour ajouter une nouvelle liste d'experience sans reinitialiser l'experience on ajoute l'id du CV dan sla liste
+          $listUpdateExperiences = get_option( 'listUpdateExperiences', [] );
           if (is_array($listUpdateExperiences) && !in_array($candidat_id, $listUpdateExperiences)) {
             delete_field('itjob_cv_experiences', $candidat_id);
           }
@@ -1098,14 +1102,17 @@ if ( ! class_exists( 'scImport' ) ) :
     }
 
     // Ajouter les anciens offres
-    protected function add_offer() {
+    protected function add_offer( $content_type ) {
       if ( ! is_user_logged_in() ) {
         return;
       }
       $column = Http\Request::getValue( 'column' );
       $row    = json_decode( $column );
+      $obj    = new \stdClass();
+      list( $obj->id, $obj->id_user, $obj->id_entreprise, $obj->status, $obj->created, $obj->type_contrat,
+        $obj->date_limit_candidature, $obj->poste_base_a, $obj->poste_a_pourvoir, $obj->mission, $obj->profil_recherche,
+        $obj->autre_info, $obj->reference, $obj->salaire_net, $obj->published, $obj->nbr_vue, $obj->position ) = $row;
       $Helper = new JHelper();
-      $obj    = (object) $row;
 
       $User = $Helper->has_user( (int) $obj->id_user );
       if ( ! $User && ! in_array( 'company', $User->roles ) ) {

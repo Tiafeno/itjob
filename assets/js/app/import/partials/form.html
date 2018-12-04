@@ -16,10 +16,6 @@
 
           <div class="form-group d-flex align-left">
 
-            <a href="#added" ng-disabled="chargement" ng-if="formData.entryType === 'offers'" ng-click="addedOfferForm()" class="btn btn-outline-blue btn-icon btn-fix float-right" >
-              {{ chargement ? 'Chargement ...' : 'Ajouter'}}
-            </a>
-
             <a href="#delete" ng-disabled="chargement" ng-if="formData.entryType === 'offers'" ng-click="deleteAllOffer()" class="btn btn-outline-danger btn-icon btn-fix float-right" >
               {{ chargement ? 'Chargement ...' : 'Effacer'}}
             </a>
