@@ -29,8 +29,7 @@
                           {% if candidate.jobSought is iterable %}
                             {{ candidate.jobSought|explode_terms }}
                           {% else %}
-                            {{ candidate.jobSought }}
-                            {{ candidate.jobSought|split(',') }}
+                            {{ candidate.jobSought.name|split(',') }}
                           {% endif %}
                         {% else %}
                           Aucun
