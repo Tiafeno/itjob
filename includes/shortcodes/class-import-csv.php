@@ -797,6 +797,7 @@ if ( ! class_exists( 'scImport' ) ) :
           }
 
           echo $mission;
+          exit;
 
           $candidat_id = $Helper->is_cv( $id_cv );
           if ( $candidat_id ) {
