@@ -1176,10 +1176,8 @@ if ( ! class_exists( 'scImport' ) ) :
         }
 
         // Ajouter une secteur d'activité à cette offre
-        if ( $Company->branch_activity !== null || ! empty( $Company->branch_activity ) ) {
-          if ( isset( $Company->branch_activity->term_id ) ) {
+        if ( $Company->branch_activity !== null && isset( $Company->branch_activity->term_id ) ) {
             wp_set_post_terms( $post_id, [ $Company->branch_activity->term_id ], 'branch_activity' );
-          }
         }
         wp_send_json_success( [ 'msg' => "Offre ajouter avec succès", 'term' => $term ] );
       } else {
