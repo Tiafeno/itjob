@@ -796,9 +796,6 @@ if ( ! class_exists( 'scImport' ) ) :
             wp_send_json_success( "Annuler pour raison de manque d'information" );
           }
 
-          echo $mission;
-          exit;
-
           $candidat_id = $Helper->is_cv( $id_cv );
           if ( $candidat_id ) {
             $Experiences       = get_field( 'itjob_cv_experiences', $candidat_id );
