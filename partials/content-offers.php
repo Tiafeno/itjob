@@ -5,6 +5,7 @@ if (!$offers->is_activated()) {
 }
 
 // Vérifier la date limite de l'offre
+echo $offers->dateLimit;
 $today = strtotime("today");
 $limited = strtotime($offers->dateLimit) < $today;
 ?>
