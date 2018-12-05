@@ -369,6 +369,26 @@ if ( ! class_exists( 'itJob' ) ) {
                     return $where;
                   });
 
+                } else {
+                  // Meta query
+                  if ( ! isset( $meta_query ) ) {
+                    $meta_query = $query->get( 'meta_query' );
+                  }
+
+                  $meta_query[] = [
+                    [
+                      'key'     => 'activated',
+                      'value'   => 1,
+                      'compare' => '=',
+                      'type'    => 'NUMERIC'
+                    ],
+                    [
+                      'key'     => 'itjob_cv_hasCV',
+                      'value'   => 1,
+                      'compare' => '=',
+                      'type'    => 'NUMERIC'
+                    ]
+                  ];
                 }
 
 
