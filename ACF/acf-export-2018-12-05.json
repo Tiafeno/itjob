@@ -16,7 +16,7 @@
                     "class": "",
                     "id": ""
                 },
-                "message": "Valider et publier le CV dans le site",
+                "message": "Valider et publier dans le site",
                 "default_value": 0,
                 "ui": 0,
                 "ui_on_text": "",
@@ -230,15 +230,15 @@
                     "class": "",
                     "id": ""
                 },
-                "choices": [
-                    "Je cherche un emploi",
-                    "Je souhaite entretenir mon réseau",
-                    "Je cherche un stage"
-                ],
+                "choices": {
+                    "1": "Je cherche un emploi",
+                    "2": "Je souhaite entretenir mon réseau",
+                    "3": "Je cherche un stage"
+                },
                 "default_value": [
-                    0
+                    1
                 ],
-                "allow_null": 0,
+                "allow_null": 1,
                 "multiple": 0,
                 "ui": 0,
                 "ajax": 0,
@@ -266,24 +266,24 @@
                 "sub_fields": [
                     {
                         "key": "field_5b7d2d5720e5b",
-                        "label": "Début mois",
+                        "label": "Date Début",
                         "name": "exp_dateBegin",
                         "type": "date_picker",
                         "instructions": "",
-                        "required": 1,
+                        "required": 0,
                         "conditional_logic": 0,
                         "wrapper": {
                             "width": "50",
                             "class": "",
                             "id": ""
                         },
-                        "display_format": "F, Y",
-                        "return_format": "F, Y",
+                        "display_format": "m\/d\/Y",
+                        "return_format": "m\/d\/Y",
                         "first_day": 1
                     },
                     {
                         "key": "field_5b7d2dcb20e5c",
-                        "label": "Fin mois",
+                        "label": "Date Fin",
                         "name": "exp_dateEnd",
                         "type": "date_picker",
                         "instructions": "",
@@ -294,9 +294,69 @@
                             "class": "",
                             "id": ""
                         },
-                        "display_format": "F, Y",
-                        "return_format": "F, Y",
+                        "display_format": "m\/d\/Y",
+                        "return_format": "m\/d\/Y",
                         "first_day": 1
+                    },
+                    {
+                        "key": "field_5b7d2edb47341",
+                        "label": "Post occupé",
+                        "name": "exp_positionHeld",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "60",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5c0049bc5ab28",
+                        "label": "Secteur d'activité",
+                        "name": "exp_branch_activity",
+                        "type": "taxonomy",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "taxonomy": "branch_activity",
+                        "field_type": "select",
+                        "allow_null": 1,
+                        "add_term": 1,
+                        "save_terms": 0,
+                        "load_terms": 0,
+                        "return_format": "object",
+                        "multiple": 0
+                    },
+                    {
+                        "key": "field_5b7d2e754733f",
+                        "label": "Nom de l'entreprise ou société",
+                        "name": "exp_company",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "60",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
                     },
                     {
                         "key": "field_5b7d2e044733d",
@@ -337,44 +397,6 @@
                         "maxlength": ""
                     },
                     {
-                        "key": "field_5b7d2e754733f",
-                        "label": "Nom de l'entreprise ou société",
-                        "name": "exp_company",
-                        "type": "text",
-                        "instructions": "",
-                        "required": 1,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "60",
-                            "class": "",
-                            "id": ""
-                        },
-                        "default_value": "",
-                        "placeholder": "",
-                        "prepend": "",
-                        "append": "",
-                        "maxlength": ""
-                    },
-                    {
-                        "key": "field_5b7d2edb47341",
-                        "label": "Post occupé",
-                        "name": "exp_positionHeld",
-                        "type": "text",
-                        "instructions": "",
-                        "required": 1,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "60",
-                            "class": "",
-                            "id": ""
-                        },
-                        "default_value": "",
-                        "placeholder": "",
-                        "prepend": "",
-                        "append": "",
-                        "maxlength": ""
-                    },
-                    {
                         "key": "field_5b7d2f327e1dc",
                         "label": "Missions et tâche réalisées",
                         "name": "exp_mission",
@@ -388,10 +410,103 @@
                             "id": ""
                         },
                         "default_value": "",
-                        "tabs": "visual",
+                        "tabs": "all",
                         "toolbar": "basic",
                         "media_upload": 1,
                         "delay": 0
+                    },
+                    {
+                        "key": "field_5bf1563b37c5d",
+                        "label": "Validation",
+                        "name": "validated",
+                        "type": "true_false",
+                        "instructions": "Ce champ à pour rôle de valider ou non ce contenue. Si la valeur est oui, On affiche l'expérience en publique.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "message": "Voulez vous publier cette expérience?",
+                        "default_value": 0,
+                        "ui": 0,
+                        "ui_on_text": "",
+                        "ui_off_text": ""
+                    },
+                    {
+                        "key": "field_5c004b5f8c140",
+                        "label": "Ancien Valeurs",
+                        "name": "old_value",
+                        "type": "group",
+                        "instructions": "Cette groupe de champ contient les informations ancien sur le site ItJobMada",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "layout": "table",
+                        "sub_fields": [
+                            {
+                                "key": "field_5c00537d8c141",
+                                "label": "Debut",
+                                "name": "exp_dateBegin",
+                                "type": "text",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "default_value": "",
+                                "placeholder": "",
+                                "prepend": "",
+                                "append": "",
+                                "maxlength": ""
+                            },
+                            {
+                                "key": "field_5c0053878c142",
+                                "label": "Fin",
+                                "name": "exp_dateEnd",
+                                "type": "text",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "default_value": "",
+                                "placeholder": "",
+                                "prepend": "",
+                                "append": "",
+                                "maxlength": ""
+                            },
+                            {
+                                "key": "field_5c0053a68c143",
+                                "label": "Secteur d'activité",
+                                "name": "exp_branch_activity",
+                                "type": "text",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "default_value": "",
+                                "placeholder": "",
+                                "prepend": "",
+                                "append": "",
+                                "maxlength": ""
+                            }
+                        ]
                     }
                 ]
             },
@@ -418,25 +533,8 @@
                         "key": "field_5b7d76ecbd047",
                         "label": "Date debut",
                         "name": "training_dateBegin",
-                        "type": "date_picker",
-                        "instructions": "",
-                        "required": 1,
-                        "conditional_logic": 0,
-                        "wrapper": {
-                            "width": "50",
-                            "class": "",
-                            "id": ""
-                        },
-                        "display_format": "F, Y",
-                        "return_format": "F, Y",
-                        "first_day": 1
-                    },
-                    {
-                        "key": "field_5b7d774dbd048",
-                        "label": "Date fin",
-                        "name": "training_dateEnd",
-                        "type": "date_picker",
-                        "instructions": "",
+                        "type": "text",
+                        "instructions": "Année",
                         "required": 0,
                         "conditional_logic": 0,
                         "wrapper": {
@@ -444,9 +542,30 @@
                             "class": "",
                             "id": ""
                         },
-                        "display_format": "F, Y",
-                        "return_format": "F, Y",
-                        "first_day": 1
+                        "default_value": "",
+                        "placeholder": "Ex: 2018",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5b7d774dbd048",
+                        "label": "Date fin",
+                        "name": "training_dateEnd",
+                        "type": "text",
+                        "instructions": "Année",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "50",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "Ex: 2018",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
                     },
                     {
                         "key": "field_5b7d776ebd049",
@@ -523,6 +642,25 @@
                         "prepend": "",
                         "append": "",
                         "maxlength": ""
+                    },
+                    {
+                        "key": "field_5bf1577637c5e",
+                        "label": "Validation",
+                        "name": "validated",
+                        "type": "true_false",
+                        "instructions": "Ce champ à pour rôle de valider ou non ce contenue. Si la valeur est oui, On affiche l'a formation en publique.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "message": "Voulez vous publier cette formation?",
+                        "default_value": 0,
+                        "ui": 0,
+                        "ui_on_text": "",
+                        "ui_off_text": ""
                     }
                 ]
             },
@@ -832,7 +970,7 @@
                 "required": 0,
                 "conditional_logic": 0,
                 "wrapper": {
-                    "width": "",
+                    "width": "50",
                     "class": "",
                     "id": ""
                 },
@@ -841,6 +979,34 @@
                 "ui": 0,
                 "ui_on_text": "",
                 "ui_off_text": ""
+            },
+            {
+                "key": "field_5bd32fead8706",
+                "label": "Type de compte",
+                "name": "itjob_meta_account",
+                "type": "select",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": [
+                    "Compte standard",
+                    "Compte premium",
+                    "En attente de validation"
+                ],
+                "default_value": [
+                    0
+                ],
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 0,
+                "ajax": 0,
+                "return_format": "value",
+                "placeholder": ""
             },
             {
                 "key": "field_5b7897cc9cb4c",
@@ -1236,10 +1402,11 @@
                     "class": "",
                     "id": ""
                 },
-                "choices": {
-                    "cdd": "CDD",
-                    "cdi": "CDI"
-                },
+                "choices": [
+                    "CDD",
+                    "CDI",
+                    "Intérim"
+                ],
                 "default_value": [],
                 "allow_null": 1,
                 "multiple": 0,
@@ -1391,24 +1558,6 @@
                 "load_terms": 0,
                 "return_format": "object",
                 "multiple": 0
-            },
-            {
-                "key": "field_5ba647e4a9e8c",
-                "label": "Les utilisateurs qui ont postulé",
-                "name": "itjob_users_apply",
-                "type": "user",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "wrapper": {
-                    "width": "",
-                    "class": "",
-                    "id": ""
-                },
-                "role": "",
-                "allow_null": 0,
-                "multiple": 1,
-                "return_format": "id"
             }
         ],
         "location": [
@@ -1605,6 +1754,105 @@
                 "multiple": 0,
                 "return_format": "id",
                 "ui": 1
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "options_page",
+                    "operator": "==",
+                    "value": "acf-options-itjob-settings"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": 1,
+        "description": ""
+    },
+    {
+        "key": "group_5bc08cf62b9f2",
+        "title": "Options administrateur",
+        "fields": [
+            {
+                "key": "field_5bc08ce8fcb34",
+                "label": "Nom de l'administrateur",
+                "name": "admin_name",
+                "type": "text",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5bc08d22fcb35",
+                "label": "Adresse émail",
+                "name": "admin_mail",
+                "type": "email",
+                "instructions": "Adresse émail du super administrateur.",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_5bebcfd8004aa",
+                "label": "Les éditeurs du site",
+                "name": "admin_editor_user",
+                "type": "user",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "50",
+                    "class": "",
+                    "id": ""
+                },
+                "role": [
+                    "editor"
+                ],
+                "allow_null": 0,
+                "multiple": 0,
+                "return_format": "object"
+            },
+            {
+                "key": "field_5c065894b5537",
+                "label": "Activer ou désactiver les mails",
+                "name": "save_post_mailing",
+                "type": "true_false",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "Désactiver les notifications ou les confirmations par mail",
+                "default_value": 1,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
             }
         ],
         "location": [

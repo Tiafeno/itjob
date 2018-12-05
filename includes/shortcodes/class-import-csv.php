@@ -1109,7 +1109,7 @@ if ( ! class_exists( 'scImport' ) ) :
       $column = Http\Request::getValue( 'column' );
       $row    = json_decode( $column );
       $obj    = new \stdClass();
-      list( $obj->id, $obj->id_user, $obj->id_entreprise, $obj->status, $obj->created, $obj->type_contrat,
+      list( $obj->id, $obj->id_user, , $obj->status, $obj->created, $obj->type_contrat,
         $obj->date_limit_candidature, $obj->poste_base_a, $obj->poste_a_pourvoir, $obj->mission, $obj->profil_recherche,
         $obj->autre_info, $obj->reference, $obj->salaire_net, $obj->published, $obj->nbr_vue, $obj->position ) = $row;
       $Helper = new JHelper();
