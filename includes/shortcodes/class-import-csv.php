@@ -362,13 +362,7 @@ if ( ! class_exists( 'scImport' ) ) :
                   wp_send_json_error( $insert_company->get_error_message() );
                 }
 
-                // Mettre à jour le nom login avec l'identifiant du post entreprise
                 $id_company = (int) $insert_company;
-                $up_user    = wp_update_user( [ 'user_login' => 'user' . $id_company, 'ID' => $user_id ] );
-                if ( is_wp_error( $up_user ) ) {
-                  wp_send_json_error( $up_user->get_error_message() );
-                }
-
                 update_field( 'itjob_company_email', $rows_object->email, $id_company );
                 update_field( 'itjob_company_name', $rows_object->name, $id_company );
                 update_field( 'itjob_company_newsletter', $rows_object->subscriber, $id_company );
@@ -427,13 +421,7 @@ if ( ! class_exists( 'scImport' ) ) :
                   wp_send_json_error( $insert_candidate->get_error_message() );
                 }
 
-                // Mettre à jour le nom login
                 $id_candidate = (int) $insert_candidate;
-                $up_user      = wp_update_user( [ 'user_login' => 'user' . $id_candidate, 'ID' => $user_id ] );
-                if ( is_wp_error( $up_user ) ) {
-                  wp_send_json_error( $up_user->get_error_message() );
-                }
-
                 update_field( 'itjob_cv_email', $rows_object->email, $id_candidate );
                 update_field( 'itjob_cv_firstname', $first_name, $id_candidate );
                 update_field( 'itjob_cv_lastname', $last_name, $id_candidate );
