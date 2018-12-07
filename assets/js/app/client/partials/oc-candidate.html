@@ -348,7 +348,13 @@
                 <div class="col-lg-12">
                   <!-- Le candidat possède un CV-->
                   <div ng-show="cv.hasCV">
-                    <h2 class="font-bold mb-4">REFERENCE <a target="_blank" title="Voir le CV" ng-href="[[Candidate.candidate_url]]" class="text-muted">#[[Candidate.reference]]</a></h2>
+                    <h2 class="font-bold">REFERENCE 
+                      <a target="_blank" title="Voir le CV" ng-href="[[Candidate.candidate_url]]" class="text-muted">
+                        #[[Candidate.reference]]
+                      </a>
+                    </h2>
+                    <span class="badge badge-pill ng-binding badge-pink" ng-if="Candidate.state === 'pending'">En attente de validation</span>
+                    <div class="mb-4"></div>
                     <!-- Emploi rechercher -->
                     <job-search jobs="Candidate.jobSought"></job-search>
                     <!-- Experience directive -->

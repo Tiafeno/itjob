@@ -117,7 +117,7 @@
           </div>
         </div>
 
-        <div class="col-sm-12 mt-4">
+        <div class="col-sm-12 mt-4" ng-show="Exp.mission != ''">
           <label class="col-form-label uk-text-bold">Description </label>
           <div class="form-group">
             <div class="input-group">
@@ -133,10 +133,10 @@
             <p class="info-status mt-auto mb-auto" ng-show="status">[[status]]</p>
           </div>
           <div class="col-sm-8 uk-text-right">
-            <button class="btn btn-danger ml-4" ng-show="mode === 1" data-ng-click="onDeleteExperience(Exp.id)">
+            <!-- <button class="btn btn-danger ml-4" ng-show="mode === 1" data-ng-click="onDeleteExperience(Exp.id)">
               Supprimer
-            </button>
-            <!--<button class="btn btn-blue ml-4" type="submit">Enregistrer</button>-->
+            </button> -->
+            <button class="btn btn-blue uk-modal-close ml-4" type="button" >Fermer</button>
           </div>
         </div>
       </div>

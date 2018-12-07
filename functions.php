@@ -215,6 +215,7 @@ add_filter( 'wp_nav_menu_args', function ( $args ) {
 
 
 add_action('init', function () {
+  //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
 //  header('Content-Type: text/csv');
 //  header('Content-Disposition: attachment; filename="emploi.csv"');
 //  $args = [
