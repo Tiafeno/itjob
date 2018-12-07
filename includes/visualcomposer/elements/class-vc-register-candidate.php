@@ -134,6 +134,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         'angular-animate',
         'ngFileUpload',
         'b-datepicker',
+        'moment-locales',
         'daterangepicker',
         'bootstrap-tagsinput',
         'ng-tags',

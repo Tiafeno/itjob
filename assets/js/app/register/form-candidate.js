@@ -130,11 +130,19 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
 
           // Effacer tout les champs input des permis.
 
-
           $rootScope.initDatePicker = function () {
             window.setTimeout(() => {
+              moment.locale('fr');
               jQuery('.input-daterange-years').datepicker({
-                format: "mm/dd/yyyy",
+                format: {
+                  toDisplay: (date, format) => {
+                    let dateFormat = new Date(date);
+                    return moment(dateFormat).format('MMMM YYYY');
+                  },
+                  toValue: (date, format) => {
+                    return new Date(date);
+                  }
+                },
                 minViewMode: "months",
                 startView: 2,
                 autoclose: true,
@@ -629,6 +637,24 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
         var dataForm = new FormData();
         dataForm.append('action', 'update_user_cv');
         var formKeys = Object.keys($rootScope.formData);
+        // Mettre en format internationnal les dates
+        let Experiences = $rootScope.formData.experiences;
+        let Trainings = $rootScope.formData.trainings;
+        moment.locale('fr');
+        $rootScope.formData.experiences = [];
+        for (let Experience of Experiences) {
+          Experience.start = moment(Experience.start, 'MMMM YYYY', 'fr').format('MM/DD/YYYY');
+          Experience.end = moment(Experience.end, 'MMMM YYYY', 'fr').format('MM/DD/YYYY');
+          $rootScope.formData.experiences.push(Experience);
+        }
+
+        $rootScope.formData.trainings = [];
+        for (let Training of Trainings) {
+          Training.start = moment(Training.start, 'MMMM YYYY', 'fr').format('MM/DD/YYYY');
+          Training.end = moment(Training.end, 'MMMM YYYY', 'fr').format('MM/DD/YYYY');
+          $rootScope.formData.trainings.push(Training);
+        }
+
         angular.forEach(formKeys, (property) => {
           var value = Reflect.get($rootScope.formData, property);
           dataForm.set(property, JSON.stringify(value));
