@@ -1,5 +1,5 @@
 <!-- Modal edit training -->
-<div id="modal-edit-training-overflow" uk-modal>
+<div id="modal-edit-training-overflow" uk-modal="bg-close: false">
   <div class="uk-modal-dialog">
     <button class="uk-modal-close-default" type="button" uk-close></button>
     <div class="uk-modal-header">
@@ -111,7 +111,7 @@
           <div class="col-sm-8 uk-text-right">
             <!-- <button class="btn btn-danger ml-4" ng-show="mode === 1" data-ng-click="onDeleteTraining(Train.id)">Supprimer</button> -->
             <button class="btn btn-blue ml-4" ng-if="mode != 1" type="submit">Enregistrer</button>
-            <button class="btn btn-blue ml-4 uk-modal-close" ng-if="mode != 0" type="button">Fermer</button>
+            <button class="btn btn-warning ml-4 uk-modal-close" type="button">Fermer</button>
           </div>
         </div>
       </div>

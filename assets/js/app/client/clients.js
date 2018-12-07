@@ -206,40 +206,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
         };
 
         /**
-         * Modifier une expérience
-         * @param {string} positionHeld
-         */
-        $scope.editExperience = (experienceId) => {
-          $scope.mode = 1;
-          let experience = _.find($scope.Candidate.experiences, experience => experience.id == parseInt(experienceId));
-          let momentDateBegin = moment(experience.exp_dateBegin, 'MM/DD/YYYY', 'fr');
-          let dateEndObj = {};
-          if (!_.isEmpty(experience.exp_dateEnd)) {
-            let momentDateEnd = moment(experience.exp_dateEnd, 'MM/DD/YYYY', 'fr');
-            dateEndObj = {
-              month: momentDateEnd.format('MMMM'),
-              year: parseInt(momentDateEnd.format('YYYY'))
-            };
-          }
-          $scope.Exp = {
-            id: experience.id,
-            validated: experience.validated,
-            position: experience.exp_positionHeld,
-            company: experience.exp_company,
-            city: experience.exp_city,
-            country: experience.exp_country,
-            mission: experience.exp_mission,
-            position_currently_works: _.isEmpty(experience.exp_dateEnd) ? true : false,
-            dateBegin: {
-              month: momentDateBegin.format('MMMM'),
-              year: parseInt(momentDateBegin.format('YYYY'))
-            },
-            dateEnd: dateEndObj
-          };
-          UIkit.modal('#modal-edit-experience-overflow').show();
-        };
-
-        /**
          * Supprimer une experience dans la base de donnée
          * @param {int} experienceId
          */
@@ -266,29 +232,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
             });
         };
 
-        /**
-         * Envoyer le formulaire d'ajout pour la modification
-         * @param {bool} isValid
-         */
-        $scope.submitForm = (isValid) => {
-          if (!isValid || !$scope.eform.$dirty) return;
-          self.formatFormEntry($scope.Exp)
-            .then(Experience => {
-              self.updateExperience(Experience)
-                .then(response => {
-                  if (response.success) {
-                    $scope.status = "Enregistrer avec succès";
-                    window.setTimeout(() => {
-                      UIkit.modal('#modal-edit-experience-overflow').hide();
-                    }, 1200);
-                  } else {
-                    $scope.status = response.msg;
-                  }
-                });
-            });
-          // Mettre à jour l'expérience
-
-        };
 
         /**
          * Envoyer le fomulaire d'ajout pour une nouvelle experience
@@ -396,6 +339,65 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
           return deferred.promise;
         };
 
+        
+        /**
+         * Envoyer le formulaire d'ajout pour la modification
+         * @param {bool} isValid
+         */
+        $scope.submitForm = (isValid) => {
+          if (!isValid || !$scope.eform.$dirty) return;
+          self.formatFormEntry($scope.Exp)
+            .then(Experience => {
+              self.updateExperience(Experience)
+                .then(response => {
+                  if (response.success) {
+                    $scope.status = "Enregistrer avec succès";
+                    window.setTimeout(() => {
+                      UIkit.modal('#modal-edit-experience-overflow').hide();
+                    }, 1200);
+                  } else {
+                    $scope.status = response.msg;
+                  }
+                });
+            });
+          // Mettre à jour l'expérience
+
+        };
+
+                /**
+         * Modifier une expérience
+         * @param {string} positionHeld
+         */
+        $scope.editExperience = (experienceId) => {
+          $scope.mode = 1;
+          let experience = _.find($scope.Candidate.experiences, experience => experience.id == parseInt(experienceId));
+          let momentDateBegin = moment(experience.exp_dateBegin, 'MM/DD/YYYY', 'fr');
+          let dateEndObj = {};
+          if (!_.isEmpty(experience.exp_dateEnd)) {
+            let momentDateEnd = moment(experience.exp_dateEnd, 'MM/DD/YYYY', 'fr');
+            dateEndObj = {
+              month: momentDateEnd.format('MMMM'),
+              year: parseInt(momentDateEnd.format('YYYY'))
+            };
+          }
+          $scope.Exp = {
+            id: experience.id,
+            validated: experience.validated,
+            position: experience.exp_positionHeld,
+            company: experience.exp_company,
+            city: experience.exp_city,
+            country: experience.exp_country,
+            mission: experience.exp_mission,
+            position_currently_works: _.isEmpty(experience.exp_dateEnd) ? true : false,
+            dateBegin: {
+              month: momentDateBegin.format('MMMM'),
+              year: parseInt(momentDateBegin.format('YYYY'))
+            },
+            dateEnd: dateEndObj
+          };
+          UIkit.modal('#modal-edit-experience-overflow').show();
+        };
+
         /**
          * Récuperer une date de fin
          * @param beginYears
@@ -411,12 +413,17 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
         };
 
         // Event on modal dialog close or hide
-        UIkit.util.on('#modal-edit-experience-overflow', 'hide', function (e) {
+        UIkit.util.on('#modal-edit-experience-overflow', 'hide', e => {
           e.preventDefault();
           $scope.Exp = {};
           $scope.eform.$setPristine();
           $scope.eform.$setUntouched();
           $scope.status = '';
+        });
+
+        UIkit.util.on('#modal-new-experience-overflow', 'hide', e => {
+          e.preventDefault();
+          $scope.newExperience = {};
         });
 
       }]
