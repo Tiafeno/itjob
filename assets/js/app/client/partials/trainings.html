@@ -94,7 +94,7 @@
                 <select ng-disabled="mode === 1" class="form-control" name="end_year" ng-model="Train.training_dateEnd.year"
                   required>
                   <option value="">Année</option>
-                  <option ng-value="year" ng-repeat="year in dateEndRange(Train.dateBegin.year)">[[year]]</option>
+                  <option ng-value="year" ng-repeat="year in dateEndRange(Train.training_dateBegin.year)">[[year]]</option>
                 </select>
               </div>
             </div>
