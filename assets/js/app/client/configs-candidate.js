@@ -49,6 +49,12 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       return moment(entry, "MM/DD/YYYY", "fr").format("MMMM, YYYY");
     }
   }])
+  .filter('moment_birthday', [function () {
+    return (entry) => {
+      if (_.isEmpty(entry)) return entry;
+      return moment(entry, 'DD/MM/YYYY', 'fr').format('dddd DD MMMM YYYY');
+    }
+  }])
   .directive('generalInformationCandidate', [function () {
     return {
       restrict: 'E',
