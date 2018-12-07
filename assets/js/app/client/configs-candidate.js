@@ -469,7 +469,13 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
           switch ($scope.mode) {
             case 0:
               // Nouvelle formation
-              Trainings.push($scope.Train);
+              moment.locale('fr');
+              let TrainingFormat = _.clone($scope.Train);
+              let dateBegin = TrainingFormat.training_dateBegin;
+              let dateEnd = TrainingFormat.training_dateEnd;
+              TrainingFormat.training_dateBegin = moment(`${dateBegin.month} ${dateBegin.year}`, 'MMMM YYYY').format('MM/DD/YYYY');
+              TrainingFormat.training_dateEnd = moment(`${dateEnd.month} ${dateEnd.year}`, 'MMMM YYYY').format('MM/DD/YYYY');
+              Trainings.push(TrainingFormat);
               break;
             case 1:
               // Modifier une formation
@@ -487,7 +493,6 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
               break;
           }
           self.updateTraining(Trainings);
-          $scope.mode = null
         };
 
         /**
@@ -515,6 +520,8 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
                   return training;
                 });
                 $scope.mode = null;
+              } else {
+                // La mise à jours n'a pas reussi
               }
             })
         };
