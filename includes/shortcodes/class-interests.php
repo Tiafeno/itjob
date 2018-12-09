@@ -224,9 +224,13 @@ class scInterests
     $User = wp_get_current_user();
     if (in_array('company', $User->roles)) {
       $Company = Company::get_company_by($User->ID);
+      $Model = new itModel();
 
       if (!$itModel->exist_interest($cv_id, $offer_id)) {
         $response = $itModel->added_interest($cv_id, $offer_id);
+        
+        $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
+        do_action('notice-interest', $Interest->id_cv_request);
         // Envoyer un mail a l'administrateur
         do_action('alert_when_company_interest', $cv_id, $offer_id);
         wp_send_json_success($response);
@@ -236,6 +240,9 @@ class scInterests
         // On ajoute et on active automatiquement l'affichage du CV
         if ($itModel->interest_access($cv_id, $Company->getId())) {
           $results = $itModel->added_interest($cv_id, $offer_id, $Company->getId(), 'validated');
+          
+          $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
+          do_action('notice-interest', $Interest->id_cv_request);
           // Envoyer un mail a l'administrateur
           do_action('alert_when_company_interest', $cv_id, $offer_id);
           wp_send_json_success($results);

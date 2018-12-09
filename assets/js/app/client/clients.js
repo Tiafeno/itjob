@@ -69,6 +69,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
       }).label;
     }
   }])
+  .filter('moment_notice', [function () {
+    return (entry) => {
+      if (_.isEmpty(entry)) return entry;
+      return moment(entry, 'YYYY-MM-DD h:mm:ss', 'fr').fromNow();
+    }
+  }])
   .directive('changePassword', ['$http', function ($http) {
     return {
       restrict: 'E',
@@ -433,8 +439,25 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/notifications.html?ver='+itOptions.version,
-      scope: {},
-      controller: ['$scope', function ($scope) {
+      scope: true,
+      controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
+        $scope.Notices = [];
+        $scope.Loading = false;
+
+        jQuery('#modal-notification-overflow').on('show.bs.modal', (e) => {
+          $scope.Loading = true;
+          $http.get(`${itOptions.Helper.ajax_url}?action=collect_current_user_notices`,{cache: false})
+            .then(response => {
+              let query = response.data;
+              $scope.Notices = _.map(query.data, (data) => {
+                data.status = parseInt(data.status);
+                data.ID = parseInt(data.ID);
+                data.url = `${data.url}&notif_id=${data.ID}`;
+                return data;
+              });
+              $scope.Loading = false;
+            }, (error) => {});
+        });
 
       }]
     }

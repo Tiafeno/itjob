@@ -31,10 +31,10 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'acf/save_post', function ( $post_id ) {
         $post_type   = get_post_type( $post_id );
         $post_status = get_post_status( $post_id );
-        update_field( 'activated', 1, $post_id );
 
-        // Activer les experiences et les formations
+        // Activer les experiences et les formations si le post est publier
         if ( $post_type === 'candidate' && $post_status === 'publish' ) {
+          update_field( 'activated', 1, $post_id );
           $Experiences = get_field( 'itjob_cv_experiences', $post_id );
           $Trainings   = get_field( 'itjob_cv_trainings', $post_id );
           if ( is_array( $Experiences ) && ! empty( $Experiences ) ) {
@@ -54,6 +54,10 @@ if ( ! class_exists( 'itJob' ) ) {
             }
             update_field( 'itjob_cv_trainings', $Values, $post_id );
           }
+
+          // Crée une notification pour informer que le CV est validé
+          
+          do_action("notice-publish-cv", $post_id);
         }
       }, 10, 1 );
 
@@ -146,6 +150,14 @@ if ( ! class_exists( 'itJob' ) ) {
                       `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
                       PRIMARY KEY (`id_lists`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_lists );
+
+        $notice = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}notices (
+            `id_notice` bigint(20) PRIMARY KEY AUTO_INCREMENT,
+            `id_user` bigint(20) NOT NULL,
+            `status` boolean DEFAULT false,
+            `notice` longtext NOT NULL COMMENT 'Contient l''object Notification',
+            `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );";
+        $wpdb->query($notice);
       } );
 
       // Add acf google map api

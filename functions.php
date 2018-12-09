@@ -42,6 +42,7 @@ require 'includes/class/middlewares/OfferHelper.php';
 require 'includes/class/middlewares/Auth.php';
 require 'includes/class/middlewares/Register.php';
 require 'includes/class/middlewares/ModelInterest.php';
+require 'includes/class/middlewares/ModelNotice.php';
 require 'includes/class/middlewares/ModelCVLists.php';
 
 // Model
@@ -103,6 +104,7 @@ $elementsVC = (object) [
 
 
 require 'includes/class/class-wp-city.php';
+require 'includes/class/class-notification.php';
 require 'includes/class/class-http-request.php';
 require 'includes/class/class-jhelper.php';
 require 'includes/class/class-menu-walker.php';

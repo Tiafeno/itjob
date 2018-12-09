@@ -17,6 +17,8 @@ trait ModelInterest {
    * @param int $id_candidat
    * @param int $id_offer
    * @param null $id_company
+   * @param string $status  pending|validated|reject
+   * @param string $type - interested|apply (apply - Signifie qu'un candidat à postuler pour une offre)
    *
    * @return bool|int
    */
@@ -68,7 +70,7 @@ trait ModelInterest {
    */
   public function update_interest_status( $id_request, $status = 'pending' ) {
     global $wpdb;
-    if ( ! is_user_logged_in() || ! is_int( $id_request ) ) {
+    if ( ! is_user_logged_in() || ! is_numeric( $id_request ) ) {
       return false;
     }
     $results = $wpdb->update( $this->requestTable, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%s' ], [ '%d' ] );
@@ -83,7 +85,7 @@ trait ModelInterest {
   }
 
   /**
-   * Cette fonction verifie si est deja ajouter dans l'offre
+   * Cette fonction verifie si le candidat a déja postuler ou selectionner sur l'offre
    *
    * @param int $id_candidat
    * @param int $id_offer
@@ -100,7 +102,7 @@ trait ModelInterest {
     }
     $table   = $wpdb->prefix . 'cv_request';
     $prepare = $wpdb->prepare( "SELECT * FROM $table WHERE id_candidate = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
-    $rows    = $wpdb->get_results( $prepare );
+    $rows    = $wpdb->get_row( $prepare );
 
     return $rows;
   }
@@ -133,7 +135,7 @@ trait ModelInterest {
       return null;
     }
     $prepare = $wpdb->prepare( "SELECT * FROM $this->requestTable WHERE id_candidate = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
-    $rows    = $wpdb->get_results( $prepare );
+    $rows    = $wpdb->get_row( $prepare );
 
     return $rows;
   }
@@ -235,7 +237,7 @@ trait ModelInterest {
   public static function get_request($id_request) {
     global $wpdb;
     if (!is_numeric($id_request)) return false;
-    $interests = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cv_request WHERE {$wpdb->prefix}cv_request.id_cv_request = {$id_request}" );
+    $interests = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cv_request WHERE {$wpdb->prefix}cv_request.id_cv_request = {$id_request}" );
 
     return $interests;
   }

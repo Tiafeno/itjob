@@ -1,59 +1,153 @@
 <?php
 namespace includes\object;
-if ( ! defined( 'ABSPATH' ) ) {
+
+use includes\model\itModel;
+use includes\post\Candidate;
+use includes\post\Company;
+use includes\post\Offers;
+
+if (!defined('ABSPATH')) {
   exit;
 }
 
+// Un nouveau CV portant la référence « ".$cvs->reference." » a été inséré 
 
-final class Notification {
-  private $title;
-  private $message;
-  private $type;
-  private $status; // lu ou non lu
+
+final class Notification
+{
+  public $ID = 0;
+  public $title;
+  public $date_create;
   public $url;
 
-  public function __construct( $type = null) {
-    if (is_null($type) || empty($type)) return false;
+  public function __construct()
+  {
   }
 
-  public function get_message() {
-    return $this->message;
-  }
-
-  public function get_title() {
-    return $this->title;
-  }
-
-  public static function getInstance($type = null) {
-    if (is_null($type) || empty($type) ) return false;
-    return new Notification($type);
+  public static function getInstance($id_notice)
+  {
+    $Model = new itModel();
+    return $Model->collect_notice($id_notice);
   }
 
 
 }
 
-final class NotificationHelper {
-  public function __construct() {
+final class NotificationHelper
+{
+  public function __construct()
+  {
     add_action('init', function () {
+      add_action('notice-candidate-postuled', [&$this, 'notice_candidate_postuled'], 10, 2);
+      add_action('notice-interest', [&$this, 'notice_interest'], 10, 1);
+      add_action('notice-publish-cv', [&$this, 'notice_publish_cv'], 10, 1);
+      add_action('notice-change-request-status', [&$this, 'notice_change_request_status'], 10, 2);
 
+      // On change la status d'une notification
+      if (isset($_GET['ref'])) {
+        $ref = $_GET['ref'];
+        if ($ref === 'notif') {
+          $id_notice = (int)$_GET['notif_id'];
+          if (!$id_notice) return false;
+          $Model = new itModel();
+          $Model->change_notice_status($id_notice);
+        }
+      }
     });
   }
 
-  
-  public function notification_publish_cv( $id_cv ) {
 
+  public function notice_publish_cv($id_cv)
+  {
+    $id_cv = (int)$id_cv;
+    if (!$id_cv) return false;
+    $Model = new itModel();
+    $Candidate = new Candidate($id_cv);
+    $Notice = new Notification();
+    $Notice->title = "Votre CV viens d'être validé";
+    $Notice->url = $Candidate->candidate_url . '?ref=notif';
+    $Author = $Candidate->getAuthor();
+    $Model->added_notice($Author->ID, $Notice);
+
+    return true;
   }
 
-  public function notification_candidate_postuled( $id_cv, $id_offer ) {
+  public function notice_candidate_postuled($id_cv, $id_offer)
+  {
+    $Model = new itModel();
+    // Company
+    $Candidate = new Candidate($id_cv);
+    $Author = $Candidate->getAuthor();
+    $Offer = new Offers($id_offer);
+    $companyNotice = new Notification();
+    $companyNotice->title = "$Candidate->title a postulé pour l'offre <b>{$Offer->title}</b>";
+    $companyNotice->url = $Candidate->candidate_url . "?ref=notif";
+    $Model->added_notice($Author->ID, $companyNotice);
 
+    return true;
   }
 
-  public function notification_company_interest( $id_cv, $id_company ) {
+  public function notice_interest($id_cv_request)
+  {
+    if (!is_numeric($id_cv_request)) return false;
+    $Interest = itModel::get_request($id_cv_request);
+    if (is_null($Interest)) return null;
+    $Model = new itModel();
+    $Offer = new Offers((int)$Interest->id_offer);
 
+    // Candidate
+    $Candidate = new Candidate((int)$Interest->id_candidate);
+    $Author = $Candidate->getAuthor();
+    $candidateNotice = new Notification();
+    $candidateNotice->title = "Une entreprise s'interesser à votre CV sur l'offre: <b>{$Offer->title}</b>";
+    $candidateNotice->url = $Offer->offer_url . "?ref=notif";
+    $Model->added_notice($Author->ID, $candidateNotice);
+
+    return true;
   }
 
-  public function notification_change_interet_status( $id_interest, $status ) {
+  /**
+   * @param $id_cv_interest
+   * @param null $status
+   *
+   * @return bool|null
+   */
+  public function notice_change_request_status($id_cv_interest, $status = null)
+  {
+    if (!is_numeric($id_cv_interest)) return false;
+    $Interest = itModel::get_request($id_cv_interest);
 
+    if (is_null($Interest)) return null;
+
+    // Instance
+    $Candidate = new Candidate((int)$Interest->id_candidate);
+    $Company = new Company((int)$Interest->id_company);
+    $Offer = new Offers((int)$Interest->id_offer);
+    $Model = new itModel();
+
+    $companyNotice = new Notification();
+    $candidateNotice = new Notification();
+    $companyNotice->url = $Candidate->candidate_url . "?ref=notif";
+    $candidateNotice->url = $Offer->offer_url . "?ref=notif";
+    switch ($Interest->status) {
+      case 'validated':
+        $companyNotice->title = "Le CV portant la référence « {$Candidate->reference} » est maintenant disponible, sur l'offre <b>{$Offer->title}</b>";
+        $candidateNotice->title = "Votre CV a été selectionné sur l'offre « {$Offer->title} »";
+        break;
+      case 'reject':
+        $companyNotice->title = "CV portant la référence « {$Candidate->reference} » a été réjeté sur l'offre <b>{$Offer->title}</b>";
+        if ($Interest->type === 'apply') {
+          $candidateNotice->title = "Votre candidature a été rejeté sur l'offre « {$Offer->title} »";
+        }
+        break;
+    }
+    $Model->added_notice($Company->author->ID, $companyNotice);
+    if ($Interest->status === 'validated' || $Interest->type === 'apply') {
+      $Author = $Candidate->getAuthor();
+      $Model->added_notice($Author->ID, $candidateNotice);
+    }
+
+    return true;
   }
 }
 

@@ -61,6 +61,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_collect_favorite_candidates', [ &$this, 'collect_favorite_candidates' ] );
         add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
         add_action( 'wp_ajax_get_candidacy', [ &$this, 'get_candidacy' ] );
+        add_action( 'wp_ajax_collect_current_user_notices', [ &$this, 'collect_current_user_notices' ] );
       }
       add_action( 'wp_ajax_nopriv_forgot_password', [ &$this, 'forgot_password' ] );
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
@@ -307,8 +308,9 @@ if ( ! class_exists( 'scClient' ) ) :
       $Model = new itModel();
       if ($request = $Model->exist_interest($candidate_id, $offer_id)) {
         if (empty($request)) wp_send_json_error("Aucun resultat trouver pendant la verification");
-        $update = $Model->update_interest_status((int)$request[0]->id_cv_request, $status);
+        $update = $Model->update_interest_status((int)$request->id_cv_request, $status);
         if ($update):
+          do_action('notice-change-request-status', (int)$request->id_cv_request, $status); // Ajouter les notifications
           wp_send_json_success("Requete mis à jours avec succès");
         endif;
         wp_send_json_error("Il est possible que la requete à déja activé la requete ou bien une erreur s'est produite");
@@ -759,21 +761,29 @@ if ( ! class_exists( 'scClient' ) ) :
           $request_interest = $Model->exist_interest( $id_candidate, $id_offer );
           if ( $request_interest ):
             $interest = $Model->collect_interest_candidate( $id_candidate, $id_offer );
-            $interest = array_map( function ( $data ) {
-              $data->attachment = get_post( (int) $data->id_attachment );
-              $data->candidate  = new Candidate( (int) $data->id_candidate );
-              $data->candidate->__get_access();
-              unset( $data->id_candidate, $data->id_attachment );
-
-              return $data;
-            }, $interest );
-
-            wp_send_json_success( $interest[0] );
+            $interest->attachment = get_post( (int) $interest->id_attachment );
+            $interest->candidate  = new Candidate( (int) $interest->id_candidate );
+            $interest->candidate->__get_access();
+            unset( $interest->id_candidate, $interest->id_attachment );
+            wp_send_json_success( $interest );
           endif;
         }
         wp_send_json_error( "Accès non autoriser" );
       }
       wp_send_json_error( "Bad request" );
+    }
+
+    /**
+     * Function ajax
+     */
+    public function collect_current_user_notices() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+      $User = wp_get_current_user();
+      if ($User->ID === 0) wp_send_json_error("Vous n'êtes pas connecter à notre service");
+      $Model = new itModel();
+      wp_send_json_success($Model->collect_notices($User->ID));
     }
 
     /**

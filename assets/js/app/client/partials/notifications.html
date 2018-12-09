@@ -9,38 +9,38 @@
       </div>
       <div class="ibox-body">
         <ul class="media-list media-list-divider scroller mr-2" data-height="470px">
-          <li class="media">
+          <li class="media" ng-if="Loading">
+            <div class="preloader-backdrop">
+              <div class="page-preloader">Chargement</div>
+            </div>
+          </li>
+          <li class="media" ng-if="Notices.length <= 0 && !Loading">
             <div class="media-body d-flex">
               <div class="flex-1">
-                <h5 class="media-heading">
-                  <span href="javascript:;">En construction</span>
-                </h5>
-                <p class="font-13 text-light mb-1">Tous les notifications sont envoyer par email pour le moment</p>
+                <p class="font-13 text-light mb-1">Aucune notification</p>
               </div>
             </div>
           </li>
-          <!--<li class="media">
+          <li class="media" ng-repeat="notice in Notices">
             <div class="media-body d-flex">
               <div class="flex-1">
-                <h5 class="media-heading">
-                  <a href="javascript:;">How to install new Adminca</a>
-                </h5>
-                <p class="font-13 text-light mb-1">Cillum in incididunt reprehenderit qui reprehenderit nulla</p>
+                <h6 class="media-heading">
+                  <a target="_blank" ng-href="[[notice.url]]">[[notice.title]]</a>
+                </h6>
                 <div class="d-flex align-items-center font-13">
-                  <img class="img-circle mr-2" src="http://api.falicrea.com/thumbnails/icons8-user-48.png" alt="image"
-                       width="22"/>
-                  <a class="mr-2 text-success" href="javascript:;">Tyrone Carroll</a>
-                  <span class="text-muted">18 mins ago</span>
+                  <span class="text-muted">[[notice.date_create|moment_notice]]</span>
                 </div>
               </div>
               <div class="text-right" style="width:100px;">
-                <span class="badge badge-primary badge-pill mb-2">Open</span>
+                <span ng-class="{'badge-secondary': notice.status, 'badge-primary': !notice.status}" class="badge badge-pill mb-2">
+                  [[ notice.status ? 'Lu' : 'Non lu' ]]
+                </span>
                 <div>
-                  <small class="text-muted font-12"><i class="fa fa-reply mr-2"></i>2 reply</small>
+                  <small class="text-muted font-12"></small>
                 </div>
               </div>
             </div>
-          </li> -->
+          </li> 
         </ul>
       </div>
     </div>
