@@ -41,6 +41,7 @@ final class NotificationHelper
       add_action('notice-candidate-postuled', [&$this, 'notice_candidate_postuled'], 10, 2);
       add_action('notice-interest', [&$this, 'notice_interest'], 10, 1);
       add_action('notice-publish-cv', [&$this, 'notice_publish_cv'], 10, 1);
+      add_action('notice-publish-offer', [&$this, 'notice_publish_offer'], 10, 1);
       add_action('notice-change-request-status', [&$this, 'notice_change_request_status'], 10, 2);
 
       // On change la status d'une notification
@@ -70,6 +71,10 @@ final class NotificationHelper
     $Model->added_notice($Author->ID, $Notice);
 
     return true;
+  }
+
+  public function notice_publish_offer($id_offer) {
+    
   }
 
   public function notice_candidate_postuled($id_cv, $id_offer)
