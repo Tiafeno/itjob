@@ -1,6 +1,7 @@
 <?php
 require_once 'class/class-permission-callback.php';
 require_once 'class/class-api-candidate.php';
+require_once 'class/class-api-helper.php';
 require_once 'class/class-api-company.php';
 
 /**
@@ -65,4 +66,38 @@ add_action('rest_api_init', function () {
     ),
   ]);
 
+  register_rest_route('it-api', '/taxonomies/(?P<taxonomy>\w+)', [
+    array(
+      'methods' => WP_REST_Server::ALLMETHODS,
+      'callback' => [new apiHelper(), 'get_taxonomy'],
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => [
+        'taxonomy' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return !empty($param);
+          }
+        ),
+      ]
+    ),
+  ]);
+
+  register_rest_route('it-api', '/candidate/update/(?P<ref>\w+)/(?P<candidate_id>\d+)', [
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => [new apiCandidate(), 'update_module_candidate'],
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => [
+        'ref' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return !empty($param);
+          }
+        ),
+        'candidate_id' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param);
+          }
+        ),
+      ]
+    ),
+  ]);
 });

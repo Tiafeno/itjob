@@ -14,21 +14,20 @@
  *   copies or substantial portions of the Software.
  */
 
-define( '__SITENAME__', 'itJob' );
-define( '__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj' );
-define( 'TWIG_TEMPLATE_PATH', get_template_directory() . '/templates' );
-if ( ! defined( 'VENDOR_URL' ) ) {
-  define( 'VENDOR_URL', get_template_directory_uri() . '/assets/vendors' );
+define('__SITENAME__', 'itJob');
+define('__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj');
+define('TWIG_TEMPLATE_PATH', get_template_directory() . '/templates');
+if (!defined('VENDOR_URL')) {
+  define('VENDOR_URL', get_template_directory_uri() . '/assets/vendors');
 }
-$theme = wp_get_theme( 'itjob' );
+$theme = wp_get_theme('itjob');
 
 // Utiliser ces variables apres la fonction: the_post()
-$offers    = null;
-$company   = null;
+$offers = null;
+$company = null;
 $candidate = null;
 // Variable pour les alerts
 $it_alerts = [];
-
 
 require 'includes/itjob-configs.php';
 require 'includes/itjob-functions.php';
@@ -59,7 +58,7 @@ $interfaces = [
   'includes/class/interfaces/iCompany.php',
   'includes/class/interfaces/iCandidate.php'
 ];
-foreach ( $interfaces as $interface ) {
+foreach ($interfaces as $interface) {
   require $interface;
 }
 
@@ -69,39 +68,38 @@ require_once 'includes/class/class-particular.php';
 require_once 'includes/class/class-company.php';
 require_once 'includes/class/class-candidate.php';
 
-$itJob = (object) [
-  'version'  => $theme->get( 'Version' ),
-  'root'     => require 'includes/class/class-itjob.php',
+$itJob = (object)[
+  'version' => $theme->get('Version'),
+  'root' => require 'includes/class/class-itjob.php',
   'services' => require 'includes/class/class-jobservices.php'
 ];
 
 // shortcodes
-$shortcode = (object) [
-  'scImport'    => require 'includes/shortcodes/class-import-csv.php',
-  'scLogin'     => require 'includes/shortcodes/class-login.php',
+$shortcode = (object)[
+  'scImport' => require 'includes/shortcodes/class-import-csv.php',
+  'scLogin' => require 'includes/shortcodes/class-login.php',
   'scInterests' => require 'includes/shortcodes/class-interests.php'
 ];
 
-add_action( 'init', function () {
+add_action('init', function () {
   global $shortcode;
   $shortcode->scClient = require 'includes/shortcodes/scClient.php';
-  $page_oc_id          = \includes\object\jobServices::page_exists( 'Espace client' );
-  add_rewrite_rule( '^espace-client/?', "index.php?page_id={$page_oc_id}", 'top' );
-} );
+  $page_oc_id = \includes\object\jobServices::page_exists('Espace client');
+  add_rewrite_rule('^espace-client/?', "index.php?page_id={$page_oc_id}", 'top');
+});
 
 // Visual composer elements
-$elementsVC = (object) [
-  'vcSearch'             => require 'includes/visualcomposer/elements/class-vc-search.php',
-  'vcOffers'             => require 'includes/visualcomposer/elements/class-vc-offers.php',
-  'vcBlog'               => require 'includes/visualcomposer/elements/class-vc-blog.php',
-  'vcCandidate'          => require 'includes/visualcomposer/elements/class-vc-candidate.php',
-  'vcJePostule'          => require 'includes/visualcomposer/elements/class-vc-jepostule.php',
-  'vcSlider'             => require 'includes/visualcomposer/elements/class-slider.php',
-  'vcRegisterCompany'    => require 'includes/visualcomposer/elements/class-vc-register-company.php',
+$elementsVC = (object)[
+  'vcSearch' => require 'includes/visualcomposer/elements/class-vc-search.php',
+  'vcOffers' => require 'includes/visualcomposer/elements/class-vc-offers.php',
+  'vcBlog' => require 'includes/visualcomposer/elements/class-vc-blog.php',
+  'vcCandidate' => require 'includes/visualcomposer/elements/class-vc-candidate.php',
+  'vcJePostule' => require 'includes/visualcomposer/elements/class-vc-jepostule.php',
+  'vcSlider' => require 'includes/visualcomposer/elements/class-slider.php',
+  'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php',
-  'vcRegisterCandidate'  => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
+  'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
 ];
-
 
 require 'includes/class/class-wp-city.php';
 require 'includes/class/class-notification.php';
@@ -110,57 +108,56 @@ require 'includes/class/class-jhelper.php';
 require 'includes/class/class-menu-walker.php';
 require 'includes/filters/function-filters.php';
 
-$itHelper = (object) [
+$itHelper = (object)[
   'Mailing' => require 'includes/class/class-mail.php'
 ];
-
-require 'api/itjob-api.php';
-require 'jobs/itjob-cron.php';
 
 // Autoload composer libraries
 require 'composer/vendor/autoload.php';
 
 try {
   $loader = new Twig_Loader_Filesystem();
-  $loader->addPath( TWIG_TEMPLATE_PATH . '/vc', 'VC' );
-  $loader->addPath( TWIG_TEMPLATE_PATH . '/shortcodes', 'SC' );
-  $loader->addPath( TWIG_TEMPLATE_PATH . '/widgets', 'WG' );
-  $loader->addPath( TWIG_TEMPLATE_PATH . '/error', 'ERROR' );
-  $loader->addPath( TWIG_TEMPLATE_PATH . '/mail', 'MAIL' );
+  $loader->addPath(TWIG_TEMPLATE_PATH . '/vc', 'VC');
+  $loader->addPath(TWIG_TEMPLATE_PATH . '/shortcodes', 'SC');
+  $loader->addPath(TWIG_TEMPLATE_PATH . '/widgets', 'WG');
+  $loader->addPath(TWIG_TEMPLATE_PATH . '/error', 'ERROR');
+  $loader->addPath(TWIG_TEMPLATE_PATH . '/mail', 'MAIL');
 
   /** @var Object $Engine */
-  $Engine = new Twig_Environment( $loader, array(
-    'debug'       => WP_DEBUG,
-    'cache'       => TWIG_TEMPLATE_PATH . '/cache',
+  $Engine = new Twig_Environment($loader, array(
+    'debug' => WP_DEBUG,
+    'cache' => TWIG_TEMPLATE_PATH . '/cache',
     'auto_reload' => WP_DEBUG
-  ) );
+  ));
   // Ajouter des filtres
-  itjob_filter_engine( $Engine );
+  itjob_filter_engine($Engine);
 
-} catch ( Twig_Error_Loader $e ) {
-  die( $e->getRawMessage() );
+} catch (Twig_Error_Loader $e) {
+  die($e->getRawMessage());
 }
 
+require 'api/itjob-api.php';
+require 'jobs/itjob-cron.php';
 
-add_action( 'after_setup_theme', function () {
-  load_theme_textdomain( 'twentyfifteen' );
-  load_theme_textdomain( __SITENAME__, get_template_directory() . '/languages' );
+add_action('after_setup_theme', function () {
+  load_theme_textdomain('twentyfifteen');
+  load_theme_textdomain(__SITENAME__, get_template_directory() . '/languages');
 
   /** @link https://codex.wordpress.org/Post_Thumbnails */
-  add_theme_support( 'post-thumbnails' );
-  add_theme_support( 'category-thumbnails' );
-  add_theme_support( 'automatic-feed-links' );
-  add_theme_support( 'title-tag' );
-  add_theme_support( 'custom-logo', array(
-    'height'     => 100,
-    'width'      => 250,
+  add_theme_support('post-thumbnails');
+  add_theme_support('category-thumbnails');
+  add_theme_support('automatic-feed-links');
+  add_theme_support('title-tag');
+  add_theme_support('custom-logo', array(
+    'height' => 100,
+    'width' => 250,
     'flex-width' => true,
-  ) );
+  ));
 
 
-	 add_image_size('sidebar-thumb', 120, 120, true);
-	 add_image_size('homepage-thumb', 220, 180);
-	 add_image_size('singlepost-thumb', 590, 9999);
+  add_image_size('sidebar-thumb', 120, 120, true);
+  add_image_size('homepage-thumb', 220, 180);
+  add_image_size('singlepost-thumb', 590, 9999);
 
 
   /**
@@ -168,52 +165,52 @@ add_action( 'after_setup_theme', function () {
    * To regenerate existing images in the new size,
    * use the Regenerate Thumbnails plugin.
    */
-  set_post_thumbnail_size( 50, 50, array(
+  set_post_thumbnail_size(50, 50, array(
     'center',
     'center'
-  ) ); // 50 pixels wide by 50 pixels tall, crop from the center
+  )); // 50 pixels wide by 50 pixels tall, crop from the center
 
   // Register menu location
-  register_nav_menus( array(
-    'primary'            => 'Menu Principal',
-    'menu-top'           => 'Menu Supérieur (Top)',
-    'menu-footer-left'   => 'Menu à gauche, bas de page',
+  register_nav_menus(array(
+    'primary' => 'Menu Principal',
+    'menu-top' => 'Menu Supérieur (Top)',
+    'menu-footer-left' => 'Menu à gauche, bas de page',
     'menu-footer-middle' => 'Menu aux milieux, bas de page',
-    'social-network'     => 'Réseau social',
-  ) );
-} );
+    'social-network' => 'Réseau social',
+  ));
+});
 
-if ( function_exists( 'acf_add_options_page' ) ) {
-  $parent = acf_add_options_page( array(
+if (function_exists('acf_add_options_page')) {
+  $parent = acf_add_options_page(array(
     'page_title' => 'General Settings',
     'menu_title' => 'itJob Settings',
     'capability' => 'edit_posts',
-    'redirect'   => false
-  ) );
+    'redirect' => false
+  ));
 }
 
-add_filter( 'body_class', function ( $classes ) {
+add_filter('body_class', function ($classes) {
   //$classes[] = 'uk-offcanvas-content';
   return $classes;
-} );
+});
 
 /**
  * Personnaliser le menu d'accueil
  * (ajouter un walker)
  */
-add_filter( 'wp_nav_menu_args', function ( $args ) {
+add_filter('wp_nav_menu_args', function ($args) {
   $menu = $args['menu'];
-  if ( empty( $menu ) ) {
+  if (empty($menu)) {
     return $args;
   }
-  if ( $menu->name === 'REF219M' ) :
-    $args['menu_class']      = "it-home-menu uk-padding-remove";
-    $args['container_class'] = "d-flex";
-    $args['walker']          = new Home_Menu_Walker();
+  if ($menu->name === 'REF219M') :
+    $args['menu_class'] = "it-home-menu uk-padding-remove";
+  $args['container_class'] = "d-flex";
+  $args['walker'] = new Home_Menu_Walker();
   endif;
 
   return $args;
-} );
+});
 
 
 add_action('init', function () {

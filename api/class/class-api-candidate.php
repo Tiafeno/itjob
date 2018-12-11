@@ -86,4 +86,35 @@ final class apiCandidate
   {
     return new WP_REST_Response('OK');
   }
+
+  public function update_module_candidate(WP_REST_Request $request)
+  {
+    $ref = $request['ref'];
+    $candidate_id = (int)$request['candidate_id'];
+
+    switch ($ref) {
+      case 'training':
+        $content = stripslashes($_REQUEST["content"]);
+        $contents = json_decode($content);
+        $Candidate = new \includes\post\Candidate($candidate_id);
+        $values = [];
+        foreach ($contents as $content) {
+          $new_trainings[] = [
+            'training_dateBegin' => $content->training_dateBegin,
+            'training_dateEnd' => $content->training_dateEnd,
+            'training_diploma' => $content->training_diploma,
+            'training_city' => $content->training_city,
+            'training_country' => $content->training_country,
+            'training_establishment' => $content->training_establishment,
+            'validated' => 1 // S'il y a une autre formation qui n'est pas validé?
+          ];
+        }
+        update_field('itjob_cv_trainings', $new_trainings, $Candidate->getId());
+        $trainings = get_field('itjob_cv_trainings', $Candidate->getId());
+
+        break;
+    }
+
+    return new WP_REST_Response($trainings);
+  }
 }
