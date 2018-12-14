@@ -68,7 +68,7 @@ final class Offers implements \iOffer {
   private $featured;
 
 
-  public function __construct( $postId = null ) {
+  public function __construct( $postId = null, $private_access = false ) {
     if ( is_null( $postId ) ) {
       return false;
     }
@@ -98,6 +98,10 @@ final class Offers implements \iOffer {
       $post_user      = get_user_by( 'email', trim($company_email) );
       $this->author   = Obj\jobServices::getUserData( $post_user->ID );
 
+    }
+
+    if ($private_access) {
+      $this->__get_access();
     }
 
     return $this;

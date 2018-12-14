@@ -45,17 +45,28 @@ add_action('rest_api_init', function () {
   ]);
 
   /**
-   * Récuperer la liste des entreprises
+   * Mettre à jour les expériences et les formations
    */
-  register_rest_route('it-api', '/company/', [
+  register_rest_route('it-api', '/candidate/update/(?P<ref>\w+)/(?P<candidate_id>\d+)', [
     array(
-      'methods' => WP_REST_Server::READABLE,
-      'callback' => [new apiCompany(), 'get_companys'],
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => [new apiCandidate(), 'update_module_candidate'],
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
-      'args' => []
+      'args' => [
+        'ref' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return !empty($param);
+          }
+        ),
+        'candidate_id' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param);
+          }
+        ),
+      ]
     ),
   ]);
-
+  
   /**
    * Récuperer la liste des candidates
    */
@@ -68,9 +79,60 @@ add_action('rest_api_init', function () {
     ),
   ]);
 
+
+  /**
+   * Récuperer la liste des entreprises
+   */
+  register_rest_route('it-api', '/company/', [
+    array(
+      'methods' => WP_REST_Server::READABLE,
+      'callback' => [new apiCompany(), 'get_companys'],
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => []
+    ),
+  ]);
+
   /**
    * Récuperer la liste des offres
    */
+  register_rest_route('it-api', '/offer/(?P<id>\d+)', [
+    // Recuperer un offre
+    array(
+      'methods' => WP_REST_Server::READABLE,
+      'callback' => function (WP_REST_Request $request) {
+        $offer_id = $request['id'];
+        $Offer = new \includes\post\Offers($offer_id, true);
+        if (!$Offer->is_offer()) {
+          return new WP_Error('no_offer', 'Aucun offre ne correpond à cette id', array('status' => 404));
+        }
+        return new WP_REST_Response($Offer);
+      },
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => array(
+        'id' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param);
+          }
+        ),
+      ),
+    ),
+    // Mettre à jours une offre
+    array(
+      'methods' => WP_REST_Server::EDITABLE,
+      'callback' => function (WP_REST_Request $request) {
+        return new WP_REST_Response(true);
+      },
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => array(
+        'id' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param);
+          }
+        ),
+      ),
+    )
+  ]);
+
   register_rest_route('it-api', '/offers/', [
     array(
       'methods' => WP_REST_Server::CREATABLE,
@@ -95,23 +157,4 @@ add_action('rest_api_init', function () {
     ),
   ]);
 
-  register_rest_route('it-api', '/candidate/update/(?P<ref>\w+)/(?P<candidate_id>\d+)', [
-    array(
-      'methods' => WP_REST_Server::CREATABLE,
-      'callback' => [new apiCandidate(), 'update_module_candidate'],
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
-      'args' => [
-        'ref' => array(
-          'validate_callback' => function ($param, $request, $key) {
-            return !empty($param);
-          }
-        ),
-        'candidate_id' => array(
-          'validate_callback' => function ($param, $request, $key) {
-            return is_numeric($param);
-          }
-        ),
-      ]
-    ),
-  ]);
 });
