@@ -93,7 +93,7 @@ final class Offers implements \iOffer {
       // La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
       // Retourne post entreprise...
       $post_company   = get_field( "itjob_offer_company", $this->ID );
-      if (!$post_company) return;
+      if (!is_object($post_company)) return;
       $company_email  = get_field( 'itjob_company_email', $post_company->ID );
       $post_user      = get_user_by( 'email', trim($company_email) );
       $this->author   = Obj\jobServices::getUserData( $post_user->ID );
