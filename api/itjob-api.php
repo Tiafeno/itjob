@@ -105,6 +105,7 @@ add_action('rest_api_init', function () {
         if (!$Offer->is_offer()) {
           return new WP_Error('no_offer', 'Aucun offre ne correpond à cette id', array('status' => 404));
         }
+        $Offer->enterprise = $Offer->getCompany();
         return new WP_REST_Response($Offer);
       },
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
