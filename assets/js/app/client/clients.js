@@ -8,8 +8,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
     return {
       getCity: function () {
         return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {
-          cache: true
-        })
+            cache: true
+          })
           .then(function (resp) {
             return resp.data;
           });
@@ -37,9 +37,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
   }])
   .filter('Greet', [function () {
     const Greeting = [{
-      greeting: 'mrs',
-      label: 'Madame'
-    },
+        greeting: 'mrs',
+        label: 'Madame'
+      },
       {
         greeting: 'mr',
         label: 'Monsieur'
@@ -54,9 +54,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
   }])
   .filter('Status', [function () {
     const postStatus = [{
-      slug: 'publish',
-      label: 'Vérifier'
-    },
+        slug: 'publish',
+        label: 'Vérifier'
+      },
       {
         slug: 'pending',
         label: 'En attente'
@@ -78,7 +78,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
   .directive('changePassword', ['$http', function ($http) {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/change-password.html?ver='+itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/change-password.html?ver=' + itOptions.version,
       scope: {},
       link: function (scope, element, attrs) {
         scope.password = {};
@@ -106,7 +106,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
               pwd: {
                 required: "Ce champ est obligatoire",
                 pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, " +
-                "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
+                  "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
               },
               confpwd: {
                 required: "Ce champ est obligatoire",
@@ -120,13 +120,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
               Fm.append('pwd', scope.password.pwd);
               // Submit form validate
               $http({
-                url: itOptions.Helper.ajax_url,
-                method: "POST",
-                headers: {
-                  'Content-Type': undefined
-                },
-                data: Fm
-              })
+                  url: itOptions.Helper.ajax_url,
+                  method: "POST",
+                  headers: {
+                    'Content-Type': undefined
+                  },
+                  data: Fm
+                })
                 .then(resp => {
                   let data = resp.data;
                   // Update password success
@@ -161,7 +161,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
   .directive('alerts', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/alert.html?version='+itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/alert.html?version=' + itOptions.version,
       scope: {
         onSave: '&', // Function pass
         alerts: '=', // Two way variable pass
@@ -173,7 +173,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
   .directive('experiences', ['clientService', function (clientService) {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html?ver='+itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html?ver=' + itOptions.version,
       scope: {
         Candidate: "=candidate",
         abranchFn: '&abranchFn' // Function pass
@@ -193,7 +193,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
         $scope.dateEndRange = [];
 
-        this.$onInt = () => {$
+        this.$onInt = () => {
+          $
         };
 
         /**
@@ -218,11 +219,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
         $scope.onDeleteExperience = (experienceId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-            labels: {
-              ok: 'Supprimer',
-              cancel: 'Annuler'
-            }
-          })
+              labels: {
+                ok: 'Supprimer',
+                cancel: 'Annuler'
+              }
+            })
             .then(function () {
               let Experiences = _.reject($scope.Candidate.experiences, (experience) => experience.id === parseInt(experienceId));
               self.updateExperience(Experiences)
@@ -317,13 +318,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
           subForm.append('experiences', JSON.stringify(Experiences));
           $scope.status = "Enregistrement en cours...";
           $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -345,7 +346,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
           return deferred.promise;
         };
 
-        
         /**
          * Envoyer le formulaire d'ajout pour la modification
          * @param {bool} isValid
@@ -370,7 +370,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
 
         };
 
-                /**
+        /**
          * Modifier une expérience
          * @param {string} positionHeld
          */
@@ -438,7 +438,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
   .directive('notifications', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/notifications.html?ver='+itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/notifications.html?ver=' + itOptions.version,
       scope: true,
       controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
         $scope.Notices = [];
@@ -446,7 +446,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
 
         jQuery('#modal-notification-overflow').on('show.bs.modal', (e) => {
           $scope.Loading = true;
-          $http.get(`${itOptions.Helper.ajax_url}?action=collect_current_user_notices`,{cache: false})
+          $http.get(`${itOptions.Helper.ajax_url}?action=collect_current_user_notices`, {
+              cache: false
+            })
             .then(response => {
               let query = response.data;
               $scope.Notices = _.map(query.data, (data) => {
@@ -475,7 +477,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
       $scope.Helper = {};
       $scope.preloader = false;
       $scope.select2Options = {
-        allowClear:true,
+        allowClear: true,
         placeholder: "Selectionner",
         width: 'resolve',
         matcher: function (params, data) {
@@ -538,7 +540,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
       $scope.searchCityFn = (city) => {
         if (!_.isUndefined($scope.profilEditor.form.region)) {
           let region = parseInt($scope.profilEditor.form.region);
-          rg = _.findWhere($scope.profilEditor.regions, {term_id: region});
+          rg = _.findWhere($scope.profilEditor.regions, {
+            term_id: region
+          });
           if (rg) {
             if (city.name.indexOf(rg.name) > -1) {
               return true;
@@ -570,12 +574,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
               }, 1200);
 
             }
-          }, (error) => {
-          });
+          }, (error) => {});
       };
 
       $scope.onSubmitCandidateInformation = (isValid) => {
-//update_candidate_information
+        //update_candidate_information
         if (!isValid) return false;
         $scope.profilEditor.loading = true;
         const Form = new FormData();
@@ -596,8 +599,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
               }, 1200);
 
             }
-          }, (error) => {
-          });
+          }, (error) => {});
       };
 
       self.send
@@ -615,9 +617,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
           if (_.isNull($scope.Company.branch_activity) || !$scope.Company.branch_activity || !$scope.Company.country ||
             !$scope.Company.region || _.isEmpty($scope.Company.greeting)) {
             $q.all([
-              $scope.asyncTerms('branch_activity'),
-              $scope.asyncTerms('region'),
-              $scope.asyncTerms('city')])
+                $scope.asyncTerms('branch_activity'),
+                $scope.asyncTerms('region'),
+                $scope.asyncTerms('city')
+              ])
               .then(data => {
                 $scope.profilEditor.abranchs = _.clone(data[0]);
                 $scope.profilEditor.regions = _.clone(data[1]);
@@ -640,8 +643,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
               })
           }
 
-        }
-        else {
+        } else {
           // Candidat
           // Crée une image par default
           let sexe = Client.iClient.greeting === null || _.isEmpty(Client.iClient.greeting) ? '' : (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';
@@ -681,11 +683,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
           const abranch = $scope.Candidate.branch_activity;
           let updateActivity = $scope.Candidate.has_cv ? (!!(_.isNull(abranch) || !abranch)) : false;
 
-          if ( !country || !region || _.isEmpty($scope.Candidate.greeting) || !address || updateActivity) {
+          if (!country || !region || _.isEmpty($scope.Candidate.greeting) || !address || updateActivity) {
             $q.all([
-              $scope.asyncTerms('branch_activity'),
-              $scope.asyncTerms('region'),
-              $scope.asyncTerms('city')])
+                $scope.asyncTerms('branch_activity'),
+                $scope.asyncTerms('region'),
+                $scope.asyncTerms('city')
+              ])
               .then(data => {
                 $scope.profilEditor.abranchs = _.clone(data[0]);
                 $scope.profilEditor.regions = _.clone(data[1]);
@@ -799,13 +802,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
         form.append('action', 'update_alert_filter');
         form.append('alerts', JSON.stringify($scope.alerts));
         $http({
-          method: 'POST',
-          url: itOptions.Helper.ajax_url,
-          headers: {
-            'Content-Type': undefined
-          },
-          data: form
-        })
+            method: 'POST',
+            url: itOptions.Helper.ajax_url,
+            headers: {
+              'Content-Type': undefined
+            },
+            data: form
+          })
           .then(response => {
             // Handle success
             let data = response.data;
@@ -963,13 +966,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
        */
       $scope.onSaveCandidateProfil = (formData) => {
         $http({
-          url: itOptions.Helper.ajax_url,
-          method: "POST",
-          headers: {
-            'Content-Type': undefined
-          },
-          data: formData
-        })
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: formData
+          })
           .then(resp => {
             let data = resp.data;
             if (!data.success) return;

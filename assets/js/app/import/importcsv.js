@@ -253,7 +253,7 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
       {
         _id: 7,
         slug: 'user_company',
-        label: 'Utilisateurs - Ajouter les entreprises'
+        label: 'Utilisateurs - Entreprises'
       },
       {
         _id: 4,

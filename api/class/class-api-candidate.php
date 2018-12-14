@@ -91,13 +91,12 @@ final class apiCandidate
   {
     $ref = $request['ref'];
     $candidate_id = (int)$request['candidate_id'];
-
+    $content = stripslashes($_REQUEST["content"]);
+    $contents = json_decode($content);
+    $Candidate = new \includes\post\Candidate($candidate_id);
     switch ($ref) {
       case 'training':
-        $content = stripslashes($_REQUEST["content"]);
-        $contents = json_decode($content);
-        $Candidate = new \includes\post\Candidate($candidate_id);
-        $values = [];
+        $new_trainings = [];
         foreach ($contents as $content) {
           $new_trainings[] = [
             'training_dateBegin' => $content->training_dateBegin,
@@ -106,15 +105,34 @@ final class apiCandidate
             'training_city' => $content->training_city,
             'training_country' => $content->training_country,
             'training_establishment' => $content->training_establishment,
-            'validated' => 1 // S'il y a une autre formation qui n'est pas validé?
+            'validated' => $contentn->validated // S'il y a une autre formation qui n'est pas validé?
           ];
         }
         update_field('itjob_cv_trainings', $new_trainings, $Candidate->getId());
-        $trainings = get_field('itjob_cv_trainings', $Candidate->getId());
+        $fields = get_field('itjob_cv_trainings', $Candidate->getId());
 
+        break;
+      case 'experience':
+        $new_experiences = [];
+        foreach ($contents as $content) {
+          $new_experiences[] = [
+            'exp_dateBegin' => $content->exp_dateBegin,
+            'exp_dateEnd' => $content->exp_dateEnd,
+            'exp_positionHeld' => $content->exp_positionHeld,
+            'exp_company' => $content->exp_company,
+            'exp_city' => $content->exp_city,
+            'exp_country' => $content->exp_country,
+            'exp_mission' => $content->exp_mission,
+            'exp_branch_activity' => $content->exp_branch_activity,
+            'validated' => $content->validated // S'il y a une autre formation qui n'est pas validé?
+            // exp_branch_activity
+          ];
+        }
+        update_field('itjob_cv_experiences', $new_experiences, $Candidate->getId());
+        $fields = get_field('itjob_cv_experiences', $Candidate->getId());
         break;
     }
 
-    return new WP_REST_Response($trainings);
+    return new WP_REST_Response($fields);
   }
 }
