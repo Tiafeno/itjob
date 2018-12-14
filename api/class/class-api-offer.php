@@ -13,6 +13,8 @@ final class apiOffer {
       'post_type' => 'offers',
       'post_status' => 'any',
       "posts_per_page" => $posts_per_page,
+      'order' => 'DESC',
+      'orderby' => 'ID',
       "paged" => $paged
     ];
     $the_query = new WP_Query($args);
