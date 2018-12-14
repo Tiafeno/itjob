@@ -1,6 +1,8 @@
 <?php
+require_once 'model/class-api-model.php';
 require_once 'class/class-permission-callback.php';
 require_once 'class/class-api-candidate.php';
+require_once 'class/class-api-offer.php';
 require_once 'class/class-api-helper.php';
 require_once 'class/class-api-company.php';
 
@@ -61,6 +63,18 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCandidate(), 'get_candidates'],
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => []
+    ),
+  ]);
+
+  /**
+   * Récuperer la liste des offres
+   */
+  register_rest_route('it-api', '/offers/', [
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => [new apiOffer(), 'get_offers'],
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => []
     ),

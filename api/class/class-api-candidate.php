@@ -48,9 +48,6 @@ final class apiCandidate
         ]
       ]
     ];
-    if (isset($search['value']) && !empty($search['value'])) {
-
-    }
     $the_query = new WP_Query($args);
     $candidates = [];
     if ($the_query->have_posts()) {
@@ -79,11 +76,15 @@ final class apiCandidate
         'data' => []
       ];
     }
-
   }
 
+  // TODO: Mettre à jours le candidat et le validé
   public function update_candidate(WP_REST_Request $request)
   {
+    $candidate_id = (int)$request['id'];
+    $candidate = stripslashes($_REQUEST['candidate']);
+
+    
     return new WP_REST_Response('OK');
   }
 
