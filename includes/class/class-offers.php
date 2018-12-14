@@ -86,6 +86,7 @@ final class Offers implements \iOffer {
     $this->offer_status = $output->post_status;
     $this->datePublication = get_the_date( 'j F, Y', $output );
     if ( $this->is_offer() ) {
+      $this->id_offer = &$this->ID;
       $this->post_url = get_the_permalink( $this->ID );
       $this->acfElements()->getOfferTaxonomy();
 
