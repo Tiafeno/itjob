@@ -17,6 +17,9 @@ final class apiOffer {
       'orderby' => 'ID',
       "paged" => $paged
     ];
+    if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
+      $args = array_merge($args, ['s' => $_POST['search']['value']]);
+    }
     $the_query = new WP_Query($args);
     $offers = [];
     if ($the_query->have_posts()) {
