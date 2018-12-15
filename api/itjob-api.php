@@ -118,7 +118,7 @@ add_action('rest_api_init', function () {
             case 'activated':
               $status = isset($_REQUEST['status']) ? stripslashes(urldecode($_REQUEST['status'])) : null;
               if (is_null($status)) new WP_REST_Response('Parametre manquant');
-              update_field('activated', (bool)$status ? 1 : 0, $Offer->ID);
+              update_field('activated', $status=== 'true' ? 1 : 0, $Offer->ID);
 
               return new WP_REST_Response("Offre mis à jour avec succès, {$status}");
               break;
