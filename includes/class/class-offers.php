@@ -144,7 +144,7 @@ final class Offers implements \iOffer {
     $regions      = wp_get_post_terms( $this->ID, 'region', ["fields" => "all"] );
     $towns        = wp_get_post_terms( $this->ID, 'city', ["fields" => "all"]);
     $this->region = is_array($regions) && !empty($regions) ? $regions[0] : '';
-    $this->town   = is_array($towns) && !empty($towns) ? $towns[0] : '';
+    $this->town   = is_array($towns) && !empty($towns) ? $towns[0] : null;
     $this->tags   = wp_get_post_terms( $this->ID, 'itjob_tag', [ "fields" => "names" ] );
     if ( is_wp_error( $this->tags ) ) {
       $this->tags = null;
