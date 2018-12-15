@@ -170,7 +170,7 @@ final class Offers implements \iOffer {
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
     $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
     $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID ); // Objet Term
-    $this->rateplan         = get_field( 'itjob_offer_rateplan', $this->ID ); // Objet Term
+    $this->rateplan         = get_field( 'itjob_offer_rateplan', $this->ID ); // String
 
     return $this;
   }
