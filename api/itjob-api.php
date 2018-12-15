@@ -121,15 +121,18 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::EDITABLE,
       'callback' => function (WP_REST_Request $request) {
+        $updatePost = false;
         $offer = stripslashes($_REQUEST['offer']);
         $offer = json_decode($offer);
         remove_filter('acf/update_value/name=itjob_offer_abranch', 'update_offer_reference');
+        $currentOffer = new \includes\post\Offers($offer->ID);
         $dateTime = DateTime::createFromFormat("m/d/Y", $offer->date_limit);
         $acfDateLimit = $dateTime->format('Ymd');
-        $form = (object)[
+        $form = [
           'post' => $offer->post,
           'reference' => $offer->reference,
           'contrattype' => (int)$offer->contract,
+          'rateplan' => $offer->plan,
           'proposedsallary' => $offer->proposedsalary,
           'abranch' => $offer->branch_activity,
           'datelimit' => $acfDateLimit,
@@ -138,7 +141,34 @@ add_action('rest_api_init', function () {
           'otherinformation' => nl2br($offer->otherInformation),
         ];
 
-        return new WP_REST_Response($form);
+        wp_set_post_terms($offer->ID, [(int)$offer->region], 'region');
+        wp_set_post_terms($offer->ID, [(int)$offer->town], 'city');
+
+        foreach ($form as $itemKey => $item) {
+          update_field("itjob_offer_{$itemKey}", $item, $offer->ID);
+        }
+
+        // Activation et publication
+        if ($currentOffer->offer_status !== $offer->status ||
+          (bool)$currentOffer->activated !== (bool)$offer->activated) {
+          $updatePost = true;
+        }
+        if ($updatePost) {
+          update_field('activated', (bool)$offer->activated, $offer->ID);
+          if ($currentOffer->offer_status !== $offer->status && $offer->status === 'publish') {
+            // notification de validation
+            do_action('confirm_validate_offer', $offer->ID);
+          }
+          $result = wp_update_post(['ID' => $offer->ID, 'post_status' => $offer->status], true);
+          if ( is_wp_error( $result ) ) {
+            return new WP_REST_Response($result->get_error_message());
+          } else {
+            $message = $offer->status === 'publish' ? "publier" : "mise en attente";
+            return new WP_REST_Response("Offre {$message} avec succès");
+          }
+        }
+
+        return new WP_REST_Response('Offre mise à jour avec succès');
       },
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => array(

@@ -42,6 +42,8 @@ class Mailing {
     add_action( 'new_validate_term', [ &$this, 'notif_admin_new_validate_term' ], 10, 1 );
     add_action( 'email_application_validation', [ &$this, 'email_application_validation' ], 10, 1 );
 
+    add_action( 'confirm_validate_offer', [&$this, 'confirm_validate_offer'], 10, 1);
+    add_action( 'confirm_validate_candidate', [&$this, 'confirm_validate_candidate'], 10, 1);
     // Envoyer une email au commercial et a l'administrateur
     // pour notifier une inscription ou un nouveau utilisateur
     add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
