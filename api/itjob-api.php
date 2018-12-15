@@ -105,9 +105,31 @@ add_action('rest_api_init', function () {
         if (!$Offer->is_offer()) {
           return new WP_Error('no_offer', 'Aucun offre ne correpond à cette id', array('status' => 404));
         }
-        $companyPost = $Offer->getCompany();
-        $Offer->__info = new \includes\post\Company($companyPost->ID);
-        return new WP_REST_Response($Offer);
+        $ref = isset($_REQUEST['ref']) ? stripslashes(urldecode($_REQUEST['ref'])) : false;
+        if ($ref) {
+          switch ($ref) {
+            case 'collect':
+              $companyPost = $Offer->getCompany();
+              $Offer->__info = new \includes\post\Company($companyPost->ID);
+              return new WP_REST_Response($Offer);
+
+              break;
+
+            case 'activated':
+              $status = isset($_REQUEST['status']) ? stripslashes(urldecode($_REQUEST['status'])) : null;
+              if (is_null($status)) new WP_REST_Response('Parametre manquant');
+              update_field('activated', (bool)$status, $Offer->ID);
+
+              return new WP_REST_Response("Offre mis à jour avec succès");
+              break;
+
+            default:
+              break;
+          }
+        } else {
+          return new WP_REST_Response(false);
+        }
+
       },
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => array(
@@ -161,7 +183,7 @@ add_action('rest_api_init', function () {
             do_action('confirm_validate_offer', $offer->ID);
           }
           $result = wp_update_post(['ID' => $offer->ID, 'post_status' => $offer->status], true);
-          if ( is_wp_error( $result ) ) {
+          if (is_wp_error($result)) {
             return new WP_REST_Response($result->get_error_message());
           } else {
             $message = $offer->status === 'publish' ? "publier" : "mise en attente";
