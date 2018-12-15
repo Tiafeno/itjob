@@ -52,6 +52,9 @@ final class Offers implements \iOffer {
   /** @var string $region - Region */
   public $region;
 
+  /** @var $town - Ville */
+  public $town;
+
   /** @var array $contractType -  Type de contrat */
   public $contractType;
 
@@ -138,10 +141,10 @@ final class Offers implements \iOffer {
    */
   private function getOfferTaxonomy() {
     // get region
-    $regions      = wp_get_post_terms( $this->ID, 'region', [
-      "fields" => "all"
-    ] );
-    $this->region = isset( $regions[0] ) ? $regions[0] : '';
+    $regions      = wp_get_post_terms( $this->ID, 'region', ["fields" => "all"] );
+    $towns        = wp_get_post_terms( $this->ID, 'city', ["fields" => "all"]);
+    $this->region = is_array($regions) && !empty($regions) ? $regions[0] : '';
+    $this->town   = is_array($towns) && !empty($towns) ? $towns[0] : '';
     $this->tags   = wp_get_post_terms( $this->ID, 'itjob_tag', [ "fields" => "names" ] );
     if ( is_wp_error( $this->tags ) ) {
       $this->tags = null;
