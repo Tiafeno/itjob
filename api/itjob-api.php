@@ -120,7 +120,7 @@ add_action('rest_api_init', function () {
               if (is_null($status)) new WP_REST_Response('Parametre manquant');
               update_field('activated', (bool)$status, $Offer->ID);
 
-              return new WP_REST_Response("Offre mis à jour avec succès");
+              return new WP_REST_Response("Offre mis à jour avec succès, {$status}");
               break;
 
             default:
