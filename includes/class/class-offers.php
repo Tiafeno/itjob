@@ -55,6 +55,9 @@ final class Offers implements \iOffer {
   /** @var array $contractType -  Type de contrat */
   public $contractType;
 
+  /** @var string $rateplan - Mode de diffusion (sereine ou standard) */
+  public $rateplan;
+
   /** @var string $profil - Type de profil réchercher pour l'offre */
   public $profil;
 
@@ -156,7 +159,7 @@ final class Offers implements \iOffer {
     $this->company = get_field( 'itjob_offer_company', $this->ID ); // Object article
 
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
-    $this->dateLimitFormat  = date_i18n('F j, Y', strtotime($this->dateLimit)); // \DateTime::createFromFormat( 'm/d/Y', $this->dateLimit )->format( 'F j, Y' );
+    $this->dateLimitFormat  = date_i18n( 'F j, Y', strtotime($this->dateLimit)); // \DateTime::createFromFormat( 'm/d/Y', $this->dateLimit )->format( 'F j, Y' );
     $this->activated        = get_field( 'activated', $this->ID ); // Bool
     $this->postPromote      = get_field( 'itjob_offer_post', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
@@ -167,6 +170,7 @@ final class Offers implements \iOffer {
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
     $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
     $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID ); // Objet Term
+    $this->rateplan         = get_field( 'itjob_offer_rateplan', $this->ID ); // Objet Term
 
     return $this;
   }
