@@ -124,8 +124,7 @@ add_action('rest_api_init', function () {
         $offer = stripslashes($_REQUEST['offer']);
         $offer = json_decode($offer);
         remove_filter('acf/update_value/name=itjob_offer_abranch', 'update_offer_reference');
-        $dateLimit = strtotime($offer->date_limit);
-        $dateTime = DateTime::createFromFormat("m/d/Y", $dateLimit);
+        $dateTime = DateTime::createFromFormat("m/d/Y", $offer->date_limit);
         $acfDateLimit = $dateTime->format('Ymd');
         $form = (object)[
           'post' => $offer->post,
