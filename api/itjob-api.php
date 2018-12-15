@@ -106,7 +106,7 @@ add_action('rest_api_init', function () {
           return new WP_Error('no_offer', 'Aucun offre ne correpond à cette id', array('status' => 404));
         }
         $companyPost = $Offer->getCompany();
-        $Offer->enterprise = new \includes\post\Company($companyPost->ID);
+        $Offer->__info = new \includes\post\Company($companyPost->ID);
         return new WP_REST_Response($Offer);
       },
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
