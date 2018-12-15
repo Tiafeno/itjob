@@ -66,7 +66,7 @@ add_action('rest_api_init', function () {
       ]
     ),
   ]);
-  
+
   /**
    * Récuperer la liste des candidates
    */
@@ -121,13 +121,31 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::EDITABLE,
       'callback' => function (WP_REST_Request $request) {
-        return new WP_REST_Response(true);
+        $offer = stripslashes($_REQUEST['offer']);
+        $offer = json_decode($offer);
+        remove_filter('acf/update_value/name=itjob_offer_abranch');
+        $dateLimit = strtotime($offer->date_limit);
+        $dateTime = \DateTime::createFromFormat("m/d/Y", $dateLimit);
+        $acfDateLimit = $dateTime->format('Ymd');
+        $form = (object)[
+          'post' => $offer->post,
+          'reference' => $offer->reference,
+          'contrattype' => (int)$offer->contract,
+          'proposedsallary' => $offer->proposedsalary,
+          'abranch' => $offer->branch_activity,
+          'datelimit' => $acfDateLimit,
+          'mission' => nl2br($offer->mission),
+          'profil' => nl2br($offer->profil),
+          'otherinformation' => nl2br($offer->otherInformation),
+        ];
+
+        return new WP_REST_Response($form);
       },
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => array(
         'id' => array(
           'validate_callback' => function ($param, $request, $key) {
-            return is_numeric($param);
+            return !empty($param);
           }
         ),
       ),
