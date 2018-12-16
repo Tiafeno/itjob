@@ -23,15 +23,14 @@ final class apiOffer
       $searchs = explode('|', $search);
       $s = '';
       $meta_query = [];
-
+      $meta_query[] = ['relation' => "AND"];
       $activated = trim($searchs[1]) !== '' && trim($searchs[1]) !== ' ' ? (int)$searchs[1] : '';
       if ($activated === 1 || $activated === 0) {
-        $activatedArg = [
-          'meta_key' => 'activated',
-          'meta_value' => (int)$activated,
-          'meta_compare' => '='
+        $meta_query[] = [
+          'key' => 'activated',
+          'value' => (int)$activated,
+          'compare' => '='
         ];
-        $args = array_merge($args, $activatedArg);
       }
 
       if (!empty($searchs[2]) && $searchs[2] !== ' ') {
@@ -40,26 +39,23 @@ final class apiOffer
 
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
         $s = $searchs[0];
-        add_filter('posts_where', function ($where) use ($s) {
-          global $wpdb;
-          //global $wp_query;
-          if (!is_admin()) {
-            $where .= " AND {$wpdb->posts}.ID IN (
-                        SELECT
-                          pt.ID
-                        FROM {$wpdb->posts} as pt
-                        WHERE  
-                          pt.ID IN (
-                            SELECT {$wpdb->postmeta}.post_id as post_id
-                            FROM {$wpdb->postmeta}
-                            WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_reference' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                          )";
-            $where .= ")"; //  .end AND
-          }
-          return $where;
-        });
-
+        $meta_query[] = [
+          [
+            "relation" => "OR"
+          ],
+          [
+            'key' => 'itjob_offer_reference',
+            'value' => $s,
+            'compare' => 'LIKE'
+          ],
+          [
+            'key' => 'itjob_offer_post',
+            'value' => $s,
+            'compare' => 'LIKE'
+          ]
+        ];
       }
+      $args =array_merge($args, ['meta_query' => $meta_query]);
     }
 
     $the_query = new WP_Query($args);
