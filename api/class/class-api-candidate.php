@@ -13,7 +13,8 @@ final class apiCandidate
       global $wpdb;
       //global $wp_query;
       $s = $search;
-      $where .= " AND {$wpdb->posts}.ID IN (
+      if (!is_admin()) {
+        $where .= " AND {$wpdb->posts}.ID IN (
                       SELECT
                         pt.ID
                       FROM {$wpdb->posts} as pt
@@ -49,6 +50,8 @@ final class apiCandidate
                           WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
                         ))
                       )";
+      }
+      
       return $where;
     });
   }
