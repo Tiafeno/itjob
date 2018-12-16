@@ -36,7 +36,7 @@ final class apiOffer {
         $args = array_merge($args, $meta_query);
       }
 
-      if (!empty($searchs[2]) || $searchs[2] !== ' ') {
+      if (!empty($searchs[2]) && $searchs[2] !== ' ') {
         $status = $searchs[2];
         $args['post_status'] = $status;
       }
