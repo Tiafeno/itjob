@@ -33,7 +33,7 @@ final class apiOffer {
         $args['post_status'] = $status;
       }
     }
-    print_r($args);
+    print_r($searchs);
     $the_query = new WP_Query($args);
     $offers = [];
     if ($the_query->have_posts()) {
