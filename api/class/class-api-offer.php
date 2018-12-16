@@ -6,7 +6,6 @@ final class apiOffer {
   public function get_offers() {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
-    $search = $_POST['search'];
     $paged = isset($_POST['start']) ? ($start === 0) ? 0 : $start / $length : 1;
     $posts_per_page = isset($_POST['length']) ? (int)$_POST['length'] : 10;
     $args = [
@@ -18,7 +17,29 @@ final class apiOffer {
       "paged" => $paged
     ];
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
-      $args = array_merge($args, ['s' => $_POST['search']['value']]);
+      $search = stripslashes($_POST['search']['value']);
+      $searchs = explode('|', $search);
+      if (!empty($searchs[0]) && $searchs[0] !== ' ')
+        $args = array_merge($args, ['s' => $searchs[0]]);
+      // activation
+      if (!empty($searchs[1]) && $searchs[1] !== ' ') {
+        $activated = $searchs[1];
+        $meta_query = 
+        [
+          'meta_query' => [
+            [
+              'key' => 'activated',
+              'value' => $activated,
+            ]
+          ]
+        ];
+        $args = array_merge($args, $meta_query);
+      }
+
+      if (!empty($searchs[2]) || $searchs[2] !== ' ') {
+        $status = $searchs[2];
+        $args['post_status'] = $status;
+      }
     }
     $the_query = new WP_Query($args);
     $offers = [];
