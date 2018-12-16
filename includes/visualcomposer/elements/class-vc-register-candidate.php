@@ -275,7 +275,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         }
       }, array_keys( (array) $form->driveLicences ) );
       $licences = empty($licences) ? '' : implode( ',', $licences );
-      update_field( 'itjob_cv_driveLicence', $licences );
+      update_field( 'itjob_cv_driveLicence', $licences, $this->Candidate->getId() );
 
       // Update notification
       if ( $form->notifEmploi ) {

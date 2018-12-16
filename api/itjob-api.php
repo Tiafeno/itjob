@@ -63,7 +63,7 @@ add_action('rest_api_init', function () {
     ),
     // Mettre à jours un candidat
     array(
-      'methods' => WP_REST_Server::EDITABLE,
+      'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCandidate(), 'update_candidate'],
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => array(

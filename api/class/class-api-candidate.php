@@ -139,10 +139,56 @@ final class apiCandidate
   public function update_candidate(WP_REST_Request $request)
   {
     $candidate_id = (int)$request['id'];
-    $candidate = stripslashes($_REQUEST['candidate']);
+    $candidate = stripslashes($_REQUEST['candidat']);
+    $objCandidate = json_decode(candidate);
 
+    // Update ACF field
+    $activated = is_string($objCandidate->activated) ? ($objCandidate->activated == 'true' ? 1 : 0) : (bool)$objCandidate->activated;
+    update_field( 'activated', $activated, $candidate_id );
 
-    return new WP_REST_Response('OK');
+    $centerInterest = [
+      'various' => $objCandidate->divers,
+      'projet'  => $objCandidate->projet
+    ];
+    update_field( 'itjob_cv_centerInterest', $centerInterest, $candidate_id );
+
+    $driveLicences = array_map(function ($dL) {
+      return $dl->id;
+    }, $objCandidate->driveLicences);
+    $driveLicences = empty($driveLicences) ? '' : implode( ',', $driveLicences );
+    update_field( 'itjob_cv_driveLicence', $driveLicences, $candidate_id );
+
+    $datetimeBd = DateTime::createFromFormat('m/d/Y', $objCandidate->birthday);
+    $bdACF = $dateTime->format('Ymd');
+    $form = (object)[
+      'firstname' => $objCandidate->firstname,
+      'lastname' => $objCandidate->lastname,
+      'birthdayDate' => $bdACF,
+      'address' => $objCandidate->address,
+      'greeting' => $objCandidate->greeting,
+    ];
+
+    foreach (get_object_vars($form) as $key => $value) {
+      update_field("itjob_cv_" . $key, $value, $candidate_id);
+    }
+
+    // Ajouter les emplois rechercher par le candidat (Existant et qui n'existe pas encore dans la base de donnée)
+    $jobIds = is_array($objCandidate->jobs) ? $objCandidate->jobs : [];
+    wp_set_post_terms( $candidate_id, $jobIds, 'job_sought' );
+    // Ajouter les logiciels
+    $softwareIds = is_array($objCandidate->softwares) ? $objCandidate->softwares : [];
+    wp_set_post_terms( $candidate_id, $softwareIds, 'software' );
+    // Ajouter les languages
+    $languagesIds = is_array($objCandidate->languages) ? $objCandidate->languages : [];
+    wp_set_post_terms( $candidate_id, $languagesIds, 'language' );
+
+    $regionIds = is_array($objCandidate->region) ? $objCandidate->region : [];
+    wp_set_post_terms( $candidate_id, $regionIds, 'region' );
+
+    $cityIds = is_array($objCandidate->town) ? $objCandidate->town : [];
+    wp_set_post_terms( $candidate_id, $cityIds, 'city' );
+
+    return new WP_REST_Response('Candidat mis à jour avec succès');
   }
 
   public function update_module_candidate(WP_REST_Request $request)
