@@ -70,14 +70,36 @@ final class apiCandidate
       "paged" => $paged,
     ];
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
-      $this->add_filter_search($_POST['search']['value']);
+      $search = stripslashes($_POST['search']['value']);
+      $searchs = explode('|', $search);
+      $s = '';
+      $activated = trim($searchs[1]) !== '' && trim($searchs[1]) !== ' ' ? (int)$searchs[1] : '';
+      if ($activated === 1 || $activated === 0) {
+        $meta_query[] = [
+          'key' => 'activated',
+          'value' => (int)$activated,
+          'compare' => '='
+        ];
+      }
+
+      if (!empty($searchs[2]) && $searchs[2] !== ' ') {
+        $args['post_status'] = $searchs[2];
+      }
+
+      if (!empty($searchs[0]) && $searchs[0] !== ' ') {
+        $s = $searchs[0];
+        $this->add_filter_search($s);
+      }
+      
     } else {
-      $args = array_merge($args, ['meta_query' => [
-        [
-          'key' => 'itjob_cv_hasCV',
-          'value' => 1
-        ]
-      ]]);
+      $args = array_merge($args,
+        ['meta_query' => [
+          [
+            'key' => 'itjob_cv_hasCV',
+            'value' => 1
+          ]
+        ]]
+      );
     }
     $the_query = new WP_Query($args);
     $candidates = [];

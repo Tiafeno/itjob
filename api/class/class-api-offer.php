@@ -55,7 +55,7 @@ final class apiOffer
           ]
         ];
       }
-      $args =array_merge($args, ['meta_query' => $meta_query]);
+      $args = array_merge($args, ['meta_query' => $meta_query]);
     }
 
     $the_query = new WP_Query($args);
