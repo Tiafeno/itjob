@@ -3,35 +3,6 @@
 final class apiOffer {
   public function __construct() {}
 
-
-    private function add_filter_search($search, $meta_query = [])
-    {
-      add_filter('posts_where', function ($where) use ($search) {
-        global $wpdb;
-        //global $wp_query;
-        $s = $search;
-        $where .= " AND {$wpdb->posts}.ID IN (
-                      SELECT
-                        pt.ID
-                      FROM {$wpdb->posts} as pt
-                      WHERE  
-                        pt.ID IN (
-                          SELECT {$wpdb->postmeta}.post_id as post_id
-                          FROM {$wpdb->postmeta}
-                          WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_reference' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                        )
-                        OR (pt.ID IN (
-                          SELECT {$wpdb->postmeta}.post_id as post_id
-                          FROM {$wpdb->postmeta}
-                          WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_post' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                        ))";
-        $where .= ")"; //  .end AND
-
-        return $where;
-      }, 12, 1);
-    }
-  
-
   public function get_offers(WP_REST_Request $rq) {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
@@ -64,7 +35,31 @@ final class apiOffer {
       }
       
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
-        $this->add_filter_search($searchs[0]);
+        $s = $searchs[0];
+
+        add_filter('posts_where', function ($where) use ($s) {
+          global $wpdb;
+          //global $wp_query;
+          $where .= " AND {$wpdb->posts}.ID IN (
+                        SELECT
+                          pt.ID
+                        FROM {$wpdb->posts} as pt
+                        WHERE  
+                          pt.ID IN (
+                            SELECT {$wpdb->postmeta}.post_id as post_id
+                            FROM {$wpdb->postmeta}
+                            WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_reference' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
+                          )
+                          OR (pt.ID IN (
+                            SELECT {$wpdb->postmeta}.post_id as post_id
+                            FROM {$wpdb->postmeta}
+                            WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_post' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
+                          ))";
+          $where .= ")"; //  .end AND
+  
+          return $where;
+        });
+
       }
     }
     
