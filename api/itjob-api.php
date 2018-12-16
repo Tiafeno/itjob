@@ -19,7 +19,38 @@ add_action('rest_api_init', function () {
     // Recuperer un candidat
     array(
       'methods' => WP_REST_Server::READABLE,
-      'callback' => [new apiCandidate(), 'get_candidate'],
+      'callback' => function (WP_REST_Request $request) {
+        $ref = isset($_REQUEST['ref']) ? stripslashes($_REQUEST['ref']) : false;
+        if ($ref) {
+          $candidate_id = (int)$request['id'];
+          $Candidate = new \includes\post\Candidate($candidate_id);
+          if (is_null($Candidate->title)) {
+            return new WP_Error('no_candidate', 'Aucun candidate ne correpond à cette id', array('status' => 404));
+          }
+          switch ($ref) {
+            case 'collect':
+              $Candidate->__get_access();
+              return new WP_REST_Response($Candidate);
+
+              break;
+
+            case 'activated':
+              $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+              if (is_null($status)) new WP_REST_Response('Parametre manquant');
+              update_field('activated', (int)$status, $Candidate->getId());
+
+              return new WP_REST_Response("Offre mis à jour avec succès");
+              break;
+
+            default:
+              break;
+          }
+        } else {
+          return new WP_REST_Response(false);
+        }
+
+        
+      },
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => array(
         'id' => array(

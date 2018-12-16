@@ -7,24 +7,6 @@ final class apiCandidate
 
   }
 
-  /**
-   * This is our callback function that embeds our resource in a WP_REST_Response
-   *
-   * @param WP_REST_Request $request
-   *
-   * @return WP_Error|WP_REST_Response
-   */
-  public function get_candidate(WP_REST_Request $request)
-  {
-    $candidate_id = $request['id'];
-    $Candidate = new \includes\post\Candidate($candidate_id);
-    if (is_null($Candidate->title)) {
-      return new WP_Error('no_candidate', 'Aucun candidate ne correpond à cette id', array('status' => 404));
-    }
-    $Candidate->__get_access();
-
-    return new WP_REST_Response($Candidate);
-  }
 
   /**
    * Récuperer seulement les utilisateurs ou les candidats qui ont un CV
