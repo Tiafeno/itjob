@@ -19,7 +19,6 @@ final class apiCandidate
                       FROM {$wpdb->posts} as pt
                       INNER JOIN {$wpdb->postmeta} as pm1 ON (pt.ID = pm1.post_id)
                       WHERE pt.post_type = 'candidate'
-                        AND pt.post_status = 'publish'
                         AND (pt.ID IN (
                           SELECT {$wpdb->postmeta}.post_id as post_id
                           FROM {$wpdb->postmeta}
