@@ -44,10 +44,8 @@ final class apiOffer {
     $posts_per_page = isset($_POST['length']) ? (int)$_POST['length'] : 10;
     $args = [
       'post_type' => 'offers',
-      'post_status' => 'any',
+      'post_status' => ['publish', 'pending'],
       "posts_per_page" => $posts_per_page,
-      'order' => 'DESC',
-      'orderby' => 'ID',
       "paged" => $paged
     ];
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
