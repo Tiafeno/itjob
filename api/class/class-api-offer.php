@@ -6,7 +6,7 @@ final class apiOffer {
 
     private function add_filter_search($search, $meta_query = [])
     {
-      add_filter('posts_where', function ($where) use (&$search, &$meta_query) {
+      add_filter('posts_where', function ($where) use ($search) {
         global $wpdb;
         //global $wp_query;
         $s = $search;
@@ -14,17 +14,12 @@ final class apiOffer {
                         SELECT
                           pt.ID
                         FROM {$wpdb->posts} as pt
-                        WHERE pt.post_type = 'offers' 
-                         AND (pt.ID IN (
-                            SELECT {$wpdb->postmeta}.post_id as post_id
-                            FROM {$wpdb->postmeta}
-                            WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
-                          ))
-                         AND (pt.ID IN (
+                        WHERE  
+                         pt.ID IN (
                             SELECT {$wpdb->postmeta}.post_id as post_id
                             FROM {$wpdb->postmeta}
                             WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_reference' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                          ))
+                         )
                          OR (pt.ID IN (
                             SELECT {$wpdb->postmeta}.post_id as post_id
                             FROM {$wpdb->postmeta}
@@ -61,15 +56,12 @@ final class apiOffer {
           'meta_value' => (int)$activated, 
           'meta_compare' => '='
         ];
-        $meta_query[] = $activatedArg;
+
+        $args = array_merge($args, ['meta_query' => $activatedArg]);
       }
       
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
-        $this->add_filter_search($searchs[0], $meta_query);
-      } else {
-        if (isset($activatedArg)) {
-          $args = array_merge($args, $activatedArg);
-        }
+        $this->add_filter_search($searchs[0]);
       }
 
       if (!empty($searchs[2]) && $searchs[2] !== ' ') {
