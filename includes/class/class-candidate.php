@@ -41,7 +41,7 @@ final class Candidate extends UserParticular implements \iCandidate {
    *
    * @param int $postId - ID post 'candidate' type
    */
-  public function __construct( $postId = null ) {
+  public function __construct( $postId = null, $privateAccess = false ) {
     if ( is_null( $postId ) ) {
       return false;
     }
@@ -80,6 +80,10 @@ final class Candidate extends UserParticular implements \iCandidate {
       // Cette methode appel une fonction qui ajoute une propriété (has_cv) de type boolean
       // qui constitue à verifier si le candidate posséde un CV ou autrement.
       $this->hasCV();
+
+      if ($privateAccess) {
+        $this->__get_access();
+      }
     }
   }
 

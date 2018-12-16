@@ -49,7 +49,7 @@ add_action('rest_api_init', function () {
           return new WP_REST_Response(false);
         }
 
-        
+
       },
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => array(
@@ -148,10 +148,40 @@ add_action('rest_api_init', function () {
 
             case 'activated':
               $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
-              if (is_null($status)) new WP_REST_Response('Parametre manquant');
+              if (is_null($status)) return new WP_REST_Response('Parametre manquant');
               update_field('activated', (int)$status, $Offer->ID);
 
               return new WP_REST_Response("Offre mis à jour avec succès");
+              break;
+
+            case 'request':
+              $Model = new \includes\model\itModel();
+              $Interests = $Model->get_offer_interests($offer_id);
+              if (is_array($Interests) && !empty($Interests)) {
+                $Response = [];
+                foreach ($Interests as $Interest) {
+                  $It = new stdClass();
+                  $It->type = $Interest->type;
+                  $It->status = $Interest->status;
+                  $It->id_request = $Interest->id_cv_request;
+                  $It->candidate = new \includes\post\Candidate($Interest->id_candidate, true);
+                  $Response[] = $It;
+                }
+                return new WP_REST_Response($Response);
+              }
+              return new WP_REST_Response(false);
+
+              break;
+
+            case 'update_request':
+              $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+              $id_request = isset($_REQUEST['id_request']) ? $_REQUEST['id_request'] : null;
+              if (is_null($status) || (is_null($id_request) && is_numeric($id_request)))
+                return new WP_Error("params", 'Parametre manquant');
+              $Model = new \includes\model\itModel();
+              $result = $Model->update_interest_status($id_request, $status);
+
+              return new WP_REST_Response($result);
               break;
 
             default:

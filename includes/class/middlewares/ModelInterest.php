@@ -214,7 +214,7 @@ trait ModelInterest {
    *
    * @param int|null $id_offer
    *
-   * @return array|bool|null|object
+   * @return array|bool|null
    */
   public function get_offer_interests( $id_offer = null ) {
     global $wpdb;
