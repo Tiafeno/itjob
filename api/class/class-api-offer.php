@@ -44,7 +44,7 @@ final class apiOffer {
         $where .=      ")";
 
         return $where;
-      }, 10, 2);
+      }, 10, 1);
     }
   
 
