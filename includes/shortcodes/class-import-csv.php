@@ -172,6 +172,7 @@ if (!class_exists('scImport')) :
         $abranch = wp_get_post_terms($postCompany->ID, 'branch_activity');
         $abranch = is_array($abranch) && !empty($abranch) ? $abranch[0] : null;
         if (!is_null($abranch)) {
+          echo $abranch->term_id."\n\r";
           wp_set_post_terms($Offer->ID, [$abranch->term_id], 'branch_activity');
         }
         $numberOffer += 1;
