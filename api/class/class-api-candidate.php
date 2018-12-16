@@ -69,6 +69,8 @@ final class apiCandidate
       "posts_per_page" => $posts_per_page,
       "paged" => $paged,
     ];
+    $meta_query = [];
+    $meta_query[] = ['relation' => "AND"];
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
       $search = stripslashes($_POST['search']['value']);
       $searchs = explode('|', $search);
@@ -92,15 +94,13 @@ final class apiCandidate
       }
       
     } else {
-      $args = array_merge($args,
-        ['meta_query' => [
-          [
-            'key' => 'itjob_cv_hasCV',
-            'value' => 1
-          ]
-        ]]
-      );
+      $meta_query[] = [
+        'key' => 'itjob_cv_hasCV',
+        'value' => 1
+      ];
     }
+
+    $args = array_merge($args, ['meta_query' => $meta_query]);
     $the_query = new WP_Query($args);
     $candidates = [];
     if ($the_query->have_posts()) {
