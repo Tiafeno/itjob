@@ -6,7 +6,7 @@ final class apiOffer {
 
     private function add_filter_search($search, $meta_query = [])
     {
-      add_filter('posts_where', function ($where) use ($search, $meta_query) {
+      add_filter('posts_where', function ($where) use (&$search, &$meta_query) {
         global $wpdb;
         //global $wp_query;
         $s = $search;
@@ -22,22 +22,26 @@ final class apiOffer {
           $where .=   "  AND (pt.ID IN (
                             SELECT {$wpdb->postmeta}.post_id as post_id
                             FROM {$wpdb->postmeta}
-                            WHERE {$wpdb->postmeta}.meta_key = '{$meta->meta_key}' AND {$wpdb->postmeta}.meta_value {$meta->meta_compare} {$meta->meta_value}
+                            WHERE {$wpdb->postmeta}.meta_key = '{$meta->meta_key}' AND {$wpdb->postmeta}.meta_value = {$meta->meta_value}
                           ))";
         }
+        $where .=   "  AND (pt.ID IN (
+                            SELECT {$wpdb->postmeta}.post_id as post_id
+                            FROM {$wpdb->postmeta}
+                            WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_reference' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
+                          ))";
         $where .= ")"; //  .end AND
           // Si une taxonomie n'est pas definie on ajoute cette condition dans la recherche
-        $where .= "  OR (
+        $where .= " OR (
                           {$wpdb->posts}.post_title LIKE  '%{$s}%'
                           AND {$wpdb->posts}.post_type = 'offers'";
 
         foreach ($meta_query as $meta) {
           $meta = (object) $meta;
-          if (strpos($meta->meta_key, '%')) continue;
           $where .=     " AND ({$wpdb->posts}.ID IN (
                             SELECT {$wpdb->postmeta}.post_id as post_id
                             FROM {$wpdb->postmeta}
-                            WHERE {$wpdb->postmeta}.meta_key = '{$meta->meta_key}' AND {$wpdb->postmeta}.meta_value {$meta->meta_compare} {$meta->meta_value}
+                            WHERE {$wpdb->postmeta}.meta_key = '{$meta->meta_key}' AND {$wpdb->postmeta}.meta_value = {$meta->meta_value}
                           ))";
         }
 
@@ -78,13 +82,7 @@ final class apiOffer {
       }
       
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
-        $s = $searchs[0];
-        $meta_query[] = [
-          'meta_key' => 'itjob_offer_reference',
-          'meta_value' =>  "'%{$s}%'",
-          'meta_compare' => "LIKE"
-        ];
-        $this->add_filter_search($s, $meta_query);
+        $this->add_filter_search($searchs[0], $meta_query);
       } else {
         if (isset($activatedArg)) {
           $args = array_merge($args, $activatedArg);
