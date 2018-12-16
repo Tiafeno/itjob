@@ -167,8 +167,8 @@ if (!class_exists('scImport')) :
       $posts = get_posts($args);
       foreach ($posts as $post) {
         $Offer = new Offers($post->ID);
-        print_r($Offer);
         $postCompany = $Offer->getCompany();
+        print_r($postCompany);
         $abranch = wp_get_post_terms($postCompany->ID, 'branch_activity');
         $this->__set_field_term($Offer, $abranch);
         $numberOffer += 1;
