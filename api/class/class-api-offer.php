@@ -22,8 +22,8 @@ final class apiOffer {
       if (!empty($searchs[0]) && $searchs[0] !== ' ')
         $args = array_merge($args, ['s' => $searchs[0]]);
       // activation
-      if (!empty($searchs[1]) && $searchs[1] !== ' ') {
-        $activated = (int)$searchs[1];
+      $activated = (int)$searchs[1];
+      if ($activated === 1 || $activated === 0) {
         $meta_query = ['meta_key' => 'activated', 'meta_value' => (int)$activated, 'meta_compare' => '='];
         $args = array_merge($args, $meta_query);
       }
@@ -33,7 +33,7 @@ final class apiOffer {
         $args['post_status'] = $status;
       }
     }
-    print_r($searchs);
+    
     $the_query = new WP_Query($args);
     $offers = [];
     if ($the_query->have_posts()) {
