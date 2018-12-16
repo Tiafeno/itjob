@@ -1,9 +1,13 @@
 <?php
 
-final class apiOffer {
-  public function __construct() {}
+final class apiOffer
+{
+  public function __construct()
+  {
+  }
 
-  public function get_offers(WP_REST_Request $rq) {
+  public function get_offers(WP_REST_Request $rq)
+  {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
     $paged = isset($_POST['start']) ? ($start === 0) ? 0 : $start / $length : 1;
@@ -20,27 +24,27 @@ final class apiOffer {
       $s = '';
       $meta_query = [];
 
-      $activated = trim($searchs[1]) !== '' &&  trim($searchs[1]) !== ' ' ? (int)$searchs[1] : '';
+      $activated = trim($searchs[1]) !== '' && trim($searchs[1]) !== ' ' ? (int)$searchs[1] : '';
       if ($activated === 1 || $activated === 0) {
         $activatedArg = [
-          'meta_key' => 'activated', 
-          'meta_value' => (int)$activated, 
+          'meta_key' => 'activated',
+          'meta_value' => (int)$activated,
           'meta_compare' => '='
         ];
-        $args = array_merge($args,  $activatedArg);
+        $args = array_merge($args, $activatedArg);
       }
 
       if (!empty($searchs[2]) && $searchs[2] !== ' ') {
         $args['post_status'] = $searchs[2];
       }
-      
+
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
         $s = $searchs[0];
-
         add_filter('posts_where', function ($where) use ($s) {
           global $wpdb;
           //global $wp_query;
-          $where .= " AND {$wpdb->posts}.ID IN (
+          if (!is_admin()) {
+            $where .= " AND {$wpdb->posts}.ID IN (
                         SELECT
                           pt.ID
                         FROM {$wpdb->posts} as pt
@@ -55,14 +59,14 @@ final class apiOffer {
                             FROM {$wpdb->postmeta}
                             WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_post' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
                           ))";
-          $where .= ")"; //  .end AND
-  
+            $where .= ")"; //  .end AND
+          }
           return $where;
         });
 
       }
     }
-    
+
     $the_query = new WP_Query($args);
     $offers = [];
     if ($the_query->have_posts()) {
