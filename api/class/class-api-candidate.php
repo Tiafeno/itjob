@@ -57,6 +57,7 @@ final class apiCandidate
         $candidates = array_map(function ($candidate) {
           if (!isset($candidate->ID)) return $candidate;
           $objCandidate = new \includes\post\Candidate($candidate->ID);
+          $objCandidate->isActive = $objCandidate->is_activated();
           $objCandidate->__get_access();
 
           return $objCandidate;
