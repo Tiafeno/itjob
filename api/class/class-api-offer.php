@@ -81,7 +81,7 @@ final class apiOffer {
         $s = $searchs[0];
         $meta_query[] = [
           'meta_key' => 'itjob_offer_reference',
-          'meta_value' =>  "'%$s%'",
+          'meta_value' =>  "'%{$s}%'",
           'meta_compare' => "LIKE"
         ];
         $this->add_filter_search($s, $meta_query);
