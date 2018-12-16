@@ -166,6 +166,7 @@ if (!class_exists('scImport')) :
       ];
       $posts = get_posts($args);
       foreach ($posts as $post) {
+        echo $post->ID;
         $Offer = new Offers($post->ID);
         $postCompany = $Offer->getCompany();
         $abranch = wp_get_post_terms($postCompany->ID, 'branch_activity');
@@ -184,7 +185,6 @@ if (!class_exists('scImport')) :
   private function __set_field_term($offer, $term) {
     $term = is_array($term) && !empty($term) ? $term[0] : null;
     if (!is_null($term)) {
-      var_dump($Offer->ID);
       update_field("itjob_offer_abranch", $term->term_id, $Offer->ID);
     }
   }
