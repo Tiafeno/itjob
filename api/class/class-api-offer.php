@@ -53,12 +53,7 @@ final class apiOffer
                             SELECT {$wpdb->postmeta}.post_id as post_id
                             FROM {$wpdb->postmeta}
                             WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_reference' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                          )
-                          OR (pt.ID IN (
-                            SELECT {$wpdb->postmeta}.post_id as post_id
-                            FROM {$wpdb->postmeta}
-                            WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_post' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                          ))";
+                          )";
             $where .= ")"; //  .end AND
           }
           return $where;
