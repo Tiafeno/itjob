@@ -185,6 +185,7 @@ if (!class_exists('scImport')) :
   private function __set_field_term($offer, $term) {
     $term = is_array($term) && !empty($term) ? $term[0] : null;
     if (!is_null($term)) {
+      var_dump($Offer->ID);
       update_field("itjob_offer_abranch", $term->term_id, $Offer->ID);
     }
   }
