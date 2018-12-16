@@ -29,23 +29,13 @@ final class apiOffer {
                             SELECT {$wpdb->postmeta}.post_id as post_id
                             FROM {$wpdb->postmeta}
                             WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_reference' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                          ))";
-        $where .= ")"; //  .end AND
-          // Si une taxonomie n'est pas definie on ajoute cette condition dans la recherche
-        $where .= " OR (
-                          {$wpdb->posts}.post_title LIKE  '%{$s}%'
-                          AND {$wpdb->posts}.post_type = 'offers'";
-
-        foreach ($meta_query as $meta) {
-          $meta = (object) $meta;
-          $where .=     " AND ({$wpdb->posts}.ID IN (
+                          ))
+                       OR (pt.ID IN (
                             SELECT {$wpdb->postmeta}.post_id as post_id
                             FROM {$wpdb->postmeta}
-                            WHERE {$wpdb->postmeta}.meta_key = '{$meta->meta_key}' AND {$wpdb->postmeta}.meta_value = {$meta->meta_value}
+                            WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_post' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
                           ))";
-        }
-
-        $where .=      ")";
+        $where .= ")"; //  .end AND
 
         return $where;
       }, 10, 1);
