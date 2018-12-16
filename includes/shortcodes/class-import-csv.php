@@ -169,7 +169,7 @@ if (!class_exists('scImport')) :
       foreach ($post_ids as $post_id) {
         $Offer = new Offers($post_id);
         $postCompany = $Offer->getCompany();
-        $abranch = wp_get_post_terms($stCompany->ID, 'branch_activity');
+        $abranch = wp_get_post_terms($postCompany->ID, 'branch_activity');
         $abranch = is_array($abranch) && !empty($abranch) ? $abranch[0] : null;
         if (!is_null($abranch)) {
           wp_set_post_terms($Offer->ID, [$abranch->term_id], 'branch_activity');
