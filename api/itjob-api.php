@@ -30,6 +30,7 @@ add_action('rest_api_init', function () {
           switch ($ref) {
             case 'collect':
               $Candidate->__get_access();
+              $Candidate->isActive = $Candidate->is_activated();
               return new WP_REST_Response($Candidate);
 
               break;
