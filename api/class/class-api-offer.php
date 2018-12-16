@@ -42,6 +42,7 @@ final class apiOffer {
         }
 
         $where .=      ")";
+
         return $where;
       });
     }
@@ -68,23 +69,26 @@ final class apiOffer {
       $activated = trim($searchs[1]) !== '' &&  trim($searchs[1]) !== ' ' ? (int)$searchs[1] : '';
 
       if ($activated === 1 || $activated === 0) {
-        $meta_query[] = [
+        $activatedArg = [
           'meta_key' => 'activated', 
           'meta_value' => (int)$activated, 
           'meta_compare' => '='
         ];
+        $meta_query[] = $activatedArg;
       }
-      if (!empty($s)) {
+      
+      if (!empty($searchs[0]) && $searchs[0] !== ' ') {
+        $s = $searchs[0];
         $meta_query[] = [
           'meta_key' => 'itjob_offer_reference',
           'meta_value' =>  "'%$s%'",
           'meta_compare' => "LIKE"
         ];
-      }
-      
-      if (!empty($searchs[0]) && $searchs[0] !== ' ') {
-        $s = $searchs[0];
         $this->add_filter_search($s, $meta_query);
+      } else {
+        if (isset($activatedArg)) {
+          $args = array_merge($args, $activatedArg);
+        }
       }
 
       if (!empty($searchs[2]) && $searchs[2] !== ' ') {
