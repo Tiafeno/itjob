@@ -7,6 +7,53 @@ final class apiCandidate
 
   }
 
+  private function add_filter_search($search)
+  {
+    add_filter('posts_where', function ($where) use ($search) {
+      global $wpdb;
+      //global $wp_query;
+      $s = $search;
+      $where .= " AND {$wpdb->posts}.ID IN (
+                      SELECT
+                        pt.ID
+                      FROM {$wpdb->posts} as pt
+                      INNER JOIN {$wpdb->postmeta} as pm1 ON (pt.ID = pm1.post_id)
+                      WHERE pt.post_type = 'candidate'
+                        AND pt.post_status = 'publish'
+                        AND (pt.ID IN (
+                          SELECT {$wpdb->postmeta}.post_id as post_id
+                          FROM {$wpdb->postmeta}
+                          WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+                        ))
+                        AND (pt.ID IN(
+                          SELECT trs.object_id as post_id
+                          FROM {$wpdb->terms} as terms
+                            INNER JOIN {$wpdb->term_relationships} as trs
+                            INNER JOIN {$wpdb->term_taxonomy} as ttx ON (trs.term_taxonomy_id = ttx.term_taxonomy_id)
+                          WHERE terms.term_id = ttx.term_id
+                          AND ttx.taxonomy = 'job_sought'
+                          AND terms.name LIKE '%{$s}%'
+                        ))
+                        OR (pt.ID IN (
+                          SELECT {$wpdb->postmeta}.post_id
+                          FROM {$wpdb->postmeta}
+                          WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
+                        ))";
+      $where .= ")"; //  .end AND
+        // Si une taxonomie n'est pas definie on ajoute cette condition dans la recherche
+      $where .= "  OR (
+                        {$wpdb->posts}.post_title LIKE  '%{$s}%'
+                        AND {$wpdb->posts}.post_type = 'candidate'
+                        AND ({$wpdb->posts}.ID IN (
+                          SELECT {$wpdb->postmeta}.post_id as post_id
+                          FROM {$wpdb->postmeta}
+                          WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+                        ))
+                      )";
+      return $where;
+    });
+  }
+
 
   /**
    * Récuperer seulement les utilisateurs ou les candidats qui ont un CV
@@ -15,7 +62,6 @@ final class apiCandidate
   {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
-    $search = $_POST['search'];
     $paged = isset($_POST['start']) ? ($start === 0) ? 0 : $start / $length : 1;
     $posts_per_page = isset($_POST['length']) ? (int)$_POST['length'] : 10;
     $args = [
@@ -23,13 +69,17 @@ final class apiCandidate
       'post_status' => 'any',
       "posts_per_page" => $posts_per_page,
       "paged" => $paged,
-      'meta_query' => [
+    ];
+    if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
+      $this->add_filter_search($_POST['search']['value']);
+    } else {
+      $args = array_merge($args, ['meta_query' => [
         [
           'key' => 'itjob_cv_hasCV',
           'value' => 1
         ]
-      ]
-    ];
+      ]]);
+    }
     $the_query = new WP_Query($args);
     $candidates = [];
     if ($the_query->have_posts()) {
@@ -67,7 +117,7 @@ final class apiCandidate
     $candidate_id = (int)$request['id'];
     $candidate = stripslashes($_REQUEST['candidate']);
 
-    
+
     return new WP_REST_Response('OK');
   }
 
