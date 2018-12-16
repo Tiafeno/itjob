@@ -162,12 +162,11 @@ if (!class_exists('scImport')) :
         'paged' => $i,
         'posts_per_page' => $posts_per_page,
         'post_type' => $post_type,
-        'fields' => 'ids',
         'post_status' => 'any'
       ];
-      $post_ids = get_posts($args);
-      foreach ($post_ids as $post_id) {
-        $Offer = new Offers($post_id);
+      $posts = get_posts($args);
+      foreach ($posts as $post) {
+        $Offer = new Offers($post->ID);
         $postCompany = $Offer->getCompany();
         $abranch = wp_get_post_terms($postCompany->ID, 'branch_activity');
         $this->__set_field_term($Offer, $abranch);

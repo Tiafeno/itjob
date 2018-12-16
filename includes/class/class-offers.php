@@ -14,7 +14,7 @@ final class Offers implements \iOffer {
   use \OfferHelper;
 
   /** @var int $ID - Identification de l'offre */
-  public $ID;
+  public $ID = 0;
 
   /** @var url $offer_url - Contient le liens de l'offre */
   public $offer_url;
