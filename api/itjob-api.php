@@ -150,9 +150,17 @@ add_action('rest_api_init', function () {
               $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
               if (is_null($status)) return new WP_REST_Response('Parametre manquant');
               update_field('activated', (int)$status, $Offer->ID);
-
               return new WP_REST_Response("Offre mis à jour avec succès");
+
               break;
+              
+            case 'update_request':
+              $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+              $id_request = isset($_REQUEST['id_request']) ? $_REQUEST['id_request'] : null;
+              if (is_null($status) || (is_null($id_request) && is_numeric($id_request)))
+                return new WP_Error("params", 'Parametre manquant');
+              $Model = new \includes\model\itModel();
+              $result = $Model->update_interest_status($id_request, $status);
 
             case 'request':
               $Model = new \includes\model\itModel();
@@ -171,17 +179,6 @@ add_action('rest_api_init', function () {
               }
               return new WP_REST_Response(false);
 
-              break;
-
-            case 'update_request':
-              $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
-              $id_request = isset($_REQUEST['id_request']) ? $_REQUEST['id_request'] : null;
-              if (is_null($status) || (is_null($id_request) && is_numeric($id_request)))
-                return new WP_Error("params", 'Parametre manquant');
-              $Model = new \includes\model\itModel();
-              $result = $Model->update_interest_status($id_request, $status);
-
-              return new WP_REST_Response($result);
               break;
 
             default:
