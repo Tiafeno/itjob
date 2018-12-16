@@ -11,6 +11,7 @@ use includes\import\importUser;
 use includes\object\JHelper;
 use includes\post\Candidate;
 use includes\post\Company;
+use includes\post\Offers;
 use Underscore\Types\Arrays;
 
 if (!class_exists('scImport')) :
@@ -25,12 +26,13 @@ if (!class_exists('scImport')) :
 
       if (current_user_can("remove_users")) {
         add_shortcode('itjob_import_csv', [$this, 'sc_render_html']);
+
         add_action('wp_ajax_import_csv', [&$this, 'import_csv']);
-        add_action('wp_ajax_get_offer_data', [&$this, 'get_offer_data']);
         add_action('wp_ajax_delete_post', [&$this, 'delete_post']);
         add_action('wp_ajax_delete_term', [&$this, 'delete_term']);
         add_action('wp_ajax_remove_all_experiences', [&$this, 'remove_all_experiences']);
         add_action('wp_ajax_active_career', [&$this, 'active_career']);
+        add_action('wp_ajax_added_offer_sector_activity', [&$this, 'added_offer_sector_activity']);
       }
     });
 
@@ -72,21 +74,6 @@ if (!class_exists('scImport')) :
     exit;
   }
 
-  /**
-   * Récuperer les anciens offres
-   */
-  public function get_offer_data()
-  {
-    $fileLink = get_template_directory() . '/includes/class/import/data/oc29_offers.php';
-    if (\file_exists($fileLink)) {
-      include $fileLink;
-      $rows = &$oc29_offers;
-      wp_send_json_success($rows);
-    } else {
-      wp_send_json_error("Le fichier backup n'existe pas");
-    }
-
-  }
 
   /**
    * Function ajax
@@ -154,6 +141,48 @@ if (!class_exists('scImport')) :
     }
 
     wp_send_json_success($results);
+  }
+
+  /** Function ajax */
+  public function added_offer_sector_activity()
+  {
+    global $wpdb;
+    $post_type = "offers";
+    $sql = "SELECT COUNT(*) FROM {$wpdb->posts} WHERE {$wpdb->posts}.post_type = '%s'";
+    $prepare = $wpdb->prepare($sql, $post_type);
+    $rows = $wpdb->get_var($prepare);
+    $posts_per_page = 20;
+    $paged = $rows / $posts_per_page;
+
+    $numberOffer = 0;
+    $numberPage = 0;
+
+    for ($i = 1; $i <= $paged; $i++) {
+      $args = [
+        'paged' => $i,
+        'posts_per_page' => $posts_per_page,
+        'post_type' => $post_type,
+        'fields' => 'ids',
+        'post_status' => 'any'
+      ];
+      $post_ids = get_posts($args);
+      foreach ($post_ids as $post_id) {
+        $Offer = new Offers($post_id);
+        $postCompany = $Offer->getCompany();
+        $abranch = wp_get_post_terms($stCompany->ID, 'branch_activity');
+        $abranch = is_array($abranch) && !empty($abranch) ? $abranch[0] : null;
+        if (!is_null($abranch)) {
+          wp_set_post_terms($Offer->ID, [$abranch->term_id], 'branch_activity');
+        }
+        $numberOffer += 1;
+      }
+      $numberPage += 1;
+    }
+    wp_send_json_success([
+      'msg' => 'Tous les offres sont à jours',
+      "Nombre d'offre à jour" => $numberOffer,
+      "Nombre de page" => $numberPage
+    ]);
   }
 
   /**
@@ -1164,7 +1193,7 @@ if (!class_exists('scImport')) :
     if (!is_wp_error($post_id)) {
       $Company = Company::get_company_by($User->ID);
         // Ajouter une secteur d'activité à cette offre
-      if (($Company->branch_activity !== null && is_object($Company->branch_activity)) && isset($Company->branch_activity->term_id)) {
+      if ($Company->branch_activity !== null && is_object($Company->branch_activity)) {
         wp_set_post_terms($post_id, [$Company->branch_activity->term_id], 'branch_activity');
       }
 
