@@ -56,17 +56,15 @@ final class apiOffer {
           'meta_value' => (int)$activated, 
           'meta_compare' => '='
         ];
+        $args = array_merge($args,  $activatedArg);
+      }
 
-        $args = array_merge($args, ['meta_query' => $activatedArg]);
+      if (!empty($searchs[2]) && $searchs[2] !== ' ') {
+        $args['post_status'] = $searchs[2];
       }
       
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
         $this->add_filter_search($searchs[0]);
-      }
-
-      if (!empty($searchs[2]) && $searchs[2] !== ' ') {
-        $status = $searchs[2];
-        $args['post_status'] = $status;
       }
     }
     
