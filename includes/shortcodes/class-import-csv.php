@@ -170,7 +170,7 @@ if (!class_exists('scImport')) :
         $Offer = new Offers($post_id);
         $postCompany = $Offer->getCompany();
         $abranch = wp_get_post_terms($postCompany->ID, 'branch_activity');
-        $this->__set_post_term($Offer, $abranch);
+        $this->__set_field_term($Offer, $abranch);
         $numberOffer += 1;
       }
       $numberPage += 1;
@@ -182,10 +182,10 @@ if (!class_exists('scImport')) :
     ]);
   }
 
-  private function __set_post_term($offer, $term) {
-    $term = is_array($term) && !empty($term) ? $abrantermch[0] : null;
+  private function __set_field_term($offer, $term) {
+    $term = is_array($term) && !empty($term) ? $term[0] : null;
     if (!is_null($term)) {
-      wp_set_post_terms($Offer->ID, [$term->term_id], 'branch_activity');
+      update_field($Offer->ID, "itjob_offer_abranch", $term->term_id);
     }
   }
 
