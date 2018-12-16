@@ -23,7 +23,7 @@ final class apiOffer {
         $args = array_merge($args, ['s' => $searchs[0]]);
       // activation
       if (!empty($searchs[1]) && $searchs[1] !== ' ') {
-        $activated = $searchs[1];
+        $activated = (int)$searchs[1];
         $meta_query = 
         [
           'meta_query' => [
