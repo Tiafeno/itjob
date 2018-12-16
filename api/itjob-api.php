@@ -110,6 +110,15 @@ add_action('rest_api_init', function () {
     ),
   ]);
 
+  register_rest_route('it-api', '/offers/', [
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => [new apiOffer(), 'get_offers'],
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => []
+    ),
+  ]);
+
 
   /**
    * Récuperer la liste des entreprises
@@ -262,14 +271,6 @@ add_action('rest_api_init', function () {
     )
   ]);
 
-  register_rest_route('it-api', '/offers/', [
-    array(
-      'methods' => WP_REST_Server::CREATABLE,
-      'callback' => [new apiOffer(), 'get_offers'],
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
-      'args' => []
-    ),
-  ]);
 
   register_rest_route('it-api', '/taxonomies/(?P<taxonomy>\w+)', [
     array(

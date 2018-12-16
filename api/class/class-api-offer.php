@@ -81,6 +81,7 @@ final class apiOffer {
           return $objOffer;
         }, $the_query->posts);
       }
+      wp_reset_postdata();
 
       return [
         "recordsTotal" => (int)$the_query->found_posts,
