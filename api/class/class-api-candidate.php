@@ -97,6 +97,11 @@ final class apiCandidate
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
         $s = $searchs[0];
         $this->add_filter_search($s);
+      } else {
+        $meta_query[] = [
+          'key' => 'itjob_cv_hasCV',
+          'value' => 1
+        ];
       }
       
     } else {
