@@ -30,11 +30,18 @@ final class apiModel
     if (!$post_type && !post_type_exists($post_type)) {
       return null;
     }
-    $sql = "SELECT COUNT(*) FROM $wpdb->posts pts WHERE pts.post_type = %s AND pts.ID IN (
-      SELECT {$wpdb->postmeta}.post_id as post_id
-      FROM {$wpdb->postmeta}
-      WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
-    )";
+    $sql = "SELECT COUNT(*) FROM $wpdb->posts pts WHERE 
+              pts.post_type = %s 
+              AND pts.ID IN (
+                SELECT {$wpdb->postmeta}.post_id as post_id
+                FROM {$wpdb->postmeta}
+                WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+              ) 
+              AND  pts.ID IN (
+                SELECT {$wpdb->postmeta}.post_id as post_id
+                FROM {$wpdb->postmeta}
+                WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+              )";
     $prepare = $wpdb->prepare($sql, $post_type);
     $rows = $wpdb->get_var($prepare);
 
