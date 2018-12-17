@@ -126,7 +126,7 @@ add_action('rest_api_init', function () {
    */
   register_rest_route('it-api', '/company/', [
     array(
-      'methods' => WP_REST_Server::READABLE,
+      'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCompany(), 'get_companys'],
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => []
