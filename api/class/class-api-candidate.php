@@ -86,7 +86,7 @@ final class apiCandidate
       $s = '';
       
       $status = preg_replace('/\s+/', '', $searchs[1]);
-      $status = strlen($status) > 1 ? $status : (int)$status;
+      $status = strlen($status) > 1 && $status !== '' ? $status : (int)$status;
       if ($status === 1 || $status === 0) {
         $meta_query[] = [
           'key' => 'activated',
