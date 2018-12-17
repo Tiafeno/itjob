@@ -155,7 +155,7 @@ final class apiCandidate
     $driveLicences = array_map(function ($dL) {
       return $dL->id;
     }, $objCandidate->driveLicences);
-    $driveLicences = empty($driveLicences) ? '' : implode( ',', $driveLicences );
+    $driveLicences = empty($driveLicences) ? '' : $driveLicences;
     update_field( 'itjob_cv_driveLicence', $driveLicences, $candidate_id );
 
     $datetimeBd = DateTime::createFromFormat('m/d/Y', $objCandidate->birthday);
