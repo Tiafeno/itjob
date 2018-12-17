@@ -272,6 +272,66 @@ add_action('rest_api_init', function () {
     )
   ]);
 
+  register_rest_route('ati-api', '/dashboard/', [
+    array(
+      'methods' => WP_REST_Server::READABLE,
+      'callback' => function (WP_REST_Request $request) {
+        $ref = isset($_REQUEST['ref']) ? stripslashes(urldecode($_REQUEST['ref'])) : false;
+        if ($ref) {
+          switch ($ref) {
+            case 'collect':
+              $apiModel = new apiModel();
+              $countCompany = $apiModel->count_post_type('company');
+              $countActiveCompany = $apiModel->count_post_active('company');
+              $Entreprise = [
+                'count' => $countCompany,
+                'countActive' => $countActiveCompany,
+                'countFeatured' => $apiModel->count_featured_company()
+              ];
+
+              $countCandidates = $apiModel->count_post_type('candidate');
+              $countActiveCandidate = $apiModel->count_post_active('candidate');
+              $Candidates = [
+                'count' => $countCandidates,
+                'countActive' => $countActiveCandidate,
+                'countFeatured' => $apiModel->count_featured_candidates()
+              ];
+
+              $countOffers = $apiModel->count_post_type('offers');
+              $countActiveOffers = $apiModel->count_post_active('offers');
+              $Offres = [
+                'count' => $countOffers,
+                'countActive' => $countActiveOffers,
+                'countFeatured' => $apiModel->count_featured_offers()
+              ];
+
+              return new WP_REST_Response([
+                'company' => $Entreprise,
+                'candidate' => $Candidates,
+                'offer' => $Offres
+              ]);
+              break;
+              
+
+            default:
+              break;
+          }
+        } else {
+          return new WP_REST_Response(false);
+        }
+
+      },
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => array(
+        'id' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param);
+          }
+        ),
+      ),
+    )
+  ]);
+
 
   register_rest_route('it-api', '/taxonomies/(?P<taxonomy>\w+)', [
     array(
