@@ -318,8 +318,8 @@ add_action('rest_api_init', function () {
                 'company' => $apiModel->count_post_status('company', 'pending'),
                 'offers' => $apiModel->count_post_status('offers', 'pending')
               ];
-              return WP_REST_Response($response);
-              
+              return new WP_REST_Response($response);
+
               break;
               
 
