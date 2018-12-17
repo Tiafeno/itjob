@@ -233,6 +233,8 @@ final class apiCandidate
     $cityIds = [ $objCandidate->town ];
     wp_set_post_terms( $candidate_id, $cityIds, 'city' );
 
+    wp_update_post(['ID' => $candidate_id, 'post_status' => 'publish'], true);
+
     return new WP_REST_Response('Candidat mis à jour avec succès');
   }
 

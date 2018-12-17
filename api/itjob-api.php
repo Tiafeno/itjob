@@ -240,26 +240,25 @@ add_action('rest_api_init', function () {
         }
 
         // Activation et publication
-        if ($currentOffer->offer_status !== $offer->status ||
-          (bool)$currentOffer->activated !== (bool)$offer->activated) {
-          $updatePost = true;
-        }
+        $updatePost = $currentOffer->offer_status !== $offer->status && $offer->status !== 'pending';
+        $status = (int)$offer->status;
         if ($updatePost) {
-          update_field('activated', (bool)$offer->activated, $offer->ID);
-          if ($currentOffer->offer_status !== $offer->status && $offer->status === 'publish') {
+          update_field('activated', $status, $offer->ID);
+          if ($status === 1) {
             // notification de validation
             do_action('confirm_validate_offer', $offer->ID);
           }
-          $result = wp_update_post(['ID' => $offer->ID, 'post_status' => $offer->status], true);
-          if (is_wp_error($result)) {
-            return new WP_REST_Response($result->get_error_message());
-          } else {
-            $message = $offer->status === 'publish' ? "publier" : "mise en attente";
-            return new WP_REST_Response("Offre {$message} avec succès");
-          }
+          $result = wp_update_post(['ID' => $offer->ID, 'post_status' => 'publish'], true);
+        } else {
+          $result = wp_update_post(['ID' => $offer->ID, 'post_status' => 'pending'], true);
         }
 
-        return new WP_REST_Response('Offre mise à jour avec succès');
+        if (is_wp_error($result)) {
+          return new WP_REST_Response($result->get_error_message());
+        } else {
+          $message = $status === 1 ? "publier" : ($status === 0 ? "désactiver" : "mise en attente");
+          return new WP_REST_Response("Offre {$message} avec succès");
+        }
       },
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => array(
