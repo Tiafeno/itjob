@@ -278,9 +278,9 @@ add_action('rest_api_init', function () {
       'callback' => function (WP_REST_Request $request) {
         $ref = isset($_REQUEST['ref']) ? stripslashes(urldecode($_REQUEST['ref'])) : false;
         if ($ref) {
+          $apiModel = new apiModel();
           switch ($ref) {
             case 'collect':
-              $apiModel = new apiModel();
               $countCompany = $apiModel->count_post_type('company');
               $countActiveCompany = $apiModel->count_post_active('company');
               $Entreprise = [
@@ -310,6 +310,16 @@ add_action('rest_api_init', function () {
                 'candidate' => $Candidates,
                 'offer' => $Offres
               ]);
+              break;
+            
+            case 'header':
+              $response = [
+                'candidate' => $apiModel->count_post_status('candidate', 'pending'),
+                'company' => $apiModel->count_post_status('company', 'pending'),
+                'offers' => $apiModel->count_post_status('offers', 'pending')
+              ];
+              return WP_REST_Response($response);
+              
               break;
               
 

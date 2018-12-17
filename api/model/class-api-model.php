@@ -41,6 +41,21 @@ final class apiModel
     return $rows;
   }
 
+  public function count_post_status($post_type, $post_status = 'publish') {
+    global $wpdb;
+    if (!is_user_logged_in()) {
+      return false;
+    }
+    if (!$post_type && !post_type_exists($post_type)) {
+      return 0;
+    }
+    $sql = "SELECT COUNT(*) FROM $wpdb->posts pts WHERE pts.post_type = %s AND pts.post_status = %s";
+    $prepare = $wpdb->prepare($sql, $post_type, $post_status);
+    $rows = $wpdb->get_var($prepare);
+
+    return $rows;
+  }
+
   public function count_featured_candidates() {
     global $wpdb;
     if (!is_user_logged_in()) {
