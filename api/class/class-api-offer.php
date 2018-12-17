@@ -27,7 +27,7 @@ final class apiOffer
       $meta_query = [];
       $meta_query[] = ['relation' => "AND"];
       $status = preg_replace('/\s+/', '', $searchs[1]);
-      $status = strlen($status) > 1 ? $status : (int)$status;
+      $status = $status === '0' ? 0 : ($status === '1' ? 1 : ($status === 'pending' ? 'pending' : ''));
       if ($status === 1 || $status === 0) {
         $meta_query[] = [
           'key' => 'activated',
