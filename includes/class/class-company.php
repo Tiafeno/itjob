@@ -93,6 +93,7 @@ final class Company implements \iCompany {
     $this->title   = $output->post_title;
     $this->post_status = $output->post_status;
     $this->addDate = get_the_date( 'l, j F Y', $output );
+    $this->add_create = $output->post_date;
 
     if ( $this->is_company() ) {
       // FIX: Corriger une erreur sur l'utilisateur si l'admin ajoute une company
