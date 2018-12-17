@@ -24,17 +24,18 @@ final class apiOffer
       $s = '';
       $meta_query = [];
       $meta_query[] = ['relation' => "AND"];
-      $activated = trim($searchs[1]) !== '' && trim($searchs[1]) !== ' ' ? (int)$searchs[1] : '';
-      if ($activated === 1 || $activated === 0) {
+      $status = preg_replace('/\s+/', '', $searchs[1]);
+      $status = strlen($status) > 1 ? $status : (int)$status;
+      if ($status === 1 || $status === 0) {
         $meta_query[] = [
           'key' => 'activated',
-          'value' => (int)$activated,
+          'value' => (int)$status,
           'compare' => '='
         ];
       }
 
-      if (!empty($searchs[2]) && $searchs[2] !== ' ') {
-        $args['post_status'] = $searchs[2];
+      if ($status === 'pending') {
+        $args['post_status'] = $status;
       }
 
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {

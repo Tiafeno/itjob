@@ -26,7 +26,7 @@ class apiCompany
       $searchs = explode('|', $search);
       $s = '';
       $status = preg_replace('/\s+/', '', $searchs[1]);
-      $status = strlen($status) > 1 ? '' : (int)$status;
+      $status = strlen($status) > 1 ? $status : (int)$status;
       if ($status === 1 || $status === 0) {
         $meta_query[] = [
           'key' => 'activated',
@@ -36,8 +36,8 @@ class apiCompany
         $args['post_status'] = $status ? 'publish' : 'any';
       }
 
-      if ($searchs[1] === 'pending') {
-        $args['post_status'] = $searchs[1];
+      if ($status === 'pending') {
+        $args['post_status'] = $status;
       }
 
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {

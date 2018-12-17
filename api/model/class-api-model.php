@@ -37,6 +37,13 @@ final class apiModel
                 FROM {$wpdb->postmeta}
                 WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
               )";
+    if ($post_type === 'candidate') {
+      $sql .= "AND pts.ID IN (
+                  SELECT {$wpdb->postmeta}.post_id as post_id
+                  FROM {$wpdb->postmeta}
+                  WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+                )";
+    }
     $prepare = $wpdb->prepare($sql, $post_type);
     $rows = $wpdb->get_var($prepare);
 
