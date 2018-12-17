@@ -122,7 +122,7 @@ final class apiCandidate
       $filterDate = $searchs[3];
       if ($filterDate !== '' && !empty($filterDate)) {
         add_filter('posts_where', function ($where) use ($filterDate) {
-          $date = explode('-', $filterDate);
+          $date = explode('x', $filterDate);
           global $wpdb;
           if (!is_admin()) {
             $where .= " AND {$wpdb->posts}.ID IN (
@@ -130,7 +130,7 @@ final class apiCandidate
                             pt.ID
                           FROM {$wpdb->posts} as pt
                           WHERE pt.post_type = 'candidate'
-                            AND pt.post_date between to_date('{$date[0]}', 'mm/dd/yyyy') AND to_date('{$date[1]}', 'mm/dd/yyyy')";
+                            AND pt.post_date between '{$date[0]}' AND '{$date[1]}'";
             $where .=  ")"; //  .end AND
          
           }
