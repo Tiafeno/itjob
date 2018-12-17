@@ -118,6 +118,11 @@ final class apiCandidate
           'terms' => [$activityArea]
         ];
       }
+
+      $filterDate = $searchs[3];
+      if ($filterDate !== '' && !empty($filterDate)) {
+        
+      }
       
     } else {
       $meta_query[] = [
