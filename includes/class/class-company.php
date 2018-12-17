@@ -91,6 +91,7 @@ final class Company implements \iCompany {
     }
     $this->ID      = $output->ID;
     $this->title   = $output->post_title;
+    $this->post_status = $output->post_status;
     $this->addDate = get_the_date( 'l, j F Y', $output );
 
     if ( $this->is_company() ) {
