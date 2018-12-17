@@ -42,6 +42,15 @@ class apiCompany
         $s = $searchs[0];
         $args['s'] = $s;
       }
+
+      $account = trim($searchs[3]) !== '' && trim($searchs[3]) !== ' ' ? (int)$searchs[3] : '';
+      if ($account === 1 || $account === 0 || $account === 2) {
+        $meta_query[] = [
+          'key' => 'itjob_meta_account',
+          'value' => (int)$account,
+          'compare' => '='
+        ];
+      }
       
     }
 
