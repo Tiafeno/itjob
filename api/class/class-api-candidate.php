@@ -182,10 +182,10 @@ final class apiCandidate
     $languagesIds = is_array($objCandidate->languages) ? $objCandidate->languages : [];
     wp_set_post_terms( $candidate_id, $languagesIds, 'language' );
 
-    $regionIds = is_array($objCandidate->region) ? $objCandidate->region : [];
+    $regionIds = [ $objCandidate->region ];
     wp_set_post_terms( $candidate_id, $regionIds, 'region' );
 
-    $cityIds = is_array($objCandidate->town) ? $objCandidate->town : [];
+    $cityIds = [ $objCandidate->town ];
     wp_set_post_terms( $candidate_id, $cityIds, 'city' );
 
     return new WP_REST_Response('Candidat mis à jour avec succès');
