@@ -314,9 +314,9 @@ add_action('rest_api_init', function () {
             
             case 'header':
               $response = [
-                'candidate' => $apiModel->count_post_status('candidate', 'pending'),
-                'company' => $apiModel->count_post_status('company', 'pending'),
-                'offers' => $apiModel->count_post_status('offers', 'pending')
+                'candidate' => (int)$apiModel->count_post_status('candidate', 'pending'),
+                'company' => (int)$apiModel->count_post_status('company', 'pending'),
+                'offers' => (int)$apiModel->count_post_status('offers', 'pending')
               ];
               return new WP_REST_Response($response);
 
