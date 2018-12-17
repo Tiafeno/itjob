@@ -115,8 +115,7 @@ final class apiCandidate
         $tax_query[] = [
           'taxonomy' => 'branch_activity',
           'field' => 'term_id',
-          'terms' => [$activityArea],
-          'operator' => 'IN'
+          'terms' => [$activityArea]
         ];
       }
       
@@ -130,7 +129,6 @@ final class apiCandidate
     $args = array_merge($args, ['meta_query' => $meta_query]);
     $args = array_merge($args, ['tax_query' => $tax_query]);
 
-    print_r($args);
     $the_query = new WP_Query($args);
     $candidates = [];
     if ($the_query->have_posts()) {
