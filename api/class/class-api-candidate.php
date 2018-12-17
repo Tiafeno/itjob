@@ -159,7 +159,7 @@ final class apiCandidate
     update_field( 'itjob_cv_driveLicence', $driveLicences, $candidate_id );
 
     $datetimeBd = DateTime::createFromFormat('m/d/Y', $objCandidate->birthday);
-    $bdACF = $dateTime->format('Ymd');
+    $bdACF = $datetimeBd->format('Ymd');
     $form = (object)[
       'firstname' => $objCandidate->firstname,
       'lastname' => $objCandidate->lastname,
