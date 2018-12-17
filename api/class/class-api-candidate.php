@@ -74,8 +74,13 @@ final class apiCandidate
       "posts_per_page" => $posts_per_page,
       "paged" => $paged,
     ];
+
     $meta_query = [];
     $meta_query[] = ['relation' => "AND"];
+
+    $tax_query = [];
+    $tax_query[] = ['relation' => 'AND'];
+
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
       $search = stripslashes($_POST['search']['value']);
       $searchs = explode('|', $search);
@@ -105,6 +110,16 @@ final class apiCandidate
           'value' => 1
         ];
       }
+
+      $activityArea = (int)$searchs[2];
+      if ($activityArea !== 0) {
+        $tax_query[] = [
+          'taxonomy' => 'branch_activity',
+          'field' => 'term_id',
+          'terms' => $activityArea,
+          'operator' => 'IN'
+        ];
+      }
       
     } else {
       $meta_query[] = [
@@ -114,6 +129,7 @@ final class apiCandidate
     }
 
     $args = array_merge($args, ['meta_query' => $meta_query]);
+    $args = array_merge($args, ['tax_query' => $tax_query]);
     $the_query = new WP_Query($args);
     $candidates = [];
     if ($the_query->have_posts()) {
