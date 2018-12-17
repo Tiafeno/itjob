@@ -100,7 +100,6 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
 
                 });
               });
-
           };
 
           $rootScope.searchCityFn = (city) => {

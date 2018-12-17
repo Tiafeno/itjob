@@ -61,6 +61,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_collect_favorite_candidates', [ &$this, 'collect_favorite_candidates' ] );
         add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
         add_action( 'wp_ajax_get_candidacy', [ &$this, 'get_candidacy' ] );
+        add_action( 'wp_ajax_collect_current_user_notices', [ &$this, 'collect_current_user_notices' ] );
       }
       add_action( 'wp_ajax_nopriv_forgot_password', [ &$this, 'forgot_password' ] );
       add_shortcode( 'itjob_client', [ &$this, 'sc_render_html' ] );
@@ -70,7 +71,7 @@ if ( ! class_exists( 'scClient' ) ) :
      * Afficher l'espace client
      */
     public function sc_render_html( $attrs, $content = '' ) {
-      global $Engine, $itJob;
+      global $Engine, $itJob, $theme;
       if ( ! is_user_logged_in() ) {
         $customer_area_url = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : get_permalink();
 
@@ -97,6 +98,7 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
       wp_register_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
         'angular',
+        'angular-ui-select2',
         'angular-aria',
         'angular-messages',
         'angular-sanitize',
@@ -115,7 +117,8 @@ if ( ! class_exists( 'scClient' ) ) :
       try {
         do_action( 'get_notice' );
         $wp_localize_script_args = [
-          'Helper' => [
+          'version' => $theme->get('Version'),
+          'Helper'  => [
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
             'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
             'img_url'       => get_template_directory_uri() . '/img',
@@ -291,7 +294,7 @@ if ( ! class_exists( 'scClient' ) ) :
     /**
      * Function ajax
      * Mettre à jours le status d'un requete (postulant ou interesser) dans la base de donnée
-     * @request wp-admin/admin-ajax.php?action=update_request_status&candidate_id=<int>&offer_id=<int>
+     * @request wp-admin/admin-ajax.php?action=update_request_status&candidate_id=<int>&offer_id=<int>&status=validated|[reject, pending]
      */
     public function update_request_status() {
       if ( ! is_user_logged_in() ) {
@@ -305,9 +308,11 @@ if ( ! class_exists( 'scClient' ) ) :
       $Model = new itModel();
       if ($request = $Model->exist_interest($candidate_id, $offer_id)) {
         if (empty($request)) wp_send_json_error("Aucun resultat trouver pendant la verification");
-        $update = $Model->update_interest_status((int)$request[0]->id_cv_request, $status);
-        if ($update)
+        $update = $Model->update_interest_status((int)$request->id_cv_request, $status);
+        if ($update):
+          do_action('notice-change-request-status', (int)$request->id_cv_request, $status); // Ajouter les notifications
           wp_send_json_success("Requete mis à jours avec succès");
+        endif;
         wp_send_json_error("Il est possible que la requete à déja activé la requete ou bien une erreur s'est produite");
       } else {
         wp_send_json_error("Aucun candidat n'a postulé ou ajouter à cette offre");
@@ -622,6 +627,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'exp_city'         => $experience->exp_city,
           'exp_company'      => $experience->exp_company,
           'exp_positionHeld' => $experience->exp_positionHeld,
+          'exp_branch_activity' => (int)$experience->abranch,
           'exp_mission'      => $experience->exp_mission,
           'validated'        => $experience->validated
         ];
@@ -755,21 +761,29 @@ if ( ! class_exists( 'scClient' ) ) :
           $request_interest = $Model->exist_interest( $id_candidate, $id_offer );
           if ( $request_interest ):
             $interest = $Model->collect_interest_candidate( $id_candidate, $id_offer );
-            $interest = array_map( function ( $data ) {
-              $data->attachment = get_post( (int) $data->id_attachment );
-              $data->candidate  = new Candidate( (int) $data->id_candidate );
-              $data->candidate->__get_access();
-              unset( $data->id_candidate, $data->id_attachment );
-
-              return $data;
-            }, $interest );
-
-            wp_send_json_success( $interest[0] );
+            $interest->attachment = get_post( (int) $interest->id_attachment );
+            $interest->candidate  = new Candidate( (int) $interest->id_candidate );
+            $interest->candidate->__get_access();
+            unset( $interest->id_candidate, $interest->id_attachment );
+            wp_send_json_success( $interest );
           endif;
         }
         wp_send_json_error( "Accès non autoriser" );
       }
       wp_send_json_error( "Bad request" );
+    }
+
+    /**
+     * Function ajax
+     */
+    public function collect_current_user_notices() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+      $User = wp_get_current_user();
+      if ($User->ID === 0) wp_send_json_error("Vous n'êtes pas connecter à notre service");
+      $Model = new itModel();
+      wp_send_json_success($Model->collect_notices($User->ID));
     }
 
     /**
@@ -792,12 +806,14 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( $id_candidate ) {
         $id_candidate  = (int) $id_candidate;
         $response      = $itModel->add_list( $id_candidate );
-        $change_status = $itModel->update_interest_status( $id_request, 'validated' );
-        if ( $response && $change_status ) {
+        if ( $response ) {
+          $itModel->update_interest_status( $id_request, 'validated' );
           wp_send_json_success( "Le candidat a bien étés valider avec succès." );
         }
+      } else {
+        wp_send_json_error( "Paramètre invalide" );
       }
-      wp_send_json_error( "Paramètre invalide" );
+
     }
 
     /**

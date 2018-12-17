@@ -1,10 +1,12 @@
 <?php
 global $offers;
-if ( ! $offers->is_activated()) { return; }
+if (!$offers->is_activated()) {
+  return;
+}
 
 // Vérifier la date limite de l'offre
-$today = date("m/d/Y");
-$limited = $offers->dateLimit < $today;
+$today = strtotime("today");
+$limited = strtotime($offers->dateLimit) < $today;
 ?>
 <div class="col-md-12">
   <div class="card ibox mb-4">
@@ -30,7 +32,7 @@ $limited = $offers->dateLimit < $today;
     </div>
     <div class="card-body">
       <h4 class="card-title mb-4">
-        <a href="<?= get_the_permalink( $offers->ID ) ?>" class="text-primary">
+        <a href="<?= get_the_permalink($offers->ID) ?>" class="text-primary">
           <?= $offers->postPromote ?>
         </a>
       </h4>
@@ -48,14 +50,14 @@ $limited = $offers->dateLimit < $today;
                 <td>Mission:</td>
                 <td>
                   <?php
-                    $offers->mission = strip_tags($offers->mission);
-                    $mission_words = explode(' ', $offers->mission);
-                    foreach ($mission_words as $index => $word) {
-                      if (($index < 12))
-                        echo " $word";
-                    }
-                    echo count($mission_words) >= 12 ? ' ... ' : ''
-                   ?>
+                  $offers->mission = strip_tags($offers->mission);
+                  $mission_words = explode(' ', $offers->mission);
+                  foreach ($mission_words as $index => $word) {
+                    if (($index < 12))
+                      echo " $word";
+                  }
+                  echo count($mission_words) >= 12 ? ' ... ' : ''
+                  ?>
                 </td>
               </tr>
               <tr>
@@ -77,7 +79,7 @@ $limited = $offers->dateLimit < $today;
           </div>
           <div class="col-4 uk-flex">
             <div class="uk-flex uk-margin-auto-left">
-              <a href="<?= get_the_permalink( $offers->ID ) ?>" class=" uk-margin-auto-vertical">
+              <a href="<?= get_the_permalink($offers->ID) ?>" class=" uk-margin-auto-vertical">
                 <button class="btn btn-warning btn-fix">
                   <span class="btn-icon"> Voir l'offre <i class="la la-plus"></i></span>
                 </button>
@@ -104,11 +106,11 @@ $limited = $offers->dateLimit < $today;
     <div class="card-footer">
       <div class="d-flex align-items-center justify-content-between">
         <div class="text-primary">
-          <b>TAG: </b> <span class="card-tag"><?= implode( ', ', $offers->tags ) ?></span>
+          <b>TAG: </b> <span class="card-tag"><?= implode(', ', $offers->tags) ?></span>
         </div>
 
         <div>
-          <?php if ($limited): ?>
+          <?php if ($limited) : ?>
           <span class="badge badge-danger">Date limite atteinte</span>
           <?php endif; ?>
         </div>

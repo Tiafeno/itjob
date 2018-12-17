@@ -3,7 +3,7 @@ APPOC
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
     $routeProvider
       .when('/oc-company', {
-        templateUrl: itOptions.Helper.tpls_partials + '/oc-company.html',
+        templateUrl: itOptions.Helper.tpls_partials + '/oc-company.html?ver='+itOptions.version,
         controller: 'clientCtrl',
         resolve: {
           Client: ['$http', '$q', function ($http, $q) {
@@ -26,7 +26,7 @@ APPOC
   .directive('generalInformationCompany', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/general-information-company.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/general-information-company.html?ver='+itOptions.version,
       scope: {
         Entreprise: '=company',
         regions: '&',
@@ -112,7 +112,7 @@ APPOC
     return {
       restrict: 'E',
       scope: true,
-      templateUrl: itOptions.Helper.tpls_partials + '/premium-plan.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/premium-plan.html?ver='+itOptions.version,
       link: function (scope, element, attr) {
       },
       controller: ['$scope', '$http', function ($scope, $http) {
@@ -157,7 +157,7 @@ APPOC
     return {
       restrict: "E",
       scope: true,
-      templateUrl: itOptions.Helper.tpls_partials + '/history-cv.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/history-cv.html?ver='+itOptions.version,
       controller: ["$scope", '$http', function ($scope, $http) {
         const loadingHistoricalElement = jQuery('#modal-history-cv-overflow').find('.loading-historical');
         loadingHistoricalElement.text('Aucun CV');
@@ -186,7 +186,7 @@ APPOC
   .directive('offerLists', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/offer-lists.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/offer-lists.html?ver='+itOptions.version,
       scope: {
         candidateLists: '=listsCandidate',
         options: '&',
@@ -346,7 +346,7 @@ APPOC
         $scope.addList = (id_candidate, $event) => {
           $scope.error = '';
           if (!_.isNumber(id_candidate)) return;
-          var el = $event.currentTarget;
+          let el = $event.currentTarget;
           angular.element(el).text("Patienter ...");
           const request = _.find($scope.interestCandidats, (it) => it.candidate.ID === id_candidate);
           $http.get(`${itOptions.Helper.ajax_url}?action=add_cv_list&id_candidate=${request.candidate.ID}&id_request=${request.id_request}`, {
@@ -364,6 +364,7 @@ APPOC
                 });
               } else {
                 $scope.error = query.data;
+                angular.element(el).text("Ajouter & Voir");
               }
             });
         };
@@ -393,7 +394,7 @@ APPOC
   .directive('cvConsult', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/cv-consult.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/cv-consult.html?ver='+itOptions.version,
       scope: {
         Company: '=company',
         Offer: '=offer',

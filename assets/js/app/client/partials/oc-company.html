@@ -131,9 +131,12 @@
     <div class="flexbox-b">
       <div class="card text-center centered mb-4">
         <div class="card-body">
-          <h4 class="card-title text-left mb-3" style="font-size: 41px; font-weight: bold">
+          <h4 class="card-title text-left " style="font-size: 41px; font-weight: bold">
             [[ Company.title ]]
           </h4>
+          <span class="mb-3 text-left d-table badge badge-blue" ng-if="Company.account === 0">Compte standart</span>
+          <span class="mb-3 text-left d-table badge badge-info" ng-if="Company.account === 2">En attente de validation</span>
+          <span class="mb-3 text-left d-table badge badge-pink" ng-if="Company.account === 1">Compte premium</span>
           <!--<div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Company.address ]]</div>-->
           <div class="d-flex justify-content-around align-items-center">
             <notifications></notifications>

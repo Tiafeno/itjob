@@ -80,7 +80,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
      * @return string
      */
     public function register_render_html( $attrs ) {
-      global $Engine, $itJob;
+      global $Engine, $itJob, $theme;
 
       $message_access_refused = '<div class="d-flex align-items-center">';
       $message_access_refused .= '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Access refuser</div></div>';
@@ -127,12 +127,14 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       wp_enqueue_style( 'ng-tags-bootstrap' );
       wp_enqueue_script( 'form-candidate', get_template_directory_uri() . '/assets/js/app/register/form-candidate.js', [
         'angular',
+        'angular-ui-select2',
         'angular-ui-route',
         'angular-sanitize',
         'angular-messages',
         'angular-animate',
         'ngFileUpload',
         'b-datepicker',
+        'moment-locales',
         'daterangepicker',
         'bootstrap-tagsinput',
         'ng-tags',
@@ -143,6 +145,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       // Verifier si l'ajout du CV consiste à postuler sur une offre
       wp_localize_script( 'form-candidate', 'itOptions', [
+        'version'      => $theme->get('Version'),
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
@@ -271,8 +274,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           return $LicenceSchema[ $key ];
         }
       }, array_keys( (array) $form->driveLicences ) );
-      $licences = empty($licences) ? '' : implode( ',', $licences );
-      update_field( 'itjob_cv_driveLicence', $licences );
+      $licences = empty($licences) ? '' : $licences;
+      update_field( 'itjob_cv_driveLicence', $licences, $this->Candidate->getId() );
 
       // Update notification
       if ( $form->notifEmploi ) {
@@ -319,6 +322,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           'exp_city'         => $experience->city,
           'exp_company'      => $experience->company,
           'exp_positionHeld' => $experience->positionHeld,
+          'exp_branch_activity' => (int)$experience->abranch,
           'exp_mission'      => $experience->mission
         ];
       }

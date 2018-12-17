@@ -16,8 +16,8 @@
           <label class="col-form-label ">Intitulé du poste <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-disabled="true" ng-model="Exp.position" placeholder="Ex: Assistant" autocomplete="off"
-                     name="position" class="form-control" required>
+              <input ng-disabled="true" ng-model="Exp.position" placeholder="Ex: Assistant" autocomplete="off" name="position"
+                class="form-control" required>
             </div>
           </div>
         </div>
@@ -27,17 +27,18 @@
           <div class="form-group">
             <div class="input-group">
               <input ng-disabled="true" ng-model="Exp.company" placeholder="Ex: Google" autocomplete="on" name="company"
-                     class="form-control" required>
+                class="form-control" required>
             </div>
           </div>
         </div>
+
 
         <div class="col-sm-12">
           <label class="col-form-label ">Ville <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-disabled="true" ng-model="Exp.city" placeholder="Ex: Antananarivo" autocomplete="off"
-                     name="city" class="form-control" required>
+              <input ng-disabled="true" ng-model="Exp.city" placeholder="Ex: Antananarivo" autocomplete="off" name="city"
+                class="form-control" required>
             </div>
           </div>
         </div>
@@ -46,8 +47,8 @@
           <label class="col-form-label ">Pays <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-disabled="true" ng-model="Exp.country" placeholder="Ex: Madagascar" autocomplete="off"
-                     name="country" class="form-control" required>
+              <input ng-disabled="true" ng-model="Exp.country" placeholder="Ex: Madagascar" autocomplete="off" name="country"
+                class="form-control" required>
             </div>
           </div>
         </div>
@@ -61,7 +62,7 @@
             <div class="col-sm-12">
               <div class="form-group">
                 <select ng-disabled="true" class="form-control" name="begin_month" ng-model="Exp.dateBegin.month"
-                        required>
+                  required>
                   <option value="">Mois</option>
                   <option ng-value="month" ng-repeat="month in months">[[month]]</option>
                 </select>
@@ -70,7 +71,7 @@
             <div class="col-sm-12">
               <div class="form-group">
                 <select ng-disabled="true" class="form-control" name="begin_year" ng-model="Exp.dateBegin.year"
-                        required>
+                  required>
                   <option value="">Année</option>
                   <option ng-value="year" ng-repeat="year in years">[[year]]</option>
                 </select>
@@ -104,19 +105,18 @@
         <div class="row">
           <div class="form-group col-md-12">
             <div class="col-sm-12">
-                <span>
-                  <label class="ui-switch switch-icon mr-2 mb-0">
-                    <input ng-disabled="true" type="checkbox" name="currently_works"
-                           ng-model="Exp.position_currently_works">
-                    <span></span>
-                  </label>
-                  Ceci est mon poste actuel
-                </span>
+              <span>
+                <label class="ui-switch switch-icon mr-2 mb-0">
+                  <input ng-disabled="true" type="checkbox" name="currently_works" ng-model="Exp.position_currently_works">
+                  <span></span>
+                </label>
+                Ceci est mon poste actuel
+              </span>
             </div>
           </div>
         </div>
 
-        <div class="col-sm-12 mt-4">
+        <div class="col-sm-12 mt-4" ng-show="Exp.mission != ''">
           <label class="col-form-label uk-text-bold">Description </label>
           <div class="form-group">
             <div class="input-group">
@@ -132,10 +132,10 @@
             <p class="info-status mt-auto mb-auto" ng-show="status">[[status]]</p>
           </div>
           <div class="col-sm-8 uk-text-right">
-            <button class="btn btn-danger ml-4" ng-show="mode === 1" data-ng-click="onDeleteExperience(Exp.id)">
+            <!-- <button class="btn btn-danger ml-4" ng-show="mode === 1" data-ng-click="onDeleteExperience(Exp.id)">
               Supprimer
-            </button>
-            <!--<button class="btn btn-blue ml-4" type="submit">Enregistrer</button>-->
+            </button> -->
+            <button class="btn btn-blue uk-modal-close ml-4" type="button">Fermer</button>
           </div>
         </div>
       </div>
@@ -147,7 +147,7 @@
 <!-- .end Modal-->
 
 <!-- Modal new experience-->
-<div id="modal-new-experience-overflow" uk-modal>
+<div id="modal-new-experience-overflow" uk-modal="bg-close: false">
   <div class="uk-modal-dialog">
     <button class="uk-modal-close-default" type="button" uk-close></button>
     <div class="uk-modal-header">
@@ -160,7 +160,7 @@
           <div class="form-group">
             <div class="input-group">
               <input ng-model="newExperience.position" placeholder="Ex: Assistant" autocomplete="off" name="position"
-                     class="form-control" required>
+                class="form-control" required>
             </div>
           </div>
         </div>
@@ -168,8 +168,22 @@
           <label class="col-form-label ">Entreprise <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-model="newExperience.company" placeholder="Ex: Google" autocomplete="on" name="company"
-                     class="form-control" required>
+              <input ng-model="newExperience.company" placeholder="Ex: Google" autocomplete="on" name="company" class="form-control"
+                required>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <div ng-form="abForm">
+            <label class="col-form-label ">Secteur d’activité <span style="color: red">*</span></label>
+            <div class="form-group">
+              <div class="">
+                <select class="form-control" name="abranch" ui-select2="select2Options" style="width: 100%"
+                  data-placeholder="Secteur d’activité" ng-model="newExperience.abranch" ng-required="true">
+                  <option></option>
+                  <option ng-value="abranch.term_id" ng-repeat="abranch in abranchs">{{abranch.name}}</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -177,8 +191,8 @@
           <label class="col-form-label ">Ville <span style="color: red">*</span></label>
           <div class="form-group">
             <div class="input-group">
-              <input ng-model="newExperience.city" placeholder="Ex: Antananarivo" autocomplete="off" name="city"
-                     class="form-control" required>
+              <input ng-model="newExperience.city" placeholder="Ex: Antananarivo" autocomplete="off" name="city" class="form-control"
+                required>
             </div>
           </div>
         </div>
@@ -187,7 +201,7 @@
           <div class="form-group">
             <div class="input-group">
               <input ng-model="newExperience.country" placeholder="Ex: Madagascar" autocomplete="off" name="country"
-                     class="form-control" required>
+                class="form-control" required>
             </div>
           </div>
         </div>
@@ -239,13 +253,13 @@
         <div class="row">
           <div class="form-group col-md-12">
             <div class="col-sm-12">
-                <span>
-                  <label class="ui-switch switch-icon mr-2 mb-0">
-                    <input type="checkbox" name="currently_works" ng-model="newExperience.position_currently_works">
-                    <span></span>
-                  </label>
-                  Ceci est mon poste actuel
-                </span>
+              <span>
+                <label class="ui-switch switch-icon mr-2 mb-0">
+                  <input type="checkbox" name="currently_works" ng-model="newExperience.position_currently_works">
+                  <span></span>
+                </label>
+                Ceci est mon poste actuel
+              </span>
             </div>
           </div>
         </div>
@@ -253,8 +267,7 @@
           <label class="col-form-label uk-text-bold">Description </label>
           <div class="form-group">
             <div class="input-group">
-              <textarea ng-model="newExperience.mission" rows="8" placeholder="Votre mission" name="mission"
-                        class="form-control"></textarea>
+              <div ng-model="newExperience.mission" froala="froalaOptions" placeholder="Votre mission" name="mission"></div>
             </div>
           </div>
         </div>
@@ -267,6 +280,7 @@
           <div class="col-sm-8 uk-text-right">
             <!--<button class="btn btn-danger ml-4" ng-show="mode === 1" data-ng-click="onDeleteExperience(newExperience.id)">Supprimer</button>-->
             <button class="btn btn-blue ml-4" type="submit">Enregistrer</button>
+            <button class="btn btn-warning uk-modal-close ml-4" type="button">Fermer</button>
           </div>
         </div>
       </div>
@@ -292,7 +306,8 @@
           <div class="flex-1">
             <h5 class="media-heading">
               [[ experience.exp_positionHeld ]]
-              <span class="badge badge-pill ng-binding badge-pink" ng-if="!experience.validated">En attente de validation</span>
+              <span class="badge badge-pill ng-binding badge-pink" ng-if="!experience.validated">En attente de
+                validation</span>
             </h5>
             <h6 class="text-muted">
               [[ experience.exp_company ]]
@@ -318,4 +333,3 @@
     </ul>
   </div>
 </div>
-

@@ -91,7 +91,9 @@ final class Company implements \iCompany {
     }
     $this->ID      = $output->ID;
     $this->title   = $output->post_title;
+    $this->post_status = $output->post_status;
     $this->addDate = get_the_date( 'l, j F Y', $output );
+    $this->add_create = $output->post_date;
 
     if ( $this->is_company() ) {
       // FIX: Corriger une erreur sur l'utilisateur si l'admin ajoute une company
@@ -111,7 +113,7 @@ final class Company implements \iCompany {
 
       // Récuperer le secteur d'activité
       $abranch               = wp_get_post_terms( $this->ID, 'branch_activity' );
-      $this->branch_activity = !is_array ($abranch) || !empty($abranch) ? $abranch[0] : null;
+      $this->branch_activity = is_array($abranch) && !empty($abranch)  ? $abranch[0] : null;
 
       $this->init();
     }
@@ -162,7 +164,7 @@ final class Company implements \iCompany {
   }
 
   /**
-   * Initialiser les prorpriétés de cette class
+   * Initialiser les propriétés de cette class
    * @return bool
    */
   private function init() {

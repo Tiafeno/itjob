@@ -1,0 +1,496 @@
+id;value
+13;SIGEM
+2;ubuntu
+37;Java
+17; Adobe photoshop
+34;Linux
+26;Microsoft windows server 2012
+977;GOAUTODIAL
+68;microsoft office 2010
+76;CSS
+77;SQL
+83;ORACLE
+96;Windows 10-Windows Xp
+97;Windows Server 2003-Ubuntu
+98;Windows Xp -OFFICE 2K7  2K10  2K13
+99;CISCO Paket Tracer, GNS3
+129;ORACLE,JAVA
+138;3Dsmax 2016, Adobe Premier Cs6, Adobe Illustrator, Adobe After Effect, Adobe Photoshop, Cinema 4D
+139;Atoll
+140;Pathloss
+141;Packet Tracer
+148;Microsoft Windows Server 2012, PowerPoint, Excel avanc
+791;Serenic
+165;PHP, SQL, JAVA, Adobe Photoshop, R
+223;Adobe Premier Cs6, Adobe After Effect, Adobe Photoshop,
+265;SIG
+267;PHP, SQL, Adobe Photoshop, R
+279;Linux, access, MySQL, postgresql , php, Java
+282;Windows Server 2003-Ubuntu, JAVA, C++, VB, Delphi, Pascal, HTML5, CSS3, Javascript et PHP, Access microsoft, MySQL, postgreSQL
+283;Word
+284;
+289;PowerPoint,
+292;Bureautique, Web, HTML, CSS, CMS, WordPress
+293;Sage, Saari, Ciel compta
+294;Windows 10-Windows Xp, photoshop, office
+295;Bureautique, outlook
+296;Microsoft Office 2010, Auto CAD, MS project
+297;Blender, See Electrical
+300;Word
+792;Sage
+350;SAGE compta, SPHINX, sage commercial, sage paie, EBP
+351;Microsoft Office 2010, HTML
+352;Word, Excel
+353;word, excel, powerpoint, sentinel, minsat, Ability 
+354;Word, Excel, Powerpoint, Sentinel, Minsat, Ability
+356;Word
+357;Windows 10-Windows Xp, sage, 
+358;sage
+359;Autocad/word/excel/powerpoint
+360;HTML, CSS, Jquery, Wordpress, Joomla
+362;HTML5/PHP/ACCESS/ORACLE
+364;Windows Xp -OFFICE 2007  2010  2013
+367;Microsoft Windows Server 2012/SQL server/HTML5/PHP5
+375;Ubuntu
+376;PHP, SQL, Adobe Photoshop
+380;Microsoft Office 2010/Autocad 2D
+381;SQL, C, C++, JAVA, VB, CodeIgniter, symfony, JavaFx
+382;Excel 
+383;Java, C#, PHP, HTML5/CSS3, JavaScript, Bootstrap, Spring MVC, Hibernate, .Net, JSF, NodeJs, Android, Xamarin, Cordova, MySQL, Oracle, PostgresQL
+399;Outlook, Sage Saari, Ciel compta
+402;Adobe Photoshop/outlook/word/excel/power point
+419;EXCEL, ADOBE INDESIGN,SPHINX,
+420;Microsoft Office 2010, frappe dix doigts 
+422;Microsoft Office 2010, ciel compta, GesCom
+423;Microsoft Office 2007
+429;excel, word, powerpoint
+434;Microsoft Office 2010/Sage/Delta Bank
+442;Adobe Photoshop/microsoft office/sharpDevellop/MySQL server/DreamWeaver
+455;Word/Excel
+464;EBP ON LINE
+465;EBP Gescom
+475;Ubuntu,Java
+484;Word,Excel ,Powerpoint ,Autocad 2d,Robobat
+495;HTML, CSS, Jquery, Wordpress,
+505;HTML, CSS, Jquery, Javascript, Wordpress, Adobe Photoshop CS6
+519;Pack Office, Sage Saari, Ciel Compta, Odoo atout Persona
+539;D
+540;Syst
+541;Windows 9x/2000/NT/XP/VISTA, Windows 2000/2003 Server
+542;R
+543;Langage de programmation: C, Java, JSP, Action Script, Delphi 7, Oracle Forms, C#.NET,
+544;VB.NET, C++.NET
+545;SGBD: MySQL, SQL Server 2000/2005, ORACLE 9i et 10G.
+546;M
+547;Notation: UML.
+548;Technologie Web: HTML, HTML5, PHP4, PHP5, XML, CSS, XHTML, XSLT
+549;Framework: thymeleaf, GWT, tapestry, struts, spring, AOP, hibernate, Jface, spring MVC,
+550;EJB, Wicket, Ext Js, jQuery, JDBC, Jsp taglib, Apache CXF
+551;IDE: Eclipse et Netbeans
+552;Server de d
+553;Gestion versionning: SVN, GIT
+554;Test unitaire: Junit, Selenium, Spring runner
+555;Qualit
+556;Int
+557;Build projet: Maven, ant
+558;Web services: SOAP, REST
+564;CISCO Paket Tracer, GNS3, bureautique
+565;Word, Excel, PowerPoint, Cisco Packet Tracer, Matlab, Eclipse, VMware
+566;Langages de programmations : HTML, CSS, PHP, Java, C#, C/C++
+567;Base du syst
+570;Debian server, Proxmox paravirtualisation,
+576;SAGE Compta, SPHINX, Sage Commercial, Sage Paie, EBP, COMPTA sur logiciel COALA. COMPTA sur logiciel XERO ONLINE.
+579;Microsoft Windows Server 2012, PowerPoint, Excel Avanc
+582;Windows Server 2008 R2, Windows (7, 8, 10) , LAN, Routage IP, Proxy,
+583;Squid, pfsence, MySQL
+584;Adobe Photoshop, Adobe Audition.
+586;SGBD Acc
+795;Ms exchange 2010
+588;Logiciel Utilitaires: Aotocard 2D, Code:: Blocs, P-spice, proteus, WampServer, Eclipse
+592;oracle,postegrsQL, spring MVC,Xamarin, Hibernate,Bootstrap, merise SQL Server 2000/2005,visual basic, r
+593;Linux,
+604;Logiciels Bureautiques, SGBD, Access, MySQL,programmation en  Php, Java, C, C#, HTML, CSS, Wordpress, javascript
+605;Cisco Packet Tracer, Matlab, Eclipse, VMware
+613;MIDAC
+614;Tradenet
+617;Bureautique, Powerpoint, Publisher
+618;Matlab, Autocad 2D, 3D, Automation studio, My Ecodyal, Adobe photoshop.
+627;Office sous Linux
+797;Slack
+637;Logiciel STATA
+639;Stata 9
+640;SPSS (Statistical Package for the Social Sciences)
+798;Basecamp
+799;Evernote
+800;ORCHID SYSTEM
+802;Sage i7
+804;Mysql
+653;Ciel Compta, sage 100, Windev, Photoshop
+803;Php
+659;Word, Excel, Powerpoint.
+663;Excel, Word, Powerpoint, Internet
+664;Word, Excel, Power point.
+666;Adobe Photoshop, Maintenance informatique
+667;Bureautique: Windows (Word, Excel, PowerPoint
+806;Node Js
+669;Langage de programmation: Assembleur, Perl, Java, C (initiation), ANDROID (notion)
+670;Technologies Web/Internet: HTML/CSS, JavaScript, PHP
+807;jQuery
+808;javascript
+674;Administration des services: VoIP Asterisk, Captive
+675;Portal, VPN, DNS, DHCP, IMAP, VoIP, VNC, FTP, IIS, Active
+676;Directory, RADIUS, Apache, SAMBA, NFS, NAS, Clustering, Failover
+678;Outils de Virtualisation: VMware, Oracle Virtual Box.
+810;HTML
+811;VOXCO
+681;PAO /DAO: Adobe Photoshop 
+682;Microsoft Office 2010, Power point.
+683;Logiciel statistique: R Studio.
+812;Asterisk
+686;"Windows 7 Pro ; Windows 10 , Windows 2012R2 serveur, Windows serveur 2008R2, MAC OSX 10.7; 10.8"
+687;"Linux Debian Lenny,linux debian sqeeze, Linux Ubuntu 10.10, ubuntu 11.04 , windows serveur 2012 R2; Android"
+689;Office 2010, Office 2013, LibreOffice 3.3, Open Office 3.3 , sharepoint 2010
+813;Sentinel
+691;Sharepoint 2010 , EBP paye, SunPlus Compta, Linux Docker
+814;Minsat
+693;Vmware, HyperV windows server 2008, VirtualBox
+816;sydonia
+695;HTML , CSS3
+696;PHP5 et MySql,
+697;Apache,
+698;Java Netbeans , Java Eclipse, BootStrap, Dreamweaver 2017
+699;Drupal 7, Joomla, wordpress
+700;"Connaissance en ADSL ; VLAN ; VPN ; VSAT ; Firewall ; asterisk et VoIP ; PABX"
+817;Delphi
+818;Eclipse
+703;Windev, php/Mysql, Java
+704;script bash et powershell ( Linux)
+815;Ability
+706;Xarchitecture , la gamme du serveur IBM xSeries
+819;spring
+820;Dreamweaver
+821;SYCORAX
+822;Shinx
+711;Merise 2, Agile
+823;Adobe lighroom
+714;Windows Server 2003 et 2008 , connaissance de protocol TCP/IP, configuration Routeur
+825;IMS Fleet Maintenance
+717;Mise en place serveur , Installation serveur Blade Center ( H20 , H21, Js20 et JS 21)
+826;STATISTICA
+828;Bureautique avancé
+829;Sphinx et Ms Project
+727;Mise en place serveur VPN , serveur de messagerie ( PostFix ou POP3 )
+728;Mise en place securite serveur ( Firewall et proxy , squid et iptables )
+729;Mise en place serveur DHCP, NAT, Squid et VPN Linux.
+730;Autocad, Covadis, MS Office, Open Office, Power Point
+732;Linux, logiciels bureautiques, internet, programmation (niveau d
+734;Word, Excel, Power point, Navigation internet
+735;"ORCHNID;LPF;CIEL COMPTA......."
+740;Windows 10-Windows Xp - Sage Gestion Commerciale
+741;Adobe Photoshop
+747;Microsoft Office 2010
+748;Linux, Logiciel Bureautique, Internet, Programmation (niveau D
+753;Windows 7,8,10
+754;Office 2003, 2010
+755;Adobe Photoshop CS6
+756;Adobe Premiere Pro CS6
+757;Ubuntu, Microsoft Windows 7,8, PHP, HTML, Javascript,CISCO PAKET TRACERT,SQL,JAVA,CODE BLOCK
+758;Microsoft Office
+760;Microsoft Office
+761;Python, Oracle, MySql, Sql
+762;Java, Android (Eclipse) Ios
+763;Windows et Linux
+764;Photoshop, Illustrator et CorelDraw
+765;3ds max, BluffTitler
+766;Adobe Premiere et Sonar
+767;Dreamweaver, Joomla
+768;Python, Oracle, MySql, Sql
+769;Windev
+770;Windows et Linux
+771;Windev et Access
+772;Dreamweaver, Joomla...
+773;Pf sense
+775;Debian
+776;CIEL-COMPTA, ORCHID, CAMP MID 15, TOMATES, SYDONIA ++
+777;Microsoft Office
+780;Sage Paie 
+782;Sage
+785;Sage
+786;SAGE ET EBP OPEN 
+787;Adobe Indesign
+788;SAGE Compta, Sage Commercial, Sage Paie, EBP
+789;SAGE GESCOM
+790;Sage i7 SQL, Saari, Ciel Compta, EBP Comptabilit
+830;QGIS
+831;Ilwis
+832;Systat
+833;Guest Hotel
+834;Visual Fox Pro6
+835;Oracle 8i
+836;Windows 20XX
+837;WhiteBox
+838;Cisco paket tracer
+839;joomla
+840;bootstrap
+841;spring mvc
+842;hibernate
+843;jsf
+844;nodeJs
+845;android
+846;xamarin
+847;cordova
+848;symphonie
+849;MS project
+850;Langage de programmation  Java et C
+851;Compta Saf 2000
+852;VMware
+853;jdevelopper
+854;CorelDraw
+855;Postgresql
+856;Odoo
+857;Sage Compta 100
+858;EBP Compta
+859;Connaissances en Progiciel ERP
+860;FL STUDIO
+861;Windows 2012
+862;covadis
+863;xarchitecture
+864;informatique bureatique
+865;dactilographie assisté par ordinateur
+866;télédétection
+867;Recherche opérationnelle
+868;ciel gestion commercial
+869;Auto cad
+870;Archicad
+871;Google Sketchup
+872;Robot bat
+873;CBS
+874;COVADIS
+875;graphisme
+876;cyber link paie
+877;bitween multiplication ordi independant
+878;microsoft office
+879;ajax
+880;Excel Sage  Minimaint Ciel Compta
+881;sage commercial 16
+882;Microsoft office 2003
+883;Windows 2007
+884;Adobe lightroom
+885;hyperV
+886;Tomate
+887;sharpdevellop
+888;LinSSID
+972;wamp server
+890;adobe illustrator
+891;Adobe premiere
+892;adobe audition
+893;Symfony
+894;Bootstrap
+895;Tradeworks
+896;Connaissance en ORCHID
+897;Connaissance en SAGE COM
+898;SOMMA
+899;sage saari
+900;outlook
+901;EnergyPlus
+902;R et Rstudio
+903;Gemis
+904;LaTex
+905;Alizé
+906;Comsol
+907;Comsol CAO
+908;Solidworks DAO et CAO
+909;Programmation Arduino
+910;LabView
+911;Proteus
+912;Access
+913;Arduino
+914;LABVEW
+915;solidwork
+973;Zara radio
+917;SAGE COALA
+918;MS SQL Server
+919;Oracle
+920;QlikView
+921;Qlik Sense
+922;SSIS
+923;SSAS
+924;SSRS
+925;Hermes.Net  VOCALCOM
+926;mmmm
+927;ArcGis
+928;Lizmap web client
+929;Monteverdi
+930;Postgis
+931;Geoserver
+932;Visual Paradigm
+933;Microsoft office 2013
+934;R Studio
+935;Pascal
+936;COSOL Multiphysics
+937;Simplorer
+938;Android studio
+939;SQL Server
+940;JavaFX scene Builder
+941;JetBrains
+942;Visual Studio 2017
+943;FL Studio
+944;Nuendo
+945;Sonar X3
+946;Adobe After effect
+947;pmapper
+948;MySQL
+949;MapServer
+950;ILWIS
+951;Symphony2
+952;Hiberbnate
+953;Netbeans
+954;SublimText
+955;Tomcat
+956;Jboss
+957;Glassfish
+958;JSP
+959;MOBAC
+960;ADOBE ILLUSTRATOR
+961;Angular JS
+962;React jS
+963;gumby
+964;ISBA
+965;AMPLITUDE SOPRA BANKING
+966;proxmox
+967;gantt project
+968;Langage de programmation
+988;Qelectrotech
+976;Adobe audition
+989;Analyse et Conception Orienté Objet avec modélisation UML
+979;Adobe Encore CS6
+980;sphynx
+981;Sqlite
+982;Django
+983;GOAUTODIALE
+985;MEAN Stack
+986;TALLY logiciel compta
+990;TOMPRO
+991;xero
+992;ENVI
+993;Geosoft
+994;Open ERP
+995;Gimp
+996;ipfirefirewall
+997;Ipfire firewall
+998;HTML5  CSS3
+999;Javascript
+1000;Php Mysql
+1001;Microsoft Project
+1002;Powerpoint
+1003;CodeIgniter
+1004;Ecodial
+1005;Matlab simulink
+1006;Retscreen
+1007;ZENDESK
+1008;Artlantis
+1009;Hardware
+1010;Orchestra
+1011;Fidelio
+1012;PI logiciel pourla restaurationl restauration
+1013;Home plan Pro
+1014;OGC
+1015;JOVTRACK
+1016;MyEcodial
+1017;Rapsodie
+1018;Micro Fidelio
+1019;Ciel compta
+1020;sage x3
+1021;Tolopax 2.0
+1022;sage compta 1000
+1030;TEMENOS
+1024;Hyper V
+1025;Vbox
+1026;EXCEL
+1027;ERP5
+1028;cielcompta
+1029;Microsoft Visio
+1031;COSACS
+1032;BUSINESS OBJECT
+1033;SIGFP
+1034;ERP
+1035;Css
+1036;Gestion de Maintenance Assisté par Ordinateur
+1037;Enterprise Asset Management EAM
+1038;Rio GMAO
+1039;selenium
+1040;python
+1041;office
+1042;shell
+1043;linux et windows server
+1044;cloud computing
+1045;Bordereau de suivi de gargaison
+1046;Bordereau de suivi des cargaisons
+1047;Le Système Intégré de Gestion des Opérations de Change
+1048;GESTION DE STOCK
+1049;myposs
+1050;Logiciels enquetes
+1051;traitement de données
+1052;Traitements de données
+1053;Anadefi 32
+1054;JIRA
+1055;Lotus
+1056;ISIS Proteus
+1057;MPLAB
+1058;MATLAB
+1059;visual basic
+1060;Cubase Studio One  Sound Forge
+1061;quadratus comptabilite
+1062;Cubase
+1063;Presonus Studio One
+1064;Sound Forge
+1065;sage compta 100
+1066;Amadeus
+1067;AUTODESK MAYA
+1068;Mapinfo
+1069;php
+1070;ebp back office
+1071;Ms Project
+1072;xamp server
+1073;Sage Immobilisation
+1074;gimp
+1075;power point
+1076;NETSCAP NAVIGATOR
+1077;Microsoft SQL Server
+1078;bureautiques
+1079;Notepad
+1080;PHPEdit
+1081;Odoo Geoengine
+1082;Tiger
+1083;Ingenosia
+1084;Sage gescom
+1085;word 2007
+1086;ABILITY
+1087;internet
+1088;Ciel Gestion Commerciale
+1089;Openflex
+1090;LPF
+1091;Loan Performer
+1092;P STAR
+1093;PAIE STAR
+1094;magix
+1095;Loan perfomer
+1096;burauetique
+1097;bureautique
+1098;ERP X3
+1099;SMART RH
+1100;GPAO
+1101;pinnacle studio
+1102;Microsoft office
+1103;geostab
+1104;Balsamiq Mockup
+1105;JQuery
+1106;Google Earth
+1107;Sage gestion Commerciale
+1108;finish time
+1109;cybera serveur
+1110;Bureautique sous Windows
+1111;Altéa customer management
+1112;Sage gescom i7
+1113;IGOR
+1114;Sony vegas pro

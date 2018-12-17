@@ -41,7 +41,7 @@ final class Candidate extends UserParticular implements \iCandidate {
    *
    * @param int $postId - ID post 'candidate' type
    */
-  public function __construct( $postId = null ) {
+  public function __construct( $postId = null, $privateAccess = false ) {
     if ( is_null( $postId ) ) {
       return false;
     }
@@ -80,6 +80,10 @@ final class Candidate extends UserParticular implements \iCandidate {
       // Cette methode appel une fonction qui ajoute une propriété (has_cv) de type boolean
       // qui constitue à verifier si le candidate posséde un CV ou autrement.
       $this->hasCV();
+
+      if ($privateAccess) {
+        $this->__get_access();
+      }
     }
   }
 
@@ -143,24 +147,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     }
     $this->activated   = get_field( 'activated', $this->getId() );
     $this->status      = get_field( 'itjob_cv_status', $this->getId() );
-    $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [
-      'training_dateBegin',
-      'training_dateEnd',
-      'training_country',
-      'training_city',
-      'training_diploma',
-      'training_establishment',
-      'validated'
-    ] );
-    $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [
-      'exp_dateBegin',
-      'exp_dateEnd',
-      'exp_city',
-      'exp_country',
-      'exp_company',
-      'exp_mission',
-      'validated'
-    ] );
+    $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [] );
+    $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [] );
 
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
     $this->newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
@@ -326,7 +314,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     }
     $resolve = [];
     $rows    = get_field( $repeaterField, $this->getId() );
-    if ( $rows ) {
+    if ( $rows && is_array($rows) ) {
       foreach ( $rows as $row ) {
         array_push( $resolve, (object) $row );
       }

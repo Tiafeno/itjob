@@ -89,7 +89,9 @@ if (!class_exists('jePostule')) :
             // Ajouter l'offre dans le champ pour les offres postulé par le candidat
           $offer_apply[] = $id_offer;
           update_field('itjob_cv_offer_apply', $offer_apply, $Candidate->getId());
-          do_action('alert_for_postuled_offer', $id_offer);
+
+          do_action('alert_admin_postuled_offer', $id_offer);
+          do_action('notice-candidate-postuled', $Candidate->getId(), $id_offer); // Ajouter une notification
           do_action('add_notice', 'Votre candidature à bien êtes soumis', 'info');
         }
       }
@@ -139,7 +141,7 @@ if (!class_exists('jePostule')) :
     $current_uri = $_SERVER['REQUEST_URI'];
     if (!is_user_logged_in()) {
         // Le client est non connecter
-      do_action('add_notice', '<i class="la la-warning alert-icon"></i> Veuillez vous connecter en tant que candidate pour postuler à un offre', 'warning');
+      do_action('add_notice', '<i class="la la-warning alert-icon"></i> Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi', 'warning');
 
       return do_shortcode("[itjob_login role='candidate' redir='{$current_uri}']");
     } else {
@@ -149,10 +151,16 @@ if (!class_exists('jePostule')) :
       if (!$Candidate || !$Candidate->is_candidate()) {
         return $message_access_refused;
       }
-      if (!$Candidate->hasCV() || !$Candidate->is_publish() || !$Candidate->is_activated()) {
+      if (!$Candidate->hasCV()) {
         do_action('add_notice', "Vous devez crée un CV avant de postuler", "warning");
 
         return do_shortcode("[vc_register_candidate redir='{$current_uri}']");
+      }
+
+      if (!$Candidate->is_publish() && !$Candidate->is_activated()) {
+        do_action('add_notice', 'Votre CV est en cours de validation. Veuillez réessayer plus tard s\'il vous plaît', 'warning');
+        itjob_get_notice();
+        return;
       }
     }
 

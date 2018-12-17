@@ -17,7 +17,7 @@ class scInterests
 {
   public function __construct()
   {
-    add_action('init', function (){
+    add_action('init', function () {
      // add_rewrite_tag('%id%', '([^&]+)');
      // add_rewrite_rule('^download/([0-9]+)/?', admin_url('admin-ajax.php') . '?action=download_pdf&id=$matches[1]', 'top');
 
@@ -31,16 +31,15 @@ class scInterests
 
     add_action('wp_ajax_get_current_user_offers', [&$this, 'get_current_user_offers']);
     add_action('wp_ajax_nopriv_get_current_user_offers', [&$this, 'get_current_user_offers']);
-
-    add_action('wp_ajax_remove_token_access', [&$this, 'remove_token_access']);
     add_action('wp_ajax_download_pdf', [&$this, 'download_pdf']);
   }
 
-  public function download_pdf() {
+  public function download_pdf()
+  {
     global $Engine;
 
     // create new PDF document
-    require  get_template_directory() . '/libs/tcpdf/vendor/autoload.php';
+    require get_template_directory() . '/libs/tcpdf/vendor/autoload.php';
     $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $pdf->SetCreator(PDF_CREATOR);
 
@@ -65,7 +64,7 @@ class scInterests
     // FEATURED: Verifier si le CV est dans la liste de l'entreprise
     $itModel = new itModel();
     if (!$itModel->interest_access($Candidate->getId(), $Entreprise->getId()) ||
-        !$itModel->list_exist($Entreprise->getId(), $Candidate->getId())) {
+      !$itModel->list_exist($Entreprise->getId(), $Candidate->getId())) {
       wp_send_json_error("Accès non autoriser");
     }
 
@@ -78,12 +77,12 @@ class scInterests
 // set default header data
     $logo = get_template_directory() . '/img/logo.png';
     $site = get_site_url();
-    $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.$Candidate->reference, "ItJobMada - {$site}");
+    $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . $Candidate->reference, "ItJobMada - {$site}");
     // set header and footer fonts
-    $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
     // set auto page breaks
-    $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+    $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -111,7 +110,7 @@ class scInterests
     $pdf->lastPage();
 
 //Close and output PDF document
-    $pdf->Output(get_template_directory()."/contents/pdf/itjobmada_{$Candidate->reference}.pdf", 'FI');
+    $pdf->Output(get_template_directory() . "/contents/pdf/itjobmada_{$Candidate->reference}.pdf", 'FI');
   }
 
   /**
@@ -225,11 +224,15 @@ class scInterests
     $User = wp_get_current_user();
     if (in_array('company', $User->roles)) {
       $Company = Company::get_company_by($User->ID);
+      $Model = new itModel();
 
       if (!$itModel->exist_interest($cv_id, $offer_id)) {
         $response = $itModel->added_interest($cv_id, $offer_id);
+        
+        $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
+        do_action('notice-interest', $Interest->id_cv_request);
         // Envoyer un mail a l'administrateur
-        do_action('alert_when_company_interest', $cv_id);
+        do_action('alert_when_company_interest', $cv_id, $offer_id);
         wp_send_json_success($response);
       } else {
 
@@ -237,7 +240,11 @@ class scInterests
         // On ajoute et on active automatiquement l'affichage du CV
         if ($itModel->interest_access($cv_id, $Company->getId())) {
           $results = $itModel->added_interest($cv_id, $offer_id, $Company->getId(), 'validated');
-          do_action('alert_when_company_interest', $cv_id);
+          
+          $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
+          do_action('notice-interest', $Interest->id_cv_request);
+          // Envoyer un mail a l'administrateur
+          do_action('alert_when_company_interest', $cv_id, $offer_id);
           wp_send_json_success($results);
         }
 

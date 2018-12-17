@@ -1,4 +1,4 @@
-const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
+const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
   .value('froalaConfig', {
     toolbarInline: false,
     quickInsertTags: null,
@@ -8,8 +8,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
     return {
       getCity: function () {
         return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {
-          cache: true
-        })
+            cache: true
+          })
           .then(function (resp) {
             return resp.data;
           });
@@ -37,9 +37,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   }])
   .filter('Greet', [function () {
     const Greeting = [{
-      greeting: 'mrs',
-      label: 'Madame'
-    },
+        greeting: 'mrs',
+        label: 'Madame'
+      },
       {
         greeting: 'mr',
         label: 'Monsieur'
@@ -54,9 +54,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   }])
   .filter('Status', [function () {
     const postStatus = [{
-      slug: 'publish',
-      label: 'Vérifier'
-    },
+        slug: 'publish',
+        label: 'Vérifier'
+      },
       {
         slug: 'pending',
         label: 'En attente'
@@ -69,10 +69,16 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       }).label;
     }
   }])
+  .filter('moment_notice', [function () {
+    return (entry) => {
+      if (_.isEmpty(entry)) return entry;
+      return moment(entry, 'YYYY-MM-DD h:mm:ss', 'fr').fromNow();
+    }
+  }])
   .directive('changePassword', ['$http', function ($http) {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/change-password.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/change-password.html?ver=' + itOptions.version,
       scope: {},
       link: function (scope, element, attrs) {
         scope.password = {};
@@ -100,7 +106,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               pwd: {
                 required: "Ce champ est obligatoire",
                 pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, " +
-                "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
+                  "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
               },
               confpwd: {
                 required: "Ce champ est obligatoire",
@@ -114,13 +120,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               Fm.append('pwd', scope.password.pwd);
               // Submit form validate
               $http({
-                url: itOptions.Helper.ajax_url,
-                method: "POST",
-                headers: {
-                  'Content-Type': undefined
-                },
-                data: Fm
-              })
+                  url: itOptions.Helper.ajax_url,
+                  method: "POST",
+                  headers: {
+                    'Content-Type': undefined
+                  },
+                  data: Fm
+                })
                 .then(resp => {
                   let data = resp.data;
                   // Update password success
@@ -155,7 +161,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .directive('alerts', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/alert.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/alert.html?version=' + itOptions.version,
       scope: {
         onSave: '&', // Function pass
         alerts: '=', // Two way variable pass
@@ -167,9 +173,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
   .directive('experiences', ['clientService', function (clientService) {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html',
+      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html?ver=' + itOptions.version,
       scope: {
         Candidate: "=candidate",
+        abranchFn: '&abranchFn' // Function pass
       },
       controller: ['$scope', '$http', '$q', function ($scope, $http, $q) {
         const self = this;
@@ -180,53 +187,29 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
          */
         $scope.mode = null;
         $scope.Exp = {};
+        $scope.abranchs = [];
         $scope.newExperience = {};
         $scope.months = clientService.months;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
         $scope.dateEndRange = [];
 
+        this.$onInt = () => {
+          $
+        };
+
         /**
          * Ajouter une nouvelle expérience
          */
         $scope.addNewExperience = () => {
+          console.info("Model new experience init");
           $scope.mode = 0;
           $scope.newExperience.position_currently_works = true;
           $scope.newExperience.validated = false;
-          UIkit.modal('#modal-new-experience-overflow').show();
-        };
+          $q.all([$scope.abranchFn()]).then(data => {
+            $scope.abranchs = _.clone(data[0]);
+            UIkit.modal('#modal-new-experience-overflow').show();
+          });
 
-        /**
-         * Modifier une expérience
-         * @param {string} positionHeld
-         */
-        $scope.editExperience = (experienceId) => {
-          $scope.mode = 1;
-          let experience = _.find($scope.Candidate.experiences, experience => experience.id == parseInt(experienceId));
-          let momentDateBegin = moment(experience.exp_dateBegin, 'MM/DD/YYYY', 'fr');
-          let dateEndObj = {};
-          if (!_.isEmpty(experience.exp_dateEnd)) {
-            let momentDateEnd = moment(experience.exp_dateEnd, 'MM/DD/YYYY', 'fr');
-            dateEndObj = {
-              month: momentDateEnd.format('MMMM'),
-              year: parseInt(momentDateEnd.format('YYYY'))
-            };
-          }
-          $scope.Exp = {
-            id: experience.id,
-            validated: experience.validated,
-            position: experience.exp_positionHeld,
-            company: experience.exp_company,
-            city: experience.exp_city,
-            country: experience.exp_country,
-            mission: experience.exp_mission,
-            position_currently_works: _.isEmpty(experience.exp_dateEnd) ? true : false,
-            dateBegin: {
-              month: momentDateBegin.format('MMMM'),
-              year: parseInt(momentDateBegin.format('YYYY'))
-            },
-            dateEnd: dateEndObj
-          };
-          UIkit.modal('#modal-edit-experience-overflow').show();
         };
 
         /**
@@ -236,11 +219,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         $scope.onDeleteExperience = (experienceId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-            labels: {
-              ok: 'Supprimer',
-              cancel: 'Annuler'
-            }
-          })
+              labels: {
+                ok: 'Supprimer',
+                cancel: 'Annuler'
+              }
+            })
             .then(function () {
               let Experiences = _.reject($scope.Candidate.experiences, (experience) => experience.id === parseInt(experienceId));
               self.updateExperience(Experiences)
@@ -256,29 +239,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
             });
         };
 
-        /**
-         * Envoyer le formulaire d'ajout pour la modification
-         * @param {bool} isValid
-         */
-        $scope.submitForm = (isValid) => {
-          if (!isValid || !$scope.eform.$dirty) return;
-          self.formatFormEntry($scope.Exp)
-            .then(Experience => {
-              self.updateExperience(Experience)
-                .then(response => {
-                  if (response.success) {
-                    $scope.status = "Enregistrer avec succès";
-                    window.setTimeout(() => {
-                      UIkit.modal('#modal-edit-experience-overflow').hide();
-                    }, 1200);
-                  } else {
-                    $scope.status = response.msg;
-                  }
-                });
-            });
-          // Mettre à jour l'expérience
-
-        };
 
         /**
          * Envoyer le fomulaire d'ajout pour une nouvelle experience
@@ -358,13 +318,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           subForm.append('experiences', JSON.stringify(Experiences));
           $scope.status = "Enregistrement en cours...";
           $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -387,6 +347,64 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         };
 
         /**
+         * Envoyer le formulaire d'ajout pour la modification
+         * @param {bool} isValid
+         */
+        $scope.submitForm = (isValid) => {
+          if (!isValid || !$scope.eform.$dirty) return;
+          self.formatFormEntry($scope.Exp)
+            .then(Experience => {
+              self.updateExperience(Experience)
+                .then(response => {
+                  if (response.success) {
+                    $scope.status = "Enregistrer avec succès";
+                    window.setTimeout(() => {
+                      UIkit.modal('#modal-edit-experience-overflow').hide();
+                    }, 1200);
+                  } else {
+                    $scope.status = response.msg;
+                  }
+                });
+            });
+          // Mettre à jour l'expérience
+
+        };
+
+        /**
+         * Modifier une expérience
+         * @param {string} positionHeld
+         */
+        $scope.editExperience = (experienceId) => {
+          $scope.mode = 1;
+          let experience = _.find($scope.Candidate.experiences, experience => experience.id == parseInt(experienceId));
+          let momentDateBegin = moment(experience.exp_dateBegin, 'MM/DD/YYYY', 'fr');
+          let dateEndObj = {};
+          if (!_.isEmpty(experience.exp_dateEnd)) {
+            let momentDateEnd = moment(experience.exp_dateEnd, 'MM/DD/YYYY', 'fr');
+            dateEndObj = {
+              month: momentDateEnd.format('MMMM'),
+              year: parseInt(momentDateEnd.format('YYYY'))
+            };
+          }
+          $scope.Exp = {
+            id: experience.id,
+            validated: experience.validated,
+            position: experience.exp_positionHeld,
+            company: experience.exp_company,
+            city: experience.exp_city,
+            country: experience.exp_country,
+            mission: experience.exp_mission,
+            position_currently_works: _.isEmpty(experience.exp_dateEnd) ? true : false,
+            dateBegin: {
+              month: momentDateBegin.format('MMMM'),
+              year: parseInt(momentDateBegin.format('YYYY'))
+            },
+            dateEnd: dateEndObj
+          };
+          UIkit.modal('#modal-edit-experience-overflow').show();
+        };
+
+        /**
          * Récuperer une date de fin
          * @param beginYears
          * @returns {*}
@@ -401,7 +419,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         };
 
         // Event on modal dialog close or hide
-        UIkit.util.on('#modal-edit-experience-overflow', 'hide', function (e) {
+        UIkit.util.on('#modal-edit-experience-overflow', 'hide', e => {
           e.preventDefault();
           $scope.Exp = {};
           $scope.eform.$setPristine();
@@ -409,176 +427,39 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           $scope.status = '';
         });
 
-        $scope.$watch('Exp', experience => {
-        });
-
-        $scope.$watch('newExperienceForm', experience => {
-        });
-      }]
-    }
-  }])
-  .directive('trainings', [function () {
-    return {
-      restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/trainings.html',
-      scope: {
-        Candidate: "=candidate",
-      },
-      controller: ['$scope', '$http', '$q', function ($scope, $http, $q) {
-        const self = this;
-        /**
-         * 0: Nouvelle formation
-         * 1: Modifier la formation
-         * 2: Supprimer la formation
-         */
-        $scope.mode = null;
-        // Cette variable contient les nouvelles informations a modifier ou ajouter
-        $scope.Train = {};
-        $scope.years = _.range(1959, new Date().getFullYear() + 1);
-        this.$onInit = () => {
-        };
-
-        // Ajouter une nouvelle formation
-        $scope.newTraining = () => {
-          $scope.mode = 0;
-          $scope.Train.validated = false;
-          UIkit.modal('#modal-edit-training-overflow').show();
-        };
-
-        /**
-         * Modifier la formation
-         * @param {int} trainingId
-         */
-        $scope.editTraining = (trainingId) => {
-          $scope.mode = 1;
-          let editTraining = _.find($scope.Candidate.trainings, training => training.id === parseInt(trainingId));
-          $scope.Train = _.mapObject(editTraining, (value, key) => {
-            switch (key) {
-              case 'training_dateBegin':
-              case 'training_dateEnd':
-                return parseInt(value);
-                break;
-
-              default:
-                return value;
-                break;
-            }
-            return value;
-          });
-          UIkit.modal('#modal-edit-training-overflow').show();
-        };
-
-        /**
-         * Supprimer une formation dans la base de donnée
-         * @param {int} trainingId
-         */
-        $scope.onDeleteTraining = (trainingId) => {
-          $scope.mode = 2;
-          UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-            labels: {
-              ok: 'Supprimer',
-              cancel: 'Annuler'
-            }
-          })
-            .then(function () {
-              let Trainings = _.reject($scope.Candidate.trainings, (training) => training.id === parseInt(trainingId));
-              self.updateTraining(Trainings);
-              $scope.mode = null;
-            }, () => {
-              alertify.error("Une erreur s'est produite pendant la suppression.");
-              $scope.mode = null;
-            });
-        };
-
-        /**
-         * Envoyer le formulaire pour mettre a jour les formations\
-         * @param {bool} isValid
-         */
-        $scope.submitForm = (isValid) => {
-          if (!isValid || _.isNull($scope.mode) || !$scope.tform.$dirty) return;
-          let Trainings = _.clone($scope.Candidate.trainings);
-          switch ($scope.mode) {
-            case 0:
-              // Nouvelle formation
-              Trainings.push($scope.Train);
-              break;
-            case 1:
-              // Modifier une formation
-              // FEATURED: Ajouter un code pour modifier une formation
-              Trainings = _.map($scope.Candidate.trainings, (training) => {
-                if (training.id === $scope.Train.id) {
-                  return $scope.Train;
-                }
-                return training;
-              });
-              break;
-            default:
-              alertify.error("Une erreur s'est produite dans le formulaire");
-              return false;
-              break;
-          }
-          self.updateTraining(Trainings);
-          $scope.mode = null
-        };
-
-        /**
-         * Mettre a jour les formations ajouter ou modifier dans l'OC
-         * @param {object} trainings
-         */
-        self.updateTraining = (trainings) => {
-          const subForm = new FormData();
-          subForm.append('action', 'update_trainings');
-          subForm.append('trainings', JSON.stringify(trainings));
-          $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
-            .then(resp => {
-              let data = resp.data;
-              if (data.success) {
-                UIkit.modal('#modal-edit-training-overflow').hide();
-                $scope.Candidate.trainings = _.map(data.trainings, (training, index) => {
-                  training.id = index;
-                  return training;
-                });
-                $scope.mode = null;
-              }
-            })
-        };
-
-        /**
-         * Récuperer une date de fin
-         * @param beginYears
-         * @returns {*}
-         */
-        $scope.dateEndRange = (beginYears) => {
-          if (beginYears) {
-            let yBegin = parseInt(beginYears);
-            return _.range(yBegin, new Date().getFullYear() + 1)
-          } else {
-            return $scope.years;
-          }
-        };
-
-        UIkit.util.on('#modal-edit-training-overflow', 'hide', function (e) {
+        UIkit.util.on('#modal-new-experience-overflow', 'hide', e => {
           e.preventDefault();
-          $scope.Train = {};
-          $scope.tform.$setPristine();
-          $scope.tform.$setUntouched();
+          $scope.newExperience = {};
         });
+
       }]
     }
   }])
   .directive('notifications', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/notifications.html',
-      scope: {},
-      controller: ['$scope', function ($scope) {
+      templateUrl: itOptions.Helper.tpls_partials + '/notifications.html?ver=' + itOptions.version,
+      scope: true,
+      controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
+        $scope.Notices = [];
+        $scope.Loading = false;
+
+        jQuery('#modal-notification-overflow').on('show.bs.modal', (e) => {
+          $scope.Loading = true;
+          $http.get(`${itOptions.Helper.ajax_url}?action=collect_current_user_notices`, {
+              cache: false
+            })
+            .then(response => {
+              let query = response.data;
+              $scope.Notices = _.map(query.data, (data) => {
+                data.status = parseInt(data.status);
+                data.ID = parseInt(data.ID);
+                data.url = `${data.url}&notif_id=${data.ID}`;
+                return data;
+              });
+              $scope.Loading = false;
+            }, (error) => {});
+        });
 
       }]
     }
@@ -595,6 +476,48 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.jobSearchs = [];
       $scope.Helper = {};
       $scope.preloader = false;
+      $scope.select2Options = {
+        allowClear: true,
+        placeholder: "Selectionner",
+        width: 'resolve',
+        matcher: function (params, data) {
+          var inTerm = [];
+
+          // If there are no search terms, return all of the data
+          if (jQuery.trim(params.term) === '') {
+            return data;
+          }
+
+          // Do not display the item if there is no 'text' property
+          if (typeof data.text === 'undefined') {
+            return null;
+          }
+
+          // `params.term` should be the term that is used for searching
+          // `data.text` is the text that is displayed for the data object
+          var dataContains = data.text.toLowerCase();
+          var paramTerms = jQuery.trim(params.term).split(' ');
+          jQuery.each(paramTerms, (index, value) => {
+            if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
+              inTerm.push(true);
+            } else {
+              inTerm.push(false);
+            }
+          });
+          var isEveryTrue = _.every(inTerm, (boolean) => {
+            return boolean === true;
+          });
+          if (isEveryTrue) {
+            var modifiedData = jQuery.extend({}, data, true);
+            //modifiedData.text += ' (Trouver)';
+            return modifiedData;
+          } else {
+            // Return `null` if the term should not be displayed
+            return null;
+          }
+        }
+      };
+
       // Contient l'image par default de l'OC
       $scope.featuredImage = '';
       // La valeur reste `false` si la photo de profil n'est pas toucher
@@ -617,7 +540,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
       $scope.searchCityFn = (city) => {
         if (!_.isUndefined($scope.profilEditor.form.region)) {
           let region = parseInt($scope.profilEditor.form.region);
-          rg = _.findWhere($scope.profilEditor.regions, {term_id: region});
+          rg = _.findWhere($scope.profilEditor.regions, {
+            term_id: region
+          });
           if (rg) {
             if (city.name.indexOf(rg.name) > -1) {
               return true;
@@ -649,12 +574,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               }, 1200);
 
             }
-          }, (error) => {
-          });
+          }, (error) => {});
       };
 
       $scope.onSubmitCandidateInformation = (isValid) => {
-//update_candidate_information
+        //update_candidate_information
         if (!isValid) return false;
         $scope.profilEditor.loading = true;
         const Form = new FormData();
@@ -675,8 +599,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               }, 1200);
 
             }
-          }, (error) => {
-          });
+          }, (error) => {});
       };
 
       self.send
@@ -694,9 +617,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           if (_.isNull($scope.Company.branch_activity) || !$scope.Company.branch_activity || !$scope.Company.country ||
             !$scope.Company.region || _.isEmpty($scope.Company.greeting)) {
             $q.all([
-              $scope.asyncTerms('branch_activity'),
-              $scope.asyncTerms('region'),
-              $scope.asyncTerms('city')])
+                $scope.asyncTerms('branch_activity'),
+                $scope.asyncTerms('region'),
+                $scope.asyncTerms('city')
+              ])
               .then(data => {
                 $scope.profilEditor.abranchs = _.clone(data[0]);
                 $scope.profilEditor.regions = _.clone(data[1]);
@@ -719,8 +643,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
               })
           }
 
-        }
-        else {
+        } else {
           // Candidat
           // Crée une image par default
           let sexe = Client.iClient.greeting === null || _.isEmpty(Client.iClient.greeting) ? '' : (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';
@@ -760,11 +683,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
           const abranch = $scope.Candidate.branch_activity;
           let updateActivity = $scope.Candidate.has_cv ? (!!(_.isNull(abranch) || !abranch)) : false;
 
-          if ( !country || !region || _.isEmpty($scope.Candidate.greeting) || !address || updateActivity) {
+          if (!country || !region || _.isEmpty($scope.Candidate.greeting) || !address || updateActivity) {
             $q.all([
-              $scope.asyncTerms('branch_activity'),
-              $scope.asyncTerms('region'),
-              $scope.asyncTerms('city')])
+                $scope.asyncTerms('branch_activity'),
+                $scope.asyncTerms('region'),
+                $scope.asyncTerms('city')
+              ])
               .then(data => {
                 $scope.profilEditor.abranchs = _.clone(data[0]);
                 $scope.profilEditor.regions = _.clone(data[1]);
@@ -878,13 +802,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
         form.append('action', 'update_alert_filter');
         form.append('alerts', JSON.stringify($scope.alerts));
         $http({
-          method: 'POST',
-          url: itOptions.Helper.ajax_url,
-          headers: {
-            'Content-Type': undefined
-          },
-          data: form
-        })
+            method: 'POST',
+            url: itOptions.Helper.ajax_url,
+            headers: {
+              'Content-Type': undefined
+            },
+            data: form
+          })
           .then(response => {
             // Handle success
             let data = response.data;
@@ -1042,13 +966,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ngRoute', 'froala', 'n
        */
       $scope.onSaveCandidateProfil = (formData) => {
         $http({
-          url: itOptions.Helper.ajax_url,
-          method: "POST",
-          headers: {
-            'Content-Type': undefined
-          },
-          data: formData
-        })
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: formData
+          })
           .then(resp => {
             let data = resp.data;
             if (!data.success) return;

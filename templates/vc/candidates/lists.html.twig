@@ -24,8 +24,13 @@
                     <tr>
                       <td>L'emploi recherché:</td>
                       <td>
+
                         {% if candidate.jobSought is not same as(undefined) %}
-                          {{ candidate.jobSought|explode_terms }}
+                          {% if candidate.jobSought is iterable %}
+                            {{ candidate.jobSought|explode_terms }}
+                          {% else %}
+                            {{ candidate.jobSought.name }}
+                          {% endif %}
                         {% else %}
                           Aucun
                         {% endif %}

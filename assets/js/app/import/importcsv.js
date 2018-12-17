@@ -71,39 +71,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
           /**
            * @event ngClick
            */
-          $scope.addedOfferForm = () => {
-            const Form = new FormData();
-            Form.append('action', 'get_offer_data');
-            $scope.chargement = true;
-            importService
-              .sendform(Form)
-              .then(resp => {
-                let query = resp.data;
-                if (query.success) {
-                  let inputs = query.data;
-                  let response = [];
-
-                  async function loopOffers(inputs) {
-                    for (const input of inputs) {
-                      await self.sendEntryContent(input, 'offers')
-                        .then(resp => {
-                          response.push(resp);
-                        });
-                    }
-                    $scope.chargement = false;
-                  }
-
-                  loopOffers(inputs);
-                } else {
-                  $scope.chargement = false;
-                }
-
-              })
-          };
-
-          /**
-           * @event ngClick
-           */
           $scope.activeCandidateCareer = () => {
             const inputCSV = jQuery('input#files');
             if (!inputCSV[0].files.length) {
@@ -207,7 +174,6 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               console.log($scope.formData.fileContent);
               form.append('action', 'import_csv');
               form.append('entry_type', $scope.formData.entryType);
-              form.append('order', $scope.columns);
               form.append('column', JSON.stringify(column[0]));
               importService
                 .sendform(form)
@@ -219,6 +185,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
                     parser.abort();
                     $scope.chargement = false;
                   }
+                }, (error) => {
+                  console.error(error);
+                  setTimeout(() => {
+                    parser.resume();
+                  }, 5000)
                 })
             }
           };
@@ -280,24 +251,24 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Tout les utilisateurs"
       },
       {
+        _id: 7,
+        slug: 'user_company',
+        label: 'Utilisateurs - Entreprises'
+      },
+      {
         _id: 4,
         slug: 'user_candidate_cv',
-        label: "Demandeur emploi - CV"
-      },
-      {
-        _id: 13,
-        slug: 'user_candidate_update_job_sought',
-        label: "Demandeur emploi - Ajouter l'emploi dans un meta"
-      },
-      {
-        _id: 10,
-        slug: 'update_candidate_language',
-        label: "Demandeur emploi - Mettre à jour les langues"
+        label: "Utilisateurs - Candidat CV"
       },
       {
         _id: 5,
-        slug: 'user_candidate_information',
-        label: "Demandeur emploi - Information"
+        slug: 'user_candidate_informations',
+        label: "Utilisateurs - Candidat Information"
+      },
+      {
+        _id: 10,
+        slug: 'user_candidate_status',
+        label: "Utilisateurs - Candidat Status (information)"
       },
       {
         _id: 3,
@@ -310,15 +281,16 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Demandeur emploi - Formation"
       },
       {
-        _id: 7,
-        slug: 'user_company',
-        label: 'Utilisateurs - Ajouter les entreprises'
+        _id: 11,
+        slug: 'user_update_publish_date',
+        label: "Demandeur emploi - Update date publish"
       },
       {
-        _id: 11,
-        slug: 'user_company_update_branch_activity',
-        label: 'Entreprise - Mise à jour du secteur d\'activité'
+        _id: 13,
+        slug: 'add_offers',
+        label: "Offers - Ajouter"
       }
+
     ];
     self.getColumns = (typeofFileId) => {
       if (typeofFileId === 1) {

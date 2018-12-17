@@ -17,6 +17,8 @@ trait ModelInterest {
    * @param int $id_candidat
    * @param int $id_offer
    * @param null $id_company
+   * @param string $status  pending|validated|reject
+   * @param string $type - interested|apply (apply - Signifie qu'un candidat à postuler pour une offre)
    *
    * @return bool|int
    */
@@ -68,15 +70,22 @@ trait ModelInterest {
    */
   public function update_interest_status( $id_request, $status = 'pending' ) {
     global $wpdb;
-    if ( ! is_user_logged_in() || ! is_int( $id_request ) ) {
+    if ( ! is_user_logged_in() || ! is_numeric( $id_request ) ) {
       return false;
     }
     $results = $wpdb->update( $this->requestTable, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%s' ], [ '%d' ] );
-    return !!$results;
+    if ($results && $status === 'validated') {
+      // TODO: Envoyer un mail de confirmation que le demande est validé
+      $request = self::get_request($id_request);
+      if (null === $request) return false;
+      // Envoyer un mail pour informer la validation de cette offre
+      do_action("email_application_validation", $request);
+    }
+    return $results;
   }
 
   /**
-   * Cette fonction verifie si est deja ajouter dans l'offre
+   * Cette fonction verifie si le candidat a déja postuler ou selectionner sur l'offre
    *
    * @param int $id_candidat
    * @param int $id_offer
@@ -93,8 +102,19 @@ trait ModelInterest {
     }
     $table   = $wpdb->prefix . 'cv_request';
     $prepare = $wpdb->prepare( "SELECT * FROM $table WHERE id_candidate = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
-    $rows    = $wpdb->get_results( $prepare );
+    $rows    = $wpdb->get_row( $prepare );
 
+    return $rows;
+  }
+
+  // Cette fonction permet d'effacer les requetes sur une offre
+  public function remove_interest( $id_offer ) {
+    global $wpdb;
+    if (!is_user_logged_in() || !$id_offer) {
+      return false;
+    }
+    $prepare = $wpdb->prepare("DELETE FROM {$this->requestTable} WHERE id_offer = %d", $id_offer);
+    $rows = $wpdb->get_results($prepare);
     return $rows;
   }
 
@@ -115,7 +135,7 @@ trait ModelInterest {
       return null;
     }
     $prepare = $wpdb->prepare( "SELECT * FROM $this->requestTable WHERE id_candidate = %d AND id_offer = %d", (int) $id_candidat, (int) $id_offer );
-    $rows    = $wpdb->get_results( $prepare );
+    $rows    = $wpdb->get_row( $prepare );
 
     return $rows;
   }
@@ -194,7 +214,7 @@ trait ModelInterest {
    *
    * @param int|null $id_offer
    *
-   * @return array|bool|null|object
+   * @return array|bool|null
    */
   public function get_offer_interests( $id_offer = null ) {
     global $wpdb;
@@ -210,6 +230,14 @@ trait ModelInterest {
   public static function get_all() {
     global $wpdb;
     $interests = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cv_request" );
+
+    return $interests;
+  }
+
+  public static function get_request($id_request) {
+    global $wpdb;
+    if (!is_numeric($id_request)) return false;
+    $interests = $wpdb->get_row( "SELECT * FROM {$wpdb->prefix}cv_request WHERE {$wpdb->prefix}cv_request.id_cv_request = {$id_request}" );
 
     return $interests;
   }

@@ -100,11 +100,15 @@
           <div class="col-sm-10 pr-0">
             <input class="form-control mt-1" name="cellphone" ng-model="phone.value"
                    type="text"
+                   ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/"
                    placeholder="Numéro de téléphone" required>
 
-            <div ng-messages="setPhone.cellphone.$error" role="alert" multiple>
-              <div ng-message="required" class="alert alert-info d-block mt-1">Veuillez saisir un numero de téléphone.</div>
+            <div ng-messages="setPhone.cellphone.$error" role="alert" class="input-message-animation"
+                 ng-show="setPhone.cellphone.$invalid && setPhone.cellphone.$touched">
+              <div ng-message="required" class="alert alert-danger d-block mt-1">Veuillez saisir un numero de téléphone.</div>
+              <div ng-message="pattern" class="alert alert-danger d-block mt-1">Numéro de téléphone invalide</div>
             </div>
+
           </div>
           <div class="col-sm-2">
             <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" tabindex="0"

@@ -14,7 +14,7 @@ final class Offers implements \iOffer {
   use \OfferHelper;
 
   /** @var int $ID - Identification de l'offre */
-  public $ID;
+  public $ID = 0;
 
   /** @var url $offer_url - Contient le liens de l'offre */
   public $offer_url;
@@ -52,8 +52,14 @@ final class Offers implements \iOffer {
   /** @var string $region - Region */
   public $region;
 
+  /** @var $town - Ville */
+  public $town;
+
   /** @var array $contractType -  Type de contrat */
   public $contractType;
+
+  /** @var string $rateplan - Mode de diffusion (sereine ou standard) */
+  public $rateplan;
 
   /** @var string $profil - Type de profil réchercher pour l'offre */
   public $profil;
@@ -68,7 +74,7 @@ final class Offers implements \iOffer {
   private $featured;
 
 
-  public function __construct( $postId = null ) {
+  public function __construct( $postId = null, $private_access = false ) {
     if ( is_null( $postId ) ) {
       return false;
     }
@@ -90,16 +96,19 @@ final class Offers implements \iOffer {
       $this->post_url = get_the_permalink( $this->ID );
       $this->acfElements()->getOfferTaxonomy();
 
+      if ($private_access) {
+        $this->__get_access();
+      }
+
       // La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
       // Retourne post entreprise...
       $post_company   = get_field( "itjob_offer_company", $this->ID );
-      if (!$post_company) return;
+      if (empty($post_company) || !isset($post_company->ID)) return $this;
       $company_email  = get_field( 'itjob_company_email', $post_company->ID );
       $post_user      = get_user_by( 'email', trim($company_email) );
       $this->author   = Obj\jobServices::getUserData( $post_user->ID );
 
     }
-
     return $this;
   }
 
@@ -131,10 +140,10 @@ final class Offers implements \iOffer {
    */
   private function getOfferTaxonomy() {
     // get region
-    $regions      = wp_get_post_terms( $this->ID, 'region', [
-      "fields" => "all"
-    ] );
-    $this->region = isset( $regions[0] ) ? $regions[0] : '';
+    $regions      = wp_get_post_terms( $this->ID, 'region', ["fields" => "all"] );
+    $towns        = wp_get_post_terms( $this->ID, 'city', ["fields" => "all"]);
+    $this->region = is_array($regions) && !empty($regions) ? $regions[0] : '';
+    $this->town   = is_array($towns) && !empty($towns) ? $towns[0] : null;
     $this->tags   = wp_get_post_terms( $this->ID, 'itjob_tag', [ "fields" => "names" ] );
     if ( is_wp_error( $this->tags ) ) {
       $this->tags = null;
@@ -152,7 +161,7 @@ final class Offers implements \iOffer {
     $this->company = get_field( 'itjob_offer_company', $this->ID ); // Object article
 
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
-    $this->dateLimitFormat  = date_i18n('F j, Y', strtotime($this->dateLimit)); // \DateTime::createFromFormat( 'm/d/Y', $this->dateLimit )->format( 'F j, Y' );
+    $this->dateLimitFormat  = date_i18n( 'F j, Y', strtotime($this->dateLimit)); // \DateTime::createFromFormat( 'm/d/Y', $this->dateLimit )->format( 'F j, Y' );
     $this->activated        = get_field( 'activated', $this->ID ); // Bool
     $this->postPromote      = get_field( 'itjob_offer_post', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
@@ -163,6 +172,7 @@ final class Offers implements \iOffer {
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
     $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
     $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID ); // Objet Term
+    $this->rateplan         = get_field( 'itjob_offer_rateplan', $this->ID ); // String
 
     return $this;
   }

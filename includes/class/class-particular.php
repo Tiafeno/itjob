@@ -84,7 +84,7 @@ abstract class UserParticular {
     $this->dateAdd      = get_the_date( 'j F, Y', $this->getId() );
     // repeater field
     $phones = get_field( 'itjob_cv_phone', $this->getId() );
-    if ( $phones ) {
+    if ( $phones && is_array($phones) ) {
       foreach ( $phones as $phone ):
         array_push( $this->phones, $phone['number'] );
       endforeach;
