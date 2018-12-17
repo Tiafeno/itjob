@@ -78,17 +78,20 @@ final class apiCandidate
       $search = stripslashes($_POST['search']['value']);
       $searchs = explode('|', $search);
       $s = '';
-      $activated = trim($searchs[1]) !== '' && trim($searchs[1]) !== ' ' ? (int)$searchs[1] : '';
-      if ($activated === 1 || $activated === 0) {
+      
+      $status = preg_replace('/\s+/', '', $searchs[1]);
+      $status = strlen($status) > 1 ? '' : (int)$status;
+      if ($status === 1 || $status === 0) {
         $meta_query[] = [
           'key' => 'activated',
-          'value' => (int)$activated,
+          'value' => (int)$status,
           'compare' => '='
         ];
+        $args['post_status'] = $status ? 'publish' : 'any';
       }
 
-      if (!empty($searchs[2]) && $searchs[2] !== ' ') {
-        $args['post_status'] = $searchs[2];
+      if ($status === 'pending') {
+        $args['post_status'] = $status;
       }
 
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
