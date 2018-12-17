@@ -86,10 +86,10 @@ final class apiCandidate
       $s = '';
       
       $status = preg_replace('/\s+/', '', $searchs[1]);
-      $status = $status !== '' ? $status : (int)$status;
+      $status = $status === '0' ? 0 : ($status === '1' ? 1 : $status === 'pending' ? 'pending' : '');
       if ($status === 1 || $status === 0) {
         $meta_query[] = [
-          'key' => '_activated',
+          'key' => 'activated',
           'value' => (int)$status,
           'compare' => '='
         ];
