@@ -153,7 +153,7 @@ final class apiCandidate
     update_field( 'itjob_cv_centerInterest', $centerInterest, $candidate_id );
 
     $driveLicences = array_map(function ($dL) {
-      return $dl->id;
+      return $dL->id;
     }, $objCandidate->driveLicences);
     $driveLicences = empty($driveLicences) ? '' : implode( ',', $driveLicences );
     update_field( 'itjob_cv_driveLicence', $driveLicences, $candidate_id );
