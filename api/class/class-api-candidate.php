@@ -96,6 +96,8 @@ final class apiCandidate
         $args['post_status'] = $status ? 'publish' : 'any';
       }
 
+      var_dump($status);
+
       if ($status === 'pending') {
         $args['post_status'] = $status;
       }
