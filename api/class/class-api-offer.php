@@ -71,22 +71,15 @@ final class apiOffer
 
       $filterDate = $searchs[3];
       if ($filterDate !== '' && !empty($filterDate)) {
-        add_filter('posts_where', function ($where) use ($filterDate) {
-          $date = explode('x', $filterDate);
-          global $wpdb;
-          if (!is_admin()) {
-            $where .= " AND {$wpdb->posts}.ID IN (
-                          SELECT
-                            pt.ID
-                          FROM {$wpdb->posts} as pt
-                          WHERE pt.post_type = 'offers'
-                            AND pt.post_date BETWEEN '{$date[0]}' AND '{$date[1]}'";
-            $where .=  ")"; //  .end AND
-         
-          }
-          
-          return $where;
-        });
+        $date = explode('x', $filterDate);
+        $date_query = [
+          [
+            'after' => $date[0],
+            'before' => $date[1],
+            'inclusive' => true,
+          ]
+        ];
+        $args = array_merge($args, ['date_query' => $date_query]);
       }
 
       $args = array_merge($args, ['meta_query' => $meta_query]);
