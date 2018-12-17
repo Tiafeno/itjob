@@ -98,13 +98,7 @@ final class apiOffer
     if ($the_query->have_posts()) {
       while ($the_query->have_posts()) {
         $the_query->the_post();
-        if (!is_array($the_query->posts)) return false;
-        $offers = array_map(function ($offer) {
-          if (!isset($offer->ID)) return false;
-          $objOffer = new \includes\post\Offers($offer->ID, true);
-
-          return $objOffer;
-        }, $the_query->posts);
+        $offers[] = new \includes\post\Offers(get_the_ID(), true);
       }
       wp_reset_postdata();
 
