@@ -69,6 +69,8 @@ final class apiCandidate
     $args = [
       'post_type' => 'candidate',
       'post_status' => 'any',
+      'order' => 'DESC',
+      'orderby' => 'ID',
       "posts_per_page" => $posts_per_page,
       "paged" => $paged,
     ];
