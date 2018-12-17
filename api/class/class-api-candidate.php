@@ -89,7 +89,7 @@ final class apiCandidate
       $status = $status !== '' ? $status : (int)$status;
       if ($status === 1 || $status === 0) {
         $meta_query[] = [
-          'key' => 'activated',
+          'key' => '_activated',
           'value' => (int)$status,
           'compare' => '='
         ];
