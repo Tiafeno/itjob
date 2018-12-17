@@ -96,11 +96,10 @@ final class apiOffer
     $the_query = new WP_Query($args);
     $offers = [];
     if ($the_query->have_posts()) {
-      while ($the_query->have_posts()) {
-        $the_query->the_post();
-        $offers[] = new \includes\post\Offers(get_the_ID(), true);
-      }
-      wp_reset_postdata();
+      $offers = array_map(function ($offer) {
+        $response = new \includes\post\Offers($offer->ID, true);
+        return $response;
+      }, $the_query->posts);
 
       return [
         "recordsTotal" => (int)$the_query->found_posts,
