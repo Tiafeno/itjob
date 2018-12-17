@@ -90,8 +90,8 @@ final class apiCandidate
         $args['post_status'] = $status ? 'publish' : 'any';
       }
 
-      if ($status === 'pending') {
-        $args['post_status'] = $status;
+      if ($searchs[1] === 'pending') {
+        $args['post_status'] = $searchs[1];
       }
 
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
