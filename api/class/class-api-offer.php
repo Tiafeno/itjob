@@ -26,6 +26,7 @@ final class apiOffer
       $s = '';
       $meta_query = [];
       $meta_query[] = ['relation' => "AND"];
+      $tax_query = [];
       $status = preg_replace('/\s+/', '', $searchs[1]);
       $status = $status === '0' ? 0 : ($status === '1' ? 1 : ($status === 'pending' ? 'pending' : ''));
       if ($status === 1 || $status === 0) {
@@ -58,7 +59,38 @@ final class apiOffer
           ]
         ];
       }
+
+      $activityArea = (int)$searchs[2];
+      if ($activityArea !== 0) {
+        $tax_query[] = [
+          'taxonomy' => 'branch_activity',
+          'field' => 'term_id',
+          'terms' => [$activityArea]
+        ];
+      }
+
+      $filterDate = $searchs[3];
+      if ($filterDate !== '' && !empty($filterDate)) {
+        add_filter('posts_where', function ($where) use ($filterDate) {
+          $date = explode('x', $filterDate);
+          global $wpdb;
+          if (!is_admin()) {
+            $where .= " AND {$wpdb->posts}.ID IN (
+                          SELECT
+                            pt.ID
+                          FROM {$wpdb->posts} as pt
+                          WHERE pt.post_type = 'offers'
+                            AND pt.post_date BETWEEN '{$date[0]}' AND '{$date[1]}'";
+            $where .=  ")"; //  .end AND
+         
+          }
+          
+          return $where;
+        });
+      }
+
       $args = array_merge($args, ['meta_query' => $meta_query]);
+      $args = array_merge($args, ['tax_query' => $tax_query]);
     }
 
     $the_query = new WP_Query($args);
