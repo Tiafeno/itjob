@@ -100,8 +100,8 @@ final class apiCandidate
         $args['post_status'] = $status;
       }
 
-      if (!empty($searchs[0]) && $searchs[0] !== ' ') {
-        $s = $searchs[0];
+      $s = $status = preg_replace('/\s+/', '', $searchs[0]);
+      if (!empty($s) && $s !== '') {
         $this->add_filter_search($s);
       } else {
         $meta_query[] = [
