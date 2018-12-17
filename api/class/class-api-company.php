@@ -32,10 +32,11 @@ class apiCompany
           'value' => (int)$activated,
           'compare' => '='
         ];
+        $args['post_status'] = $activated ? 'publish' : 'any';
       }
 
-      if (!empty($searchs[2]) && $searchs[2] !== ' ') {
-        $args['post_status'] = $searchs[2];
+      if ($searchs[1] === 'pending') {
+        $args['post_status'] = $searchs[1];
       }
 
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
@@ -43,7 +44,7 @@ class apiCompany
         $args['s'] = $s;
       }
 
-      $account = trim($searchs[3]) !== '' && trim($searchs[3]) !== ' ' ? (int)$searchs[3] : '';
+      $account = trim($searchs[2]) !== '' && trim($searchs[2]) !== ' ' ? (int)$searchs[2] : '';
       if ($account === 1 || $account === 0 || $account === 2) {
         $meta_query[] = [
           'key' => 'itjob_meta_account',
