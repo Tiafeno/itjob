@@ -79,7 +79,6 @@ final class apiCandidate
     $meta_query[] = ['relation' => "AND"];
 
     $tax_query = [];
-    $tax_query[] = ['relation' => 'AND'];
 
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
       $search = stripslashes($_POST['search']['value']);
