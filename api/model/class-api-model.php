@@ -36,11 +36,6 @@ final class apiModel
                 SELECT {$wpdb->postmeta}.post_id as post_id
                 FROM {$wpdb->postmeta}
                 WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
-              ) 
-              AND  pts.ID IN (
-                SELECT {$wpdb->postmeta}.post_id as post_id
-                FROM {$wpdb->postmeta}
-                WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
               )";
     $prepare = $wpdb->prepare($sql, $post_type);
     $rows = $wpdb->get_var($prepare);
@@ -57,6 +52,13 @@ final class apiModel
       return 0;
     }
     $sql = "SELECT COUNT(*) FROM $wpdb->posts pts WHERE pts.post_type = %s AND pts.post_status = %s";
+    if ($post_type === 'candidate') {
+      $sql .= "AND pts.ID IN (
+                  SELECT {$wpdb->postmeta}.post_id as post_id
+                  FROM {$wpdb->postmeta}
+                  WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+                )";
+    }
     $prepare = $wpdb->prepare($sql, $post_type, $post_status);
     $rows = $wpdb->get_var($prepare);
 
