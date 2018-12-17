@@ -140,7 +140,7 @@ final class apiCandidate
   {
     $candidate_id = (int)$request['id'];
     $candidate = stripslashes($_REQUEST['candidat']);
-    $objCandidate = json_decode(candidate);
+    $objCandidate = json_decode($candidate);
 
     // Update ACF field
     $activated = is_string($objCandidate->activated) ? ($objCandidate->activated == 'true' ? 1 : 0) : (bool)$objCandidate->activated;
