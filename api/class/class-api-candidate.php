@@ -189,11 +189,8 @@ final class apiCandidate
     ];
     update_field( 'itjob_cv_centerInterest', $centerInterest, $candidate_id );
 
-    $driveLicences = array_map(function ($dL) {
-      return $dL->id;
-    }, $objCandidate->driveLicences);
-    $driveLicences = empty($driveLicences) ? '' : $driveLicences;
-    update_field( 'itjob_cv_driveLicence', $driveLicences, $candidate_id );
+    if (is_array($$objCandidate->drivelicences))
+      update_field( 'itjob_cv_driveLicence', $$objCandidate->drivelicences, $candidate_id );
 
     $datetimeBd = DateTime::createFromFormat('m/d/Y', $objCandidate->birthday);
     $bdACF = $datetimeBd->format('Ymd');
@@ -209,6 +206,12 @@ final class apiCandidate
     foreach (get_object_vars($form) as $key => $value) {
       update_field("itjob_cv_" . $key, $value, $candidate_id);
     }
+
+    $valuePhone = [];
+    foreach ($objCandidate->cellphones as $phone) {
+      $valuePhone[] = ['number' => $phone];
+    }
+    update_field('itjob_cv_phone', $valuePhone, $candidate_id);
 
     // Ajouter les emplois rechercher par le candidat (Existant et qui n'existe pas encore dans la base de donnée)
     $jobIds = is_array($objCandidate->jobs) ? $objCandidate->jobs : [];
