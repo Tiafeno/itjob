@@ -280,6 +280,7 @@ final class apiCandidate
             'exp_country' => $content->exp_country,
             'exp_mission' => $content->exp_mission,
             'exp_branch_activity' => $content->exp_branch_activity,
+            'old_value' => $content->old_value,
             'validated' => $content->validated // S'il y a une autre formation qui n'est pas validé?
             // exp_branch_activity
           ];
