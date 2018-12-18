@@ -10,7 +10,7 @@ final class apiOffer
   {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
-    $paged = isset($_POST['start']) ? ($start === 0 ? 1 : ($start + 1) / $length) : 1;
+    $paged = isset($_POST['start']) ? ($start === 0 ? 1 : ($start + $length) / $length) : 1;
     $posts_per_page = isset($_POST['length']) ? (int)$_POST['length'] : 20;
     $args = [
       'post_type' => 'offers',
