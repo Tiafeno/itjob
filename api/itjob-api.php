@@ -240,16 +240,15 @@ add_action('rest_api_init', function () {
         }
 
         // Activation et publication
-        $updatePost = $currentOffer->offer_status !== $offer->status && $offer->status !== 'pending';
-        $status = (int)$offer->status;
-        if ($updatePost) {
-          update_field('activated', $status, $offer->ID);
-          if ($status === 1) {
-            // notification de validation
+        $a = &$offer->status;
+        $activated = !empty($a)  ? ($a === '1' ? 1 : ($a === '0' ? 0 : 'pending')) : null;
+        if (is_numeric($activated)) {
+          update_field( 'activated', $activated, $offer->ID );
+          if ($activated && $currentOffer->offer_status !== 'publish')
             do_action('confirm_validate_offer', $offer->ID);
-          }
           $result = wp_update_post(['ID' => $offer->ID, 'post_status' => 'publish'], true);
         } else {
+          update_field( 'activated', 0, $offer->ID );
           $result = wp_update_post(['ID' => $offer->ID, 'post_status' => 'pending'], true);
         }
 

@@ -183,9 +183,6 @@ final class apiCandidate
     $objCandidate = json_decode($candidate);
 
     // Update ACF field
-    $activated = is_string($objCandidate->activated) ? ($objCandidate->activated == 'true' ? 1 : 0) : (bool)$objCandidate->activated;
-    update_field( 'activated', $activated, $candidate_id );
-
     $centerInterest = [
       'various' => $objCandidate->divers,
       'projet'  => $objCandidate->projet
@@ -227,8 +224,19 @@ final class apiCandidate
 
     $cityIds = [ $objCandidate->town ];
     wp_set_post_terms( $candidate_id, $cityIds, 'city' );
+    $a = &$objCandidate->activated;
+    $activated = !empty($a)  ? ($a === '1' ? 1 : ($a === '0' ? 0 : 'pending')) : null;
+    $currentPost = get_post($candidate_id);
+    if (is_numeric($activated)) {
+      update_field( 'activated', $activated, $candidate_id );
+      if ($activated && $currentPost->post_status !== 'publish')
+        do_action('confirm_validate_candidate', $candidate_id);
+      wp_update_post(['ID' => $candidate_id, 'post_status' => 'publish'], true);
+    } else {
+      update_field( 'activated', 0, $candidate_id );
+      wp_update_post(['ID' => $candidate_id, 'post_status' => 'pending'], true);
+    }
 
-    wp_update_post(['ID' => $candidate_id, 'post_status' => 'publish'], true);
 
     return new WP_REST_Response('Candidat mis à jour avec succès');
   }

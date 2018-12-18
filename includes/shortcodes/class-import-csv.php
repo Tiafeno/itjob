@@ -29,11 +29,13 @@ if (!class_exists('scImport')) :
 
         add_action('wp_ajax_import_csv', [&$this, 'import_csv']);
         add_action('wp_ajax_delete_post', [&$this, 'delete_post']);
+        add_action('wp_ajax_delete_users', [&$this, 'delete_users']);
         add_action('wp_ajax_delete_term', [&$this, 'delete_term']);
         add_action('wp_ajax_remove_all_experiences', [&$this, 'remove_all_experiences']);
         add_action('wp_ajax_active_career', [&$this, 'active_career']);
         add_action('wp_ajax_added_offer_sector_activity', [&$this, 'added_offer_sector_activity']);
       }
+
     });
 
     add_action('admin_init', function () {
@@ -144,6 +146,33 @@ if (!class_exists('scImport')) :
   }
 
   /**
+   * Function ajax
+   * Effacer tous les ustilisateur sauf l'administrateur
+   * 
+   * @url /wp-admin/admin-ajax.php?action=delete_users
+   */
+  public function delete_users()
+  {
+    if (!is_user_logged_in()) {
+      wp_send_json_error("Accès refuser");
+    }
+    global $wpdb;
+    
+    $sql = "SELECT * FROM {$wpdb->users} usr WHERE usr.ID != %d";
+    $prepare = $wpdb->prepare($sql, 1); // Not delete admin user
+    $users = $wpdb->get_results($prepare);
+
+    $posts_per_page = 20;
+    $paged = count($users) / $posts_per_page;
+    foreach ($users as $user) {
+      wp_delete_user($user->ID);
+      $count += 1;
+    }
+    wp_send_json_succes(['UserCount' => $count]);
+
+  }
+
+  /**
    * Mettre à jour les secteur d'activité des offres par la secteur d'activité de l'entreprise
    */
   public function added_offer_sector_activity()
@@ -183,7 +212,8 @@ if (!class_exists('scImport')) :
     ]);
   }
 
-  private function __set_field_term($offer, $term) {
+  private function __set_field_term($offer, $term)
+  {
     $term = is_array($term) && !empty($term) ? $term[0] : null;
     if (!is_null($term)) {
       update_field("itjob_offer_abranch", $term->term_id, $offer->ID);
@@ -411,10 +441,13 @@ if (!class_exists('scImport')) :
 
                 // Ajouter une post type 'company'
             $status = $rows_object->status ? 'publish' : 'pending';
+            $create_date = strtotime($rows_object->created);
+            $publish = date('Y-m-d H:i:s', $create_date);
             $argc = [
               'post_title' => $rows_object->name,
               'post_status' => $status,
               'post_type' => 'company',
+              'post_date' => $publish,
               'post_author' => $user_id
             ];
             $insert_company = wp_insert_post($argc);
@@ -469,12 +502,15 @@ if (!class_exists('scImport')) :
             $importUser = new importUser($user_id);
             $importUser->update_user_meta($rows_object);
 
-                // Ajouter une post type 'candidate'
+            // Ajouter une post type 'candidate'
+            $create_date = strtotime($rows_object->created);
+            $publish = date('Y-m-d H:i:s', $create_date);
             $argc = [
               'post_title' => $rows_object->name,
               'post_status' => 'pending',
               'post_type' => 'candidate',
-              'post_author' => $user_id
+              'post_author' => $user_id,
+              'post_date' => $publish
             ];
             $insert_candidate = wp_insert_post($argc);
             if (is_wp_error($insert_candidate)) {
@@ -564,7 +600,7 @@ if (!class_exists('scImport')) :
             $values[] = ['number' => $phone];
           }
           update_field('itjob_company_cellphone', $values, $Company->getId());
-          wp_update_post(['ID' => $Company->getId(), 'post_title' => $company_name]);
+          wp_update_post(['ID' => $Company->getId(), 'post_status' => 'publish', 'post_title' => $company_name]);
 
             // Enregistrer la date de creation original & l'ancienne secteur d'activité
           update_post_meta($Company->getId(), '__create', $create);
@@ -874,7 +910,6 @@ if (!class_exists('scImport')) :
             });
             $city = !isset($city['value']) || empty($city) ? '' : $city['value'];
           }
-          update_post_meta($candidat_id, "experience_{$id_experience}_{$id_cv}_ville", $ville_id);
 
             // Récuperer le poste qui correspond à son identifiant
           $poste = '';
@@ -886,7 +921,6 @@ if (!class_exists('scImport')) :
             });
             $poste = !isset($poste['value']) ? "" : $poste['value'];
           }
-          update_post_meta($candidat_id, "experience_{$id_experience}_{$id_cv}_poste", $postoccuper_id);
 
             // SECTEUR D'ACTIVITES
           $secteuractivite_id = (int)$secteuractivite_id;
@@ -967,7 +1001,6 @@ if (!class_exists('scImport')) :
             $city = empty($city) || !isset($city['value']) ? '' : $city['value'];
             unset($VILLES);
           }
-          update_post_meta($candidat_id, "training_{$id_formation}_{$id_demandeur}_ville", $ville_id);
 
             // Récuperer le diplome
           $diploma = '';
@@ -979,7 +1012,6 @@ if (!class_exists('scImport')) :
             $diploma = empty($diploma) || !isset($diploma['value']) ? '' : ucfirst($diploma['value']);
             unset($DIPLOMES);
           }
-          update_post_meta($candidat_id, "training_{$id_formation}_{$id_demandeur}_diplome", $diplome_id);
 
             // Récuperer l'université
           $university = '';
@@ -991,7 +1023,6 @@ if (!class_exists('scImport')) :
             $university = empty($university) || !isset($university['value']) ? '' : $university['value'];
             unset($UNIVERSITE);
           }
-          update_post_meta($candidat_id, "training_{$id_formation}_{$id_demandeur}_universite", $universite_id);
 
           if (empty($diploma) || empty($university)) {
             wp_send_json_success("Impossible d'ajouter cette formation pour une raison de manque d'information");

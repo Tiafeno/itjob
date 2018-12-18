@@ -18,4 +18,31 @@ final class itModel {
     $this->__noticeConstruct();
   }
 
+  public function get_candidate_id_by_email( $email ) {
+    global $wpdb;
+    $prepare = $this->getPrepareSql('candidate','itjob_cv_email', $email );
+    $id    = $wpdb->get_var( $prepare );
+    return $id;
+  }
+
+  public function get_company_id_by_email( $email ) {
+    global $wpdb;
+    $prepare = $this->getPrepareSql('company','itjob_company_email', $email );
+    $id    = $wpdb->get_var( $prepare );
+    return $id;
+  }
+
+  private function getPrepareSql($post_type, $meta_key, $meta_value) {
+    global $wpdb;
+    $sql = "SELECT pst.ID 
+              FROM {$wpdb->posts} as pst
+              WHERE pst.post_type = '%s'
+                AND (pst.ID IN (
+                  SELECT {$wpdb->postmeta}.post_id as post_id
+                  FROM {$wpdb->postmeta}
+                  WHERE {$wpdb->postmeta}.meta_key = '%s' AND {$wpdb->postmeta}.meta_value = '%s'
+                ))";
+    return $wpdb->prepare($sql, $post_type, $meta_key, $meta_value);
+  }
+
 }

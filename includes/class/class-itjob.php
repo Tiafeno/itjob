@@ -75,8 +75,9 @@ if ( ! class_exists( 'itJob' ) ) {
       // Effacer le candidat ou l'entreprise si on supprime l'utilisateur
       add_action( 'delete_user', function ( $user_id ) {
         $user_obj = get_userdata( $user_id );
+        $Model = new itModel();
         if ( in_array( 'company', $user_obj->roles ) ) {
-          $Company = Post\Company::get_company_by( $user_id );
+          $company_id = $Model->get_company_id_by_email($user_obj->user_email);
           // FEATURED: Effacer les offres de l'entreprise
           $argOffers = [
             'post_type' => 'offers',
@@ -84,27 +85,26 @@ if ( ! class_exists( 'itJob' ) ) {
             'meta_query' => [
               [
                 'key' => 'itjob_offer_company',
-                'value' => $Company->getId(),
+                'value' => $company_id,
                 'compare' => '='
               ]
             ]
           ];
           // Récuperer tous les offres de l'entreprise
           $offers = get_posts($argOffers);
-          $Model = new itModel();
           foreach ($offers as $offer):
             // Effacer l'offre
             $deleted = wp_delete_post($offer->ID, true);
           if ( ! is_wp_error($deleted) )
             $Model->remove_interest($offer->ID);
           endforeach;
-          wp_delete_post( $Company->getId(), true);
+          wp_delete_post( $company_id, true);
 
         }
 
         if ( in_array( 'candidate', $user_obj->roles ) ) {
-          $Candidate = Post\Candidate::get_candidate_by( $user_id );
-          wp_delete_post( $Candidate->getId(), true);
+          $candidate_id = $Model->get_candidate_id_by_email($user_obj->user_email);
+          wp_delete_post( $candidate_id, true);
         }
       } );
 
