@@ -152,18 +152,13 @@ final class apiCandidate
     $the_query = new WP_Query($args);
     $candidates = [];
     if ($the_query->have_posts()) {
-      while ($the_query->have_posts()) {
-        $the_query->the_post();
-        if (!is_array($the_query->posts)) return false;
-        $candidates = array_map(function ($candidate) {
-          if (!isset($candidate->ID)) return $candidate;
-          $objCandidate = new \includes\post\Candidate($candidate->ID);
-          $objCandidate->isActive = $objCandidate->is_activated();
-          $objCandidate->__get_access();
+      $candidates = array_map(function ($candidate) {
+        $objCandidate = new \includes\post\Candidate($candidate->ID);
+        $objCandidate->isActive = $objCandidate->is_activated();
+        $objCandidate->__get_access();
 
-          return $objCandidate;
-        }, $the_query->posts);
-      }
+        return $objCandidate;
+      }, $the_query->posts);
 
       return [
         "recordsTotal" => (int)$the_query->found_posts,

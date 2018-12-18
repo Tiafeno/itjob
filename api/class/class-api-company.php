@@ -11,7 +11,7 @@ class apiCompany
   {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
-    $paged = isset($_POST['start']) ? ($start === 0 ? 1 : ($start+$length) / $length) : 1;
+    $paged = isset($_POST['start']) ? ($start === 0 ? 1 : ($start + $length) / $length) : 1;
     $posts_per_page = isset($_POST['length']) ? (int)$_POST['length'] : 10;
     $args = [
       'post_type' => 'company',
@@ -55,25 +55,19 @@ class apiCompany
           'compare' => '='
         ];
       }
-      
+
     }
 
     $args = array_merge($args, ['meta_query' => $meta_query]);
     $the_query = new WP_Query($args);
     $entreprises = [];
     if ($the_query->have_posts()) {
-      while ($the_query->have_posts()) {
-        $the_query->the_post();
-        if (!is_array($the_query->posts)) return false;
-        $entreprises = array_map(function ($entreprise) {
-          if (!isset($entreprise->ID)) return $entreprise;
-          $objCompany = new \includes\post\Company($entreprise->ID);
-          $objCompany->isActive = $objCompany->isValid();
+      $entreprises = array_map(function ($entreprise) {
+        $objCompany = new \includes\post\Company($entreprise->ID);
+        $objCompany->isActive = $objCompany->isValid();
 
-          return $objCompany;
-        }, $the_query->posts);
-      }
-
+        return $objCompany;
+      }, $the_query->posts);
       return [
         "recordsTotal" => (int)$the_query->found_posts,
         "recordsFiltered" => (int)$the_query->found_posts,
