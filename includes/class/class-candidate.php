@@ -211,7 +211,6 @@ final class Candidate extends UserParticular implements \iCandidate {
   protected function getInformations() {
     $this->privateInformations                = new \stdClass();
     $this->privateInformations->cellphone     = $this->getCellphone();
-    $this->privateInformations->phone         = $this->getPhones();
     $this->privateInformations->firstname     = $this->getFirstName();
     $this->privateInformations->lastname      = $this->getLastName();
     $this->privateInformations->address       = $this->getAddress();

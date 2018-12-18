@@ -179,7 +179,7 @@ final class apiCandidate
   public function update_candidate(WP_REST_Request $request)
   {
     $candidate_id = (int)$request['id'];
-    $candidate = stripslashes($_REQUEST['candidat']);
+    $candidate = stripslashes_deep($_REQUEST['candidat']);
     $objCandidate = json_decode($candidate);
 
     // Update ACF field
@@ -188,10 +188,10 @@ final class apiCandidate
       'projet'  => $objCandidate->projet
     ];
     update_field( 'itjob_cv_centerInterest', $centerInterest, $candidate_id );
-
-    if (is_array($$objCandidate->drivelicences))
-      update_field( 'itjob_cv_driveLicence', $$objCandidate->drivelicences, $candidate_id );
-
+    
+    if (is_array($objCandidate->drivelicences))
+      update_field( 'itjob_cv_driveLicence', $objCandidate->drivelicences, $candidate_id );
+    
     $datetimeBd = DateTime::createFromFormat('m/d/Y', $objCandidate->birthday);
     $bdACF = $datetimeBd->format('Ymd');
     $form = (object)[
@@ -202,17 +202,17 @@ final class apiCandidate
       'greeting' => $objCandidate->greeting,
       'status' => (int)$objCandidate->status
     ];
-
+    
     foreach (get_object_vars($form) as $key => $value) {
       update_field("itjob_cv_" . $key, $value, $candidate_id);
     }
-
+    
     $valuePhone = [];
     foreach ($objCandidate->cellphones as $phone) {
       $valuePhone[] = ['number' => $phone];
     }
     update_field('itjob_cv_phone', $valuePhone, $candidate_id);
-
+    
     // Ajouter les emplois rechercher par le candidat (Existant et qui n'existe pas encore dans la base de donnée)
     $jobIds = is_array($objCandidate->jobs) ? $objCandidate->jobs : [];
     wp_set_post_terms( $candidate_id, $jobIds, 'job_sought' );
@@ -228,7 +228,7 @@ final class apiCandidate
 
     $cityIds = [ $objCandidate->town ];
     wp_set_post_terms( $candidate_id, $cityIds, 'city' );
-
+    
     $a = &$objCandidate->activated;
     $activated = !empty($a)  ? ($a === '1' ? 1 : ($a === '0' ? 0 : 'pending')) : null;
     $currentPost = get_post($candidate_id);
@@ -241,7 +241,6 @@ final class apiCandidate
       update_field( 'activated', 0, $candidate_id );
       wp_update_post(['ID' => $candidate_id, 'post_status' => 'pending'], true);
     }
-
 
     return new WP_REST_Response('Candidat mis à jour avec succès');
   }
