@@ -203,6 +203,7 @@ final class apiCandidate
       'birthdayDate' => $bdACF,
       'address' => $objCandidate->address,
       'greeting' => $objCandidate->greeting,
+      'status' => (int)$objCandidate->status
     ];
 
     foreach (get_object_vars($form) as $key => $value) {
@@ -224,6 +225,7 @@ final class apiCandidate
 
     $cityIds = [ $objCandidate->town ];
     wp_set_post_terms( $candidate_id, $cityIds, 'city' );
+
     $a = &$objCandidate->activated;
     $activated = !empty($a)  ? ($a === '1' ? 1 : ($a === '0' ? 0 : 'pending')) : null;
     $currentPost = get_post($candidate_id);
