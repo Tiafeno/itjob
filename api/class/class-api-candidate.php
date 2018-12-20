@@ -76,8 +76,6 @@ final class apiCandidate
     ];
 
     $meta_query = [];
-    $meta_query[] = ['relation' => "AND"];
-
     $tax_query = [];
 
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
@@ -88,6 +86,7 @@ final class apiCandidate
       $status = preg_replace('/\s+/', '', $searchs[1]);
       $status = $status === '0' ? 0 : ($status === '1' ? 1 : ($status === 'pending' ? 'pending' : ''));
       if ($status === 1 || $status === 0) {
+        $meta_query[] = ['relation' => "AND"];
         $meta_query[] = [
           'key' => 'activated',
           'value' => (int)$status,

@@ -25,11 +25,11 @@ final class apiOffer
       $searchs = explode('|', $search);
       $s = '';
       $meta_query = [];
-      $meta_query[] = ['relation' => "AND"];
       $tax_query = [];
       $status = preg_replace('/\s+/', '', $searchs[1]);
       $status = $status === '0' ? 0 : ($status === '1' ? 1 : ($status === 'pending' ? 'pending' : ''));
       if ($status === 1 || $status === 0) {
+        $meta_query[] = ['relation' => "AND"];
         $meta_query[] = [
           'key' => 'activated',
           'value' => (int)$status,
@@ -44,16 +44,14 @@ final class apiOffer
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
         $s = $searchs[0];
         $meta_query[] = [
+          "relation" => "OR",
           [
-            "relation" => "OR"
-          ],
-          [
-            'key' => 'itjob_offer_reference',
+            'key' => 'itjob_offer_post',
             'value' => $s,
             'compare' => 'LIKE'
           ],
           [
-            'key' => 'itjob_offer_post',
+            'key' => 'itjob_offer_reference',
             'value' => $s,
             'compare' => 'LIKE'
           ]
@@ -83,9 +81,9 @@ final class apiOffer
       }
 
       $args = array_merge($args, ['meta_query' => $meta_query]);
-      $args = array_merge($args, ['tax_query' => $tax_query]);
+      if (!empty($tax_query))
+        $args = array_merge($args, ['tax_query' => $tax_query]);
     }
-
     $the_query = new WP_Query($args);
     $offers = [];
     if ($the_query->have_posts()) {

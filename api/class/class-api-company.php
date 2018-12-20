@@ -22,14 +22,14 @@ class apiCompany
       "paged" => $paged,
     ];
     $meta_query = [];
-    $meta_query[] = ['relation' => "AND"];
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
       $search = stripslashes($_POST['search']['value']);
       $searchs = explode('|', $search);
       $s = '';
-      $status = preg_replace('/\s+/', '', $searchs[1]);
+      $status = preg_replace('/\s+/', '', $searchs[2]);
       $status = $status === '0' ? 0 : ($status === '1' ? 1 : ($status === 'pending' ? 'pending' : ''));
       if ($status === 1 || $status === 0) {
+        $meta_query[] = ['relation' => "AND"];
         $meta_query[] = [
           'key' => 'activated',
           'value' => $status,
@@ -42,18 +42,54 @@ class apiCompany
         $args['post_status'] = $status;
       }
 
-      if (!empty($searchs[0]) && $searchs[0] !== ' ') {
-        $s = $searchs[0];
+      $s = $searchs[2];
+      if (!empty($s) && $s !== ' ') {
         $args['s'] = $s;
       }
 
-      $account = trim($searchs[2]) !== '' && trim($searchs[2]) !== ' ' ? (int)$searchs[2] : '';
+      $account = $searchs[0] === '0' ? 0 : (empty($searchs[0]) ? '' : (int)$searchs[0]);
       if ($account === 1 || $account === 0 || $account === 2) {
-        $meta_query[] = [
-          'key' => 'itjob_meta_account',
-          'value' => (int)$account,
-          'compare' => '='
+        $value = $account === 0 ? [1, 2] : $account;
+        $compare = $account === 0 ? 'NOT IN' : '=';
+          $account_query = [
+          [
+            'key' => 'itjob_meta_account',
+            'value' => $value,
+            'compare' => $compare
+          ]
         ];
+        if ($account === 0) {
+          $account_query = array_merge($account_query, [
+            'relation' => 'OR',
+            [
+              'key' => 'itjob_meta_account',
+              'compare' => 'NOT EXISTS'
+            ]
+          ]);
+        }
+        $meta_query = $account_query;
+      }
+
+      $activityArea = (int)$searchs[1];
+      if ($activityArea !== 0) {
+        $tax_query[] = [
+          'taxonomy' => 'branch_activity',
+          'field' => 'term_id',
+          'terms' => [$activityArea]
+        ];
+      }
+
+      $beetwenDate = $searchs[3];
+      if ($beetwenDate !== '' && !empty($beetwenDate)) {
+        $date = explode('x', $beetwenDate);
+        $date_query = [
+          [
+            'after' => $date[0],
+            'before' => $date[1],
+            'inclusive' => true,
+          ]
+        ];
+        $args = array_merge($args, ['date_query' => $date_query]);
       }
 
     }

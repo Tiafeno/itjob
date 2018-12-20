@@ -38,9 +38,13 @@ add_action('rest_api_init', function () {
             case 'activated':
               $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
               if (is_null($status)) new WP_REST_Response('Parametre manquant');
+              $status = (int)$status;
+              if ($Candidate->state === 'pending' && $status === 1) {
+                wp_update_post(['ID' => $Candidate->getId(), 'post_status' => 'publish'], true);
+              }
               update_field('activated', (int)$status, $Candidate->getId());
 
-              return new WP_REST_Response("Offre mis à jour avec succès");
+              return new WP_REST_Response("Candidate mis à jour avec succès");
               break;
 
             default:
@@ -49,8 +53,6 @@ add_action('rest_api_init', function () {
         } else {
           return new WP_REST_Response(false);
         }
-
-
       },
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => array(
@@ -130,7 +132,56 @@ add_action('rest_api_init', function () {
       'callback' => [new apiCompany(), 'get_companys'],
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => []
-    ),
+    )
+  ]);
+
+  register_rest_route('it-api', '/company/(?P<id>\d+)', [
+    array(
+      'methodes' => WP_REST_Server::READABLE,
+      'callback' => function (WP_REST_Request $request) {
+        $ref = isset($_REQUEST['ref']) ? stripslashes($_REQUEST['ref']) : false;
+        if ($ref) {
+          $company_id = (int)$request['id'];
+          $Company = new \includes\post\Company($company_id);
+          if (is_null($Company->title)) {
+            return new WP_Error('no_company', 'Aucun candidate ne correpond à cette id', array('status' => 404));
+          }
+          switch ($ref) {
+            case 'collect':
+              $Company->isValid = $Company->isValid();
+              $Company->isPremium = $Company->isPremium();
+              return new WP_REST_Response($Company);
+
+              break;
+
+            case 'activated':
+              $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+              if (is_null($status)) new WP_REST_Response('Parametre manquant');
+              $status = (int)$status;
+              if ($Company->post_status === 'pending' && $status === 1) {
+                wp_update_post(['ID' => $Company->getId(), 'post_status' => 'publish'], true);
+              }
+              update_field('activated', (int)$status, $Company->getId());
+
+              return new WP_REST_Response("Entreprise mis à jour avec succès");
+              break;
+
+            default:
+              break;
+          }
+        } else {
+          return new WP_REST_Response(false);
+        }
+      },
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => array(
+        'id' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param);
+          }
+        ),
+      ),
+    )
   ]);
 
   /**
@@ -159,6 +210,10 @@ add_action('rest_api_init', function () {
             case 'activated':
               $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
               if (is_null($status)) return new WP_REST_Response('Parametre manquant');
+              $status = (int)$status;
+              if ($Offer->offer_status === 'pending' && $status === 1) {
+                wp_update_post(['ID' => $Offer->ID, 'post_status' => 'publish'], true);
+              }
               update_field('activated', (int)$status, $Offer->ID);
               return new WP_REST_Response("Offre mis à jour avec succès");
 
