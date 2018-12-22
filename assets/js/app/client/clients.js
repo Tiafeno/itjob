@@ -193,8 +193,36 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
         $scope.dateEndRange = [];
 
-        this.$onInt = () => {
-          $
+        $scope.loadExperiences = false;
+        $scope.loadTrainings = false;
+
+        this.$onInit = () => {
+          moment.locale('fr');
+          let experiences = _.clone($scope.Candidate.experiences);
+          $scope.Candidate.experiences = _.map(experiences, (experience) => {
+            if (!_.isUndefined(experience.old_value)) {
+              let oldValue = experience.old_value;
+              if (!_.isEmpty(oldValue.exp_dateBegin) && !_.isEmpty(oldValue.exp_branch_activity)) {
+                experience.exp_dateBegin = moment(oldValue.exp_dateBegin).format('MM/DD/YYYY');
+                experience.exp_dateEnd = moment(oldValue.exp_dateEnd).format('MM/DD/YYYY');
+              }
+            }
+            
+            return experience;
+          });
+          $scope.loadExperiences = true;
+
+          $scope.Candidate.trainings = _.map($scope.Candidate.trainings, (training) => {
+            let dateBegin = training.training_dateBegin;
+            if (moment(dateBegin, "MM/DD/YYYY", "fr").format() === 'Invalid date') {
+              let dateEnd = training.training_dateEnd;
+              training.training_dateBegin = moment(dateBegin).format('MM/DD/YYYY');
+              training.training_dateEnd = moment(dateEnd).format('MM/DD/YYYY');
+            }
+
+            return training;
+          });
+          $scope.loadTrainings = true;
         };
 
         /**

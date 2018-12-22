@@ -301,7 +301,7 @@
   </div>
   <div class="ibox-body">
     <ul class="media-list media-list-divider scroller mr-2">
-      <li class="media" ng-repeat="experience in Candidate.experiences">
+      <li class="media" ng-repeat="experience in Candidate.experiences" ng-if="loadExperiences">
         <div class="media-body d-flex">
           <div class="flex-1">
             <h5 class="media-heading">

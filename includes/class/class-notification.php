@@ -97,7 +97,7 @@ final class NotificationHelper
     $Author = $Candidate->getAuthor();
     $Firstname = $Candidate->getFirstName();
 
-    $Notice->title = "<b>$Firstname</b> viens de modifier son CV pour reference <b>{$Candidate->title}</b>";
+    $Notice->title = "<b>$Firstname</b> viens de modifier son CV (<b>{$Candidate->title}</b>)";
     $Notice->url = "/candidate/{$id_cv}/edit";
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
@@ -131,6 +131,15 @@ final class NotificationHelper
     $companyNotice->url = $Candidate->candidate_url . "?ref=notif";
     $Model->added_notice($Author->ID, $companyNotice);
 
+    // To admin
+    $Notice = new Notification(); 
+    $Notice->title = "Un candidat viens de postuler sur <b>{$Offer->title}</b>";
+    $Notice->url = "/offer/{$id_offer}/edit";
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
+
     return true;
   }
   public function notice_interest($id_cv_request) {
@@ -139,6 +148,7 @@ final class NotificationHelper
     if (is_null($Interest)) return null;
     $Model = new itModel();
     $Offer = new Offers((int)$Interest->id_offer);
+    $Company = new Company((int)$$Interest->id_company);
 
     // Candidate
     $Candidate = new Candidate((int)$Interest->id_candidate);
@@ -147,6 +157,14 @@ final class NotificationHelper
     $candidateNotice->title = "Une entreprise s'interesser à votre CV sur l'offre: <b>{$Offer->title}</b>";
     $candidateNotice->url = $Offer->offer_url . "?ref=notif";
     $Model->added_notice($Author->ID, $candidateNotice);
+
+    // To admin
+    $Notice->title = "<b>$Company->title</b> s'interesse à un candidat pour réference <b>{$Candidate->reference}</b>";
+    $Notice->url = "/offer/{$Interest->id_offer}/edit";
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
 
     return true;
   }

@@ -136,7 +136,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         $scope.jobs = [];
         $scope.jobLoading = false;
         this.$onInit = () => {
-          $scope.jobs = _.clone($scope.inJobs);
+          $scope.jobs = _.isArray($scope.inJobs) ? _.clone($scope.inJobs) : [];
         };
         // Call before added tag
         $scope.onAddingTag = ($tag) => {
