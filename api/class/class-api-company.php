@@ -27,7 +27,7 @@ class apiCompany
       $searchs = explode('|', $search);
       $s = '';
       $status = preg_replace('/\s+/', '', $searchs[2]);
-      $status = $status === '0' ? 0 : ($status === '1' ? 1 : ($status === 'pending' ? 'pending' : ''));
+      $status = $status === 'pending' ? 'pending' : intval($status);
       if ($status === 1 || $status === 0) {
         $meta_query[] = ['relation' => "AND"];
         $meta_query[] = [
@@ -42,12 +42,12 @@ class apiCompany
         $args['post_status'] = $status;
       }
 
-      $s = $searchs[2];
+      $s = $searchs[4];
       if (!empty($s) && $s !== ' ') {
         $args['s'] = $s;
       }
 
-      $account = $searchs[0] === '0' ? 0 : (empty($searchs[0]) ? '' : (int)$searchs[0]);
+      $account = empty($searchs[0]) ? '' : intval($searchs[0]);
       if ($account === 1 || $account === 0 || $account === 2) {
         $value = $account === 0 ? [1, 2] : $account;
         $compare = $account === 0 ? 'NOT IN' : '=';
@@ -91,10 +91,10 @@ class apiCompany
         ];
         $args = array_merge($args, ['date_query' => $date_query]);
       }
-
     }
 
     $args = array_merge($args, ['meta_query' => $meta_query]);
+    //print_r($args);
     $the_query = new WP_Query($args);
     $entreprises = [];
     if ($the_query->have_posts()) {

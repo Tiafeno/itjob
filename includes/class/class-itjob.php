@@ -189,6 +189,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
             if ( ! empty( $region ) ) {
               $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+              $tax_query = !is_array($tax_query) ? [] : $tax_query;
               $tax_query[] = [
                 'taxonomy' => 'region',
                 'field'    => 'term_id',
@@ -203,6 +204,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( $abranch ) {
                   $meta_query   = isset( $meta_query ) ? $meta_query : $query->get( 'meta_query' );
+                  $meta_query = !is_array($meta_query) ? [] : $meta_query;
                   $meta_query[] = [
                     'key'     => 'itjob_offer_abranch',
                     'value'   => (int) $abranch,
@@ -216,6 +218,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
+                  $meta_query = !is_array($meta_query) ? [] : $meta_query;
                   // Feature: Recherché aussi dans le profil recherché et mission
                   $meta_query[] = [
                     'relation' => 'OR',
@@ -245,7 +248,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 if ( ! isset( $meta_query ) ) {
                   $meta_query = $query->get( 'meta_query' );
                 }
-
+                $meta_query = !is_array($meta_query) ? [] : $meta_query;
                 $meta_query[] = [
                   [
                     'key'     => 'activated',
@@ -278,6 +281,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( $abranch ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
                   $tax_query[] = [
                     'taxonomy'         => 'branch_activity',
                     'field'            => 'term_id',
@@ -288,6 +292,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( ! empty( $language ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
                   $tax_query[] = [
                     'taxonomy'         => 'language',
                     'field'            => 'term_id',
@@ -299,6 +304,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 // Rechercher dans les logiciel si le champ n'es pas vide
                 if ( ! empty( $software ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
                   $tax_query[] = [
                     'taxonomy'         => 'software',
                     'field'            => 'term_id',
@@ -385,7 +391,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
-
+                  $meta_query = !is_array($meta_query) ? [] : $meta_query;
                   $meta_query[] = [
                     [
                       'key'     => 'activated',
@@ -428,7 +434,7 @@ if ( ! class_exists( 'itJob' ) ) {
               if ( ! isset( $meta_query ) ) {
                 $meta_query = $query->get( 'meta_query' );
               }
-
+              $meta_query = !is_array($meta_query) ? [] : $meta_query;
               $meta_query[] = [
                 'key'     => 'activated',
                 'value'   => 1,

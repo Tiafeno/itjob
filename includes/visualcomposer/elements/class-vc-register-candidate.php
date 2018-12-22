@@ -335,6 +335,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       update_field( 'itjob_cv_hasCV', 1, $this->Candidate->getId() );
       // Envoyer un email de confirmation
       do_action('submit_particular_cv', $this->Candidate->getId());
+      do_action('notice_admin_create_cv', $this->Candidate->getId());
 
       // Alerter les entreprises
      // $itHelper->Mailing->alert_for_new_candidate($this->Candidate->getId());

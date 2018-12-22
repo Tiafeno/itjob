@@ -229,7 +229,7 @@ final class apiCandidate
     wp_set_post_terms( $candidate_id, $cityIds, 'city' );
     
     $a = &$objCandidate->activated;
-    $activated = !empty($a)  ? ($a === '1' ? 1 : ($a === '0' ? 0 : 'pending')) : null;
+    $activated = $a === 'pending' ? 'pending' : intval($a);
     $currentPost = get_post($candidate_id);
     if (is_numeric($activated)) {
       update_field( 'activated', $activated, $candidate_id );

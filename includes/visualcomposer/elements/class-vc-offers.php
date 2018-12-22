@@ -203,6 +203,9 @@ if ( ! class_exists( 'vcOffers' ) ):
       $this->update_acf_field( $post_id, $form );
       wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
       wp_set_post_terms( $post_id, [ (int) $form->country ], 'city' );
+
+      do_action('notice_admin_new_offer', $post_id);
+      
       wp_send_json( [ 'success' => true, 'offer' => new Offers( $post_id ) ] );
     }
 

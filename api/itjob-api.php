@@ -137,7 +137,7 @@ add_action('rest_api_init', function () {
 
   register_rest_route('it-api', '/company/(?P<id>\d+)', [
     array(
-      'methodes' => WP_REST_Server::READABLE,
+      'methods' => WP_REST_Server::READABLE,
       'callback' => function (WP_REST_Request $request) {
         $ref = isset($_REQUEST['ref']) ? stripslashes($_REQUEST['ref']) : false;
         if ($ref) {
@@ -166,6 +166,17 @@ add_action('rest_api_init', function () {
               return new WP_REST_Response("Entreprise mis à jour avec succès");
               break;
 
+            case 'account':
+              $type = isset($_REQUEST['type']) ? (int)$_REQUEST['type'] : null;
+              if (is_null($type)) new WP_REST_Response('Parametre manquant');
+              if ($type !== $Company->account) {
+                update_field('itjob_meta_account', $type, $Company->getId());
+                return new WP_REST_Response(['success' => true, 'msg' => "Compte mise à jour avec succès"]);
+              } else {
+                return new WP_REST_Response(['success' => true, 'msg' => 'Ce compte est déja un compte ' . $type]);
+              }
+              break;
+
             default:
               break;
           }
@@ -178,6 +189,52 @@ add_action('rest_api_init', function () {
         'id' => array(
           'validate_callback' => function ($param, $request, $key) {
             return is_numeric($param);
+          }
+        ),
+      ),
+    ),
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => function (WP_REST_Request $request) {
+        $company_id = (int)$request['id'];
+        $company = stripslashes($_REQUEST['company']);
+        $company = json_decode($company);
+        $currentCompany = get_post($company_id);
+        $form = [
+          'itjob_meta_account' => (int)$company->account,
+          'itjob_company_address' => $company->address,
+          'itjob_company_greeting' => $company->greeting,
+          'itjob_company_name' => $company->name,
+          'itjob_company_nif' => $company->nif,
+          'itjob_company_stat' => $company->stat
+        ];
+
+        foreach ($form as $itemKey => $item) {
+          update_field($itemKey, $item, $currentCompany->ID);
+        }
+
+        wp_set_post_terms($currentCompany->ID, [(int)$company->region], 'region');
+        wp_set_post_terms($currentCompany->ID, [(int)$company->town], 'city');
+        wp_set_post_terms($currentCompany->ID, [(int)$company->area_activity], 'branch_activity');
+
+        $valuePhone = [];
+        foreach ($company->cellphones as $phone) {
+          $valuePhone[] = ['number' => $phone];
+        }
+        update_field('itjob_company_cellphone', $valuePhone, $currentCompany->ID);
+
+        $result = wp_update_post(['ID' => $currentCompany->ID, 'post_title' => $company->title]);
+        if (is_wp_error($result)) {
+          return new WP_REST_Response(['success' => false, 'msg' => $result->get_error_message()]);
+        } else {
+          return new WP_REST_Response(['success' => true, 'msg' => 'Entreprise mise à jour avec succès']);
+        }
+      },
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => array(
+        'id' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param) && $param !== 0;
           }
         ),
       ),
@@ -218,7 +275,7 @@ add_action('rest_api_init', function () {
               return new WP_REST_Response("Offre mis à jour avec succès");
 
               break;
-              
+
             case 'update_request':
               $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
               $id_request = isset($_REQUEST['id_request']) ? $_REQUEST['id_request'] : null;
@@ -267,25 +324,37 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::EDITABLE,
       'callback' => function (WP_REST_Request $request) {
-        $updatePost = false;
         $offer = stripslashes($_REQUEST['offer']);
         $offer = json_decode($offer);
-        remove_filter('acf/update_value/name=itjob_offer_abranch', 'update_offer_reference');
-        $currentOffer = new \includes\post\Offers($offer->ID);
+        $currentOffer = get_post($offer->ID);
         $dateTime = DateTime::createFromFormat("m/d/Y", $offer->date_limit);
         $acfDateLimit = $dateTime->format('Ymd');
         $form = [
           'post' => $offer->post,
-          'reference' => $offer->reference,
           'contrattype' => (int)$offer->contract,
           'rateplan' => $offer->plan,
           'proposedsallary' => $offer->proposedsalary,
           'abranch' => $offer->branch_activity,
           'datelimit' => $acfDateLimit,
-          'mission' => nl2br($offer->mission),
-          'profil' => nl2br($offer->profil),
-          'otherinformation' => nl2br($offer->otherInformation),
+          'mission' => $offer->mission,
+          'profil' => $offer->profil,
+          'otherinformation' => $offer->otherInformation,
         ];
+
+        // Activation et publication
+        $a = &$offer->status;
+        $activated = $a === 'pending' ? 'pending' : intval($a);
+        if ($activated === 0 || $activated === 1) {
+          update_field('activated', $activated, $currentOffer->ID);
+          if ($activated && $currentOffer->post_status !== 'publish')
+            do_action('confirm_validate_offer', $currentOffer->ID);
+          $result = wp_update_post(['ID' => $currentOffer->ID, 'post_status' => 'publish'], true);
+        } else {
+          update_field('activated', 0, $currentOffer->ID);
+          if ($activated === 'pending')
+            $result = wp_update_post(['ID' => $currentOffer->ID, 'post_status' => 'pending'], true);
+          $result = true;
+        }
 
         wp_set_post_terms($offer->ID, [(int)$offer->region], 'region');
         wp_set_post_terms($offer->ID, [(int)$offer->town], 'city');
@@ -294,23 +363,10 @@ add_action('rest_api_init', function () {
           update_field("itjob_offer_{$itemKey}", $item, $offer->ID);
         }
 
-        // Activation et publication
-        $a = &$offer->status;
-        $activated = !empty($a)  ? ($a === '1' ? 1 : ($a === '0' ? 0 : 'pending')) : null;
-        if (is_numeric($activated)) {
-          update_field( 'activated', $activated, $offer->ID );
-          if ($activated && $currentOffer->offer_status !== 'publish')
-            do_action('confirm_validate_offer', $offer->ID);
-          $result = wp_update_post(['ID' => $offer->ID, 'post_status' => 'publish'], true);
-        } else {
-          update_field( 'activated', 0, $offer->ID );
-          $result = wp_update_post(['ID' => $offer->ID, 'post_status' => 'pending'], true);
-        }
-
         if (is_wp_error($result)) {
           return new WP_REST_Response($result->get_error_message());
         } else {
-          $message = $status === 1 ? "publier" : ($status === 0 ? "désactiver" : "mise en attente");
+          $message = $a === 1 ? "publier" : ($a === 0 ? "désactiver" : "mise en attente");
           return new WP_REST_Response("Offre {$message} avec succès");
         }
       },
@@ -364,7 +420,7 @@ add_action('rest_api_init', function () {
                 'offer' => $Offres
               ]);
               break;
-            
+
             case 'header':
               $response = [
                 'candidate' => (int)$apiModel->count_post_status('candidate', 'pending'),
@@ -374,7 +430,25 @@ add_action('rest_api_init', function () {
               return new WP_REST_Response($response);
 
               break;
-              
+
+            case 'notice':
+              $User = wp_get_current_user();
+              if ($User->ID === 0) return new WP_REST_Response(['success' => false, 'body' => "Utilisateur non definie"]);
+              global $wpdb;
+              $sql           = "SELECT * FROM {$wpdb->prefix}notices WHERE id_user = %d ORDER BY date_create DESC LIMIT 15";
+              $prepare       = $wpdb->prepare( $sql, $User->ID );
+              $rows          = $wpdb->get_results( $prepare );
+              $Notifications = [];
+              foreach ( $rows as $row ) {
+                $Notice              = unserialize( $row->notice );
+                $Notice->ID          = $row->id_notice;
+                $Notice->date_create = $row->date_create;
+                $Notice->status      = $row->status;
+                $Notifications[]     = $Notice;
+              }
+
+              return new WP_REST_Response(['success' => true, 'body' => $Notifications]);
+              break;
 
             default:
               break;
@@ -394,7 +468,6 @@ add_action('rest_api_init', function () {
       ),
     )
   ]);
-
 
   register_rest_route('it-api', '/taxonomies/(?P<taxonomy>\w+)', [
     array(
