@@ -312,7 +312,7 @@ class scInterests
     $offers = get_posts($args);
     if (empty($offers)) {
       wp_send_json_error([
-        'msg' => 'Vous devez avoir une offre en cours validée pour pouvoir continuer cette opération',
+        'msg' => 'Vous devez poster une offre et qu’elle soit validée avant de pouvoir sélectionner des candidats. Merci',
         'status' => 'access'
       ]);
     }

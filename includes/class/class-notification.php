@@ -48,6 +48,7 @@ final class NotificationHelper
       add_action('notice-admin-create-cv', [&$this, 'notice_admin_create_cv'], 10, 1);
       add_action('notice-admin-new-offer', [&$this, 'notice_admin_new_offer'], 10, 1);
       add_action('notice-admin-update-cv', [&$this, 'notice_admin_update_cv'], 10, 1);
+      add_action('notice-admin-new-company', [&$this, 'notice_admin_new_company'], 10, 1);
 
       // On change la status d'une notification
       if (isset($_GET['ref'])) {
@@ -72,6 +73,20 @@ final class NotificationHelper
 
     $Notice->title = "<b>$firstname</b> viens d'ajouter un CV pour reference <b>{$Candidate->title}</b>";
     $Notice->url = "/candidate/{$id_cv}/edit";
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
+  }
+
+  public function notice_admin_new_company($id_company) {
+    $Model = new itModel();
+    // Company
+    $Company = new Company((int)$id_cv);
+    $Notice = new Notification();
+
+    $Notice->title = "Inscription d'une nouvelle entreprise - <b>{$Company->title}</b>";
+    $Notice->url = "/company-lists";
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
       $Model->added_notice($admin->ID, $Notice);
@@ -120,16 +135,21 @@ final class NotificationHelper
     return true;
   }
   public function notice_publish_offer($id_offer) {}
+
   public function notice_candidate_postuled($id_cv, $id_offer) {
     $Model = new itModel();
+
     // Company
-    $Candidate = new Candidate($id_cv);
-    $Author = $Candidate->getAuthor();
+    $Candidate = new Candidate((int)$id_cv);
     $Offer = new Offers($id_offer);
+
+    $postCompany = $Offer->getCompany();
+    $Company = new Company($postCompany->ID);
+
     $companyNotice = new Notification();
     $companyNotice->title = "$Candidate->title a postulé pour l'offre <b>{$Offer->title}</b>";
     $companyNotice->url = $Candidate->candidate_url . "?ref=notif";
-    $Model->added_notice($Author->ID, $companyNotice);
+    $Model->added_notice($Company->author->ID, $companyNotice);
 
     // To admin
     $Notice = new Notification(); 

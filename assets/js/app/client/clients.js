@@ -492,8 +492,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
       }]
     }
   }])
-  .controller('clientCtrl', ['$scope', '$http', '$q', 'clientFactory', 'clientService', 'Client', 'Upload',
-    function ($scope, $http, $q, clientFactory, clientService, Client, Upload) {
+  .controller('clientCtrl', ['$scope', '$http', '$q', '$filter', 'clientFactory', 'clientService', 'Client', 'Upload',
+    function ($scope, $http, $q, $filter, clientFactory, clientService, Client, Upload) {
       const self = this;
       // Contient les valeurs d'introduction
       $scope.profilEditor = {};
@@ -503,6 +503,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
       $scope.alerts = [];
       $scope.jobSearchs = [];
       $scope.Helper = {};
+      $scope.Greet = '';
       $scope.preloader = false;
       $scope.select2Options = {
         allowClear: true,
@@ -642,6 +643,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
           $scope.Helper = _.clone(Client.Helper);
           $scope.offerLists = _.clone(Client.Offers);
           $scope.candidateLists = _.clone(Client.ListsCandidate);
+          let greeting = $scope.Company.greeting;
+          $scope.Greet = !_.isEmpty(greeting) ? $filter('Greet')($scope.Company.greeting).toLowerCase() : '';
           if (_.isNull($scope.Company.branch_activity) || !$scope.Company.branch_activity || !$scope.Company.country ||
             !$scope.Company.region || _.isEmpty($scope.Company.greeting)) {
             $q.all([
@@ -704,6 +707,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
                 break;
             }
           }); // .mapObject
+          let greeting = $scope.Candidate.greeting;
+          $scope.Greet = _.isObject(greeting) ? $filter('Greet')($scope.Candidate.greeting.value).toLowerCase() : '';
           $scope.cv.hasCV = $scope.Candidate.has_cv;
           const region = $scope.Candidate.privateInformations.address.region;
           const country = $scope.Candidate.privateInformations.address.country;
