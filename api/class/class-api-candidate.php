@@ -41,7 +41,7 @@ final class apiCandidate
                           WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
                         ))
 
-                        OR pt.post_title LIKE  '%{$s}%'
+                        OR pt.post_title LIKE '%{$s}%'
 
                         OR  (pt.ID IN (
                           SELECT
@@ -97,7 +97,7 @@ final class apiCandidate
       $s = '';
 
       $status = preg_replace('/\s+/', '', $searchs[1]);
-      $status = $status === 'pending' ? 'pending' : (!empty($status) ? intval($status) : null);
+      $status = $status === 'pending' ? 'pending' : (empty($status) && $status !== '0' ? null : intval($status));
       if ($status === 1 || $status === 0) {
         $meta_query[] = ['relation' => "AND"];
         $meta_query[] = [
@@ -162,7 +162,6 @@ final class apiCandidate
 
     $args = array_merge($args, ['meta_query' => $meta_query]);
     $args = array_merge($args, ['tax_query' => $tax_query]);
-
     $the_query = new WP_Query($args);
     $candidates = [];
     if ($the_query->have_posts()) {
