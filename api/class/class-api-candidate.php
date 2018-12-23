@@ -7,9 +7,9 @@ final class apiCandidate
 
   }
 
-  private function add_filter_search($search)
+  private function add_filter_search($search, $params)
   {
-    add_filter('posts_where', function ($where) use ($search) {
+    add_filter('posts_where', function ($where) use ($search, $params) {
       global $wpdb;
       //global $wp_query;
       $s = $search;
@@ -18,13 +18,13 @@ final class apiCandidate
                       SELECT
                         pt.ID
                       FROM {$wpdb->posts} as pt
-                      INNER JOIN {$wpdb->postmeta} as pm1 ON (pt.ID = pm1.post_id)
                       WHERE pt.post_type = 'candidate'
                         AND (pt.ID IN (
                           SELECT {$wpdb->postmeta}.post_id as post_id
                           FROM {$wpdb->postmeta}
                           WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
                         ))
+
                         AND (pt.ID IN(
                           SELECT trs.object_id as post_id
                           FROM {$wpdb->terms} as terms
@@ -34,24 +34,37 @@ final class apiCandidate
                           AND ttx.taxonomy = 'job_sought'
                           AND terms.name LIKE '%{$s}%'
                         ))
+
                         OR (pt.ID IN (
                           SELECT {$wpdb->postmeta}.post_id
                           FROM {$wpdb->postmeta}
                           WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                        ))";
-      $where .= ")"; //  .end AND
-        // Si une taxonomie n'est pas definie on ajoute cette condition dans la recherche
-      $where .= "  OR (
-                        {$wpdb->posts}.post_title LIKE  '%{$s}%'
-                        AND {$wpdb->posts}.post_type = 'candidate'
-                        AND ({$wpdb->posts}.ID IN (
-                          SELECT {$wpdb->postmeta}.post_id as post_id
-                          FROM {$wpdb->postmeta}
-                          WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
                         ))
-                      )";
+
+                        OR pt.post_title LIKE  '%{$s}%'
+
+                        OR  (pt.ID IN (
+                          SELECT
+                            pts.ID
+                          FROM {$wpdb->posts} as pts
+                          WHERE
+                            pts.post_type = 'candidate'
+                            AND (pts.ID IN (
+                              SELECT {$wpdb->postmeta}.post_id as post_id
+                              FROM {$wpdb->postmeta}
+                              WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+                            ))
+                            AND (pts.ID IN (
+                              SELECT {$wpdb->postmeta}.post_id as post_id
+                              FROM {$wpdb->postmeta}
+                              WHERE 
+                                ({$wpdb->postmeta}.meta_key = 'itjob_cv_firstname' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%')
+                                OR ({$wpdb->postmeta}.meta_key = 'itjob_cv_lastname' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%')
+                            ))
+                        ))";
+        $where .= ")"; //  .end AND
       }
-      
+
       return $where;
     });
   }
@@ -64,7 +77,7 @@ final class apiCandidate
   {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
-    $paged = isset($_POST['start']) ? ($start === 0 ? 1 : ($start+$length) / $length) : 1;
+    $paged = isset($_POST['start']) ? ($start === 0 ? 1 : ($start + $length) / $length) : 1;
     $posts_per_page = isset($_POST['length']) ? (int)$_POST['length'] : 10;
     $args = [
       'post_type' => 'candidate',
@@ -82,7 +95,7 @@ final class apiCandidate
       $search = stripslashes($_POST['search']['value']);
       $searchs = explode('|', $search);
       $s = '';
-      
+
       $status = preg_replace('/\s+/', '', $searchs[1]);
       $status = $status === 'pending' ? 'pending' : (!empty($status) ? intval($status) : null);
       if ($status === 1 || $status === 0) {
@@ -100,8 +113,9 @@ final class apiCandidate
       }
 
       $s = $status = preg_replace('/\s+/', '', $searchs[0]);
+      $searchs[0] = $s;
       if (!empty($s) && $s !== '') {
-        $this->add_filter_search($s);
+        $this->add_filter_search($s, $searchs);
       } else {
         $meta_query[] = [
           'key' => 'itjob_cv_hasCV',
@@ -110,6 +124,7 @@ final class apiCandidate
       }
 
       $activityArea = (int)$searchs[2];
+      $searchs[2] = $activityArea;
       if ($activityArea !== 0) {
         $tax_query[] = [
           'taxonomy' => 'branch_activity',
@@ -130,14 +145,14 @@ final class apiCandidate
                           FROM {$wpdb->posts} as pt
                           WHERE pt.post_type = 'candidate'
                             AND pt.post_date BETWEEN '{$date[0]}' AND '{$date[1]}'";
-            $where .=  ")"; //  .end AND
-         
+            $where .= ")"; //  .end AND
+
           }
-          
+
           return $where;
         });
       }
-      
+
     } else {
       $meta_query[] = [
         'key' => 'itjob_cv_hasCV',
@@ -184,13 +199,13 @@ final class apiCandidate
     // Update ACF field
     $centerInterest = [
       'various' => $objCandidate->divers,
-      'projet'  => $objCandidate->projet
+      'projet' => $objCandidate->projet
     ];
-    update_field( 'itjob_cv_centerInterest', $centerInterest, $candidate_id );
-    
+    update_field('itjob_cv_centerInterest', $centerInterest, $candidate_id);
+
     if (is_array($objCandidate->drivelicences))
-      update_field( 'itjob_cv_driveLicence', $objCandidate->drivelicences, $candidate_id );
-    
+      update_field('itjob_cv_driveLicence', $objCandidate->drivelicences, $candidate_id);
+
     $datetimeBd = DateTime::createFromFormat('m/d/Y', $objCandidate->birthday);
     $bdACF = $datetimeBd->format('Ymd');
     $form = (object)[
@@ -201,11 +216,11 @@ final class apiCandidate
       'greeting' => $objCandidate->greeting,
       'status' => (int)$objCandidate->status
     ];
-    
+
     foreach (get_object_vars($form) as $key => $value) {
       update_field("itjob_cv_" . $key, $value, $candidate_id);
     }
-    
+
     $valuePhone = [];
     foreach ($objCandidate->cellphones as $phone) {
       $valuePhone[] = ['number' => $phone];
@@ -214,30 +229,30 @@ final class apiCandidate
     
     // Ajouter les emplois rechercher par le candidat (Existant et qui n'existe pas encore dans la base de donnée)
     $jobIds = is_array($objCandidate->jobs) ? $objCandidate->jobs : [];
-    wp_set_post_terms( $candidate_id, $jobIds, 'job_sought' );
+    wp_set_post_terms($candidate_id, $jobIds, 'job_sought');
     // Ajouter les logiciels
     $softwareIds = is_array($objCandidate->softwares) ? $objCandidate->softwares : [];
-    wp_set_post_terms( $candidate_id, $softwareIds, 'software' );
+    wp_set_post_terms($candidate_id, $softwareIds, 'software');
     // Ajouter les languages
     $languagesIds = is_array($objCandidate->languages) ? $objCandidate->languages : [];
-    wp_set_post_terms( $candidate_id, $languagesIds, 'language' );
+    wp_set_post_terms($candidate_id, $languagesIds, 'language');
 
-    $regionIds = [ $objCandidate->region ];
-    wp_set_post_terms( $candidate_id, $regionIds, 'region' );
+    $regionIds = [$objCandidate->region];
+    wp_set_post_terms($candidate_id, $regionIds, 'region');
 
-    $cityIds = [ $objCandidate->town ];
-    wp_set_post_terms( $candidate_id, $cityIds, 'city' );
-    
+    $cityIds = [$objCandidate->town];
+    wp_set_post_terms($candidate_id, $cityIds, 'city');
+
     $a = &$objCandidate->activated;
     $activated = $a === 'pending' ? 'pending' : intval($a);
     $currentPost = get_post($candidate_id);
     if (is_numeric($activated)) {
-      update_field( 'activated', $activated, $candidate_id );
+      update_field('activated', $activated, $candidate_id);
       if ($activated && $currentPost->post_status !== 'publish')
         do_action('confirm_validate_candidate', $candidate_id);
       wp_update_post(['ID' => $candidate_id, 'post_status' => 'publish'], true);
     } else {
-      update_field( 'activated', 0, $candidate_id );
+      update_field('activated', 0, $candidate_id);
       wp_update_post(['ID' => $candidate_id, 'post_status' => 'pending'], true);
     }
 
