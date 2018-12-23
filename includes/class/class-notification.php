@@ -68,9 +68,9 @@ final class NotificationHelper
     $Candidate = new Candidate((int)$id_cv);
     $Notice = new Notification();
     $Author = $Candidate->getAuthor();
-    $Firstname = $Candidate->getFirstName();
+    $firstname = $Candidate->getFirstName();
 
-    $Notice->title = "<b>$Firstname</b> viens d'ajouter un CV pour reference <b>{$Candidate->title}</b>";
+    $Notice->title = "<b>$firstname</b> viens d'ajouter un CV pour reference <b>{$Candidate->title}</b>";
     $Notice->url = "/candidate/{$id_cv}/edit";
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
@@ -95,9 +95,9 @@ final class NotificationHelper
     $Candidate = new Candidate((int)$id_cv);
     $Notice = new Notification();
     $Author = $Candidate->getAuthor();
-    $Firstname = $Candidate->getFirstName();
+    $firstname = $Candidate->getFirstName();
 
-    $Notice->title = "<b>$Firstname</b> viens de modifier son CV (<b>{$Candidate->title}</b>)";
+    $Notice->title = "<b>$firstname</b> viens de modifier son CV (<b>{$Candidate->title}</b>)";
     $Notice->url = "/candidate/{$id_cv}/edit";
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
