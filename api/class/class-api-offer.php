@@ -35,6 +35,7 @@ final class apiOffer
           'value' => (int)$status,
           'compare' => '='
         ];
+        $args['post_status'] = "publish";
       }
 
       if ($status === 'pending') {

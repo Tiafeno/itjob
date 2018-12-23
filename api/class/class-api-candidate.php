@@ -92,7 +92,7 @@ final class apiCandidate
           'value' => (int)$status,
           'compare' => '='
         ];
-        $args['post_status'] = $status ? 'publish' : 'any';
+        $args['post_status'] = 'publish';
       }
 
       if ($status === 'pending') {
