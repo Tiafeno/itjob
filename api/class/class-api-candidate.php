@@ -84,7 +84,7 @@ final class apiCandidate
       $s = '';
       
       $status = preg_replace('/\s+/', '', $searchs[1]);
-      $status = $status === '0' ? 0 : ($status === '1' ? 1 : ($status === 'pending' ? 'pending' : ''));
+      $status = $status === 'pending' ? 'pending' : (!empty($status) ? intval($status) : null);
       if ($status === 1 || $status === 0) {
         $meta_query[] = ['relation' => "AND"];
         $meta_query[] = [
