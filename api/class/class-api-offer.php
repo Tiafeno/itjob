@@ -68,7 +68,7 @@ final class apiOffer
         ];
       }
 
-      $filterDate = $searchs[3];
+      $filterDate = isset($searchs[3]) ? $searchs[3] : '';
       if ($filterDate !== '' && !empty($filterDate)) {
         $date = explode('x', $filterDate);
         $date_query = [
@@ -79,6 +79,27 @@ final class apiOffer
           ]
         ];
         $args = array_merge($args, ['date_query' => $date_query]);
+      }
+
+      $ratePlan = isset($searchs[4]) ? $searchs[4] : '';
+      if ($ratePlan !== '' && !empty($ratePlan)) {
+        $rate_query = [
+          'key' => 'itjob_offer_rateplan',
+          'value' => $ratePlan,
+          'compare' => '='
+        ];
+
+        if ($ratePlan === 'standard') {
+          $query = ['relation' => 'OR'];
+          $query[] = $rate_query;
+          $query[] = [
+            'key' => 'itjob_offer_rateplan',
+            'compare' => 'NOT EXISTS'
+          ];
+        } else {
+          $query = $rate_query;
+        }
+        $meta_query[] = $query;
       }
 
       $args = array_merge($args, ['meta_query' => $meta_query]);

@@ -242,18 +242,18 @@ final class apiCandidate
     $cityIds = [$objCandidate->town];
     wp_set_post_terms($candidate_id, $cityIds, 'city');
 
-    $a = &$objCandidate->activated;
-    $activated = $a === 'pending' ? 'pending' : intval($a);
-    $currentPost = get_post($candidate_id);
-    if (is_numeric($activated)) {
-      update_field('activated', $activated, $candidate_id);
-      if ($activated && $currentPost->post_status !== 'publish')
-        do_action('confirm_validate_candidate', $candidate_id);
-      wp_update_post(['ID' => $candidate_id, 'post_status' => 'publish'], true);
-    } else {
-      update_field('activated', 0, $candidate_id);
-      wp_update_post(['ID' => $candidate_id, 'post_status' => 'pending'], true);
-    }
+    // $a = &$objCandidate->activated;
+    // $activated = $a === 'pending' ? 'pending' : intval($a);
+    // $currentPost = get_post($candidate_id);
+    // if (is_numeric($activated)) {
+    //   update_field('activated', $activated, $candidate_id);
+    //   if ($activated && $currentPost->post_status !== 'publish')
+    //     do_action('confirm_validate_candidate', $candidate_id);
+    //   wp_update_post(['ID' => $candidate_id, 'post_status' => 'publish'], true);
+    // } else {
+    //   update_field('activated', 0, $candidate_id);
+    //   wp_update_post(['ID' => $candidate_id, 'post_status' => 'pending'], true);
+    // }
 
     return new WP_REST_Response('Candidat mis à jour avec succès');
   }

@@ -435,16 +435,16 @@ add_action('rest_api_init', function () {
               $User = wp_get_current_user();
               if ($User->ID === 0) return new WP_REST_Response(['success' => false, 'body' => "Utilisateur non definie"]);
               global $wpdb;
-              $sql           = "SELECT * FROM {$wpdb->prefix}notices WHERE id_user = %d ORDER BY date_create DESC LIMIT 15";
-              $prepare       = $wpdb->prepare( $sql, $User->ID );
-              $rows          = $wpdb->get_results( $prepare );
+              $sql = "SELECT * FROM {$wpdb->prefix}notices WHERE id_user = %d ORDER BY date_create DESC LIMIT 15";
+              $prepare = $wpdb->prepare($sql, $User->ID);
+              $rows = $wpdb->get_results($prepare);
               $Notifications = [];
-              foreach ( $rows as $row ) {
-                $Notice              = unserialize( $row->notice );
-                $Notice->ID          = $row->id_notice;
+              foreach ($rows as $row) {
+                $Notice = unserialize($row->notice);
+                $Notice->ID = $row->id_notice;
                 $Notice->date_create = $row->date_create;
-                $Notice->status      = $row->status;
-                $Notifications[]     = $Notice;
+                $Notice->status = $row->status;
+                $Notifications[] = $Notice;
               }
 
               return new WP_REST_Response(['success' => true, 'body' => $Notifications]);
@@ -482,6 +482,49 @@ add_action('rest_api_init', function () {
         ),
       ]
     ),
+  ]);
+
+  register_rest_route('it-api', '/post/(?P<id>\d+)', [
+    array(
+      'methods' => WP_REST_Server::READABLE,
+      'callback' => function (WP_REST_Request $request) {
+        $post_id = $request['id'];
+        $action = isset($_REQUEST['action']) ? stripslashes(urldecode($_REQUEST['action'])) : false;
+        if ($action) {
+          switch ($action) {
+            case 'change_status':
+              $status = $_REQUEST['val'];
+              $activated = $status === 'pending' ? 'pending' : intval($status);
+              $post_status = get_post_status($post_id);
+              $post_type = get_post_type($post_id);
+              if (is_numeric($activated)) {
+                update_field('activated', $activated, $post_id);
+                if ($activated && $post_status !== 'publish') {
+                  $action = "confirm_validate_${$post_type}";
+                  do_action($action, $candidate_id);
+                }
+                wp_update_post(['ID' => $post_id, 'post_status' => 'publish'], true);
+              } else {
+                update_field('activated', 0, $post_id);
+                wp_update_post(['ID' => $post_id, 'post_status' => 'pending'], true);
+              }
+              return new WP_REST_Response(['success' => true, 'msg' => 'Status mise à jour avec succès']);
+              break;
+          }
+
+        } else {
+          return new WP_REST_Response(['success' => false, 'msg' => 'Une erreur s\'est produite']);
+        }
+      },
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => [
+        'id' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param);
+          }
+        ),
+      ]
+    )
   ]);
 
 });
