@@ -255,6 +255,11 @@ final class apiCandidate
     //   wp_update_post(['ID' => $candidate_id, 'post_status' => 'pending'], true);
     // }
 
+    if (isset($objCandidate->attachment_id)) {
+      $attachment_id = (int)$objCandidate->attachment_id;
+      update_post_meta( $candidate_id, '_thumbnail_id', $attachment_id );
+    }
+
     return new WP_REST_Response('Candidat mis à jour avec succès');
   }
 
