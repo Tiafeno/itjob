@@ -47,6 +47,15 @@ add_action('rest_api_init', function () {
               return new WP_REST_Response("Candidate mis à jour avec succès");
               break;
 
+            case 'featured':
+              $featured = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
+              if (is_null($featured)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
+              $featured = (int)$featured;
+              update_field('itjob_cv_featured', $featured, $Candidate->getId());
+
+              return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
+              break;
+
             default:
               break;
           }

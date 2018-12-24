@@ -32,6 +32,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   public $jobNotif = false;
   public $trainingNotif = false;
   public $newsletter;
+  public $featured;
   public $branch_activity;
   public $tags;
   public $privateInformations;
@@ -147,6 +148,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     }
     $this->activated   = get_field( 'activated', $this->getId() );
     $this->status      = get_field( 'itjob_cv_status', $this->getId() );
+    $featured    = get_field( 'itjob_cv_featured', $this->getId());
+    $this->featured = is_null($featured) || empty($featured) ? 0 : ($featured ? 1 : 0);
     $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [] );
     $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [] );
 
