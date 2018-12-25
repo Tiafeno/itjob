@@ -68,7 +68,7 @@ final class Company implements \iCompany {
    *
    * @param int $postId - ID du post de type 'company'
    */
-  public function __construct( $post ) {
+  public function __construct( $post, $access = false ) {
     if ( is_int( $post ) ) {
       if ( ! is_null( get_post( $post ) ) ) {
         $output = get_post( $post );
@@ -112,10 +112,14 @@ final class Company implements \iCompany {
       $this->country = reset( $country );
 
       // Récuperer le secteur d'activité
-      $abranch               = wp_get_post_terms( $this->ID, 'branch_activity' );
+      $abranch               = wp_get_post_terms( $this->ID, 'branch_activity', [ "fields" => "all" ] );
       $this->branch_activity = is_array($abranch) && !empty($abranch)  ? $abranch[0] : null;
 
       $this->init();
+      if ($access) {
+        $this->getInterests();
+
+      }
     }
   }
 

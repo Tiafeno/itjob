@@ -252,7 +252,9 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       // featured: Envoie une email de confirmation pour le changement de mot de passe
       $user = get_user_by( 'email', trim($form->email) );
+
       do_action('register_user_company', $user->ID);
+      do_action('notice-admin-new-company', $post_id);
 
       wp_send_json( [ 'success' => true, 'msg' => new Company( $post_id ), 'form' => $form ] );
     }

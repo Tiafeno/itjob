@@ -634,6 +634,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       update_field( 'itjob_cv_experiences', $new_experiences, $this->Candidate->getId() );
       $experiences = get_field( 'itjob_cv_experiences', $this->Candidate->getId() );
+
+      do_action('notice-admin-update-cv', $this->Candidate->getId());
+      
       wp_send_json( [ 'success' => true, 'experiences' => $experiences ] );
     }
 
@@ -664,6 +667,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       update_field( 'itjob_cv_trainings', $new_trainings, $this->Candidate->getId() );
       $trainings = get_field( 'itjob_cv_trainings', $this->Candidate->getId() );
+
+      do_action('notice_admin_update_cv', $this->Candidate->getId());
+
       wp_send_json( [ 'success' => true, 'trainings' => $trainings ] );
     }
 

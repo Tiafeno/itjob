@@ -162,6 +162,28 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
               })
           };
 
+          /**
+           * @event ngClick
+           */
+          $scope.onRemoveUser = () => {
+            const Form = new FormData();
+            Form.append('action', 'delete_users');
+            $scope.chargement = true;
+            importService
+              .sendform(Form)
+              .then(resp => {
+                let query = resp.data;
+                if (query.success) {
+                  let inputs = query.data;
+                  $scope.chargement = false;
+                  alert(inputs);
+                } else {
+                  $scope.chargement = false;
+                }
+
+              })
+          };
+
           $scope.stepFn = (results, parser) => {
             if (results || results.data) {
               const column = results.data;

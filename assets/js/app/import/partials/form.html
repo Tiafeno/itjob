@@ -23,6 +23,9 @@
             <a href="#delete" ng-disabled="chargement" ng-if="formData.entryType === 'user_candidate_experiences'" ng-click="onRemoveExperienceForm()" class="btn btn-outline-danger btn-icon btn-fix float-right" >
               {{ chargement ? 'Chargement ...' : 'Effacer les experiences'}}
             </a>
+            <a href="#delete" ng-disabled="chargement" ng-if="formData.entryType === 'user'" ng-click="onRemoveUser()" class="btn btn-outline-danger btn-icon btn-fix float-right" >
+              {{ chargement ? 'Chargement ...' : 'Effacer les utilisateurs'}}
+            </a>
           </div>
 
           <div class="form-group">

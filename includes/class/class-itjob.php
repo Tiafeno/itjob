@@ -75,8 +75,9 @@ if ( ! class_exists( 'itJob' ) ) {
       // Effacer le candidat ou l'entreprise si on supprime l'utilisateur
       add_action( 'delete_user', function ( $user_id ) {
         $user_obj = get_userdata( $user_id );
+        $Model = new itModel();
         if ( in_array( 'company', $user_obj->roles ) ) {
-          $Company = Post\Company::get_company_by( $user_id );
+          $company_id = $Model->get_company_id_by_email($user_obj->user_email);
           // FEATURED: Effacer les offres de l'entreprise
           $argOffers = [
             'post_type' => 'offers',
@@ -84,27 +85,26 @@ if ( ! class_exists( 'itJob' ) ) {
             'meta_query' => [
               [
                 'key' => 'itjob_offer_company',
-                'value' => $Company->getId(),
+                'value' => $company_id,
                 'compare' => '='
               ]
             ]
           ];
           // Récuperer tous les offres de l'entreprise
           $offers = get_posts($argOffers);
-          $Model = new itModel();
           foreach ($offers as $offer):
             // Effacer l'offre
             $deleted = wp_delete_post($offer->ID, true);
           if ( ! is_wp_error($deleted) )
             $Model->remove_interest($offer->ID);
           endforeach;
-          wp_delete_post( $Company->getId(), true);
+          wp_delete_post( $company_id, true);
 
         }
 
         if ( in_array( 'candidate', $user_obj->roles ) ) {
-          $Candidate = Post\Candidate::get_candidate_by( $user_id );
-          wp_delete_post( $Candidate->getId(), true);
+          $candidate_id = $Model->get_candidate_id_by_email($user_obj->user_email);
+          wp_delete_post( $candidate_id, true);
         }
       } );
 
@@ -189,6 +189,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
             if ( ! empty( $region ) ) {
               $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+              $tax_query = !is_array($tax_query) ? [] : $tax_query;
               $tax_query[] = [
                 'taxonomy' => 'region',
                 'field'    => 'term_id',
@@ -203,6 +204,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( $abranch ) {
                   $meta_query   = isset( $meta_query ) ? $meta_query : $query->get( 'meta_query' );
+                  $meta_query = !is_array($meta_query) ? [] : $meta_query;
                   $meta_query[] = [
                     'key'     => 'itjob_offer_abranch',
                     'value'   => (int) $abranch,
@@ -216,6 +218,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
+                  $meta_query = !is_array($meta_query) ? [] : $meta_query;
                   // Feature: Recherché aussi dans le profil recherché et mission
                   $meta_query[] = [
                     'relation' => 'OR',
@@ -245,7 +248,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 if ( ! isset( $meta_query ) ) {
                   $meta_query = $query->get( 'meta_query' );
                 }
-
+                $meta_query = !is_array($meta_query) ? [] : $meta_query;
                 $meta_query[] = [
                   [
                     'key'     => 'activated',
@@ -278,6 +281,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( $abranch ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
                   $tax_query[] = [
                     'taxonomy'         => 'branch_activity',
                     'field'            => 'term_id',
@@ -288,6 +292,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
                 if ( ! empty( $language ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
                   $tax_query[] = [
                     'taxonomy'         => 'language',
                     'field'            => 'term_id',
@@ -299,6 +304,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 // Rechercher dans les logiciel si le champ n'es pas vide
                 if ( ! empty( $software ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
                   $tax_query[] = [
                     'taxonomy'         => 'software',
                     'field'            => 'term_id',
@@ -385,7 +391,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
-
+                  $meta_query = !is_array($meta_query) ? [] : $meta_query;
                   $meta_query[] = [
                     [
                       'key'     => 'activated',
@@ -428,7 +434,7 @@ if ( ! class_exists( 'itJob' ) ) {
               if ( ! isset( $meta_query ) ) {
                 $meta_query = $query->get( 'meta_query' );
               }
-
+              $meta_query = !is_array($meta_query) ? [] : $meta_query;
               $meta_query[] = [
                 'key'     => 'activated',
                 'value'   => 1,

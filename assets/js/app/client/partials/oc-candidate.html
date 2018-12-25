@@ -194,7 +194,7 @@
               <select class="form-control" name="branch_activity" ng-model="profilEditor.form.abranch" ng-value=""
                 title="Status" required>
                 <option value=""></option>
-                <option value="[[abranch.term_id]]" ng-value="abranch.term_id" ng-repeat="abranch in profilEditor.abranchs">
+                <option value="[[abranch.term_id]]" ng-value="abranch.term_id" ng-repeat="abranch in profilEditor.abranchs track by abranch.name">
                   [[abranch.name]]
                 </option>
               </select>
@@ -211,7 +211,7 @@
               <select class="form-control" name="region" ng-model="profilEditor.form.region" ng-value="" title="Status"
                 required>
                 <option value=""></option>
-                <option value="[[region.term_id]]" ng-value="region.term_id" ng-repeat="region in profilEditor.regions">
+                <option value="[[region.term_id]]" ng-value="region.term_id" ng-repeat="region in profilEditor.regions track by region.name">
                   [[region.name]]
                 </option>
               </select>
@@ -221,7 +221,7 @@
               <label class="form-control-label ">Code postal ou Ville <span style="color: red">*</span></label>
               <select class="form-control input-select2" name="country" ng-model="profilEditor.form.country" title="Selectionner une ville"
                 required>
-                <option value=""></option>
+                <option value="">-- Choissir une ville ---</option>
                 <option value="[[city.term_id]]" ng-value="city.term_id" ng-repeat="city in profilEditor.city|filter:searchCityFn">[[city.name]]
                 </option>
               </select>
@@ -253,7 +253,7 @@
     <div class="card text-center centered mb-4" style="max-width:320px;">
       <div class="ibox-body alert alert-info alert-dismissable fade show">
         <!--<button class="close" data-dismiss="alert" aria-label="Close"></button>-->
-        <h4>Bonjour <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</b></h4>
+        <h4>Bonjour [[Greet]] <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</b></h4>
         <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
       </div>
       <div class="card-body">

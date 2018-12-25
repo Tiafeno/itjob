@@ -11,7 +11,7 @@ class apiCompany
   {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
-    $paged = isset($_POST['start']) ? ($start === 0) ? 0 : $start / $length : 1;
+    $paged = isset($_POST['start']) ? ($start === 0 ? 1 : ($start + $length) / $length) : 1;
     $posts_per_page = isset($_POST['length']) ? (int)$_POST['length'] : 10;
     $args = [
       'post_type' => 'company',
@@ -22,58 +22,88 @@ class apiCompany
       "paged" => $paged,
     ];
     $meta_query = [];
-    $meta_query[] = ['relation' => "AND"];
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
       $search = stripslashes($_POST['search']['value']);
       $searchs = explode('|', $search);
       $s = '';
-      $status = preg_replace('/\s+/', '', $searchs[1]);
-      $status = strlen($status) > 1 ? $status : (int)$status;
+      $status = preg_replace('/\s+/', '', $searchs[2]);
+      $status = $status === 'pending' ? 'pending' : (empty($status) && $status !== '0' ? null : intval($status));
       if ($status === 1 || $status === 0) {
+        $meta_query[] = ['relation' => "AND"];
         $meta_query[] = [
           'key' => 'activated',
           'value' => $status,
           'compare' => '='
         ];
-        $args['post_status'] = $status ? 'publish' : 'any';
+        $args['post_status'] = 'publish';
       }
 
       if ($status === 'pending') {
         $args['post_status'] = $status;
       }
 
-      if (!empty($searchs[0]) && $searchs[0] !== ' ') {
-        $s = $searchs[0];
+      $s = $searchs[4];
+      if (!empty($s) && $s !== ' ') {
         $args['s'] = $s;
       }
 
-      $account = trim($searchs[2]) !== '' && trim($searchs[2]) !== ' ' ? (int)$searchs[2] : '';
+      $account = empty($searchs[0]) ? '' : intval($searchs[0]);
       if ($account === 1 || $account === 0 || $account === 2) {
-        $meta_query[] = [
-          'key' => 'itjob_meta_account',
-          'value' => (int)$account,
-          'compare' => '='
+        $value = $account === 0 ? [1, 2] : $account;
+        $compare = $account === 0 ? 'NOT IN' : '=';
+          $account_query = [
+          [
+            'key' => 'itjob_meta_account',
+            'value' => $value,
+            'compare' => $compare
+          ]
+        ];
+        if ($account === 0) {
+          $account_query = array_merge($account_query, [
+            'relation' => 'OR',
+            [
+              'key' => 'itjob_meta_account',
+              'compare' => 'NOT EXISTS'
+            ]
+          ]);
+        }
+        $meta_query = $account_query;
+      }
+
+      $activityArea = (int)$searchs[1];
+      if ($activityArea !== 0) {
+        $tax_query[] = [
+          'taxonomy' => 'branch_activity',
+          'field' => 'term_id',
+          'terms' => [$activityArea]
         ];
       }
-      
+
+      $beetwenDate = $searchs[3];
+      if ($beetwenDate !== '' && !empty($beetwenDate)) {
+        $date = explode('x', $beetwenDate);
+        $date_query = [
+          [
+            'after' => $date[0],
+            'before' => $date[1],
+            'inclusive' => true,
+          ]
+        ];
+        $args = array_merge($args, ['date_query' => $date_query]);
+      }
     }
 
     $args = array_merge($args, ['meta_query' => $meta_query]);
+    //print_r($args);
     $the_query = new WP_Query($args);
     $entreprises = [];
     if ($the_query->have_posts()) {
-      while ($the_query->have_posts()) {
-        $the_query->the_post();
-        if (!is_array($the_query->posts)) return false;
-        $entreprises = array_map(function ($entreprise) {
-          if (!isset($entreprise->ID)) return $entreprise;
-          $objCompany = new \includes\post\Company($entreprise->ID);
-          $objCompany->isActive = $objCompany->isValid();
+      $entreprises = array_map(function ($entreprise) {
+        $objCompany = new \includes\post\Company($entreprise->ID);
+        $objCompany->isActive = $objCompany->isValid();
 
-          return $objCompany;
-        }, $the_query->posts);
-      }
-
+        return $objCompany;
+      }, $the_query->posts);
       return [
         "recordsTotal" => (int)$the_query->found_posts,
         "recordsFiltered" => (int)$the_query->found_posts,
