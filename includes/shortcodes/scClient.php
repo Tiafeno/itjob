@@ -795,6 +795,7 @@ if ( ! class_exists( 'scClient' ) ) :
     /**
      * Function ajax
      * Ajouter un CV dans la liste de l'entreprise
+     * Si l'entreprise est une entreprise premium ont ajoute le CV même s'il atteint le nombre limit ede CV
      */
     public function add_cv_list() {
       if ( ! is_user_logged_in() ) {
@@ -802,10 +803,14 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $id_candidate = (int) Http\Request::getValue( 'id_candidate' );
       $id_request   = (int) Http\Request::getValue( 'id_request' );
-
+     
       // FEATURED: Verifier si l'entreprise n'a pas atteint le nombre limite de CV
-      $itModel = new itModel();
-      if ( $itModel->check_list_limit() ) {
+      $id_request = intval($id_request);
+      if ($id_request === 0) wp_send_json_error('L\'identifiant la requete vaut 0');
+      $Model = new itModel();
+      $request = $Model->get_request($id_request);
+      $Company = new Company((int)$request->id_company);
+      if ( $Model->check_list_limit() && $Company->account === 0 ) { // Compte standard
         // Nombre limite atteinte
         wp_send_json_error( "Vous avez atteint le nombre de limite de CV dans votre liste" );
       }
@@ -813,7 +818,7 @@ if ( ! class_exists( 'scClient' ) ) :
         $id_candidate  = (int) $id_candidate;
         $response      = $itModel->add_list( $id_candidate );
         if ( $response ) {
-          $itModel->update_interest_status( $id_request, 'validated' );
+          $Model->update_interest_status( $id_request, 'validated' );
           wp_send_json_success( "Le candidat a bien étés valider avec succès." );
         }
       } else {

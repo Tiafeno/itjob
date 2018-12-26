@@ -143,13 +143,15 @@ final class NotificationHelper
     $Candidate = new Candidate((int)$id_cv);
     $Offer = new Offers($id_offer);
 
-    $postCompany = $Offer->getCompany();
-    $Company = new Company($postCompany->ID);
-
-    $companyNotice = new Notification();
-    $companyNotice->title = "$Candidate->title a postulé pour l'offre <b>{$Offer->title}</b>";
-    $companyNotice->url = $Candidate->candidate_url . "?ref=notif";
-    $Model->added_notice($Company->author->ID, $companyNotice);
+    if ($Offer->rateplan === 'standard') {
+      $postCompany = $Offer->getCompany();
+      $Company = new Company($postCompany->ID);
+  
+      $companyNotice = new Notification();
+      $companyNotice->title = "$Candidate->title a postulé pour l'offre <b>{$Offer->title}</b>";
+      $companyNotice->url = $Candidate->candidate_url . "?ref=notif";
+      $Model->added_notice($Company->author->ID, $companyNotice);
+    }
 
     // To admin
     $Notice = new Notification(); 
