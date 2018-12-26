@@ -887,6 +887,7 @@ if ( ! class_exists( 'scClient' ) ) :
         if ( $sender ) {
           // Changer la valeur du post meta pour '2' qui signifie rester en attente de validation
           update_post_meta( $this->Company->getId(), 'itjob_meta_account', 2 );
+          do_action('request-premium-account', $this->Company);
           wp_send_json_success( "Votre demande à bien été envoyer." );
         } else {
           wp_send_json_error( $information_message );

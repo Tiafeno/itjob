@@ -44,6 +44,7 @@ final class NotificationHelper
       add_action('notice-publish-cv', [&$this, 'notice_publish_cv'], 10, 1);
       add_action('notice-publish-offer', [&$this, 'notice_publish_offer'], 10, 1);
       add_action('notice-change-request-status', [&$this, 'notice_change_request_status'], 10, 2);
+      add_action('request-premium-account', [&$this, 'request_premium_account'], 10, 1);
 
       add_action('notice-admin-create-cv', [&$this, 'notice_admin_create_cv'], 10, 1);
       add_action('notice-admin-new-offer', [&$this, 'notice_admin_new_offer'], 10, 1);
@@ -78,7 +79,6 @@ final class NotificationHelper
       $Model->added_notice($admin->ID, $Notice);
     }
   }
-
   public function notice_admin_new_company($id_company) {
     $Model = new itModel();
     // Company
@@ -92,7 +92,6 @@ final class NotificationHelper
       $Model->added_notice($admin->ID, $Notice);
     }
   }
-  
   public function notice_admin_new_offer($id_offer) {
     $Model = new itModel();
     $Offer = new Offers((int)$id_offer);
@@ -119,8 +118,6 @@ final class NotificationHelper
       $Model->added_notice($admin->ID, $Notice);
     }
   }
-
-
   public function notice_publish_cv($id_cv) {
     $id_cv = (int)$id_cv;
     if (!$id_cv) return false;
@@ -189,6 +186,17 @@ final class NotificationHelper
     }
 
     return true;
+  }
+  public function request_premium_account($Company) { // Company object
+    $Model = new itModel();
+    $Notice = new Notification();
+    $Notice->title = "L'entreprise « {$Company->title} » à effectuer une demande de compte premium";
+    $id = $Company->getId();
+    $Notice->url = "/company-lists/?s={$Company->title}";
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
   }
 
   /**
