@@ -51,7 +51,7 @@ class apiCompany
       if ($account === 1 || $account === 0 || $account === 2) {
         $value = $account === 0 ? [1, 2] : $account;
         $compare = $account === 0 ? 'NOT IN' : '=';
-          $account_query = [
+        $account_query = [
           [
             'key' => 'itjob_meta_account',
             'value' => $value,
@@ -67,7 +67,7 @@ class apiCompany
             ]
           ]);
         }
-        $meta_query = $account_query;
+        $meta_query[] = $account_query;
       }
 
       $activityArea = (int)$searchs[1];

@@ -56,6 +56,15 @@ add_action('rest_api_init', function () {
               return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
               break;
 
+            case 'archived':
+              $archived = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
+              if (is_null($archived)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
+              $archived = intval($archived);
+              update_field('archived', $archived, $Candidate->getId());
+
+              return new WP_REST_Response(['success' => true, 'msg' => "Candidate mise à jour avec succès"]);
+              break;
+
             default:
               break;
           }
@@ -117,6 +126,15 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCandidate(), 'get_candidates'],
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => []
+    ),
+  ]);
+
+  register_rest_route('it-api', '/candidate/archive/', [
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => [new apiCandidate(), 'get_candidate_archived'],
       'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
       'args' => []
     ),

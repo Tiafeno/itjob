@@ -69,6 +69,77 @@ final class apiCandidate
     });
   }
 
+  public function get_candidate_archived(WP_REST_Request $rq)
+  {
+    $length = (int)$_POST['length'];
+    $start = (int)$_POST['start'];
+    $paged = isset($_POST['start']) ? ($start === 0 ? 1 : ($start + $length) / $length) : 1;
+    $posts_per_page = isset($_POST['length']) ? (int)$_POST['length'] : 10;
+    $args = [
+      'post_type' => 'candidate',
+      'post_status' => 'any',
+      'order' => 'DESC',
+      'orderby' => 'ID',
+      "posts_per_page" => $posts_per_page,
+      "paged" => $paged,
+    ];
+
+    $meta_query = [];
+    $meta_query[] = [
+      [
+        'key' => 'itjob_cv_hasCV',
+        'value' => 1
+      ],
+      [
+        'key' => 'archived',
+        'value' => 1
+      ]
+    ];
+
+    if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
+      $search = stripslashes($_POST['search']['value']);
+      $searchs = explode('|', $search);
+      $s = '';
+
+      $s = $status = preg_replace('/\s+/', '', $searchs[0]);
+      $searchs[0] = $s;
+      if (!empty($s) && $s !== '') {
+        $this->add_filter_search($s, $searchs);
+      } else {
+        $meta_query[] = [
+          'key' => 'itjob_cv_hasCV',
+          'value' => 1
+        ];
+      }
+    }
+
+    $args = array_merge($args, ['meta_query' => $meta_query]);
+    $the_query = new WP_Query($args);
+    $candidates = [];
+    if ($the_query->have_posts()) {
+      $candidates = array_map(function ($candidate) {
+        $objCandidate = new \includes\post\Candidate($candidate->ID);
+        $objCandidate->isActive = $objCandidate->is_activated();
+        $objCandidate->__get_access();
+
+        return $objCandidate;
+      }, $the_query->posts);
+
+      return [
+        "recordsTotal" => (int)$the_query->found_posts,
+        "recordsFiltered" => (int)$the_query->found_posts,
+        'data' => $candidates
+      ];
+    } else {
+
+      return [
+        "recordsTotal" => (int)$the_query->found_posts,
+        "recordsFiltered" => (int)$the_query->found_posts,
+        'data' => []
+      ];
+    }
+  }
+
 
   /**
    * Récuperer seulement les utilisateurs ou les candidats qui ont un CV
@@ -96,22 +167,6 @@ final class apiCandidate
       $searchs = explode('|', $search);
       $s = '';
 
-      $status = preg_replace('/\s+/', '', $searchs[1]);
-      $status = $status === 'pending' ? 'pending' : (empty($status) && $status !== '0' ? null : intval($status));
-      if ($status === 1 || $status === 0) {
-        $meta_query[] = ['relation' => "AND"];
-        $meta_query[] = [
-          'key' => 'activated',
-          'value' => (int)$status,
-          'compare' => '='
-        ];
-        $args['post_status'] = 'publish';
-      }
-
-      if ($status === 'pending') {
-        $args['post_status'] = $status;
-      }
-
       $s = $status = preg_replace('/\s+/', '', $searchs[0]);
       $searchs[0] = $s;
       if (!empty($s) && $s !== '') {
@@ -123,17 +178,37 @@ final class apiCandidate
         ];
       }
 
-      $activityArea = (int)$searchs[2];
-      $searchs[2] = $activityArea;
-      if ($activityArea !== 0) {
-        $tax_query[] = [
-          'taxonomy' => 'branch_activity',
-          'field' => 'term_id',
-          'terms' => [$activityArea]
-        ];
+      if (isset($searchs[1])) {
+        $status = preg_replace('/\s+/', '', $searchs[1]);
+        $status = $status === 'pending' ? 'pending' : (empty($status) && $status !== '0' ? null : intval($status));
+        if ($status === 1 || $status === 0) {
+          $meta_query[] = ['relation' => "AND"];
+          $meta_query[] = [
+            'key' => 'activated',
+            'value' => (int)$status,
+            'compare' => '='
+          ];
+          $args['post_status'] = 'publish';
+        }
+
+        if ($status === 'pending') {
+          $args['post_status'] = $status;
+        }
       }
 
-      $filterDate = $searchs[3];
+      if (isset($searchs[2])) {
+        $activityArea = (int)$searchs[2];
+        $searchs[2] = $activityArea;
+        if ($activityArea !== 0) {
+          $tax_query[] = [
+            'taxonomy' => 'branch_activity',
+            'field' => 'term_id',
+            'terms' => [$activityArea]
+          ];
+        }
+      }
+
+      $filterDate = isset($searchs[3]) ? $searchs[3] : '';
       if ($filterDate !== '' && !empty($filterDate)) {
         add_filter('posts_where', function ($where) use ($filterDate) {
           $date = explode('x', $filterDate);
@@ -151,6 +226,28 @@ final class apiCandidate
 
           return $where;
         });
+      }
+
+      $filterPosition = isset($searchs[4]) ? $searchs[4] : null;
+      if ($filterPosition !== '' && !is_null($filterPosition)) {
+        $filterPosition = intval($filterPosition);
+        $position_query = [
+          [
+            'key' => 'itjob_cv_featured',
+            'value' => $filterPosition,
+            'compare' => '='
+          ]
+        ];
+        if ($filterPosition === 0) {
+          $position_query = array_merge($position_query, [
+            'relation' => 'OR',
+            [
+              'key' => 'itjob_cv_featured',
+              'compare' => 'NOT EXISTS'
+            ]
+          ]);
+        }
+        $meta_query[] = $position_query;
       }
 
     } else {
@@ -257,7 +354,7 @@ final class apiCandidate
 
     if (isset($objCandidate->attachment_id)) {
       $attachment_id = (int)$objCandidate->attachment_id;
-      update_post_meta( $candidate_id, '_thumbnail_id', $attachment_id );
+      update_post_meta($candidate_id, '_thumbnail_id', $attachment_id);
     }
 
     return new WP_REST_Response('Candidat mis à jour avec succès');
@@ -281,7 +378,7 @@ final class apiCandidate
             'training_city' => $content->training_city,
             'training_country' => $content->training_country,
             'training_establishment' => $content->training_establishment,
-            'validated' => $contentn->validated // S'il y a une autre formation qui n'est pas validé?
+            'validated' => $content->validated // S'il y a une autre formation qui n'est pas validé?
           ];
         }
         update_field('itjob_cv_trainings', $new_trainings, $Candidate->getId());
