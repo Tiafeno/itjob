@@ -220,6 +220,7 @@ class Mailing {
           'title'     => $Candidate->title,
           'full_name' => $privateInfo->firstname . ' ' . $privateInfo->lastname
         ],
+        'greeting' => is_array($Candidate->greeting) ? $Candidate->greeting['label'] : '',
         'oc_url'             => $oc_url,
         'home_url'           => home_url( "/" ),
         'logo' => $this->logo[0],
@@ -475,9 +476,13 @@ class Mailing {
       $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
       $content   = '';
       try {
+        $postCompany = $Offer->getCompany();
+        $Company = new Company($postCompany->ID);
         $custom_logo_id = get_theme_mod( 'custom_logo' );
         $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
         $content        .= $Engine->render( '@MAIL/notification-company-when-candidate-postuled.html.twig', [
+          'company'  => $Company,
+          'greeting' => empty($Company->greeting) ? 'Mme/Mr' : ($Company->greeting === 'mr' ? 'Monsieur' : 'Madame'),
           'logo'      => $logo[0],
           'oc_url'    => $this->espace_client,
           'candidate' => $Candidate,
@@ -631,16 +636,16 @@ class Mailing {
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = '';
     try {
-      $Candidat = new Candidate( $candidat_id );
-      $Candidat->__get_access();
+      $Candidate = new Candidate( $candidat_id );
+      $Candidate->__get_access();
 
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       // New template...
       $content .= $Engine->render( '@MAIL/admin/notification-admin-for-company-interest.html.twig', [
         'company_name'       => $current_company->title,
-        'candidat_firstname' => $Candidat->privateInformations->firstname,
-        'candidat_reference' => $Candidat->title,
+        'candidat_firstname' => $Candidate->privateInformations->firstname,
+        'candidat_reference' => $Candidate->title,
         'logo'               => esc_url( $logo[0] ),
         'home_url'           => home_url( '/' ),
         'admin_url'          => $this->dashboard_url
@@ -686,6 +691,7 @@ class Mailing {
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/confirm-validate-candidate.html.twig', [
         'greeting'           => isset( $Candidate->greeting['value'] ) ? $Candidate->greeting['value'] : "Mr/Mme/Mlle",
+        'candidat_firstname' => $Candidate->privateInformations->firstname,
         'user'               => $author,
         'home_url'           => home_url( '/' ),
         'logo'               => $logo[0],
@@ -721,10 +727,12 @@ class Mailing {
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = '';
     try {
+      $Company = new Company( $company_id );
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/confirm-validate-company.html.twig', [
-        'company'  => new Company( $company_id ),
+        'company'  => $Company,
+        'greeting' => empty($Company->greeting) ? 'Mme/Mr' : ($Company->greeting === 'mr' ? 'Monsieur' : 'Madame'),
         'oc_url'   => $this->espace_client,
         'home_url' => home_url( '/' ),
         'logo'     => esc_url( $logo[0] )
@@ -759,10 +767,12 @@ class Mailing {
     $headers[]    = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content      = '';
     try {
+      $Company = new Company( $post_company->ID );
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/confirm-validate-offer.html.twig', [
-        'company'  => new Company( $post_company->ID ),
+        'company'  => $Company,
+        'greeting' => empty($Company->greeting) ? 'Mme/Mr' : ($Company->greeting === 'mr' ? 'Monsieur' : 'Madame'),
         'offer'    => new Offers( $offer_id ),
         'oc_url'   => $this->espace_client,
         'home_url' => home_url( '/' ),
