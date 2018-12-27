@@ -49,9 +49,13 @@ add_action('rest_api_init', function () {
 
             case 'featured':
               $featured = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
+              $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;
               if (is_null($featured)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
               $featured = (int)$featured;
               update_field('itjob_cv_featured', $featured, $Candidate->getId());
+              if ($featured) {
+                update_field('itjob_cv_featured_datelimit', date("Y-m-d H:i:s", strtotime($dateLimit)), $Candidate->getId());
+              }
 
               return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
               break;
@@ -327,6 +331,19 @@ add_action('rest_api_init', function () {
               }
               return new WP_REST_Response(false);
 
+              break;
+
+            case 'featured':
+              $featured = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
+              $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;
+              if (is_null($featured)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
+              $featured = (int)$featured;
+              update_field('itjob_offer_featured', $featured, $Candidate->getId());
+              if ($featured) {
+                update_field('itjob_offer_featured_datelimit', date("Y-m-d H:i:s", strtotime($dateLimit)), $Candidate->getId());
+              }
+
+              return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
               break;
 
             default:
