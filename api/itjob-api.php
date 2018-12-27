@@ -149,7 +149,6 @@ add_action('rest_api_init', function () {
     ),
   ]);
 
-
   /**
    * Récuperer la liste des entreprises
    */
@@ -509,6 +508,151 @@ add_action('rest_api_init', function () {
         ),
       ]
     ),
+  ]);
+
+  register_rest_route('it-api', '/taxonomy/(?P<taxonomy>\w+)', [
+    array(
+      'methods' => WP_REST_Server::READABLE,
+      'callback' => function (WP_REST_Request $rq) {
+        if (!isset($_REQUEST['length']) || !isset($_REQUEST['start'])) return;
+        global $wpdb;
+        $length = (int)$_REQUEST['length'];
+        $start = (int)$_REQUEST['start'];
+        $terms_per_page = $length;
+        $tpp = filter_var($terms_per_page, FILTER_VALIDATE_INT);
+        $taxonomy = filter_var($rq['taxonomy'], FILTER_SANITIZE_STRING);
+
+        if (!taxonomy_exists($taxonomy))
+          return false;
+        $term_count = wp_count_terms($taxonomy);
+
+        $max_num_pages = ceil($term_count / $tpp);
+        // We can now get our terms and paginate it
+        $args = [
+          'taxonomy' => $taxonomy,
+          'hide_empty' => false,
+          'orderby' => 'ID',
+          'order' => 'DESC',
+          'number' => $length,
+          'offset' => $start
+        ];
+
+        if (isset($_REQUEST['search']) && !empty($_REQUEST['search']['value'])) {
+          $s = $_REQUEST['search']['value'];
+          $args = array_merge($args, ['search' => $s]);
+        }
+        $contents = [];
+        $term_query = new WP_Term_Query($args);
+        $rows = $wpdb->get_results($term_query->request);
+        foreach ($term_query->terms as $term) {
+          if ($taxonomy !== 'language') {
+            $activated = (int)get_term_meta($term->term_id, 'activated', true);
+          } else {
+            $activated = 1;
+          }
+          $contents[] = [
+            'term_id' => $term->term_id,
+            'name' => $term->name,
+            'slug' => $term->slug,
+            'activated' => $activated
+          ];
+        }
+        if (!empty($term_query) && !is_wp_error($term_query)) {
+          return [
+            "recordsTotal" => count($rows) - 1,
+            "recordsFiltered" => count($rows) - 1,
+            'offset' => $start,
+            'data' => $contents
+          ];
+        } else {
+          return [
+            "recordsTotal" => 0,
+            "recordsFiltered" => 0,
+            'data' => []
+          ];
+        }
+
+      },
+      'args' => [
+        'taxonomy' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return !empty($param);
+          }
+        ),
+      ]
+    ),
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => function (WP_REST_Request $rq) {
+        $taxonomy = $rq['taxonomy'];
+        $term_name = stripslashes($_POST['title']);
+        if (empty($term_name) && !taxonomy_exists($taxonomy))
+          return new WP_REST_Response(['success' => false, 'message' => "Information manquant ou erroné"]);
+        $result = wp_insert_term($term_name, $taxonomy);
+        if (is_wp_error($result))
+          return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite. Si l'erreur persiste contacter l'administrateur"]);
+        return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été ajouter']);
+      },
+      'args' => [
+        'taxonomy' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return !empty($param);
+          }
+        ),
+      ]
+    )
+  ]);
+
+  register_rest_route('it-api', '/taxonomy/(?P<id>\d+)/(?P<action>\w+)', [
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => function (WP_REST_Request $request) {
+        $term_id = $request['id'];
+        $action = $request['action'];
+        if ($action) {
+          switch ($action) {
+            case 'update':
+              $term = $_REQUEST['term'];
+              $term = json_decode(stripslashes($term));
+              $result = wp_update_term($term_id, $term->taxonomy, ['name' => $term->title]);
+              if (!is_wp_error($result)) {
+                update_term_meta($term->term_id, 'activated', $term->activated);
+              } else {
+                return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite. Si l'erreur persiste contacter l'administrateur"]);
+              }
+              return new WP_REST_Response(['success' => true, 'message' => 'Term mise à jour avec succès', 'data' => $term]);
+
+              break;
+
+            case 'delete':
+              $term = $_REQUEST['term'];
+              $term = json_decode(stripslashes($term));
+              $result = wp_delete_term($term_id, $term->taxonomy);
+              if (is_wp_error($result))
+                return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite. Si l'erreur persiste contacter l'administrateur"]);
+              return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été effacer dans la base de donnée', 'data' => $term]);
+
+              break;
+          }
+
+        } else {
+          return new WP_REST_Response(['success' => false, 'message' => 'Une erreur s\'est produite']);
+        }
+      },
+      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'args' => [
+        'id' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return is_numeric($param);
+          }
+        ),
+        'action' => array(
+          'validate_callback' => function ($param, $request, $key) {
+            return !empty($param);
+          }
+        ),
+      ]
+    )
   ]);
 
   register_rest_route('it-api', '/post/(?P<id>\d+)', [
