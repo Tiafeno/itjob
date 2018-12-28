@@ -261,12 +261,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
     $rootScope.allCity = _.clone(allCity);
     $rootScope.company = {};
     $rootScope.company.greeting = 'mr';
-    $rootScope.company.cellphone = [
-      {
-        id: 0,
-        value: ''
-      }
-    ];
+    $rootScope.company.cellphone = [{id: 0, value: ''}];
 
   }]).run([function () {
     var loadingPath = itOptions.template_url + '/img/loading.gif';

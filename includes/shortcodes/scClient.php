@@ -806,20 +806,20 @@ if ( ! class_exists( 'scClient' ) ) :
      
       // FEATURED: Verifier si l'entreprise n'a pas atteint le nombre limite de CV
       $id_request = intval($id_request);
-      if ($id_request === 0) wp_send_json_error('L\'identifiant la requete vaut 0');
+      if ($id_request === 0) wp_send_json_error('Aucune requete ne correspont à votre demande');
       $Model = new itModel();
       $request = $Model->get_request($id_request);
       // TODO: Filtrer si l'offre est premium
       if ( $Model->check_list_limit() ) { // Compte standard
         // Nombre limite atteinte
-        wp_send_json_error( "Vous avez atteint le nombre de limite de CV dans votre liste" );
+        wp_send_json_error( "Vous venez de sélectionner 5 candidats et vous vous apprêter à en sélectionner un sixième savez vous qu’à partir de là les CV sont payants au prix de 25.000 HT / CV " );
       }
       if ( $id_candidate ) {
         $id_candidate  = (int) $id_candidate;
         $response      = $itModel->add_list( $id_candidate );
         if ( $response ) {
           $Model->update_interest_status( $id_request, 'validated' );
-          wp_send_json_success( "Le candidat a bien étés valider avec succès." );
+          wp_send_json_success( "Le candidat a bien étés sélectionner avec succès." );
         }
       } else {
         wp_send_json_error( "Paramètre invalide" );

@@ -112,12 +112,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       $scope.countPhone = 1;
       $scope.particularForm = {};
       $scope.particularForm.greeting = 'mr';
-      $scope.particularForm.cellphone = [
-        {
-          id: 0,
-          value: ''
-        }
-      ];
+      $scope.particularForm.cellphone = [{ id: 0, value: ''}];
       $scope.addPhone = function () {
         $scope.particularForm.cellphone.push({id: $scope.countPhone, value: ''});
         $scope.countPhone += 1;

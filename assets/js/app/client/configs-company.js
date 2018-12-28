@@ -323,20 +323,22 @@ APPOC
         };
         // Actualiser la liste des candidats dans la gestion des candidats
         self.refreshInterestCandidate = () => {
-          $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + $scope.offerView.ID, {
+          let query = $http.get(itOptions.Helper.ajax_url + '?action=get_postuled_candidate&oId=' + $scope.offerView.ID, {
             cache: false
-          })
-            .then(resp => {
-              $scope.interestCandidats = _.map(resp.data, data => {
-                if (_.find($scope.candidateLists, (candidat_id) => candidat_id === data.candidate.ID)) {
-                  data.inList = true;
-                } else {
-                  data.inList = false;
-                }
-                return data;
-              });
-              $scope.loadingCandidats = false;
+          });
+          query.then(resp => {
+            $scope.interestCandidats = _.map(resp.data, data => {
+              if (_.find($scope.candidateLists, (candidat_id) => candidat_id === data.candidate.ID)) {
+                data.inList = true;
+
+              } else {
+                data.inList = false;
+              }
+              return data;
             });
+            $scope.loadingCandidats = false;
+          });
+          return query;
         };
         $scope.viewCandidateInformation = (idCandidate) => {
           $scope.idCandidate = parseInt(idCandidate);
@@ -360,7 +362,9 @@ APPOC
                 }).then(response => {
                   var query = response.data;
                   $scope.candidateLists = _.clone(query.data);
-                  self.refreshInterestCandidate();
+                  self.refreshInterestCandidate().then(resp => {
+                    $scope.viewCandidateInformation(request.candidate.ID);
+                  });
                 });
               } else {
                 $scope.error = query.data;
