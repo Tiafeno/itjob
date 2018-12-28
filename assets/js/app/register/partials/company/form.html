@@ -208,17 +208,15 @@
       <label class="col-sm-4 col-form-label">Mot de passe <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="pwd" ng-model="company.pwd" ng-minlength="6" type="password"
-               placeholder="Mot de passe"
+               placeholder="Mot de passe" placeholder="Ex: Papaparse29@"
                ng-pattern="/^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/"
                required>
         <div ng-messages="formCompany.pwd.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.pwd.$invalid && formCompany.pwd.$touched">
           <div ng-message="required">Le mot de passe est obligatoire.</div>
           <div ng-message="pattern">Votre mot de passe doit au minimum 8 caractères,
-              se composer des chiffres et de lettres et comprendre des majuscules/minuscules et 1 caractère spéciale.</div>
-          <div ng-message="minlength">Votre mot de passe doit avoir: au moins 8 caractères, des majuscules et des
-            minuscules et 1 chiffre.
-          </div>
+              se composer des chiffres et de lettres et comprendre des majuscules/minuscules et 1 caractère spéciale (-*/@+\_%$=).</div>
+          <div ng-message="minlength">Votre mot de passe doit au minimum 8 caractères</div>
         </div>
       </div>
     </div>

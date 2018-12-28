@@ -97,7 +97,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
   }])
   .component('formComponent', {
     bindings: {region: '<', allCity: '<'},
-    templateUrl: itOptions.partials_url + '/particular/form.html',
+    templateUrl: itOptions.partials_url + '/particular/form.html?ver=' + itOptions.version,
     controllerAs: 'formulaire',
     controller: function ($scope, services) {
       const self = this;

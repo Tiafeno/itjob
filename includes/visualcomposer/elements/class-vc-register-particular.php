@@ -88,7 +88,7 @@ if (!class_exists('vcRegisterParticular')) :
     }
     wp_enqueue_style('b-datepicker-3');
     wp_enqueue_style('sweetalert');
-    wp_enqueue_script('form-particular', get_template_directory_uri() . '/assets/js/app/register/form-particular.js', [
+    wp_enqueue_script('form-particular', get_template_directory_uri() . '/assets/js/app/register/form-particular.js?ver='.$itJob->version, [
       'angular',
       'angular-ui-route',
       'angular-sanitize',
@@ -106,6 +106,7 @@ if (!class_exists('vcRegisterParticular')) :
       'ajax_url' => admin_url('admin-ajax.php'),
       'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
       'template_url' => get_template_directory_uri(),
+      'version' => $itJob->version,
       'urlHelper' => [
         'singin' => home_url('/connexion/candidate'),
         'redir' => is_null($redirection) ? null : $redirection

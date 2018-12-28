@@ -6,7 +6,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       {
         name: 'company',
         url: '/company',
-        templateUrl: itOptions.partials_url + '/company/company.html',
+        templateUrl: itOptions.partials_url + '/company/company.html?ver=' + itOptions.version,
         resolve: {
           abranchs: function (companyService) {
             return companyService.getBranchActivity();
@@ -29,7 +29,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       {
         name: 'company.form',
         url: '/form',
-        templateUrl: itOptions.partials_url + '/company/form.html',
+        templateUrl: itOptions.partials_url + '/company/form.html?ver=' + itOptions.version,
         controller: ['$rootScope', '$scope', 'companyFactory', 'companyService', function ($rootScope, $scope, companyFactory, companyService) {
           $scope.login_url = itOptions.Helper.login;
           $scope.addPhone = function () {
