@@ -229,7 +229,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       ];
 
       foreach ( $form as $key => $value ) :
-        if ( is_null( $value ) ) {
+        if ( is_null( $value ) && $key !== 'softwares' ) {
           \wp_send_json( [
             'success' => false,
             'msg'     => "Le formulaire n'est pas valide. Veillez verifier les champs requis",
