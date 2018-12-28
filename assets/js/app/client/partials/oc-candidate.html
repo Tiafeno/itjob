@@ -317,9 +317,14 @@
                   <change-password></change-password>
                 </div>
                 <div class="col-sm-6">
-                  <a class="btn btn-warning mt-2" ng-href="[[Helper.archive_offer_link]]" target="_blank">
-                    <span class="btn-icon"><i class="fa fa-link"></i> Les offres d'emplois</span>
-                  </a>
+                  <div class="content">
+                    <div class="ibox-body">
+                      <a class="btn btn-warning mt-2" ng-href="[[Helper.archive_offer_link]]" target="_blank">
+                        <span class="btn-icon"><i class="fa fa-link"></i> Les offres d'emplois</span>
+                      </a>
+                    </div>
+                  </div>
+
                   <!-- Alerts directive -->
                   <alerts on-save="onSaveAlert()" alerts="alerts" message="Je souhaite être informé quand une publication comportent les mots suivants:"
                     alert-loading="alertLoading">
