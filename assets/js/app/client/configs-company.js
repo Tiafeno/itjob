@@ -368,7 +368,7 @@ APPOC
                 });
               } else {
                 $scope.error = query.data;
-                angular.element(el).text("Ajouter & Voir");
+                angular.element(el).text("Ajouter & Consulter");
               }
             });
         };
