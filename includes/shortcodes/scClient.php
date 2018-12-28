@@ -347,7 +347,7 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
-     * Function ajax
+     * Function ajax.
      * Mettre à jour les informations de base (candidate) avant de continuer dans le site
      */
     public function update_candidate_information() {
@@ -420,7 +420,7 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
-     * Fonction ajax - nopriv only
+     * Fonction ajax - nopriv only.
      * Envoie un email pour recuperer le mot de passe
      *
      */
