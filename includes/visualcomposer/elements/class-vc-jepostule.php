@@ -152,7 +152,7 @@ if (!class_exists('jePostule')) :
         return $message_access_refused;
       }
       if (!$Candidate->hasCV()) {
-        do_action('add_notice', "Vous devez crée un CV avant de postuler", "warning");
+        do_action('add_notice', "Vous devez créer un CV avant de postuler", "warning");
 
         return do_shortcode("[vc_register_candidate redir='{$current_uri}']");
       }

@@ -94,7 +94,7 @@ $limited = strtotime($offers->dateLimit) < $today;
               <tr>
                 <td class="no-bold uk-text-bold">Ref: <?= $offers->reference ?></td>
                 <td class="text-center uk-text-bold">Date limite: <?= $offers->dateLimitFormat ?></td>
-                <td class="text-right">Publier le <?= $offers->datePublication ?></td>
+                <td class="text-right">Publié le <?= $offers->datePublication ?></td>
               </tr>
             </table>
           </div>

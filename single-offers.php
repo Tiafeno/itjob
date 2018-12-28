@@ -47,7 +47,7 @@ wp_enqueue_style( 'offers' );
                   </div>
                 </div>
                 <div class="mt-4">
-                  <div>Offre ajoutéé le : <?= $offers->datePublication ?></div>
+                  <div>Offre ajoutée le : <?= $offers->datePublication ?></div>
                   <div>Réf : <?= $offers->reference ?></div>
                   <div class="uk-text-bold">Date limite de candidature : <?= $offers->dateLimitFormat ?></div>
                 </div>
