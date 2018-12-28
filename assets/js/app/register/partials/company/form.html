@@ -214,8 +214,8 @@
         <div ng-messages="formCompany.pwd.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.pwd.$invalid && formCompany.pwd.$touched">
           <div ng-message="required">Le mot de passe est obligatoire.</div>
-          <div ng-message="pattern">Votre mot de passe doit au minimum 8 caractères,
-              se composer des chiffres et de lettres et comprendre des majuscules/minuscules et 1 caractère spéciale (-*/@+\_%$=).</div>
+          <div ng-message="pattern">Votre mot de passe doit comporter 8 caractères minimum, comprenant des chiffres et des lettres minuscules et 
+            majuscules,ainsi qu'un caractère spécial (-*/@+\_%$=).</div>
           <div ng-message="minlength">Votre mot de passe doit au minimum 8 caractères</div>
         </div>
       </div>
