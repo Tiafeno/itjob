@@ -141,7 +141,7 @@ if (!class_exists('jePostule')) :
     $current_uri = $_SERVER['REQUEST_URI'];
     if (!is_user_logged_in()) {
         // Le client est non connecter
-      do_action('add_notice', '<i class="la la-warning alert-icon"></i> Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi', 'warning');
+      do_action('add_notice', '<i class="la la-warning alert-icon"></i> Pour pouvoir postuler à cette offre, vous devez vous connecter ou créer un compte', 'info');
 
       return do_shortcode("[itjob_login role='candidate' redir='{$current_uri}']");
     } else {

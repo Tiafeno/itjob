@@ -29,14 +29,19 @@
 </style>
 
 <div class="ibox login-content uk-margin-large-top" ng-app="formLogin" ng-controller="loginCtrl">
-  <div class="text-center">
-
-    <span class="auth-head-icon">
-      <img src="{{ uri.theme }}/img/user.png" />
-    </span>
-  </div>
+  
+  
   <form class="ibox-body" name="loginForm" ng-submit="formSubmit(loginForm.$valid)" novalidate>
+    <div class="text-center">
+      <span class="auth-head-icon">
+        <img src="{{ uri.theme }}/img/user.png" />
+      </span>
+    </div>
     <h4 class="font-light text-center">Connexion <span class="text-danger">{{ title }}</span></h4>
+    <div class="ibox-header">
+      <p class="text-center">Si vous n'avez pas de compte <a href="{{ uri.singup }}" class="text-blue ml-2 font-bold">Créez votre compte</a></p>
+    </div>
+    <hr>
     <p class="text-center mb-5">Accédez à vos services itJob avec un seul compte.</p>
 
     <div class="alert alert-warning alert-dismissable fade show alert-outline has-icon" ng-show="error">
@@ -82,7 +87,5 @@
     </div>
   </form>
 
-  <div class="ibox-footer">
-    <p class="text-center">Nouvel utilisateur? <a href="{{ uri.singup }}" class="text-blue ml-2">Créez votre compte</a></p>
-  </div>
+  
 </div>

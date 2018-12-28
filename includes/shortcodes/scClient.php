@@ -809,8 +809,8 @@ if ( ! class_exists( 'scClient' ) ) :
       if ($id_request === 0) wp_send_json_error('L\'identifiant la requete vaut 0');
       $Model = new itModel();
       $request = $Model->get_request($id_request);
-      $Company = new Company((int)$request->id_company);
-      if ( $Model->check_list_limit() && $Company->account === 0 ) { // Compte standard
+      // TODO: Filtrer si l'offre est premium
+      if ( $Model->check_list_limit() ) { // Compte standard
         // Nombre limite atteinte
         wp_send_json_error( "Vous avez atteint le nombre de limite de CV dans votre liste" );
       }
@@ -852,6 +852,8 @@ if ( ! class_exists( 'scClient' ) ) :
      * Envoyer un mail à l'administrateur pour une demande de compte premium
      * La valeur du post meta 'itjob_meta_account' de l'entreprise sera 2 si la demande à bien étés envoyer
      * NB: 0: Standart, 1: Premium et 2: En attente
+     * 
+     * DEPRECATE:  Ne plus mettre les professionels en mode premium
      */
     public function send_request_premium_plan() {
       global $Engine;

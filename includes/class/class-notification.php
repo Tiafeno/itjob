@@ -187,6 +187,7 @@ final class NotificationHelper
 
     return true;
   }
+  // Deprecate: Ne plus mettre les professionels en mode premium
   public function request_premium_account($Company) { // Company object
     $Model = new itModel();
     $Notice = new Notification();
