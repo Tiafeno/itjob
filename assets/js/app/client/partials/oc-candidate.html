@@ -48,8 +48,9 @@
         <ul class="timeline scroller">
           <li class="timeline-item">
             <span class="ti-arrow-circle-up timeline-icon"></span>
-              Créer votre CV pour postuler aux offres et être visible par les recruteurs
-              <small class="float-right text-muted ml-2 nowrap"><a id="added_cv" class="btn btn-sm btn-success">Ajouter un CV</button></small>
+            Créer votre CV pour postuler aux offres et être visible par les recruteurs
+            <small class="float-right text-muted ml-2 nowrap"><a id="added_cv" href="#added_cv" class="btn btn-sm btn-success">Ajouter
+                un CV</a></small>
             </a>
           </li>
         </ul>
@@ -253,7 +254,8 @@
     <div class="card text-center centered mb-4" style="max-width:320px;">
       <div class="ibox-body alert alert-info alert-dismissable fade show">
         <!--<button class="close" data-dismiss="alert" aria-label="Close"></button>-->
-        <h4>Bonjour [[Greet]] <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</b></h4>
+        <h4>Bonjour [[Greet]] <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname
+            ]]</b></h4>
         <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
       </div>
       <div class="card-body">
@@ -274,14 +276,11 @@
             <h2 class="text-pink m-0">
               [[ Candidate.postuled ? Candidate.postuled.length : 0 ]]
             </h2>
-            <div class="text-muted text-uppercase">Candidatures envoyés</div>
+            <div class="text-muted text-uppercase">Candidatures envoyées</div>
           </div>
         </div>
         <div class="d-block justify-content-around align-items-center">
           <notifications></notifications>
-          <a class="btn btn-secondary mt-2" ng-href="[[Helper.archive_offer_link]]" target="_blank">
-            <span class="btn-icon"><i class="fa fa-link"></i> Les offres d'emplois</span>
-          </a>
         </div>
       </div>
     </div>
@@ -318,6 +317,9 @@
                   <change-password></change-password>
                 </div>
                 <div class="col-sm-6">
+                  <a class="btn btn-warning mt-2" ng-href="[[Helper.archive_offer_link]]" target="_blank">
+                    <span class="btn-icon"><i class="fa fa-link"></i> Les offres d'emplois</span>
+                  </a>
                   <!-- Alerts directive -->
                   <alerts on-save="onSaveAlert()" alerts="alerts" message="Je souhaite être informé quand une publication comportent les mots suivants:"
                     alert-loading="alertLoading">
