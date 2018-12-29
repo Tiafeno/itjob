@@ -200,7 +200,7 @@ class scInterests
         // Envoyer un mail a l'administrateur
         do_action('alert_when_company_interest', $cv_id, $offer_id);
 
-        wp_send_json_success($response);
+        wp_send_json_success(true);
       } else {
         // Si le candidat a déja étes valider sur une autre offre de même entreprise
         // On ajoute et on active automatiquement l'affichage du CV
@@ -214,7 +214,7 @@ class scInterests
           // Envoyer un mail a l'administrateur
           do_action('alert_when_company_interest', $cv_id, $offer_id);
 
-          wp_send_json_success($response);
+          wp_send_json_success(true);
         }
 
         wp_send_json_error([
