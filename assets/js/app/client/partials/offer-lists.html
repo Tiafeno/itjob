@@ -188,8 +188,10 @@
                           </div>
                           <small class="text-muted">[[interest.candidate.branch_activity.name]]</small>
                         </div>
-                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.status !== 'reject'" data-ng-click="addList(interest.candidate.ID, $event)">Sélectionner</button>
-                        <button class="btn btn-sm btn-outline-danger ml-2" ng-if="interest.status !== 'reject'" data-ng-click="rejectCandidate(interest.candidate.ID, $event)">Rejeter le candidat</button>
+                        <a class="btn btn-sm btn-outline-success ml-2" target="_blank" ng-href="[[interest.candidate.candidate_url]]">Voir</a>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.inList" data-ng-click="viewCandidateInformation(interest.candidate.ID, offerView.ID)">Consulter</button>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.status === 'pending'" data-ng-click="addList(interest.candidate.ID, $event)">Sélectionner</button>
+                        <button class="btn btn-sm btn-outline-danger ml-2" ng-if="interest.status === 'pending'" data-ng-click="rejectCandidate(interest.candidate.ID, $event)">Rejeter</button>
                       </div>
                     </li>
                     <li class="media align-items-center" ng-if="collectFilterResults('filter_postuled_candidate').length <= 0">Néant</li>
@@ -201,7 +203,7 @@
                 <div class="ibox-body alert alert-primary">
                   <h5 class="">Découvrez l'offre premium</h5>
                   <p>Pour pouvoir visionner et télécharger plus de CV et de trouver les bons candidats, plus rapidement sans limite</p>
-                  <button  class="btn btn-info uk-modal-close uk-close-large" type="button" >Améliorer mon compte</button>
+                  <button  class="btn btn-info uk-modal-close uk-close-large" type="button" >Améliorer l'offre</button>
                 </div>
               </div>
             </div>

@@ -43,7 +43,11 @@ final class NotificationHelper
       add_action('notice-interest', [&$this, 'notice_interest'], 10, 1);
       add_action('notice-publish-cv', [&$this, 'notice_publish_cv'], 10, 1);
       add_action('notice-publish-offer', [&$this, 'notice_publish_offer'], 10, 1);
+      add_action('notice-candidate-selected-cv', [&$this, 'notice_candidate_selected_cv'], 10, 2);
+      
       add_action('notice-change-request-status', [&$this, 'notice_change_request_status'], 10, 2);
+      add_action('notice-change-company-status', [&$this, 'notice_change_company_status'], 10, 2);
+      add_action('notice-change-offer-status', [&$this, 'notice_change_offer_status'], 10, 2);
       add_action('request-premium-account', [&$this, 'request_premium_account'], 10, 1);
 
       add_action('notice-admin-create-cv', [&$this, 'notice_admin_create_cv'], 10, 1);
@@ -64,7 +68,8 @@ final class NotificationHelper
     });
   }
 
-  public function notice_admin_create_cv($id_cv) {
+  public function notice_admin_create_cv($id_cv)
+  {
     $Model = new itModel();
     // Company
     $Candidate = new Candidate((int)$id_cv);
@@ -79,7 +84,8 @@ final class NotificationHelper
       $Model->added_notice($admin->ID, $Notice);
     }
   }
-  public function notice_admin_new_company($id_company) {
+  public function notice_admin_new_company($id_company)
+  {
     $Model = new itModel();
     // Company
     $Company = new Company((int)$id_cv);
@@ -92,7 +98,8 @@ final class NotificationHelper
       $Model->added_notice($admin->ID, $Notice);
     }
   }
-  public function notice_admin_new_offer($id_offer) {
+  public function notice_admin_new_offer($id_offer)
+  {
     $Model = new itModel();
     $Offer = new Offers((int)$id_offer);
     $Notice = new Notification();
@@ -103,7 +110,8 @@ final class NotificationHelper
       $Model->added_notice($admin->ID, $Notice);
     }
   }
-  public function notice_admin_update_cv($id_cv) {
+  public function notice_admin_update_cv($id_cv)
+  {
     $Model = new itModel();
     // Company
     $Candidate = new Candidate((int)$id_cv);
@@ -118,7 +126,8 @@ final class NotificationHelper
       $Model->added_notice($admin->ID, $Notice);
     }
   }
-  public function notice_publish_cv($id_cv) {
+  public function notice_publish_cv($id_cv)
+  {
     $id_cv = (int)$id_cv;
     if (!$id_cv) return false;
     $Model = new itModel();
@@ -131,19 +140,22 @@ final class NotificationHelper
 
     return true;
   }
-  public function notice_publish_offer($id_offer) {}
+  public function notice_publish_offer($id_offer)
+  {
+  }
 
-  public function notice_candidate_postuled($id_cv, $id_offer) {
+  public function notice_candidate_postuled($id_cv, $id_offer)
+  {
     $Model = new itModel();
 
     // Company
     $Candidate = new Candidate((int)$id_cv);
-    $Offer = new Offers($id_offer);
+    $Offer = new Offers((int)$id_offer);
 
-    if ($Offer->rateplan === 'standard') {
+    if ($Offer->rateplan === 'standard' || $Offer->rateplan === 'premium') {
       $postCompany = $Offer->getCompany();
       $Company = new Company($postCompany->ID);
-  
+
       $companyNotice = new Notification();
       $companyNotice->title = "$Candidate->title a postulé pour l'offre <b>{$Offer->title}</b>";
       $companyNotice->url = $Candidate->candidate_url . "?ref=notif";
@@ -151,7 +163,7 @@ final class NotificationHelper
     }
 
     // To admin
-    $Notice = new Notification(); 
+    $Notice = new Notification();
     $Notice->title = "Un candidat viens de postuler sur <b>{$Offer->title}</b>";
     $Notice->url = "/offer/{$id_offer}/edit";
     $Administrators = $this->get_user_administrator();
@@ -161,24 +173,27 @@ final class NotificationHelper
 
     return true;
   }
-  public function notice_interest($id_cv_request) {
+
+  public function notice_interest($id_cv_request)
+  {
     if (!is_numeric($id_cv_request)) return false;
     $Interest = itModel::get_request($id_cv_request);
     if (is_null($Interest)) return null;
     $Model = new itModel();
     $Offer = new Offers((int)$Interest->id_offer);
-    $Company = new Company((int)$$Interest->id_company);
+    $Company = new Company((int)$Interest->id_company);
 
     // Candidate
     $Candidate = new Candidate((int)$Interest->id_candidate);
     $Author = $Candidate->getAuthor();
     $candidateNotice = new Notification();
-    $candidateNotice->title = "Une entreprise s'interesser à votre CV sur l'offre: <b>{$Offer->title}</b>";
+    $candidateNotice->title = "Une entreprise s'interesse à votre CV sur l'offre: <b>{$Offer->title}</b>";
     $candidateNotice->url = $Offer->offer_url . "?ref=notif";
     $Model->added_notice($Author->ID, $candidateNotice);
 
     // To admin
-    $Notice->title = "<b>$Company->title</b> s'interesse à un candidat pour réference <b>{$Candidate->reference}</b>";
+    $Notice = new Notification();
+    $Notice->title = "<b>{$Company->title}</b> s'interesse à un candidat pour réference <b>{$Candidate->title}</b>";
     $Notice->url = "/offer/{$Interest->id_offer}/edit";
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
@@ -188,7 +203,8 @@ final class NotificationHelper
     return true;
   }
   // Deprecate: Ne plus mettre les professionels en mode premium
-  public function request_premium_account($Company) { // Company object
+  public function request_premium_account($Company)
+  { // Company object
     $Model = new itModel();
     $Notice = new Notification();
     $Notice->title = "L'entreprise « {$Company->title} » à effectuer une demande de compte premium";
@@ -226,12 +242,12 @@ final class NotificationHelper
     switch ($Interest->status) {
       case 'validated':
         $companyNotice->title = "Le CV portant la référence « {$Candidate->reference} » est maintenant disponible, sur l'offre <b>{$Offer->title}</b>";
-        $candidateNotice->title = "Votre CV a été selectionné sur l'offre « {$Offer->title} »";
+        $candidateNotice->title = "Votre CV a été selectionné sur l'offre « <b>{$Offer->title}</b> »";
         break;
       case 'reject':
         $companyNotice->title = "CV portant la référence « {$Candidate->reference} » a été réjeté sur l'offre <b>{$Offer->title}</b>";
         if ($Interest->type === 'apply') {
-          $candidateNotice->title = "Votre candidature a été rejeté sur l'offre « {$Offer->title} »";
+          $candidateNotice->title = "Votre candidature a été rejeté sur l'offre « <b>{$Offer->title}</b> »";
         }
         break;
     }
@@ -244,8 +260,54 @@ final class NotificationHelper
     return true;
   }
 
-  public function get_user_administrator() {
-    $user_query = new \WP_User_Query( array( 'role__in' => ['Administrator', 'Editor']) );
+  public function notice_change_company_status($id_company, $status = null)
+  {
+    if (!is_numeric($id_company) || is_null($status)) return false;
+    $Model = new itModel();
+    $Company = new Company($id_company);
+    $Notice = new Notification();
+    $Notice->url = "?ref=notif";
+    $Notice->title = "Votre compte a été validée";
+
+    $Model->added_notice($Company->author->ID, $Notice);
+  }
+
+  public function notice_change_offer_status($Offer, $status)
+  {
+    if ($Offer instanceof Offers) {
+      $Model = new itModel();
+      $Notice = new Notification();
+      $postCompany = $Offer->getCompany();
+      $Company = new Company($postCompany->ID);
+      $Notice->url = "{$Offer->offer_url}?ref=notif";
+      $Notice->title = "Votre offre « <b>{$Offer->title}</b> » a bien été validée";
+
+      $Model->added_notice($Company->author->ID, $Notice);
+    } else {
+      return false;
+    }
+  }
+
+  public function notice_candidate_selected_cv( $id_candidate, $id_offer ) {
+    // Candidate
+    $Model = new itModel();
+    $Offer = new Offers((int)$id_offer);
+    $Candidate = new Candidate((int)$id_candidate);
+    $Author = $Candidate->getAuthor();
+    $Notice = new Notification();
+    $Notice->title = "Votre CV viens d'être selectionné sur l'offre: <b>{$Offer->title}</b>";
+    $Notice->url = $Offer->offer_url . "?ref=notif";
+
+    $Model->added_notice($Author->ID, $Notice);
+  }
+
+  public function notice_company_when_candidate_postuled() {
+
+  }
+
+  public function get_user_administrator()
+  {
+    $user_query = new \WP_User_Query(array('role__in' => ['Administrator', 'Editor']));
     return $user_query->get_results();
   }
 }

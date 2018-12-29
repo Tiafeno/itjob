@@ -34,7 +34,7 @@ trait ModelCVLists {
     $rows    = $wpdb->get_var( $prepare );
 
     // Verifier pour les même CV sur des differents offre
-    return $rows <= 5 ? false : ( $Company->isPremium() ? false : true );
+    return $rows <= 5 ? false : true;
   }
 
   /**
@@ -88,11 +88,11 @@ trait ModelCVLists {
   public function add_list($id_candidat, $id_company = null) {
     global $wpdb;
     $Company = null;
-    if (!isset($id_candidat) || empty($id_candidat) ||
-        is_null($id_candidat) || !is_user_logged_in()) return false;
+    if (!is_numeric($id_candidat) || !is_user_logged_in()) return false;
     if (is_null($id_company) || empty($id_company)) {
       $User = wp_get_current_user();
-      if (in_array('company', $User->roles)) {
+      $userData = get_userdata($User->ID);
+      if (in_array('company', $userData->roles)) {
         $Company = \includes\post\Company::get_company_by($User->ID);
       } else return false;
     } else {

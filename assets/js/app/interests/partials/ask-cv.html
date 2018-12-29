@@ -3,26 +3,55 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">{{message.title}}</h5>
+        <h5 class="modal-title">{{errorMessage.title}}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body text-left">
-        <p>{{message.body}}</p>
+      <div class="modal-body text-center">
+        {{errorMessage.body}}
       </div>
       <div class="modal-footer">
-        <button ng-show="message.error" type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        <button ng-show="errorMessage.error" type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
 
-        <a ng-href="{{singup}}" ng-show="!message.error" class="btn btn-secondary" >S'inscrire</a>
-        <a ng-href="{{login}}" ng-show="!message.error" class="btn btn-secondary" >Connexion</a>
+        <a ng-href="{{singup}}" ng-show="!errorMessage.error" class="btn btn-secondary">S'inscrire</a>
+        <a ng-href="{{login}}" ng-show="!errorMessage.error" class="btn btn-secondary">Connexion</a>
       </div>
     </div>
   </div>
 </div>
 
+<div class="modal fade" id="modal-continue" tabindex="-1" role="dialog" aria-labelledby="modal-continue" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-center">
+        {{successMessage.body}}
+      </div>
+
+      <div class="modal-footer" ng-if="!successMessage.limit_reach">
+        <!-- On a pas atteint le nombre limite -->
+        <button type="button" class="btn btn-secondary" ng-click="gtClientArea()" data-dismiss="modal">Non</button>
+        <button type="button" class="btn btn-primary" ng-click="gtArchiveCandidat()">Oui</button>
+      </div>
+
+      <div class="modal-footer" ng-if="successMessage.limit_reach">
+          <button type="button" class="btn btn-secondary" ng-click="gtPaiement()" data-dismiss="modal">Non</button>
+          <button type="button" class="btn btn-primary" ng-click="addedInterest()">Oui</button>
+        </div>
+
+    </div>
+  </div>
+</div>
+
 <!-- Modal Error -->
-<div class="modal fade" id="modal-offer-interest" tabindex="-1" role="dialog" aria-labelledby="modal-offer-interest" aria-hidden="true">
+<div class="modal fade" id="modal-offer-interest" tabindex="-1" role="dialog" aria-labelledby="modal-offer-interest"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -37,17 +66,16 @@
             <div class="col-12">
               <div class="form-group" ng-repeat="offer in offers">
                 <label class="radio radio-grey radio-success">
-                  <input type="radio"  ng-model="$parent.offer_id" name="offer" value="{{offer.ID}}">
+                  <input type="radio" ng-model="$parent.offer_id" name="offer" value="{{offer.ID}}">
                   <span class="input-span"></span>{{offer.postPromote}}</label>
               </div>
             </div>
           </div>
         </form>
-
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-        <button ng-click="nextInterestWorkflow()" ng-disabled="offer_id === 0" class="btn btn-primary" >Suivante</button>
+        <button ng-click="nextInterestWorkflow()" ng-disabled="offer_id === 0 || loadingWorklow" class="btn btn-primary">Suivante</button>
       </div>
     </div>
   </div>

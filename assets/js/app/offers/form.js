@@ -20,7 +20,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
     const states = [
       {
         name: 'form',
-        templateUrl: itOptions.partials_url + '/form.html',
+        templateUrl: itOptions.partials_url + '/form.html?ver=' + itOptions.version,
         url: '/form',
         resolve: {
           abranchs: ['offerService', function (offerService) {
@@ -43,9 +43,11 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
       {
         name: 'form.subscription',
         url: '/subscription',
-        templateUrl: itOptions.partials_url + '/subscription.html',
+        templateUrl: itOptions.partials_url + '/subscription.html?ver=' + itOptions.version,
         resolve: {
           offer: ['$q', '$rootScope', function ($q, $rootScope) {
+            // for test
+            //return $q.resolve(true);
             if (typeof $rootScope.offers === 'undefined' || _.isEmpty($rootScope.offers)) {
               return $q.reject({
                 redirect: 'form.add-offer'
@@ -80,17 +82,14 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
 
           // Activate Popovers
           jQuery('[data-toggle="popover"]').popover();
-          $scope.$watch('rateplan', value => {
-            console.log(value);
-          });
         }]
       },
       {
         name: 'form.add-offer',
         url: '/add-offer',
-        templateUrl: itOptions.partials_url + '/add-offer.html',
-        controller: ['$rootScope', '$scope', '$state', 'abranchs', 'regions', 'offerService', 'offerFactory',
-          function ($rootScope, $scope, $state, abranchs, regions, offerService, offerFactory) {
+        templateUrl: itOptions.partials_url + '/add-offer.html?ver=' + itOptions.version,
+        controller: ['$rootScope', '$scope', '$state', 'abranchs', 'regions', 'offerFactory',
+          function ($rootScope, $scope, $state, abranchs, regions, offerFactory) {
             this.$onInit = function () {
               $scope.abranchs = _.clone(abranchs);
               $scope.regions = _.clone(regions);
@@ -109,7 +108,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
               };
 
               /* jQuery element */
-              var jqSelects = jQuery("select.form-control");
+              var jqSelects = jQuery("select.form-control:not(.no-search)");
               jQuery.each(jqSelects, function (index, element) {
                 var selectElement = jQuery(element);
                 var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
@@ -119,6 +118,10 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
                   width: '100%'
                 })
               });
+
+              jQuery("select.form-control.no-search").select2({
+                minimumResultsForSearch: -1
+              })
 
               jQuery(".form-control.country").select2({
                 placeholder: "Tapez le nom d'une ville ou code postal",
@@ -273,11 +276,6 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
       $rootScope.allCity = _.clone(allCity);
       $rootScope.isSubmit = false;
       $rootScope.offers = {};
-
-      $rootScope.$watch('offers', function (value) {
-        // Watch variable here...
-      });
-
     }
   ])
   .run(['$state', 'alertifyConfig', function ($state, alertifyConfig) {

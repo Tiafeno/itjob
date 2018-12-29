@@ -21,8 +21,8 @@ if (!class_exists('jePostule')) :
   public function __construct()
   {
     add_action('init', [&$this, 'jepostule_mapping'], 10, 0);
-    add_shortcode('vc_jepostule', [&$this, 'jepostule_html']);
     add_action('je_postule', [&$this, 'je_postule_Fn']);
+    add_shortcode('vc_jepostule', [&$this, 'jepostule_html']);
 
     /**
      * Envoyer une candidature

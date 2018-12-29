@@ -58,7 +58,7 @@ final class Offers implements \iOffer {
   /** @var array $contractType -  Type de contrat */
   public $contractType;
 
-  /** @var string $rateplan - Mode de diffusion (sereine ou standard) */
+  /** @var string $rateplan - Mode de diffusion (sereine, standard et premium) */
   public $rateplan;
 
   /** @var string $profil - Type de profil réchercher pour l'offre */

@@ -153,10 +153,6 @@ if ( ! class_exists( 'vcOffers' ) ):
      * La premiere (1) étape du formulaire d'ajout
      */
     public function ajx_insert_offers() {
-      /**
-       * @func wp_doing_ajax
-       * (bool) True if it's a WordPress Ajax request, false otherwise.
-       */
       if ( ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
         return;
       }
@@ -189,7 +185,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       // Ajouter l'offre dans la base de donnée
       $result = wp_insert_post( [
         'post_title'   => $form->post,
-        'post_content' => '',
+        'post_content' => $form->profil,
         'post_status'  => 'pending',
         'post_author'  => $User->ID,
         'post_type'    => 'offers'
@@ -393,11 +389,11 @@ if ( ! class_exists( 'vcOffers' ) ):
           'template_url' => get_template_directory_uri()
         ] );*/
       }
-
       // featured: Verifier si l'utilicateur est une entreprise
       // Réfuser l'access s'il n'est pas une entreprise
       if ( ! itjob_current_user_is_company() ) {
-        return false;
+        return '<div class="alert alert-danger"><strong>Validation</strong>
+        <br>Vous ne pouvez pas ajouté une offre pour le moment car votre compte est en cours de validation. <br>Veuillez reessayer plus tard. Merci </div>';
       }
 
 
@@ -440,6 +436,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         $redir = $redirection ? $redirection : ( is_null( $redir ) ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : $redir );
         wp_localize_script( 'offers', 'itOptions', [
           'ajax_url'     => admin_url( 'admin-ajax.php' ),
+          'version'      => $itJob->version,
           'partials_url' => get_template_directory_uri() . '/assets/js/app/offers/partials',
           'template_url' => get_template_directory_uri(),
           'urlHelper'    => [

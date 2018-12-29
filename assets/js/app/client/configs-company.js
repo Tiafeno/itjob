@@ -292,25 +292,7 @@ APPOC
               }
             });
         };
-        // Changer le mode de view dans la boite de dialogue
-        $scope.toggleMode = () => {
-          $scope.mode = $scope.mode === 'view' ? 'manage' : 'view';
-        };
-        $scope.onGetOptions = () => {
-          return $scope.options();
-        };
-        $scope.collectFilterResults = (methode) => {
-          return methode === 'filter_selected_candidate' ? _.filter($scope.interestCandidats, (item) => $scope.filterSelectedCandidates(item)) :
-            _.filter($scope.interestCandidats, (item) => $scope.filterPostuledCandidates(item));
-        };
-        // Filtrer les candidats qui sont selectionner et qui sont valider pour postuler
-        $scope.filterSelectedCandidates = (item) => {
-          return item.type === "apply" && item.status === 'validated' || item.type === 'interested';
-        };
-        // Filtre les candidats qui ont postuler mais qui ne sont pas encore validé
-        $scope.filterPostuledCandidates = (item) => {
-          return item.type === 'apply' && item.status !== 'validated';
-        };
+        
         // Afficher les candidates qui ont postule
         $scope.viewApply = (offer_id) => {
           $scope.mode = 'manage';
@@ -390,6 +372,28 @@ APPOC
                 $scope.error = query.data;
               }
             });
+        };
+
+        // Changer le mode de view dans la boite de dialogue
+        $scope.toggleMode = () => {
+          $scope.mode = $scope.mode === 'view' ? 'manage' : 'view';
+        };
+
+        $scope.onGetOptions = () => {
+          return $scope.options();
+        };
+
+        $scope.collectFilterResults = (methode) => {
+          return methode === 'filter_selected_candidate' ? _.filter($scope.interestCandidats, (item) => $scope.filterSelectedCandidates(item)) :
+            _.filter($scope.interestCandidats, (item) => $scope.filterPostuledCandidates(item));
+        };
+        // Filtrer les candidats qui sont selectionner et qui sont valider pour postuler
+        $scope.filterSelectedCandidates = (item) => {
+          return item.type === "interested";
+        };
+        // Filtre les candidats qui ont postuler mais qui ne sont pas encore validé
+        $scope.filterPostuledCandidates = (item) => {
+          return item.type === 'apply';
         };
 
       }]

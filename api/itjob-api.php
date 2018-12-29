@@ -199,7 +199,11 @@ add_action('rest_api_init', function () {
               if ($Company->post_status === 'pending' && $status === 1) {
                 wp_update_post(['ID' => $Company->getId(), 'post_status' => 'publish'], true);
               }
-              update_field('activated', (int)$status, $Company->getId());
+              $status = (int)$status;
+              update_field('activated', $status, $Company->getId());
+              if ($status) {
+                do_action( 'notice-change-company-status', $Company->getId(), $status);
+              }
 
               return new WP_REST_Response("Entreprise mis à jour avec succès");
               break;
@@ -309,7 +313,11 @@ add_action('rest_api_init', function () {
               if ($Offer->offer_status === 'pending' && $status === 1) {
                 wp_update_post(['ID' => $Offer->ID, 'post_status' => 'publish'], true);
               }
+              $status = (int)$status;
               update_field('activated', (int)$status, $Offer->ID);
+              if ($status) {
+                do_action('notice-change-offer-status', $Offer, $status);
+              }
               return new WP_REST_Response("Offre mis à jour avec succès");
 
               break;
@@ -383,7 +391,6 @@ add_action('rest_api_init', function () {
         $form = [
           'post' => $offer->post,
           'contrattype' => (int)$offer->contract,
-          'rateplan' => $offer->plan,
           'proposedsallary' => $offer->proposedsalary,
           'abranch' => $offer->branch_activity,
           'datelimit' => $acfDateLimit,
@@ -696,8 +703,8 @@ add_action('rest_api_init', function () {
               if (is_numeric($activated)) {
                 update_field('activated', $activated, $post_id);
                 if ($activated && $post_status !== 'publish') {
-                  $action = "confirm_validate_${$post_type}";
-                  do_action($action, $candidate_id);
+                  $action = "confirm_validate_{$post_type}";
+                  do_action($action, $post_id);
                 }
                 wp_update_post(['ID' => $post_id, 'post_status' => 'publish'], true);
               } else {

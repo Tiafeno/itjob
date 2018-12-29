@@ -27,6 +27,7 @@ class scInterests
 
     // ajax
     add_action('wp_ajax_get_ask_cv', [&$this, 'get_ask_cv']);
+    add_action('wp_ajax_inspect_cv', [&$this, 'inspect_cv']);
     add_action('wp_ajax_nopriv_get_ask_cv', [&$this, 'get_ask_cv']);
 
     add_action('wp_ajax_get_current_user_offers', [&$this, 'get_current_user_offers']);
@@ -74,7 +75,7 @@ class scInterests
     $pdf->SetTitle($Candidate->reference);
     $pdf->SetSubject($Candidate->reference);
 
-// set default header data
+    // set default header data
     $logo = get_template_directory() . '/img/logo.png';
     $site = get_site_url();
     $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . $Candidate->reference, "ItJobMada - {$site}");
@@ -84,13 +85,13 @@ class scInterests
     // set auto page breaks
     $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
-// set image scale factor
+    // set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
     // set font
     $pdf->SetFont('DejaVuSerifCondensed', '', 10);
 
-// add a page
+    // add a page
     $pdf->AddPage();
 
     $html = '';
@@ -109,12 +110,12 @@ class scInterests
     // reset pointer to the last page
     $pdf->lastPage();
 
-//Close and output PDF document
+    //Close and output PDF document
     $pdf->Output(get_template_directory() . "/contents/pdf/itjobmada_{$Candidate->reference}.pdf", 'FI');
   }
 
   /**
-   * Cette function affiche le CV d'un candidate, c'est aussi un shortcode
+   * Cette function affiche le CV d'un candidate au complete, c'est aussi un shortcode
    *
    * @param $attrs
    *
@@ -149,9 +150,9 @@ class scInterests
 
     // Verifier si l'entreprise a l'access au informations du candidat
     // FEATURED: Verifier si le CV est dans la liste de l'entreprise
-    $itModel = new itModel();
-    if (!$itModel->interest_access($Candidate->getId(), $Entreprise->getId()) ||
-      !$itModel->list_exist($Entreprise->getId(), $Candidate->getId())) {
+    $Model = new itModel();
+    if (!$Model->interest_access($Candidate->getId(), $Entreprise->getId()) ||
+      !$Model->list_exist($Entreprise->getId(), $Candidate->getId())) {
       do_action('add_notice', "<p class='text-center font-15 text-warning'>Accès non autoriser.</p>", 'default', false);
       do_action('get_notice');
       return;
@@ -186,9 +187,67 @@ class scInterests
     if (!$offer_id) {
       wp_send_json_error('Une erreur s\'est produite');
     }
+
+    $Model = new itModel();
+
+    $User = wp_get_current_user();
+    if (in_array('company', $User->roles)) {
+      $Company = Company::get_company_by($User->ID);
+      if (!$Model->exist_interest($cv_id, $offer_id)) {
+        $Model->added_interest($cv_id, $offer_id);
+        $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
+        do_action('notice-interest', (int)$Interest->id_cv_request);
+        // Envoyer un mail a l'administrateur
+        do_action('alert_when_company_interest', $cv_id, $offer_id);
+
+        wp_send_json_success($response);
+      } else {
+        // Si le candidat a déja étes valider sur une autre offre de même entreprise
+        // On ajoute et on active automatiquement l'affichage du CV
+        if ($Model->interest_access($cv_id, $Company->getId())) {
+          // Ajouter une requete qu est déja valider
+          $Model->added_interest($cv_id, $offer_id, $Company->getId(), 'validated');
+          // Récuperer la requete
+          $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
+          // Crée une notification
+          do_action('notice-interest', (int)$Interest->id_cv_request);
+          // Envoyer un mail a l'administrateur
+          do_action('alert_when_company_interest', $cv_id, $offer_id);
+
+          wp_send_json_success($response);
+        }
+
+        wp_send_json_error([
+          'msg' => "Vous avez déjà sélectionner ce candidat pour cette offre",
+          'status' => 'exist'
+        ]);
+      }
+
+    } else {
+      wp_send_json_error([
+        'msg' => 'Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi',
+        'status' => 'access',
+        'data' => [
+          'login' => home_url("/connexion/company?redir={$redir}"),
+          'singup' => $singup_page_url
+        ]
+      ]);
+    }
+  }
+
+  public function inspect_cv()
+  {
+    if (!wp_doing_ajax()) {
+      wp_send_json_error("Une erreur s'est produite");
+    }
+    $cv_id = (int)Http\Request::getValue('cv_id');
+    $offer_id = (int)Http\Request::getValue('offer_id', 0);
+    if (!$offer_id) {
+      wp_send_json_error('Une erreur s\'est produite');
+    }
     $redir = get_the_permalink($cv_id);
     $singup_page_url = get_the_permalink((int)REGISTER_COMPANY_PAGE_ID);
-    if (!\is_user_logged_in()) {
+    if (!is_user_logged_in()) {
       wp_send_json_error(
         [
           'msg' => 'Mme/Mr pour pouvoir sélectionner ce candidat vous devez vous inscrire, cela est gratuit, ' .
@@ -202,14 +261,15 @@ class scInterests
         ]
       );
     }
-    $itModel = new itModel();
+    $Model = new itModel();
 
     // FEATURED: Vérifier si le candidat a déja postuler pour cette offre
-    $interests = $itModel->get_offer_interests($offer_id);
+    $interests = $Model->get_offer_interests($offer_id);
     // Content array of user id
     $apply = array_map(function ($interest) {
       return (int)$interest->id_candidate;
     }, $interests);
+
     if (is_array($apply) && !empty($apply)) {
       $Candidate = new Candidate($cv_id);
       $author = $Candidate->getAuthor();
@@ -224,36 +284,10 @@ class scInterests
     $User = wp_get_current_user();
     if (in_array('company', $User->roles)) {
       $Company = Company::get_company_by($User->ID);
-      $Model = new itModel();
-
-      if (!$itModel->exist_interest($cv_id, $offer_id)) {
-        $response = $itModel->added_interest($cv_id, $offer_id);
-        
-        $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
-        do_action('notice-interest', $Interest->id_cv_request);
-        // Envoyer un mail a l'administrateur
-        do_action('alert_when_company_interest', $cv_id, $offer_id);
-        wp_send_json_success($response);
-      } else {
-
-        // Si le candidat a déja étes valider sur une autre offre de même entreprise
-        // On ajoute et on active automatiquement l'affichage du CV
-        if ($itModel->interest_access($cv_id, $Company->getId())) {
-          $results = $itModel->added_interest($cv_id, $offer_id, $Company->getId(), 'validated');
-          
-          $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
-          do_action('notice-interest', $Interest->id_cv_request);
-          // Envoyer un mail a l'administrateur
-          do_action('alert_when_company_interest', $cv_id, $offer_id);
-          wp_send_json_success($results);
-        }
-
-        wp_send_json_error([
-          'msg' => "Vous avez déjà sélectionner ce candidat pour cette offre",
-          'status' => 'exist'
-        ]);
-      }
-
+      $response = [
+        'interests' =>  $interests
+      ];
+      wp_send_json_success($response);
     } else {
       wp_send_json_error([
         'msg' => 'Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi',

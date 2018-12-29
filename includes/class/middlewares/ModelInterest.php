@@ -81,6 +81,7 @@ trait ModelInterest {
       // Envoyer un mail pour informer la validation de cette offre
       do_action("email_application_validation", $request);
     }
+    do_action("notice-change-request-status", (int)$id_request, $status);
     return $results;
   }
 
@@ -234,6 +235,7 @@ trait ModelInterest {
     return $interests;
   }
 
+  // Retourne une requete
   public static function get_request($id_request) {
     global $wpdb;
     if (!is_numeric($id_request)) return false;

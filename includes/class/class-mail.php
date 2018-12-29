@@ -44,6 +44,7 @@ class Mailing {
 
     add_action( 'confirm_validate_offer', [&$this, 'confirm_validate_offer'], 10, 1);
     add_action( 'confirm_validate_candidate', [&$this, 'confirm_validate_candidate'], 10, 1);
+    add_action( 'confirm_validate_company', [&$this, 'confirm_validate_company'], 10, 1);
     // Envoyer une email au commercial et a l'administrateur
     // pour notifier une inscription ou un nouveau utilisateur
     add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
@@ -678,6 +679,8 @@ class Mailing {
     if ( ! $author ) {
       return false;
     }
+
+    do_action('notice_publish_cv', (int)$candidat_id);
 
     $to        = $email;
     $subject   = 'Votre CV viens d\'être validé - ItJobMada';

@@ -56,7 +56,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_send_request_premium_plan', [ &$this, 'send_request_premium_plan' ] );
         add_action( 'wp_ajax_get_history_cv_view', [ &$this, 'get_history_cv_view' ] );
         add_action( 'wp_ajax_get_company_lists', [ &$this, 'get_company_lists' ] );
-        add_action( 'wp_ajax_add_cv_list', [ &$this, 'add_cv_list' ] );
+        add_action( 'wp_ajax_add_cv_list', [ &$this, 'add_cv_list' ] ); // Ajouter un candidat dans la liste de l'entreprise
         add_action( 'wp_ajax_get_candidat_interest_lists', [ &$this, 'get_candidat_interest_lists' ] );
         add_action( 'wp_ajax_collect_favorite_candidates', [ &$this, 'collect_favorite_candidates' ] );
         add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
@@ -795,7 +795,7 @@ if ( ! class_exists( 'scClient' ) ) :
     /**
      * Function ajax
      * Ajouter un CV dans la liste de l'entreprise
-     * Si l'entreprise est une entreprise premium ont ajoute le CV même s'il atteint le nombre limit ede CV
+     * Si l'offre est une entreprise premium ont ajoute le CV même s'il atteint le nombre limit ede CV
      */
     public function add_cv_list() {
       if ( ! is_user_logged_in() ) {
@@ -805,21 +805,28 @@ if ( ! class_exists( 'scClient' ) ) :
       $id_request   = (int) Http\Request::getValue( 'id_request' );
      
       // FEATURED: Verifier si l'entreprise n'a pas atteint le nombre limite de CV
-      $id_request = intval($id_request);
       if ($id_request === 0) wp_send_json_error('Aucune requete ne correspont à votre demande');
       $Model = new itModel();
       $request = $Model->get_request($id_request);
+      $Candidate = new Candidate($id_candidate);
+      $Offer = new Offers((int) $request->id_offer);
+      
       // TODO: Filtrer si l'offre est premium
-      if ( $Model->check_list_limit() ) { // Compte standard
+      if ( $Model->check_list_limit() && $Offer->rateplan === 'standard') { // Compte standard
         // Nombre limite atteinte
-        wp_send_json_error( "Vous venez de sélectionner 5 candidats et vous vous apprêter à en sélectionner un sixième savez vous qu’à partir de là les CV sont payants au prix de 25.000 HT / CV " );
+        wp_send_json_error( "Vous venez de sélectionner 5 candidats et vous vous apprêter à en sélectionner un sixième savez 
+        vous qu’à partir de là les CV sont payants au prix de 25.000 HT / CV " );
       }
-      if ( $id_candidate ) {
-        $id_candidate  = (int) $id_candidate;
-        $response      = $itModel->add_list( $id_candidate );
+      if ( $Candidate->getId() !== 0 ) {
+        $response      = $Model->add_list( $Candidate->getId() );
         if ( $response ) {
           $Model->update_interest_status( $id_request, 'validated' );
+          if ($request->type === 'apply') {
+            do_action('notice-candidate-selected-cv', $Candidate->getId(), $request->id_offer);
+          }
           wp_send_json_success( "Le candidat a bien étés sélectionner avec succès." );
+        } else {
+          wp_send_json_error( "Une erreur s'est produite" );
         }
       } else {
         wp_send_json_error( "Paramètre invalide" );
@@ -837,9 +844,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $id_candidate = (int) Http\Request::getValue( 'id_candidate' );
       $id_request   = (int) Http\Request::getValue( 'id_request' );
-      $itModel      = new itModel();
+      $Model      = new itModel();
       if ( $id_candidate ) {
-        $change_status = $itModel->update_interest_status( $id_request, 'reject' );
+        $change_status = $Model->update_interest_status( $id_request, 'reject' );
         if ( $change_status ) {
           wp_send_json_success( "Status mise à jour avec succès." );
         }
