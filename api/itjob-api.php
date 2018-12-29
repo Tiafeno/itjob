@@ -362,6 +362,15 @@ add_action('rest_api_init', function () {
               return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
               break;
 
+            case 'rateplan': 
+              $rateplan = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
+              if (is_null($featured)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
+              update_field('itjob_offer_rateplan', $rateplan, $Offer->ID);
+
+              return new WP_REST_Response(['success' => true, 'msg' => "Offre mise à jour avec succès"]);
+
+              break;
+
             default:
               break;
           }
