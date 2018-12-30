@@ -72,6 +72,7 @@ final class Offers implements \iOffer {
 
   /** @var bool $featured - L'offre est à la une ou pas */
   private $featured;
+  public $featuredDateLimit = null;
 
 
   public function __construct( $postId = null, $private_access = false ) {
@@ -170,7 +171,12 @@ final class Offers implements \iOffer {
     $this->profil           = get_field( 'itjob_offer_profil', $this->ID ); // WYSIWYG
     $this->mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
-    $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
+    $featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
+    $this->featured = boolval($featured);
+    if (boolval($this->featured)){
+      $featuredDateLimit = get_field('itjob_offer_featured_datelimit', $this->ID);
+      $this->featuredDateLimit = strtotime($featuredDateLimit);
+    }
     $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID ); // Objet Term
     $this->rateplan         = get_field( 'itjob_offer_rateplan', $this->ID ); // String
 

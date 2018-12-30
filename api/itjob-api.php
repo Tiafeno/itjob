@@ -15,6 +15,7 @@ require_once 'class/class-api-company.php';
  */
 add_action('rest_api_init', function () {
 
+  // Ajouter des information utilisateur dans la reponse
   add_filter('jwt_auth_token_before_dispatch', function ($data, $user) {
     // Tells wordpress the user is authenticated
     wp_set_current_user($user->ID);
@@ -22,6 +23,7 @@ add_action('rest_api_init', function () {
     $data['data'] = $user_data;
     return $data;
   }, 10, 2);
+
   // @route {POST} http://[DOMAINE_URL]/wp-json/it-api/candidate/<id>
   register_rest_route('it-api', '/candidate/(?P<id>\d+)', [
     // Recuperer un candidat
