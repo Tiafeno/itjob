@@ -15,11 +15,11 @@ require_once 'class/class-api-company.php';
  */
 add_action('rest_api_init', function () {
 
-  // Ajouter des information utilisateur dans la reponse
+  // Ajouter des informations utilisateur dans la reponse
   add_filter('jwt_auth_token_before_dispatch', function ($data, $user) {
     // Tells wordpress the user is authenticated
     wp_set_current_user($user->ID);
-    $user_data = get_userdata( $user->ID );
+    $user_data = get_userdata($user->ID);
     $data['data'] = $user_data;
     return $data;
   }, 10, 2);
@@ -48,6 +48,9 @@ add_action('rest_api_init', function () {
             case 'activated':
               $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
               if (is_null($status)) new WP_REST_Response('Parametre manquant');
+              // Seul l'adminstrateur peuvent modifier cette option
+              if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
+
               $status = (int)$status;
               if ($Candidate->state === 'pending' && $status === 1) {
                 wp_update_post(['ID' => $Candidate->getId(), 'post_status' => 'publish'], true);
@@ -60,6 +63,10 @@ add_action('rest_api_init', function () {
             case 'featured':
               $featured = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
               $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;
+
+              // Seul l'adminstrateur peuvent modifier cette option
+              if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
+
               if (is_null($featured)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
               $featured = (int)$featured;
               update_field('itjob_cv_featured', $featured, $Candidate->getId());
@@ -86,7 +93,9 @@ add_action('rest_api_init', function () {
           return new WP_REST_Response(false);
         }
       },
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
       'args' => array(
         'id' => array(
           'validate_callback' => function ($param, $request, $key) {
@@ -140,7 +149,9 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCandidate(), 'get_candidates'],
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
       'args' => []
     ),
   ]);
@@ -149,7 +160,9 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCandidate(), 'get_candidate_archived'],
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
       'args' => []
     ),
   ]);
@@ -158,7 +171,9 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiOffer(), 'get_offers'],
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
       'args' => []
     ),
   ]);
@@ -170,7 +185,9 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCompany(), 'get_companys'],
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
       'args' => []
     )
   ]);
@@ -204,7 +221,7 @@ add_action('rest_api_init', function () {
               $status = (int)$status;
               update_field('activated', $status, $Company->getId());
               if ($status) {
-                do_action( 'notice-change-company-status', $Company->getId(), $status);
+                do_action('notice-change-company-status', $Company->getId(), $status);
               }
 
               return new WP_REST_Response("Entreprise mis à jour avec succès");
@@ -362,13 +379,23 @@ add_action('rest_api_init', function () {
               }
 
               return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
+
               break;
 
-            case 'rateplan': 
+            case 'rateplan':
               $rateplan = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
               if (is_null($rateplan)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
               update_field('itjob_offer_rateplan', $rateplan, $Offer->ID);
 
+              return new WP_REST_Response(['success' => true, 'msg' => "Offre mise à jour avec succès"]);
+
+              break;
+
+            case 'update_date_limit':
+              $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;
+              $dateTime = DateTime::createFromFormat("m/d/Y", $dateLimit);
+              $acfDateLimit = $dateTime->format('Ymd');
+              update_field('itjob_offer_datelimit', $acfDateLimit, $Offer->ID);
               return new WP_REST_Response(['success' => true, 'msg' => "Offre mise à jour avec succès"]);
 
               break;
@@ -381,7 +408,11 @@ add_action('rest_api_init', function () {
         }
 
       },
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        $ref = isset($_REQUEST['ref']) ? stripslashes(urldecode($_REQUEST['ref'])) : false;
+        if (!$ref) return false;
+        return ($ref === 'update_date_limit') ? current_user_can('edit_posts') : current_user_can('remove_users');
+      },
       'args' => array(
         'id' => array(
           'validate_callback' => function ($param, $request, $key) {
@@ -527,7 +558,9 @@ add_action('rest_api_init', function () {
         }
 
       },
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
       'args' => array(
         'id' => array(
           'validate_callback' => function ($param, $request, $key) {
@@ -542,7 +575,9 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::ALLMETHODS,
       'callback' => [new apiHelper(), 'get_taxonomy'],
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
       'args' => [
         'taxonomy' => array(
           'validate_callback' => function ($param, $request, $key) {
