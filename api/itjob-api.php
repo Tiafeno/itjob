@@ -108,7 +108,9 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCandidate(), 'update_candidate'],
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
       'args' => array(
         'id' => array(
           'validate_callback' => function ($param, $request, $key) {
@@ -126,7 +128,9 @@ add_action('rest_api_init', function () {
     array(
       'methods' => WP_REST_Server::CREATABLE,
       'callback' => [new apiCandidate(), 'update_module_candidate'],
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
       'args' => [
         'ref' => array(
           'validate_callback' => function ($param, $request, $key) {
