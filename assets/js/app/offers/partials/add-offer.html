@@ -17,12 +17,14 @@
         weekStart: 1,
         format: "dd/mm/yyyy"
       };
+
       $('.input-group.date').datepicker({
         todayBtn: "linked",
         language: 'fr',
         keyboardNavigation: false,
         forceParse: false,
         calendarWeeks: true,
+        startDate: new Date(),
         autoclose: true
       });
     });

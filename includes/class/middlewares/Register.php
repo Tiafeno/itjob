@@ -19,9 +19,7 @@ trait Register {
       'edit_users'        => true,
 
       'manage_options' => false,
-
       'remove_users' => false,
-
       'delete_others_pages'    => true,
       'delete_posts'           => false,
       'delete_pages'           => false,
