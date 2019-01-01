@@ -66,8 +66,7 @@ add_action('rest_api_init', function () {
 
               // Seul l'adminstrateur peuvent modifier cette option
               if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
-
-              if (is_null($featured)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
+              if (is_null($featured) || is_null($dateLimit)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
               $featured = (int)$featured;
               update_field('itjob_cv_featured', $featured, $Candidate->getId());
               if ($featured) {

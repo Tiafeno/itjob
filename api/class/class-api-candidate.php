@@ -347,6 +347,7 @@ final class apiCandidate
     return new WP_REST_Response('Candidat mis à jour avec succès');
   }
 
+  // Cette fonction permet de mettre à jours l'experiences et les formations d'un candidat
   public function update_module_candidate(WP_REST_Request $request)
   {
     $ref = $request['ref'];
