@@ -671,8 +671,10 @@ add_action('rest_api_init', function () {
         if (empty($term_name) && !taxonomy_exists($taxonomy))
           return new WP_REST_Response(['success' => false, 'message' => "Information manquant ou erroné"]);
         $result = wp_insert_term($term_name, $taxonomy);
-        if (is_wp_error($result))
+        if (is_wp_error($result)) {
           return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite. Si l'erreur persiste contacter l'administrateur"]);
+        }
+        update_term_meta( $result['term_id'], 'activated', 1);
         return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été ajouter']);
       },
       'args' => [
