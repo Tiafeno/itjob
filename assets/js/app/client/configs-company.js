@@ -3,14 +3,14 @@ APPOC
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
     $routeProvider
       .when('/oc-company', {
-        templateUrl: itOptions.Helper.tpls_partials + '/oc-company.html?ver='+itOptions.version,
+        templateUrl: itOptions.Helper.tpls_partials + '/oc-company.html?ver=' + itOptions.version,
         controller: 'clientCtrl',
         resolve: {
           Client: ['$http', '$q', function ($http, $q) {
             let access = $q.defer();
             $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
-              cache: false
-            })
+                cache: false
+              })
               .then(resp => {
                 let data = resp.data;
                 access.resolve(data);
@@ -26,7 +26,7 @@ APPOC
   .directive('generalInformationCompany', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/general-information-company.html?ver='+itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/general-information-company.html?ver=' + itOptions.version,
       scope: {
         Entreprise: '=company',
         regions: '&',
@@ -34,8 +34,7 @@ APPOC
         abranchs: '&',
         init: '&init'
       },
-      link: function (scope, element, attrs) {
-      },
+      link: function (scope, element, attrs) {},
       controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
         $scope.status = false;
         $scope.userEditor = {};
@@ -112,9 +111,8 @@ APPOC
     return {
       restrict: 'E',
       scope: true,
-      templateUrl: itOptions.Helper.tpls_partials + '/premium-plan.html?ver='+itOptions.version,
-      link: function (scope, element, attr) {
-      },
+      templateUrl: itOptions.Helper.tpls_partials + '/premium-plan.html?ver=' + itOptions.version,
+      link: function (scope, element, attr) {},
       controller: ['$scope', '$http', function ($scope, $http) {
         $scope.accountUpgrade = !$scope.Company.account;
         $scope.sender = false;
@@ -132,13 +130,13 @@ APPOC
                 formData.append('action', 'send_request_premium_plan');
                 btnUpgrade.text('Chargement en cours ...');
                 $http({
-                  url: itOptions.Helper.ajax_url,
-                  method: "POST",
-                  headers: {
-                    'Content-Type': undefined
-                  },
-                  data: formData
-                })
+                    url: itOptions.Helper.ajax_url,
+                    method: "POST",
+                    headers: {
+                      'Content-Type': undefined
+                    },
+                    data: formData
+                  })
                   .then(resp => {
                     let data = resp.data;
                     btnUpgrade.text("Votre demande a bien été envoyée");
@@ -157,7 +155,7 @@ APPOC
     return {
       restrict: "E",
       scope: true,
-      templateUrl: itOptions.Helper.tpls_partials + '/history-cv.html?ver='+itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/history-cv.html?ver=' + itOptions.version,
       controller: ["$scope", '$http', function ($scope, $http) {
         const loadingHistoricalElement = jQuery('#modal-history-cv-overflow').find('.loading-historical');
         loadingHistoricalElement.text('Aucun CV');
@@ -166,8 +164,8 @@ APPOC
           $('#modal-history-cv-overflow').on('show.bs.modal', function (e) {
             loadingHistoricalElement.hide().text('Chargement en cours ...').fadeIn();
             $http.get(itOptions.Helper.ajax_url + '?action=get_history_cv_view', {
-              cache: true
-            })
+                cache: true
+              })
               .then(success => {
                 let resp = success.data;
                 if (resp.data.length <= 0) {
@@ -186,7 +184,7 @@ APPOC
   .directive('offerLists', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/offer-lists.html?ver='+itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/offer-lists.html?ver=' + itOptions.version,
       scope: {
         candidateLists: '=listsCandidate',
         options: '&',
@@ -229,9 +227,10 @@ APPOC
             format: "mm/dd/yyyy",
             language: "fr",
             startView: 2,
-            todayBtn: false,
+            todayBtn: true,
             keyboardNavigation: true,
             forceParse: false,
+            startDate: new Date(),
             autoclose: true
           });
         });
@@ -256,8 +255,8 @@ APPOC
             $scope.branchActivity = _.clone(data[1]);
             $scope.Citys = _.clone(data[2]);
             $scope.offerEditor = _.mapObject(offer, (val, key) => {
-              if (typeof val.term_id !== 'undefined') return val.term_id;
-              if (typeof val.post_title !== 'undefined') return val.ID;
+              if (_.isObject(val) && !_.isUndefined(val.term_id)) return val.term_id;
+              if (_.isObject(val) && !_.isUndefined(val.post_title)) return val.ID;
               if (key === 'proposedSalary') return parseInt(val);
               return val;
             });
@@ -292,7 +291,7 @@ APPOC
               }
             });
         };
-        
+
         // Afficher les candidates qui ont postule
         $scope.viewApply = (offer_id) => {
           $scope.mode = 'manage';
@@ -312,7 +311,6 @@ APPOC
             $scope.interestCandidats = _.map(resp.data, data => {
               if (_.find($scope.candidateLists, (candidat_id) => candidat_id === data.candidate.ID)) {
                 data.inList = true;
-
               } else {
                 data.inList = false;
               }
@@ -334,8 +332,8 @@ APPOC
           angular.element(el).text("Patienter ...");
           const request = _.find($scope.interestCandidats, (it) => it.candidate.ID === id_candidate);
           $http.get(`${itOptions.Helper.ajax_url}?action=add_cv_list&id_candidate=${request.candidate.ID}&id_request=${request.id_request}`, {
-            cache: false
-          })
+              cache: false
+            })
             .then(resp => {
               var query = resp.data;
               if (query.success) {
@@ -362,8 +360,8 @@ APPOC
           angular.element(el).text("Patienter ...");
           const request = _.find($scope.interestCandidats, (it) => it.candidate.ID === id_candidate);
           $http.get(`${itOptions.Helper.ajax_url}?action=reject_cv&id_candidate=${request.candidate.ID}&id_request=${request.id_request}`, {
-            cache: false
-          })
+              cache: false
+            })
             .then(resp => {
               var query = resp.data;
               if (query.success) {
@@ -402,7 +400,7 @@ APPOC
   .directive('cvConsult', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/cv-consult.html?ver='+itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/cv-consult.html?ver=' + itOptions.version,
       scope: {
         Company: '=company',
         Offer: '=offer',
@@ -425,22 +423,24 @@ APPOC
           $http({
             url: `${itOptions.Helper.ajax_url}?action=collect_favorite_candidates&id=${$scope.idCandidate}&id_offer=${$scope.Offer.ID}`,
             method: "GET",
-          }).then(resp => {
-            let query = resp.data;
-            if (query.success) {
-              const informations = query.data;
-              const user_token = $scope.Company.author.data.user_pass;
-              $scope.Candidate = _.clone(informations.candidate);
-              $scope.Attachment = _.clone(informations.attachment);
-              $scope.interestLink = `${$scope.Options.Helper.interest_page_uri}?token=${user_token}&cvId=${$scope.Candidate.ID}`;
-              $scope.loading = false;
-            } else {
-              $scope.toggleMode();
-            }
+          }).then(
+            resp => {
+              let query = resp.data;
+              if (query.success) {
+                const informations = query.data;
+                const user_token = $scope.Company.author.data.user_pass;
+                $scope.Candidate = _.clone(informations.candidate);
+                $scope.Attachment = _.clone(informations.attachment);
+                $scope.interestLink = `${$scope.Options.Helper.interest_page_uri}?token=${user_token}&cvId=${$scope.Candidate.ID}`;
+                $scope.loading = false;
+              } else {
+                $scope.toggleMode();
+              }
 
-          }, function (error) {
-            $scope.toggleMode();
-          })
+            },
+            error => {
+              $scope.toggleMode();
+            })
         };
 
         $scope.onReturn = () => {

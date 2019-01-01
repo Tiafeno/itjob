@@ -10,7 +10,7 @@
     <div class="uk-modal-body" uk-overflow-auto>
       <form name="editOfferForm" novalidate>
         <p>
-          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:
+          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants: <br>
           032 45 378 60 - 033 82 591 13 - 034 93 962 18.
         </p>
         <div class="form-group mb-2 row">
@@ -25,9 +25,9 @@
           <div class="col-sm-12">
             <label class="col-form-label ">Date limite de candidature <span style="color: red">*</span></label>
             <div class="form-group">
-              <div class="input-group date">
+              <div class="input-group date" style="border: 5px solid #6dab3c">
                 <span class="input-group-addon bg-white"><i class="fa fa-calendar"></i></span>
-                <input ng-model="offerEditor.dateLimit" autocomplete="off" name="datelimit" class="form-control"
+                <input ng-model="offerEditor.dateLimit" readonly="readonly" autocomplete="off" name="datelimit" class="form-control" style="border: none!important"
                        required>
               </div>
             </div>
@@ -125,7 +125,6 @@
 </div>
 <!-- Modal View Candidat -->
 <div id="modal-view-candidat" uk-modal>
-
   <div class="uk-modal-dialog uk-modal-body">
     <button class="uk-modal-close uk-float-right" type="button" uk-close></button>
     <div class="">
@@ -234,6 +233,8 @@
       <div class="ibox-body">
         <div class="form-group mb-4">
           <p>
+              En optant pour cette option cela vous permettra d’attirer l’attention des candidats et ainsi d’augmenter le nombre de candidatures reçues.
+              Vous pouvez mettre en avant votre annonce selon une période plus ou moins longue. <br>
             Pour plus d'informations, contactez le service commercial au:<br>
             <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034
               93 962 18</a>.
