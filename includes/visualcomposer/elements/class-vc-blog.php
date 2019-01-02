@@ -25,11 +25,11 @@ if ( ! class_exists( 'vcBlog' ) ):
           return;
         }
 
-        $post_type_objects = get_post_types( [], 'objects' );
-        $post_type_values  = [];
-        foreach ( $post_type_objects as $post_type => $object ) {
-          $post_type_values = array_merge( $post_type_values, [ $object->labels->name => $post_type ] );
-        }
+        // $post_type_objects = get_post_types( [], 'objects' );
+        // $post_type_values  = [];
+        // foreach ( $post_type_objects as $post_type => $object ) {
+        //   $post_type_values = array_merge( $post_type_values, [ $object->labels->name => $post_type ] );
+        // }
         vc_map(
           array(
             'name'        => "Blog lists",
@@ -53,9 +53,19 @@ if ( ! class_exists( 'vcBlog' ) ):
                 'class'       => 'vc-ij-post-type',
                 'heading'     => 'Post type',
                 'param_name'  => 'post_type',
-                'value'       => $post_type_values,
+                'value'       => ['Post' => 'post'],
                 'std'         => 'content',
                 'description' => "Type de post à afficher dans le blog",
+                'admin_label' => true,
+                'weight'      => 0
+              ),
+              array(
+                'type'        => 'textfield',
+                'class'       => 'vc-ij-category',
+                'heading'     => 'Categories',
+                'param_name'  => 'category',
+                'value'       => 'blog',
+                'description' => "Categorie",
                 'admin_label' => true,
                 'weight'      => 0
               ),
@@ -80,14 +90,16 @@ if ( ! class_exists( 'vcBlog' ) ):
         shortcode_atts(
           array(
             'title'     => "Articles recommandés",
-            'post_type' => 'post'
+            'post_type' => 'post',
+            'category'  => 'blog'
           ),
           $attrs
         )
         , EXTR_OVERWRITE );
       /** @var STRING $post_type */
       $post_type = ! ( empty( $post_type ) ) ? $post_type : 'post';
-      $contents  = $this->getBlogContents( $post_type );
+      $category = ! ( empty( $category ) ) ? $category : 'blog';
+      $contents  = $this->getBlogContents( $post_type, $category );
       try {
         /** @var STRING $title - Titre de l'element VC */
         // TODO: Crée une page pour afficher les blogs
@@ -111,7 +123,7 @@ if ( ! class_exists( 'vcBlog' ) ):
      *
      * @return array
      */
-    protected function getBlogContents( $post_type ) {
+    protected function getBlogContents( $post_type, $category = 'blog' ) {
       if ( empty( $post_type ) ) {
         return [];
       }
@@ -121,6 +133,13 @@ if ( ! class_exists( 'vcBlog' ) ):
         'post_status'    => 'publish',
         'order'          => 'ASC',
         'orderby'        => 'date',
+        'tax_query'      => [
+          [
+            'taxonomy' => 'category',
+            'field'    => 'slug',
+            'terms'    => $category
+          ]
+        ],
         'posts_per_page' => 3
       ];
       $blog_posts = get_posts( $args );
