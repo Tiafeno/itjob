@@ -214,8 +214,6 @@ add_filter('wp_nav_menu_args', function ($args) {
 
 
 add_action('init', function () {
-  $Model = new includes\model\itModel();
-  $t = $Model->collect_interest_candidate(12628, 12635);
   //var_dump($t);
   //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
 //  header('Content-Type: text/csv');
