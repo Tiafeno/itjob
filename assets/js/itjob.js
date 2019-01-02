@@ -8,6 +8,7 @@
       $(element).select2({
         placeholder: placeholder,
         allowClear: true,
+        language: "fr",
         width: '100%'
       })
     });

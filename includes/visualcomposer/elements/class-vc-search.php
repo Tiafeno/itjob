@@ -11,6 +11,7 @@ if ( ! class_exists( 'vcSearch' ) ):
         global $itJob;
         //wp_enqueue_script('multi-select', get_template_directory_uri() . "/assets/vendors/multiselect/js/jquery.multi-select.js", ['jquery'], $itJob->version);
         wp_enqueue_script( 'select-2', VENDOR_URL . "/select2/dist/js/select2.full.min.js", [ 'jquery' ], $itJob->version );
+        wp_enqueue_script( 'select-2-it8n-fr', VENDOR_URL . "/select2/dist/js/i18n/fr.js", [ 'select-2' ], $itJob->version );
       } );
     }
 
