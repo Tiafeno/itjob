@@ -16,13 +16,13 @@
   </div>
   <div class="ibox-body">
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Nom de l'entreprise <span style="color: red">*</span></label>
+      <label class="col-sm-4 col-form-label">Nom de l'entreprise ou société <span style="color: red">*</span></label>
       <div class="col-sm-6">
-        <input class="form-control" name="title" ng-model="company.title" type="text" autocomplete="off" placeholder="Nom de l'entreprise"
+        <input class="form-control" name="title" ng-model="company.title" type="text" autocomplete="off" placeholder="Nom de l'entreprise ou société"
                required>
         <div ng-messages="formCompany.title.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.title.$invalid && formCompany.title.$touched">
-          <div ng-message="required">Le nom de l'entreprise est obligatoire.</div>
+          <div ng-message="required">Le nom de l'entreprise ou société est obligatoire.</div>
         </div>
       </div>
     </div>
