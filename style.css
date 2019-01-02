@@ -38,7 +38,7 @@ ul.it-home-menu li {
   margin-right: 1.2rem;
 }
 
-ul.it-home-menu li>a {
+ul.it-home-menu li > a {
   background-color: #76cb3b;
   color: aliceblue;
   padding: 14px;
@@ -55,6 +55,21 @@ ul.it-home-menu li>a {
 ul.it-home-menu li>a:hover,
 ul.it-home-menu li.current-menu-item>a {
   background-color: #E5B62B;
+}
+
+/* Rendre compatible mobile le menu sur la page d'accueil */
+@media screen and (max-width: 767px) {
+  ul.it-home-menu {
+    width: 100%;
+  }
+
+  ul.it-home-menu li {
+    display: block;
+  }
+
+  ul.it-home-menu li > a {
+    width: 100%;
+  }
 }
 
 /** Offers **/
