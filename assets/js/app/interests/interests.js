@@ -47,15 +47,15 @@
                   let resp = query.data;
                   switch (resp.status) {
                     case 'access':
-                      $scope.message.error = true;
+                      $scope.errorMessage.error = true;
                       break;
                     case 'logged':
-                      $scope.message.error = false;
+                      $scope.errorMessage.error = false;
                       $scope.login = resp.helper.login;
                       $scope.singup = resp.helper.singup;
                       break;
                   }
-                  $scope.message.body = resp.msg;
+                  $scope.errorMessage.body = resp.msg;
                   elButton.html(textButton);
                   jQuery('#modal-error').modal('toggle')
                 }
