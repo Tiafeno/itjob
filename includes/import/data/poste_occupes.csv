@@ -333,8 +333,8 @@ id;value
 334;Responsable de production (en période d'essaie de 3 mois)
 335;Superviseur finition et expédition produits
 336;Technicien de production et maintenance stagiaire
-337; DEVELOPPEUR STAGIAIRE
-338;STAGIAIRE DEVELOPPEUR
+337; DÉVELOPPEUR STAGIAIRE
+338; DÉVELOPPEUR STAGIAIRE
 339;Agent de contrôle
 340;Chargé de mission- organisation du pavillon français 2010
 341;Chauffeur de direction
@@ -342,7 +342,7 @@ id;value
 343;Opératrice de saisie
 344;Commerciale et  Conseillère clientèle
 345;monteur vidéo (Stagiaire)
-346;Caméraman/monteur (stagiaire)
+346;Cameraman/monteur (stagiaire)
 347;Représentante au CIS Ambatovy
 348;Responsable de la boutique
 349;Caissière/barmaid/serveuse
@@ -2491,12 +2491,12 @@ id;value
 2492;Responsable base de données
 2493;Sales, Booking, Logistique
 2494;stagiaire d'appui en Comptabilité et en Gestion de procédure
-2495;Sénior des opérations Crédit et relation Clientèle
+2495;Senior des opérations Crédit et relation Clientèle
 2496;Chef d'Agence
 2497;Assistant achat
 2498;Relation , Service professionnelle et Cellule Social / Départemant Administration Personnel
 2499;RESPONSABLE RECEPTION ET EVENEMENTIEL
-2500;secretaire polyvalente
+2500;secrétaire polyvalente
 2501;responsable sorties natures
 2502;Téléopératrice francophone
 2503;Stagiaire en Géomarketing
@@ -2527,25 +2527,92 @@ id;value
 2528;Stagiaire et Intérimaire
 2529;Téléconseillère en technique mobile
 2530;Responsable du Personnel
-2531;Enqueteur/superviseur
+2531;Enquêteur/superviseur
 2532;Vendeur et caissier
 2533;cherche de client et vente de produit
 2534;Dirigeante
 2535;Employée administrative
 2536;Agent de renfort
-2537;Stagiaire récéptionniste et serveuse et cuisinière
+2537;Stagiaire réceptionniste et serveuse et cuisinière
 2538;QSSHE
-2539;Hygieniste et ambulancier pendant la saison pesteux 
-2540;Igenieur mecanique/maintenance
+2539;Hygiéniste et ambulancier pendant la saison pesteux 
+2540;Ingénieur mécanique/maintenance
 2541;Directeur adjoint de magasin
 2542;Assistante contrôleur de gestion
 2543;Technicien polyvalent
 2544;Référenceur d'un site voyage,location de voiture et BTP (SEO)
 2545;Assistante responsable traitement informatique
-2546;secrétaire tresorière comptable
+2546;secrétaire trésorière comptable
 2547;Assistante Ressources humaines
-2548;Assistan approvisionnement et agent de transit 
+2548;Assistant approvisionnement et agent de transit 
 2549;Caissier, Aide comptable, Magasinier,Responsable de vente
-2550;Professeur en Economie et Mathematique Generale
+2550;Professeur en Économie et Mathématique Générale
 2551;Agent d'usine
 2552;Gestionnaire voucher et Agent payeur
+2553;Stagiaire Archiviste
+2554;Conseiller Client Chat
+2555;Opérateur de saisie, opérateur online
+2556;Aide 
+2557;Responsable audit par intérim
+2558;Caissier Aide comptable
+2559;Agent de bureau
+2560;agent de terrain en santé
+2561;Behaviour Change Communication  ( BCC) Team
+2562;enseignante Mathématiques
+2563;Assistant du responsable norme infrastructure
+2564;Guide local
+2565;Agent activités et animations
+2566;Gestionnaire Facturation
+2567;secrétaire d'un avocat
+2568;coach sportif
+2569;réalisation de supports de communication du projet REPC, 
+2570;Hotesse et animatrice (présentation des voeux à Iavoloha)
+2571;Technicienne de maintenance informatique et réseau
+2572;Technicien Exécutant
+2573;Dessinateur
+2574;assistante en production (stagiaire)
+2575;MANAGER production
+2576;Assistante réceptionniste
+2577;Assistente Recherche et Dévelopement 
+2578;Aide traiteur
+2579;commis cuisiinier/ serveur/ responsable/ barman
+2580;Responsable snack 
+2581;consultant à la création et lancement d'un nouveau hôtel
+2582;commis serveur
+2583;Agent géolocalisation
+2584;Magasinier et responsable administratif
+2585;Formateur en informatique (Bureautique)
+2586;ASSISTANTE DE PROGRAMME
+2587;Vendeuse d'articles vestimentaires
+2588;Assistant de projet
+2589;Opérateur vidéo
+2590;Stagiaire en Auditeur interne
+2591;Secrétaire vacataire 
+2592;Enseignante bénévole 
+2593;Stage de fin d’études du troisième cycle 
+2594;Stage de fin d’études du second cycle 
+2595;Infirmier MAJOR
+2596;Stagiaire, département Achat-Logistique
+2597;Stagiaire, département logistique de l'entrepôt
+2598;Stagiaire, direction régulation et exploitation
+2599;CHARGEE CLIENTELE
+2600;CHARGEE DE COMMUNICATION
+2601;GESTIONNAIRE DE COMPETENCES
+2602;Responsable exploitation et logistique
+2603;Cadre Qualité Environnement
+2604;Leader
+2605;Directeur Adjoint Magasin
+2606;Support client /formateur
+2607;"agent Administratif polyvalent ;caissier interim"
+2608;Agent comptable ,caissier
+2609;Chef personnelle sur chantier
+2610;Financier et Ressources humaines
+2611;télévendeuse
+2612;Ingénieur Qualité & Process
+2613;Technicien Supérieur et responsable du service Infopac (Réseau X25 malgache)
+2614;Stage de fin d'étude  en HSE
+2615;Étude de faisabilité, d’évaluation environnementale et socio – économique 
+2616;Commercial et merchandising
+2617;Commercial Telma Shop
+2618;Responsable Telma Shop
+2619;Sécurité de Groupe électrogène

@@ -157,7 +157,7 @@ if (!class_exists('scImport')) :
       wp_send_json_error("Accès refuser");
     }
     global $wpdb;
-    
+
     $sql = "SELECT * FROM {$wpdb->users} usr WHERE usr.ID != %d";
     $prepare = $wpdb->prepare($sql, 1); // Not delete admin user
     $users = $wpdb->get_results($prepare);
@@ -382,184 +382,187 @@ if (!class_exists('scImport')) :
           'seoname' => $lines[2],
           'email' => $lines[3],
           'password' => $lines[4],
-          'change_pwd' => (int)$lines[5],
-          'description' => $lines[6],
-          'status' => (int)$lines[7],
-          'id_role' => (int)$lines[8],
-          'created' => $lines[9],
-          'last_login' => $lines[10],
-          'subscriber' => (int)$lines[11]
+          'description' => $lines[5],
+          'status' => (int)$lines[6],
+          'id_role' => (int)$lines[7],
+          'created' => $lines[8],
+          'last_login' => $lines[9],
+          'subscriber' => (int)$lines[10]
         ];
+        // Effacer les espace pour les textes
         $rows = array_map(function ($row) {
           return is_numeric($row) ? $row : trim($row);
         }, $rows);
+
         $rows_object = (object)$rows;
         if (!$rows_object->id_role) {
           wp_send_json_success("Passer sur une autres colonne");
         }
+
+         // Désactiver les mail envoyer par le system wordpress
+         add_filter('user_registration_email', '__return_false');
+         add_filter('send_password_change_email', '__return_false');
+
+        // (WP_User|false) WP_User object on success, false on failure.
         $isUser = get_user_by('email', $rows_object->email);
-          // Vérifier si l'utilisateur existe déja
+        // Vérifier si l'utilisateur existe déja
         $hasAccount = $isUser ? true : false;
         if ($hasAccount) {
             // Supprimer le compte
           if ($isUser instanceof \WP_User) {
-
             wp_delete_user($isUser->ID);
           }
         }
-        add_filter('user_registration_email', '__return_false');
-        add_filter('send_password_change_email', '__return_false');
-          // Ajouter l'ancien role dans un meta
+       
+        // Ajouter l'ancien role dans un meta
         switch ($rows_object->id_role) :
           case 11:
-        case 12:
-        case 14:
-        case 15:
-        case 16:
-        case 18:
-        case 19:
-              // Entreprise
-              // Ajouter une entreprise
-          $args = [
-            "user_pass" => $rows_object->password,
-            "user_login" => "user-{$rows_object->id_user}",
-            "user_email" => $rows_object->email,
-            "display_name" => $rows_object->name,
-            "first_name" => $rows_object->name,
-            "role" => 'company'
-          ];
-          if (username_exists("user-{$rows_object->id_user}")) {
-            wp_send_json_success("Cet identifiant existe déjà !");
-          }
-          $user_id = wp_insert_user($args);
-          if (!is_wp_error($user_id)) {
-                // Stocker les anciens information dans des metas
-                // Ajouter un meta '__recovery_password' pour que l'utilisateur reinitialise sont mot de passe pendant
-                // la prémiere connexion sur le site itjob
-            $importUser = new importUser($user_id);
-            $importUser->update_user_meta($rows_object);
-
-                // Ajouter une post type 'company'
-            $status = $rows_object->status ? 'publish' : 'pending';
-            $create_date = strtotime($rows_object->created);
-            $publish = date('Y-m-d H:i:s', $create_date);
-            $argc = [
-              'post_title' => $rows_object->name,
-              'post_status' => $status,
-              'post_type' => 'company',
-              'post_date' => $publish,
-              'post_author' => $user_id
+          case 12:
+          case 14:
+          case 15:
+          case 16:
+          case 18:
+          case 19:
+            // COMPANY
+            // Ajouter une entreprise
+            $args = [
+              "user_pass" => $rows_object->password,
+              "user_login" => "user-{$rows_object->id_user}",
+              "user_email" => $rows_object->email,
+              "display_name" => $rows_object->name,
+              "first_name" => $rows_object->name,
+              "role" => 'company'
             ];
-            $insert_company = wp_insert_post($argc);
-            if (is_wp_error($insert_company)) {
-              wp_send_json_error($insert_company->get_error_message());
+            if (username_exists("user-{$rows_object->id_user}")) {
+              wp_send_json_success("Cet identifiant existe déjà !");
             }
+            $user_id = wp_insert_user($args);
+            if (!is_wp_error($user_id)) {
+                  // Stocker les anciens information dans des metas
+                  // Ajouter un meta '__recovery_password' pour que l'utilisateur reinitialise sont mot de passe pendant
+                  // la prémiere connexion sur le site itjob
+              $importUser = new importUser($user_id);
+              $importUser->update_user_meta($rows_object);
 
-            $id_company = (int)$insert_company;
-            update_field('itjob_company_email', $rows_object->email, $id_company);
-            update_field('itjob_company_name', $rows_object->name, $id_company);
-            update_field('itjob_company_newsletter', $rows_object->subscriber, $id_company);
+                  // Ajouter une post type 'company'
+              $status = $rows_object->status ? 'publish' : 'pending';
+              $create_date = strtotime($rows_object->created);
+              $publish = date('Y-m-d H:i:s', $create_date);
+              $argc = [
+                'post_title' => $rows_object->name,
+                'post_status' => $status,
+                'post_type' => 'company',
+                'post_date' => $publish,
+                'post_author' => $user_id
+              ];
+              $insert_company = wp_insert_post($argc);
+              if (is_wp_error($insert_company)) {
+                wp_send_json_error($insert_company->get_error_message());
+              }
 
-            $user = new \WP_User($user_id);
-            get_password_reset_key($user);
-            wp_send_json_success(['msg' => "Utilisateur ajouter avec succès", 'utilisateur' => $user]);
+              $id_company = (int)$insert_company;
+              // Activer ou désactiver l'utilisateur
+              update_field('activated', $rows_object->status, $id_company);
 
-          } else {
-            wp_send_json_error($user_id->get_error_message());
-          }
-          break;
+              update_field('itjob_company_email', $rows_object->email, $id_company);
+              update_field('itjob_company_name', $rows_object->name, $id_company);
+              update_field('itjob_company_newsletter', $rows_object->subscriber, $id_company);
 
-        case 1:
-        case 13:
-        case 17:
-              // Candidate
-          $names = $rows_object->name;
-          $names = explode(' ', $names);
-          $first_name = $names[count($names) - 1];
-          $last_name = '';
-          array_walk($names, function ($name, $key) use ($names, &$last_name) {
-            if (count($names) - 1 < $key) {
-              $last_name .= $name . " ";
+              $user = new \WP_User($user_id);
+              get_password_reset_key($user);
+              wp_send_json_success(['msg' => "Utilisateur ajouter avec succès", 'utilisateur' => $user]);
+
+            } else {
+              wp_send_json_error($user_id->get_error_message());
             }
+            break;
 
-            return $name;
-          });
-          $args = [
-            "user_pass" => $rows_object->password,
-            "user_login" => "user-{$rows_object->id_user}",
-            "user_email" => $rows_object->email,
-            "display_name" => $rows_object->name,
-            "first_name" => $first_name,
-            "last_name" => $last_name,
-            "role" => 'candidate'
-          ];
-          if (username_exists("user-{$rows_object->id_user}")) {
-            wp_send_json_success("Cet identifiant existe déjà !");
-          }
-          $user_id = wp_insert_user($args);
-          if (!is_wp_error($user_id)) {
-                // Stocker les anciens information dans des metas
-            $importUser = new importUser($user_id);
-            $importUser->update_user_meta($rows_object);
-
-            // Ajouter une post type 'candidate'
-            $create_date = strtotime($rows_object->created);
-            $publish = date('Y-m-d H:i:s', $create_date);
-            $argc = [
-              'post_title' => $rows_object->name,
-              'post_status' => 'pending',
-              'post_type' => 'candidate',
-              'post_author' => $user_id,
-              'post_date' => $publish
+          case 1:
+          case 13:
+          case 17:
+            // CANDIDATE
+            $names = $rows_object->name;
+            $first_name = &$names;
+            $last_name = '';
+            $args = [
+              "user_pass" => $rows_object->password,
+              "user_login" => "user-{$rows_object->id_user}",
+              "user_email" => $rows_object->email,
+              "display_name" => $rows_object->name,
+              "first_name" => $first_name,
+              "last_name" => $last_name,
+              "role" => 'candidate'
             ];
-            $insert_candidate = wp_insert_post($argc);
-            if (is_wp_error($insert_candidate)) {
-              wp_send_json_error($insert_candidate->get_error_message());
+            if (username_exists("user-{$rows_object->id_user}")) {
+              wp_send_json_success("Cet identifiant existe déjà !");
             }
+            $user_id = wp_insert_user($args);
+            if (!is_wp_error($user_id)) {
+                  // Stocker les anciens information dans des metas
+              $importUser = new importUser($user_id);
+              $importUser->update_user_meta($rows_object);
 
-            $id_candidate = (int)$insert_candidate;
-            update_field('itjob_cv_email', $rows_object->email, $id_candidate);
-            update_field('itjob_cv_firstname', $first_name, $id_candidate);
-            update_field('itjob_cv_lastname', $last_name, $id_candidate);
-            update_field('itjob_cv_newsletter', $rows_object->subscriber, $id_candidate);
+              // Ajouter une post type 'candidate'
+              $create_date = strtotime($rows_object->created);
+              $publish = date('Y-m-d H:i:s', $create_date);
+              $argc = [
+                'post_title' => $rows_object->name,
+                'post_status' => 'pending',
+                'post_type' => 'candidate',
+                'post_author' => $user_id,
+                'post_date' => $publish
+              ];
+              $insert_candidate = wp_insert_post($argc);
+              if (is_wp_error($insert_candidate)) {
+                wp_send_json_error($insert_candidate->get_error_message());
+              }
+              
+              $id_candidate = (int)$insert_candidate;
+              // Désactiver le candidat par default
+              update_field('activated', 0, $id_candidate);
 
-            $user = new \WP_User($user_id);
-            get_password_reset_key($user);
-            wp_send_json_success(['msg' => "Utilisateur ajouter avec succès", 'utilisateur' => $user]);
-          } else {
-            wp_send_json_error($user_id->get_error_message());
-          }
-          break;
+              update_field('itjob_cv_email', $rows_object->email, $id_candidate);
+              update_field('itjob_cv_firstname', $first_name, $id_candidate);
+              update_field('itjob_cv_lastname', $last_name, $id_candidate);
+              update_field('itjob_cv_newsletter', $rows_object->subscriber, $id_candidate);
 
-        case 21:
-        case 22:
-              // FEATURED: Ajouter les utilisateurs pour role modérateur
-          $args = [
-            "user_pass" => $rows_object->password,
-            "user_login" => "editor-{$rows_object->id_user}",
-            "user_email" => $rows_object->email,
-            "display_name" => $rows_object->name,
-            "first_name" => $rows_object->name,
-            "role" => 'editor'
-          ];
-          if (username_exists("editor-{$rows_object->id_user}")) {
-            wp_send_json_success("Cet identifiant existe déjà !");
-          }
-          $user_id = wp_insert_user($args);
-          if (!is_wp_error($user_id)) {
-            update_user_meta($user_id, '__id_user', $rows_object->id_user);
-            update_user_meta($user_id, '__recovery_password', 1);
-            update_user_meta($user_id, '__role', $rows_object->id_role);
-            wp_send_json_success("Modérateur ajouter avec succès");
-          } else {
-            wp_send_json_error("Une erreru s'est produite, user: {$rows_object->name}");
-          }
-          break;
+              $user = new \WP_User($user_id);
+              get_password_reset_key($user);
+              wp_send_json_success(['msg' => "Utilisateur ajouter avec succès", 'utilisateur' => $user]);
+            } else {
+              wp_send_json_error($user_id->get_error_message());
+            }
+            break;
 
-        default:
-          wp_send_json_success("Impossible d'ajouter ce type de compte: " . $rows_object->id_role);
-          break;
+          case 21:
+          case 22:
+                // FEATURED: Ajouter les utilisateurs pour role modérateur
+            $args = [
+              "user_pass" => $rows_object->password,
+              "user_login" => "editor-{$rows_object->id_user}",
+              "user_email" => $rows_object->email,
+              "display_name" => $rows_object->name,
+              "first_name" => $rows_object->name,
+              "role" => 'editor'
+            ];
+            if (username_exists("editor-{$rows_object->id_user}")) {
+              wp_send_json_success("Cet identifiant existe déjà !");
+            }
+            $user_id = wp_insert_user($args);
+            if (!is_wp_error($user_id)) {
+              update_user_meta($user_id, '__id_user', $rows_object->id_user);
+              update_user_meta($user_id, '__recovery_password', 1);
+              wp_send_json_success("Modérateur ajouter avec succès");
+            } else {
+              wp_send_json_error("Une erreru s'est produite, user: {$rows_object->name}");
+            }
+            break;
+
+          default:
+            wp_send_json_success("Impossible d'ajouter ce type de compte: " . $rows_object->id_role);
+            break;
         endswitch;
+
         break;
 
       case 'user_company':
@@ -567,7 +570,7 @@ if (!class_exists('scImport')) :
         list(
           $id_entreprise, $id_user, $company_name, $address, $nif,
           $stat, $phone, $greeting, $first_name,
-          $last_name, $cellphones, $email, $activated,
+          $last_name, $cellphones, $email,
           $branch_activity, $old_branch_activity, $newsletter, $notification, $alert, $create
         ) = $lines;
 
@@ -592,7 +595,8 @@ if (!class_exists('scImport')) :
           update_field('itjob_company_phone', $phone, $Company->getId());
           update_field('itjob_company_alerts', $alert === '0' ? '' : $alert, $Company->getId());
           update_field('itjob_company_greeting', $greeting, $Company->getId());
-          update_field('activated', $activated, $Company->getId());
+
+          //update_field('activated', $activated, $Company->getId());
 
           $values = [];
           $cellphones = explode(';', $cellphones);
@@ -600,7 +604,15 @@ if (!class_exists('scImport')) :
             $values[] = ['number' => $phone];
           }
           update_field('itjob_company_cellphone', $values, $Company->getId());
-          wp_update_post(['ID' => $Company->getId(), 'post_status' => 'publish', 'post_title' => $company_name]);
+
+          $create_date = strtotime($create);
+          $publish = date('Y-m-d H:i:s', $create_date);
+          wp_update_post([
+            'ID' => $Company->getId(), 
+            'post_status' => 'publish', 
+            'post_title'  => $company_name,
+            'post_date'   => $publish
+          ]);
 
             // Enregistrer la date de creation original & l'ancienne secteur d'activité
           update_post_meta($Company->getId(), '__create', $create);
@@ -635,8 +647,10 @@ if (!class_exists('scImport')) :
           if (is_wp_error($insert_result) || !$insert_result) {
             wp_send_json_error($insert_result->get_error_message());
           }
-            // Cette fonction permet de mettre à jours le secteur d'activité des offres de l'entreprise
-            // $this->add_offers_branch_activity( $Company->getId(), $term );
+
+          // Cette fonction permet de mettre à jours le secteur d'activité des offres de l'entreprise
+          $this->add_offers_branch_activity( $Company->getId(), $term );
+
           wp_send_json_success(['msg' => "L'entreprise ajouter avec succès"]);
         } else {
           wp_send_json_success("L'utilisateur est refuser de s'inscrire ID:{$id_user}");
@@ -650,6 +664,7 @@ if (!class_exists('scImport')) :
         ) = $lines;
 
         $old_user_id = (int)$id_user;
+        $greeting = strtolower(trim($greeting));
 
         if (!$old_user_id) {
           wp_send_json_success("Passer à la colonne suivante");
@@ -826,10 +841,11 @@ if (!class_exists('scImport')) :
           }
           wp_set_post_terms($candidat_id, $langValues, 'language');
 
+          // Status de l'utilisateur pour son CV (1,2,3)
           update_field('itjob_cv_status', (int)$statut, $candidat_id);
-            // L'activation des CV sont déja ajouter pendant l'ajout d'information
-            //update_field( 'activated', 1, $candidat_id );
+          // Marque comme un utilisateur qui posséde un CV
           update_field('itjob_cv_hasCV', 1, $candidat_id);
+
           update_field('itjob_cv_centerInterest', [
             'projet' => $interets,
             'various' => isset($certificat_values) && !empty($certificat_values) ? implode(', ', $certificat_values) : ''
@@ -911,7 +927,7 @@ if (!class_exists('scImport')) :
             $city = !isset($city['value']) || empty($city) ? '' : $city['value'];
           }
 
-            // Récuperer le poste qui correspond à son identifiant
+          // Récuperer le poste qui correspond à son identifiant
           $poste = '';
           if (!empty($postoccuper_id) && (int)$postoccuper_id) {
             $POSTES = self::get_csv_contents("{$data_import_dir}/poste_occupes.csv");
@@ -922,7 +938,7 @@ if (!class_exists('scImport')) :
             $poste = !isset($poste['value']) ? "" : $poste['value'];
           }
 
-            // SECTEUR D'ACTIVITES
+          // SECTEUR D'ACTIVITES
           $secteuractivite_id = (int)$secteuractivite_id;
           if ($secteuractivite_id) :
             $BRANCHACTIVITY = self::get_csv_contents("{$data_import_dir}/secteur_activites.csv");
@@ -1198,7 +1214,7 @@ if (!class_exists('scImport')) :
     $row = json_decode($column);
     $obj = new \stdClass();
     list(
-      $obj->id, $obj->id_user,, $obj->status, $obj->created, $obj->type_contrat,
+      $obj->id, $obj->id_user, $obj->status, $obj->created, $obj->type_contrat,
       $obj->date_limit_candidature, $obj->poste_base_a, $obj->poste_a_pourvoir, $obj->mission, $obj->profil_recherche,
       $obj->autre_info, $obj->reference, $obj->salaire_net, $obj->published, $obj->nbr_vue, $obj->position
     ) = $row;
@@ -1248,12 +1264,6 @@ if (!class_exists('scImport')) :
       update_field('itjob_offer_otherinformation', html_entity_decode(htmlspecialchars_decode($obj->autre_info)), $post_id);
       update_field('itjob_offer_company', $Company->getId(), $post_id);
 
-      update_post_meta($post_id, '__offer_publish_date', $publish);
-
-        // Ajouter la date de création
-      $created_date = strtotime($obj->created);
-      $created = date('Y-m-d H:i:s', $created_date);
-      update_post_meta($post_id, '__offer_create_date', $created);
         // Ajouter autres information meta
       update_post_meta($post_id, '__offer_count_view', (int)$obj->nbr_vue);
       update_post_meta($post_id, '__id_offer', (int)$obj->id);
