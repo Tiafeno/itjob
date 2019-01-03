@@ -1,4 +1,10 @@
 <?php
+use includes\object\jobServices;
+
+if ( ! defined( 'ABSPATH' ) ) {
+  exit;
+}
+
 require_once 'model/class-api-model.php';
 require_once 'class/class-permission-callback.php';
 require_once 'class/class-api-candidate.php';
@@ -23,6 +29,31 @@ add_action('rest_api_init', function () {
     $data['data'] = $user_data;
     return $data;
   }, 10, 2);
+
+  /**
+   * Récuperer la liste des candidates
+   */
+  register_rest_route('it-api', '/candidate/', [
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => [new apiCandidate(), 'get_candidates'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
+      'args' => []
+    ),
+  ]);
+
+  register_rest_route('it-api', '/candidate/archive/', [
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => [new apiCandidate(), 'get_candidate_archived'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
+      'args' => []
+    ),
+  ]);
 
   // @route {POST} http://[DOMAINE_URL]/wp-json/it-api/candidate/<id>
   register_rest_route('it-api', '/candidate/(?P<id>\d+)', [
@@ -142,42 +173,6 @@ add_action('rest_api_init', function () {
           }
         ),
       ]
-    ),
-  ]);
-
-  /**
-   * Récuperer la liste des candidates
-   */
-  register_rest_route('it-api', '/candidate/', [
-    array(
-      'methods' => WP_REST_Server::CREATABLE,
-      'callback' => [new apiCandidate(), 'get_candidates'],
-      'permission_callback' => function ($data) {
-        return current_user_can('edit_posts');
-      },
-      'args' => []
-    ),
-  ]);
-
-  register_rest_route('it-api', '/candidate/archive/', [
-    array(
-      'methods' => WP_REST_Server::CREATABLE,
-      'callback' => [new apiCandidate(), 'get_candidate_archived'],
-      'permission_callback' => function ($data) {
-        return current_user_can('edit_posts');
-      },
-      'args' => []
-    ),
-  ]);
-
-  register_rest_route('it-api', '/offers/', [
-    array(
-      'methods' => WP_REST_Server::CREATABLE,
-      'callback' => [new apiOffer(), 'get_offers'],
-      'permission_callback' => function ($data) {
-        return current_user_can('edit_posts');
-      },
-      'args' => []
     ),
   ]);
 
@@ -303,6 +298,17 @@ add_action('rest_api_init', function () {
         ),
       ),
     )
+  ]);
+
+  register_rest_route('it-api', '/offers/', [
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => [new apiOffer(), 'get_offers'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
+      'args' => []
+    ),
   ]);
 
   /**
@@ -673,7 +679,8 @@ add_action('rest_api_init', function () {
         if (is_wp_error($result)) {
           return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite. Si l'erreur persiste contacter l'administrateur"]);
         }
-        update_term_meta( $result['term_id'], 'activated', 1);
+        // Activer par default les termes ajouter dans le BO
+        update_term_meta($result['term_id'], 'activated', 1);
         return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été ajouter']);
       },
       'args' => [
@@ -694,6 +701,7 @@ add_action('rest_api_init', function () {
         $action = $request['action'];
         if ($action) {
           switch ($action) {
+            // Metre à jour une term
             case 'update':
               $term = $_REQUEST['term'];
               $term = json_decode(stripslashes($term));
@@ -706,7 +714,8 @@ add_action('rest_api_init', function () {
               return new WP_REST_Response(['success' => true, 'message' => 'Term mise à jour avec succès', 'data' => $term]);
 
               break;
-
+            
+            // Supprimer une terme dans la liste
             case 'delete':
               $term = $_REQUEST['term'];
               $term = json_decode(stripslashes($term));
@@ -738,6 +747,7 @@ add_action('rest_api_init', function () {
     )
   ]);
 
+  // Ce route permet de modifier un post ou un custom post
   register_rest_route('it-api', '/post/(?P<id>\d+)', [
     array(
       'methods' => WP_REST_Server::READABLE,
@@ -746,6 +756,7 @@ add_action('rest_api_init', function () {
         $action = isset($_REQUEST['action']) ? stripslashes(urldecode($_REQUEST['action'])) : false;
         if ($action) {
           switch ($action) {
+
             case 'change_status':
               $status = $_REQUEST['val'];
               $activated = $status === 'pending' ? 'pending' : intval($status);
@@ -781,33 +792,173 @@ add_action('rest_api_init', function () {
     )
   ]);
 
-  register_rest_route('it-api', '/upload/', [
+  register_rest_route(
+    'it-api',
+    '/upload/',
     [
-      'methods' => WP_REST_Server::CREATABLE,
-      'callback' => function (WP_REST_Request $req) {
+      [
+        'methods' => WP_REST_Server::CREATABLE,
+        'callback' => function (WP_REST_Request $req) {
 
-        require_once(ABSPATH . 'wp-admin/includes/image.php');
-        require_once(ABSPATH . 'wp-admin/includes/file.php');
-        require_once(ABSPATH . 'wp-admin/includes/media.php');
-        if (empty($_FILES)) {
-          return new WP_REST_Response(false);
-        }
-        $file = $_FILES["upload"];
+          require_once(ABSPATH . 'wp-admin/includes/image.php');
+          require_once(ABSPATH . 'wp-admin/includes/file.php');
+          require_once(ABSPATH . 'wp-admin/includes/media.php');
+          if (empty($_FILES)) {
+            return new WP_REST_Response(false);
+          }
+          $file = $_FILES["upload"];
 
-      // Let WordPress handle the upload.
-      // Remember, 'file' is the name of our file input in our form above.
-      // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
-        $attachment_id = media_handle_upload('upload', 0);
-        if (is_wp_error($attachment_id)) {
-        // There was an error uploading the image.
-          return new WP_REST_Response(['success' => false, 'msg' => $attachment_id->get_error_message()]);
-        } else {
-        // The image was uploaded successfully!
-          return new WP_REST_Response(['attachment_id' => $attachment_id, 'success' => true]);
+          // Let WordPress handle the upload.
+          // Remember, 'file' is the name of our file input in our form above.
+          // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
+          $attachment_id = media_handle_upload('upload', 0);
+          if (is_wp_error($attachment_id)) {
+          // There was an error uploading the image.
+            return new WP_REST_Response(['success' => false, 'msg' => $attachment_id->get_error_message()]);
+          } else {
+          // The image was uploaded successfully!
+            return new WP_REST_Response(['attachment_id' => $attachment_id, 'success' => true]);
+          }
+        },
+        'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      ]
+    ]
+  );
+
+  register_rest_route(
+    'it-api',
+    '/newsletters/',
+    [
+      // Récuperer les newsletters
+      [
+        'methods' => WP_REST_Server::READABLE,
+        'callback' => function (WP_REST_Request $request) {
+          $length = (int)$_REQUEST['length'];
+          $start = (int)$_REQUEST['start'];
+          $paged = isset($_REQUEST['start']) ? ($start === 0 ? 1 : ($start + $length) / $length) : 1;
+          $posts_per_page = isset($_REQUEST['length']) ? (int)$_REQUEST['length'] : 20;
+          $args = [
+            'post_type' => 'post',
+            'post_status' => ['publish'],
+            "posts_per_page" => $posts_per_page,
+            'order' => 'DESC',
+            'orderby' => 'ID',
+            'tax_query' => [
+              [
+                'taxonomy' => 'category',
+                'field'    => 'slug',
+                'terms'    => 'newsletter'
+              ]
+            ],
+            "paged" => $paged
+          ];
+          if (isset($_REQUEST['search']) && !empty($_REQUEST['search']['value'])) {
+            $search = stripslashes($_REQUEST['search']['value']);
+            $args['s'] = $search;
+          }
+
+          $the_query = new WP_Query($args);
+          if ($the_query->have_posts()) {
+            return [
+              "recordsTotal" => (int)$the_query->found_posts,
+              "recordsFiltered" => (int)$the_query->found_posts,
+              'data' => $the_query->posts
+            ];
+          } else {
+
+            return [
+              "recordsTotal" => (int)$the_query->found_posts,
+              "recordsFiltered" => (int)$the_query->found_posts,
+              'data' => []
+            ];
+          }
+
+        },
+        'permission_callback' => function ($data) {
+          return current_user_can('edit_posts');
         }
+      ],
+      // Ajouter un newsletter
+      [
+        'methods' => WP_REST_Server::CREATABLE,
+        'callback' => function () {
+          $post = stripslashes($_REQUEST['post']);
+          $post = json_decode($post); // {title: '', content: '', for?: 'welcome'}
+          $query = json_decode(stripslashes($_REQUEST['query']));
+          if (empty($post->title)) return new WP_REST_Response(['success' =>  false]);
+          global $Engine;
+          $senders = [];
+          switch ($post->for) {
+            // Pour tous les utilisateurs une message de bienvenue
+            case 'welcome':
+              $subject = "Bonjour";
+              $user_query = new WP_User_Query(
+                array(
+                  //'role__not_in' => ['Administrator', 'Editor'],
+                  'number'    => (int)$query->number,
+                  'offset'    => (int)$query->offset
+                )
+              );
+              $results = $user_query->get_results();
+              foreach ($results as $user) {
+                $user_data = get_userdata( $user->ID );
+                if (in_array('administrator', $user_data->roles) || in_array('editor', $user_data->roles)) continue;
+                $senders[] = $user->user_email;
+              }
+              break;
+            
+            default:
+              # code...
+              break;
+          }
+
+          if (empty($senders)) return new WP_REST_Response(['success' => false, 'message' => "Aucun envoie n'a pu être effectuer"]);
+          $content = '';
+          try {
+            $oc_id   = jobServices::page_exists( 'Espace client' );
+            $logo_id = get_theme_mod( 'custom_logo' );
+            $logo    = wp_get_attachment_image_src( $logo_id, 'full' );
+            $args    = [
+              'CLIENT_AREA_LINK' => get_the_permalink( $oc_id ),
+              'logo'          => $logo[0]
+            ];
+            $content .= $Engine->render( "@MAIL/newsletters/welcome.html", $args );
+          } catch ( Twig_Error_Loader $e ) {
+          } catch ( Twig_Error_Runtime $e ) {
+          } catch ( Twig_Error_Syntax $e ) {
+            return new WP_REST_Response(['success' => false, 'message' => $e->getRawMessage()]);
+          }
+
+          $headers   = [];
+          $headers[] = 'Content-Type: text/html; charset=UTF-8';
+          $headers[] = "From: ITJobMada <no-reply-notification@itjobmada.com>";
+
+          foreach ($senders as $sender) {
+            $to = $sender;
+            //wp_mail( $to, $subject, $content, $headers );
+          }
+
+          return new WP_REST_Response(['success' => true, 'msg' => 'Newsletter envoyer avec succès', 'senders' => $senders]);
+
+        },
+        'permission_callback' => function ($data) {
+          return current_user_can('delete_users');
+        }
+      ]
+    ]
+  );
+
+  register_rest_route('it-api', '/users/', [
+    [
+      'methods' => WP_REST_Server::READABLE,
+      'callback' => function () {
+        $result = count_users();
+        return new WP_REST_Response($result);
       },
-      'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+      'permission_callback' => function ($data) {
+        return current_user_can('delete_users');
+      }
     ]
   ]);
 
-});
+}); // end rest api init
