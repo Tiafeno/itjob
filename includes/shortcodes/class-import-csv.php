@@ -455,7 +455,7 @@ if (!class_exists('scImport')) :
                 'post_date' => $publish,
                 'post_author' => $user_id
               ];
-              $insert_company = wp_insert_post($argc);
+              $insert_company = wp_insert_post($argc, true);
               if (is_wp_error($insert_company)) {
                 wp_send_json_error($insert_company->get_error_message());
               }
@@ -512,7 +512,7 @@ if (!class_exists('scImport')) :
                 'post_author' => $user_id,
                 'post_date' => $publish
               ];
-              $insert_candidate = wp_insert_post($argc);
+              $insert_candidate = wp_insert_post($argc, true);
               if (is_wp_error($insert_candidate)) {
                 wp_send_json_error($insert_candidate->get_error_message());
               }
@@ -1241,7 +1241,7 @@ if (!class_exists('scImport')) :
       'post_author' => $User->ID,
       'post_date' => $publish
     ];
-    $post_id = wp_insert_post($args);
+    $post_id = wp_insert_post($args, true);
     if (!is_wp_error($post_id)) {
       $Company = Company::get_company_by($User->ID);
         // Ajouter une secteur d'activité à cette offre

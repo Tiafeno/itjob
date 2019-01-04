@@ -792,6 +792,7 @@ add_action('rest_api_init', function () {
     )
   ]);
 
+  // Uploader un fichier ou un image dans le site
   register_rest_route(
     'it-api',
     '/upload/',
@@ -940,6 +941,93 @@ add_action('rest_api_init', function () {
 
           return new WP_REST_Response(['success' => true, 'msg' => 'Newsletter envoyer avec succès', 'senders' => $senders]);
 
+        },
+        'permission_callback' => function ($data) {
+          return current_user_can('delete_users');
+        }
+      ]
+    ]
+  );
+
+
+  register_rest_route(
+    'it-api',
+    '/blogs/',
+    [
+      // Récuperer les blogs
+      [
+        'methods' => WP_REST_Server::READABLE,
+        'callback' => function (WP_REST_Request $request) {
+          $length = (int)$_REQUEST['length'];
+          $start = (int)$_REQUEST['start'];
+          $paged = isset($_REQUEST['start']) ? ($start === 0 ? 1 : ($start + $length) / $length) : 1;
+          $posts_per_page = isset($_REQUEST['length']) ? (int)$_REQUEST['length'] : 20;
+          $args = [
+            'post_type' => 'post',
+            'post_status' => ['publish'],
+            "posts_per_page" => $posts_per_page,
+            'order' => 'DESC',
+            'orderby' => 'ID',
+            'tax_query' => [
+              [
+                'taxonomy' => 'category',
+                'field'    => 'slug',
+                'terms'    => 'blog' // article de categorie blog
+              ]
+            ],
+            "paged" => $paged
+          ];
+          if (isset($_REQUEST['search']) && !empty($_REQUEST['search']['value'])) {
+            $search = stripslashes($_REQUEST['search']['value']);
+            $args['s'] = $search;
+          }
+
+          $the_query = new WP_Query($args);
+          if ($the_query->have_posts()) {
+            return [
+              "recordsTotal" => (int)$the_query->found_posts,
+              "recordsFiltered" => (int)$the_query->found_posts,
+              'data' => $the_query->posts
+            ];
+          } else {
+
+            return [
+              "recordsTotal" => (int)$the_query->found_posts,
+              "recordsFiltered" => (int)$the_query->found_posts,
+              'data' => []
+            ];
+          }
+
+        },
+        'permission_callback' => function ($data) {
+          return current_user_can('edit_posts');
+        }
+      ],
+      // Ajouter un blog, avant d'ajouter un blog on upload l'image à la une de l'article
+      [
+        'methods' => WP_REST_Server::CREATABLE,
+        'callback' => function () {
+          $post = stripslashes($_REQUEST['post']);
+          $post = json_decode($post); // {title: '', content: '', attachment_id: 0}
+          if (empty($post->title)) return new WP_REST_Response(['success' =>  false]);
+          $ctg_blog_id = get_cat_ID( 'Blog' );
+          $result = wp_insert_post( [
+            'post_type'     => 'post',
+            'post_status'   => 'publish',
+            'post_title'    => wp_strip_all_tags($post->title),
+            'post_content'  => $post->content,
+            'post_category' => $ctg_blog_id
+          ], true );
+
+          if (is_wp_error( $result )) {
+            return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite lors de l'insertion."]);
+          }
+
+          $post_id = $result;
+          if (isset($post->attachment_id) && $post->attachment_id !== 0) {
+            update_post_meta($post_id, '_thumbnail_id', $post->attachment_id);
+          }
+          return new WP_REST_Response(['success' => true, 'message' => 'Newsletter envoyer avec succès']);
         },
         'permission_callback' => function ($data) {
           return current_user_can('delete_users');
