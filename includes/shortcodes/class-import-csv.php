@@ -1097,12 +1097,10 @@ if (!class_exists('scImport')) :
           if (in_array('candidate', $User->roles)) {
             $Candidate = Candidate::get_candidate_by($User->ID);
 
-            $create_date = strtotime($created);
-            $publish = date('Y-m-d H:i:s', $create_date);
             if (get_post_type($Candidate->getId()) == 'candidate') {
               wp_update_post([
                 'ID' => $Candidate->getId(),
-                'post_date' => $publish
+                'post_date' => $created
               ]);
             } else {
               wp_send_json_success("Le post n'existe pas");
