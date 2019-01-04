@@ -1087,7 +1087,7 @@ if (!class_exists('scImport')) :
 
       case 'user_update_publish_date':
           // User content type
-        list($id_user,,,,,,,,, $created,, ) = $lines;
+        list($id_user, $name, $seo, $email, $pwd, $desc, $status, $id_role, $created, $last_login, $subscriber) = $lines;
         $id_user = (int)$id_user;
         if (!$id_user) {
           wp_send_json_success("Passer la ligne");
