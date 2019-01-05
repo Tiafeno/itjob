@@ -48,6 +48,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
           offer: ['$q', '$rootScope', function ($q, $rootScope) {
             // for test
             //return $q.resolve(true);
+            
             if (typeof $rootScope.offers === 'undefined' || _.isEmpty($rootScope.offers)) {
               return $q.reject({
                 redirect: 'form.add-offer'
