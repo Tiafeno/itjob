@@ -20,12 +20,18 @@
               </button>
               <ul class="fab-menu">
                 <li>
-                  <a class="btn btn-soc-facebook btn-icon-only btn-circle btn-air" href="javascript:;">
-                    <i class="fa fa-facebook"></i>
-                  </a>
+                <span class="fb-share-button btn btn-soc-facebook btn-icon-only btn-circle btn-air" data-href="https://developers.facebook.com/docs/plugins/" 
+                    data-layout="button" data-size="large" data-mobile-iframe="false">
+                    <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{ offer.ID|get_permalink }}&src=sdkpreparse" 
+                    class="fb-xfbml-parse-ignore" uk-icon="icon: facebook">
+                      <i class="fa fa-facebook"></i>
+                    </a>
+                  </span>
                 </li>
+
                 <li>
-                  <a class="btn btn-soc-twitter btn-icon-only btn-circle btn-air" href="javascript:;">
+                  <a target="_blank" href="https://twitter.com/share?ref_src={{ offer.ID|get_permalink }}" class="btn btn-soc-twitter btn-icon-only btn-circle btn-air" 
+                    data-hashtags="euromada" data-text="{{ offer.postPromote|capitalize }}"  >
                     <i class="fa fa-twitter"></i>
                   </a>
                 </li>
