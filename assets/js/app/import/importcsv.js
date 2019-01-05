@@ -308,6 +308,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Demandeur emploi - Update date publish"
       },
       {
+        _id: 14,
+        slug: 'offer_update_activity_area',
+        label: "Offres - Mettre à jours les secteurs d'activités"
+      },
+      {
         _id: 13,
         slug: 'add_offers',
         label: "Offers - Ajouter"

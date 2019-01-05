@@ -1114,6 +1114,31 @@ if (!class_exists('scImport')) :
           wp_send_json_success("Utilisateur n'existe pas");
         }
         break;
+
+      case 'offer_update_activity_area':
+        // offre file content
+        list( $id_offer, $id_user ) = $lines;
+        $User = $Helper->has_user((int)$id_user);
+        if (!$User && !in_array('company', $User->roles)) {
+          wp_send_json_success("Utilisateur non inscrit, ID:" . $obj->id_user);
+        }
+        $args = [
+          'post_type' => 'offers',
+          'numberposts' => -1,
+          'meta_value' => '__id_offer',
+          'meta_key'  => (int)$id_offer
+        ];
+        $postOffers = get_posts($args);
+        if (empty($postOffers)) wp_send_json_success( "Aucune offre trouver" );
+        $Company = Company::get_company_by($User->ID);
+        if ($Company->branch_activity !== null && is_object($Company->branch_activity)) {
+          foreach ($postOffers as $offer) {
+            update_field('itjob_offer_abranch', $Company->branch_activity->term_id, $offer->ID);
+          }
+          wp_send_json_success("Secteur d'activité mise à jours ID: {$Company->branch_activity->term_id}");
+        }
+        wp_send_json_success( "Aucune modification n'a été apporter pour cette offre" );
+        break;
     }
   }
 
@@ -1229,15 +1254,12 @@ if (!class_exists('scImport')) :
       wp_send_json_success("Offre déja publier");
     }
       // Ajouter une offre
-    $publish_date = strtotime($obj->published);
-    $publish = date('Y-m-d H:i:s', $publish_date);
-
     $args = [
       "post_type" => 'offers',
       "post_title" => $obj->poste_a_pourvoir,
       "post_status" => (int)$obj->status ? 'publish' : 'pending',
       'post_author' => $User->ID,
-      'post_date' => $publish
+      'post_date' => $obj->published
     ];
     $post_id = wp_insert_post($args, true);
     if (!is_wp_error($post_id)) {
