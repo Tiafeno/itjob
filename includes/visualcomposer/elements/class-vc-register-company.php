@@ -278,6 +278,9 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       update_field( 'itjob_company_email', $form->email, $post_id );
       update_field( 'itjob_company_phone', $form->phone, $post_id );
 
+      // En attente de la validation de l'administrateur
+      update_field( 'activated', 0, $post_id );
+
       // save repeater field
       $value  = [];
       $phones = json_decode( $form->cellphone );

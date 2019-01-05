@@ -901,13 +901,19 @@ add_action('rest_api_init', function () {
                      $results = $user_query->get_results();
                      foreach ($results as $user) {
                         $user_data = get_userdata($user->ID);
-                        if (in_array('administrator', $user_data->roles) || in_array('editor', $user_data->roles)) continue;
+                        if (in_array('company', $user_data->roles) || in_array('editor', $user_data->roles)) continue;
+                        $type_post = in_array('company', $user_data->roles) ? 'company': 'candidate';
+                        $posts = get_posts(['post_type' => $type_post, 'author' => $user->ID, 'posts_per_page' => 1]);
+                        if (empty($posts)) continue;
+                        $postClient = reset($posts);
+                        $activated  = get_field('activated', $postClient->ID);
+                        if ($postClient->post_status === "publish" && !$activated) continue;
                         $senders[] = $user->user_email;
                      }
                      break;
 
                   default:
-              # code...
+                     # code...
                      break;
                }
                // Teste
@@ -939,7 +945,6 @@ add_action('rest_api_init', function () {
                }
 
                return new WP_REST_Response(['success' => true, 'msg' => 'Newsletter envoyer avec succès', 'senders' => $senders]);
-
             },
             'permission_callback' => function ($data) {
                return current_user_can('delete_users');

@@ -38,6 +38,7 @@ if (!class_exists('vcRegisterParticular')) :
     if (!defined('WPB_VC_VERSION')) {
       return;
     }
+    
     \vc_map(
       array(
         'name' => 'Particular Form (SingUp)',
