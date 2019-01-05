@@ -826,9 +826,7 @@ add_action('rest_api_init', function () {
       ]
    );
 
-   register_rest_route(
-      'it-api',
-      '/newsletters/',
+   register_rest_route( 'it-api', '/newsletters/',
       [
       // Récuperer les newsletters
          [
@@ -912,7 +910,8 @@ add_action('rest_api_init', function () {
               # code...
                      break;
                }
-
+               // Teste
+               $senders = ['tiafenofnel@gmail.com'];
                if (empty($senders)) return new WP_REST_Response(['success' => false, 'message' => "Aucun envoie n'a pu être effectuer"]);
                $content = '';
                try {
@@ -1001,107 +1000,9 @@ add_action('rest_api_init', function () {
                return current_user_can('edit_posts');
             }
          ],
-         // Cette fonction permet d'ajouter une blogue
-         [
-            'methods' => WP_REST_Server::CREATABLE,
-            'callback' => function () {
-               $post = stripslashes($_REQUEST['post']);
-               $post = json_decode($post); // {title: '', content: '', status: 'draft|publish' attachment_id: 0}
-               if (empty($post->title)) return new WP_REST_Response(['success' => false]);
-               $ctg_blog_id = get_cat_ID('Blog');
-               $result = wp_insert_post([
-                  'post_type' => 'post',
-                  'post_status' => $post->status,
-                  'post_title' => wp_strip_all_tags($post->title),
-                  'post_content' => $post->content,
-                  'post_category' => $ctg_blog_id
-               ], true);
-
-               if (is_wp_error($result)) {
-                  return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite lors de l'insertion."]);
-               }
-
-               $post_id = $result;
-               if (isset($post->attachment_id) && $post->attachment_id !== 0) {
-                  update_post_meta($post_id, '_thumbnail_id', $post->attachment_id);
-               }
-               $post = get_post($post_id);
-               $msg = $post->status === 'draft' ? "Blog enregistré en tant que brouillon": "Blog publier avec succès";
-               return new WP_REST_Response(['success' => true, 'message' => $msg, 'post' => $post]);
-            },
-            'permission_callback' => function ($data) {
-               return current_user_can('delete_users');
-            }
-         ]
       ]
    );
 
-   register_rest_route('it-api', '/blog/(?P<id>\d+)', [
-      [
-         'methods' => WP_REST_Server::READABLE,
-         'callback' => function (WP_REST_Request $request) {
-            global $wpdb;
-            $blogId = $request['id'];
-            $query = "SELECT ID FROM $wpdb->posts WHERE 1=1 AND ID = %d";
-            $exist = (int)$wpdb->get_var( $wpdb->prepare($query, [(int)$blogId]) );
-            if ($exist) {
-               $blog = get_post((int) $blogId);
-               return new WP_REST_Response(['success' => true, 'data' => $blog]);
-            } else {
-               return new WP_REST_Response(['success' => false, 'message' => "Le blog n'existe pas"]);
-            }
-         },
-         'permission_callback' => function ($data) {
-            return current_user_can('edit_posts');
-         }
-      ],
-      [
-         'methods' => WP_REST_Server::DELETABLE,
-         'callback' => function (WP_REST_Request $request) {
-            global $wpdb;
-            $blogId = $request['id'];
-            $result = wp_delete_post($blogId, true);
-            if ($result) {
-               $blog = $result;
-               return new WP_REST_Response(['success' => true, 'data' => $blog]);
-            } else {
-               return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite."]);
-            }
-         },
-         'permission_callback' => function ($data) {
-            return current_user_can('edit_posts');
-         }
-      ],
-      [
-         'methods' => WP_REST_Server::CREATABLE,
-         'callback' => function (WP_REST_Request $rq) {
-            // {title: '', content: '', status: 'draft|publish' attachment_id: 0}
-            $post = stripslashes($_POST['post']);
-            $post = json_decode($content);
-            $args = [
-               'ID'           => (int) $rq['id'],
-               'post_status'  => $post->status,
-               'post_title'   => $post->title,
-               'post_content' => $post->content
-            ];
-
-            $result = wp_update_post($args, true);
-            if (is_wp_error( $result )) {
-               return new WP_REST_Response(['success' => false, 'message' => $result->get_error_message()]);
-            }
-
-            $post_id = $result;
-            if ((isset($post->attachment_id) && $post->attachment_id !== 0) && $post_id !== 0) {
-               update_post_meta($post_id, '_thumbnail_id', $post->attachment_id);
-            }
-
-            return new WP_REST_Response(['success' => true]);
-         },
-         'permission_callback' => function ($data) {
-            return current_user_can('edit_posts');
-         }
-      ]
-   ]);
 
    register_rest_route('it-api', '/users/', [
       [
