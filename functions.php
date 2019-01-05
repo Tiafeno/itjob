@@ -229,6 +229,25 @@ add_action('init', function () {
     }
     return $post->post_content;
   }, PHP_INT_MAX);
+
+  add_filter('wpseo_title', function ($title) {
+    global $post;
+    switch ($post->post_type) {
+      case 'offers':
+        $regions      = wp_get_post_terms( $post->ID, 'region', ["fields" => "all"] );
+        $region = is_array($regions) && !empty($regions) ? $regions[0] : '';
+        $region = $region ? ' à ' . $region->name : '';
+        $branch_activity  = get_field( 'itjob_offer_abranch', $post->ID );
+        $branch_activity = $branch_activity ? ', ' . $branch_activity->name : '';
+        return 'Emploi - ' . $post->post_title . $region . $branch_activity;
+        break;
+      
+      default:
+        # code...
+        break;
+    }
+    return $title;
+  }, PHP_INT_MAX);
   //var_dump($t);
   //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
 //  header('Content-Type: text/csv');
