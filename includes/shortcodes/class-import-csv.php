@@ -1124,6 +1124,7 @@ if (!class_exists('scImport')) :
         }
         $args = [
           'post_type' => 'offers',
+          'post_status' => 'any',
           'numberposts' => -1,
           'meta_key' => '__id_offer',
           'meta_value'  => (int)$id_offer
@@ -1266,7 +1267,7 @@ if (!class_exists('scImport')) :
       $Company = Company::get_company_by($User->ID);
         // Ajouter une secteur d'activité à cette offre
       if ($Company->branch_activity !== null && is_object($Company->branch_activity)) {
-        wp_set_post_terms($post_id, [$Company->branch_activity->term_id], 'branch_activity');
+        update_field('itjob_offer_abranch', $Company->branch_activity->term_id, $post_id);
       }
 
       update_field('itjob_offer_post', $obj->poste_a_pourvoir, $post_id);
