@@ -92,8 +92,9 @@ class apiCompany
         $args = array_merge($args, ['date_query' => $date_query]);
       }
     }
-
-    $args = array_merge($args, ['meta_query' => $meta_query]);
+    if (!empty($meta_query))
+      $args = array_merge($args, ['meta_query' => $meta_query]);
+    $args = array_merge($args, ['tax_query' => $tax_query]);
     //print_r($args);
     $the_query = new WP_Query($args);
     $entreprises = [];
