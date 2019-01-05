@@ -248,6 +248,7 @@ add_action('init', function () {
     }
     return $title;
   }, PHP_INT_MAX);
+
   //var_dump($t);
   //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
 //  header('Content-Type: text/csv');
