@@ -1125,8 +1125,8 @@ if (!class_exists('scImport')) :
         $args = [
           'post_type' => 'offers',
           'numberposts' => -1,
-          'meta_value' => '__id_offer',
-          'meta_key'  => (int)$id_offer
+          'meta_key' => '__id_offer',
+          'meta_value'  => (int)$id_offer
         ];
         $postOffers = get_posts($args);
         if (empty($postOffers)) wp_send_json_success( "Aucune offre trouver" );
