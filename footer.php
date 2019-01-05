@@ -4,58 +4,58 @@
       <div class="col-md-4 col-sm-6 mt-4">
         <div class="footer-body">
           <?php
-          $locations        = get_nav_menu_locations();
-          if ( has_nav_menu( "menu-footer-left" ) ) :
+          $locations = get_nav_menu_locations();
+          if (has_nav_menu("menu-footer-left")) :
             $menu_left_id = $locations["menu-footer-left"];
-            $menuLeftObject = wp_get_nav_menu_object( $menu_left_id );
-            ?>
+          $menuLeftObject = wp_get_nav_menu_object($menu_left_id);
+          ?>
             <h4 class="footer-title d-inline-block text-uppercase"><?= $menuLeftObject->name ?></h4>
             <?php
-            wp_nav_menu( [
-              'menu_class'      => "list-group footer-menu",
-              'theme_location'  => 'menu-footer-left',
-              'container'       => '',
+            wp_nav_menu([
+              'menu_class' => "list-group footer-menu",
+              'theme_location' => 'menu-footer-left',
+              'container' => '',
               'container_class' => ''
-            ] );
-          endif;
-          ?>
+            ]);
+            endif;
+            ?>
         </div>
       </div>
       <div class="col-md-4 col-sm-6 mt-4">
         <div class="footer-body">
           <?php
-          if ( has_nav_menu( "menu-footer-middle" ) ) :
+          if (has_nav_menu("menu-footer-middle")) :
             $menu_middle_id = $locations["menu-footer-middle"];
-            $menuMiddleObject = wp_get_nav_menu_object( $menu_middle_id );
-            if ($menuMiddleObject) {
-              ?>
+          $menuMiddleObject = wp_get_nav_menu_object($menu_middle_id);
+          if ($menuMiddleObject) {
+            ?>
               <h4 class="footer-title d-inline-block text-uppercase"><?= $menuMiddleObject->name ?></h4>
               <?php
-              wp_nav_menu( [
-                'menu_class'      => "list-group footer-menu",
-                'theme_location'  => 'menu-footer-middle',
-                'container'       => '',
+              wp_nav_menu([
+                'menu_class' => "list-group footer-menu",
+                'theme_location' => 'menu-footer-middle',
+                'container' => '',
                 'container_class' => ''
-              ] );
+              ]);
             }
-          endif;
-          ?>
+            endif;
+            ?>
         </div>
       </div>
       <div class="col-md-4 col-sm-6 mt-4">
         <!-- Les reseaux sociaux -->
         <div class="footer-body">
           <?php
-          if ( has_nav_menu( 'social-network' ) ):
+          if (has_nav_menu('social-network')) :
             $menu_social_id = $locations["social-network"];
-            $menuSocialObject = wp_get_nav_menu_object( $menu_social_id );
-            $menu_items = wp_get_nav_menu_items( $menuSocialObject->term_id );
-            ?>
+          $menuSocialObject = wp_get_nav_menu_object($menu_social_id);
+          $menu_items = wp_get_nav_menu_items($menuSocialObject->term_id);
+          ?>
             <h4 class="footer-title d-inline-block text-uppercase"><?= $menuSocialObject->name ?></h4>
             <ul id="menu-social-network" class="pl-0">
               <?php
-              foreach ( (array) $menu_items as $key => $menu_item ) {
-                echo sprintf( "<a href='%s' class='d-inline-block mr-3'><i class='la la-%s'></i></a>", $menu_item->url, $menu_item->title );
+              foreach ((array)$menu_items as $key => $menu_item) {
+                echo sprintf("<a href='%s' class='d-inline-block mr-3'><i class='la la-%s'></i></a>", $menu_item->url, $menu_item->title);
               }
               ?>
             </ul>
@@ -99,6 +99,14 @@
     background-color: #7AC943;
   }
 </style>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = 'https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v3.2&appId=1407102892874754&autoLogAppEvents=1';
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 <?php wp_footer(); ?>
 </div> <!-- .end offcanvas-content -->
 </body>

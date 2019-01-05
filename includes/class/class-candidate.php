@@ -170,7 +170,10 @@ final class Candidate extends UserParticular implements \iCandidate {
     $notif = get_field( 'itjob_cv_notifFormation', $this->getId() );
     if ( $notif ) {
       if ( $notif['notification'] ) {
-        $this->trainingNotif = (object) [ 'branch_activity' => $notif['branch_activity'] ];
+        $this->trainingNotif = (object) [
+          'notification'    => true,
+          'branch_activity' => $notif['branch_activity'] 
+        ];
       }
     }
   }
@@ -184,6 +187,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     if ( $notif ) {
       if ( $notif['notification'] ) {
         $this->jobNotif = [
+          'notification'    => true,
           'branch_activity' => $notif['branch_activity'],
           'job_sought'      => $notif['job_sought']
         ];

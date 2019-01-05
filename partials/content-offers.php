@@ -3,6 +3,8 @@ global $offers;
 if (!$offers->is_activated()) {
   return;
 }
+$current_url = urlencode(get_the_permalink(get_the_ID()));
+$title = get_the_title();
 
 // Vérifier la date limite de l'offre
 $today = strtotime("today");
@@ -18,13 +20,19 @@ $limited = strtotime($offers->dateLimit) < $today;
         </button>
         <ul class="fab-menu">
           <li>
-            <a class="btn btn-soc-facebook btn-icon-only btn-circle btn-air" href="javascript:;">
+          <span class="fb-share-button btn btn-soc-facebook btn-icon-only btn-circle btn-air" data-href="https://developers.facebook.com/docs/plugins/" 
+              data-layout="button" data-size="large" data-mobile-iframe="false">
+              <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=<?= $current_url ?>&amp;src=sdkpreparse" 
+              class="fb-xfbml-parse-ignore" uk-icon="icon: facebook">
               <i class="fa fa-facebook"></i>
-            </a>
+              </a>
+            </span>
           </li>
+
           <li>
-            <a class="btn btn-soc-twitter btn-icon-only btn-circle btn-air" href="javascript:;">
-              <i class="fa fa-twitter"></i>
+            <a target="_blank" href="https://twitter.com/share?ref_src=<?= $current_url ?>" class="btn btn-soc-twitter btn-icon-only btn-circle btn-air" 
+              data-hashtags="euromada" data-text="<?= $title ?>"  >
+               <i class="fa fa-twitter"></i>
             </a>
           </li>
         </ul>
