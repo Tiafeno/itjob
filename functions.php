@@ -214,6 +214,21 @@ add_filter('wp_nav_menu_args', function ($args) {
 
 
 add_action('init', function () {
+  // Yoast filter
+  add_filter('wpseo_metadesc', function ($description) {
+    global $post;
+    switch ($post->post_type) {
+      case 'offers':
+        $mission = get_field( 'itjob_offer_profil', $post->ID );
+        return strip_tags($mission);
+        break;
+      
+      default:
+        # code...
+        break;
+    }
+    return $post->post_content;
+  }, PHP_INT_MAX);
   //var_dump($t);
   //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
 //  header('Content-Type: text/csv');
