@@ -911,7 +911,7 @@ add_action('rest_api_init', function () {
                      break;
                }
                // Teste
-               $senders = ['tiafenofnel@gmail.com'];
+               // $senders = ['contact@falicrea.com'];
                if (empty($senders)) return new WP_REST_Response(['success' => false, 'message' => "Aucun envoie n'a pu être effectuer"]);
                $content = '';
                try {
@@ -938,7 +938,7 @@ add_action('rest_api_init', function () {
                   wp_mail( $to, $subject, $content, $headers );
                }
 
-               //return new WP_REST_Response(['success' => true, 'msg' => 'Newsletter envoyer avec succès', 'senders' => $senders]);
+               return new WP_REST_Response(['success' => true, 'msg' => 'Newsletter envoyer avec succès', 'senders' => $senders]);
 
             },
             'permission_callback' => function ($data) {
