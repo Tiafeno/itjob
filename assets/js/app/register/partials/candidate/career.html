@@ -84,7 +84,7 @@
     <label class="font-normal">Les langues <span style="color: red">*</span></label>
     <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
     <tags-input ng-model="formData.languages" display-property="name" placeholder="Les langues" on-tag-adding="onAddingLangTag($tag)"
-      on-invalid-tag="onTagInvalid($tag)" replace-spaces-with-dashes="false" required>
+      on-invalid-tag="onTagInvalid($tag)" add-from-autocomplete-only="true" replace-spaces-with-dashes="false" required>
       <auto-complete source="queryItems($query, 'language')" min-length="0" load-on-focus="true" load-on-empty="true"
         max-results-to-show="10" template="auto-complete-template">
       </auto-complete>

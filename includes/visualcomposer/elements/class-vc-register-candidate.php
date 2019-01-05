@@ -251,7 +251,13 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $ids = $this->add_term_submit( $form->softwares, 'software' );
       wp_set_post_terms( $this->Candidate->getId(), $ids, 'software' );
       // Ajouter les languages
-      $ids = $this->add_term_submit( $form->languages, 'language' );
+      $ids = [];
+      if (is_array($form->languages)) {
+        foreach ($form->languages as $language) {
+          if (!isset($language->term_id)) continue;
+          array_push($ids, $language->term_id);
+        }
+      }
       wp_set_post_terms( $this->Candidate->getId(), $ids, 'language' );
 
       unset( $ids );
