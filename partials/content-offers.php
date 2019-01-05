@@ -28,13 +28,6 @@ $limited = strtotime($offers->dateLimit) < $today;
               </a>
             </span>
           </li>
-
-          <li>
-            <a target="_blank" href="https://twitter.com/share?ref_src=<?= $current_url ?>" class="btn btn-soc-twitter btn-icon-only btn-circle btn-air" 
-              data-hashtags="euromada" data-text="<?= $title ?>"  >
-               <i class="fa fa-twitter"></i>
-            </a>
-          </li>
         </ul>
       </div>
     </div>
