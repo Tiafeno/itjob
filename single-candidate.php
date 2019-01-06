@@ -359,6 +359,13 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
         </div>
         <div class="uk-width-1-4@s">
           <!--     Sidebar here ...     -->
+          <div class="widget-top">
+            <?php
+            if ( is_active_sidebar( 'single-cv-sidebar' ) ) {
+              dynamic_sidebar( 'single-cv-sidebar' );
+            }
+            ?>
+          </div>
         </div>
 
       </div>

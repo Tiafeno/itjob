@@ -566,7 +566,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
         // CV
         register_sidebar( array(
-          'name'          => 'Archive Top (Candidate)',
+          'name'          => 'Archive Content Top (Candidate)',
           'id'            => 'archive-cv-top',
           'description'   => 'Afficher des widgets en haut de la page archive',
           'before_widget' => '<div id="%1$s" class="widget mb-4 %2$s">',
@@ -582,9 +582,17 @@ if ( ! class_exists( 'itJob' ) ) {
         ) );
 
         register_sidebar( array(
-          'name'          => 'Content Top (Candidate)',
+          'name'          => 'Archive Header Top (Candidate)',
           'id'            => 'cv-header',
           'description'   => 'Afficher des widgets en mode header',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        register_sidebar( array(
+          'name'          => 'Single Sidebar (Candidate)',
+          'id'            => 'single-cv-sidebar',
+          'description'   => 'Afficher des widgets sur le côté à droite',
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
