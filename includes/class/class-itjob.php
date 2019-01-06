@@ -358,6 +358,7 @@ if ( ! class_exists( 'itJob' ) ) {
                                           FROM {$wpdb->postmeta}
                                           WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
                                         ))
+                                        
                                         AND (pt.ID IN(
                                           SELECT trs.object_id as post_id
                                           FROM {$wpdb->terms} as terms

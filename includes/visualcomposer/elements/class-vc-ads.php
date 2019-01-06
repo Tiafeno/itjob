@@ -29,7 +29,7 @@ class vcAds
          // Map the block with vc_map()
       vc_map(
          array(
-            'name' => 'La récherche',
+            'name' => 'ADS',
             'base' => 'vc_itjob_ads',
             'content_element' => true,
             'show_settings_on_create' => true,
@@ -66,13 +66,13 @@ class vcAds
                   'heading' => '',
                   'param_name' => 'size',
                   'value' => [
-                     'Default'    => 'full',
+                     'Default'    => 'medium',
                      '1120 x 210' => '1120x210',
                      '354 x 330'  => '354x330',
                      '354 x 570'  => '354x570',
                   ],
-                  'std' => 'full',
-                  'description' => "Ajouter une position",
+                  'std' => 'medium',
+                  'description' => "Ajouter une resolution pour l'affiche d'invitation",
                   'admin_label' => true
                ),
                array(
@@ -103,12 +103,23 @@ class vcAds
          EXTR_OVERWRITE
       );
 
-      $Model = new itModel();
+      $Model = new \includes\model\itModel();
       if (null == $position) return null;
 
       $Ads = $Model->get_ads_by_position($position);
       if (empty($Ads)) {
-         
+         $preview = get_template_directory_uri() . "/img/ads/" . $size . '.jpg';
+         $sizes = \explode('x', $size);
+         $width = $sizes[0];
+         $height = $sizes[1];
+         $content = '<div class="row">';
+         $content .= '<div class="col-12 mb-4">';
+         $content .= '<div class="vc_single_image-wrapper text-center">';
+         $content .= '<img src="' . $preview . '" class="vc_single_image-img  rounded" alt="Votre publicité ici" width="'.$width.'" height="'.$height.'">';
+         $content .= '</div>';
+         $content .= '</div>';
+         $content .= '</div>';
+         return $content;
       } else {
          foreach ($Ads as $ad) {
             $code = sprintf('[vc_single_image image="%d" img_link_target="_blank" img_size="%s" alignment="center"]', $ad->id_attachment, $ad->img_size);
