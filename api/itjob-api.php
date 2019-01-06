@@ -450,7 +450,7 @@ add_action('rest_api_init', function () {
                'otherinformation' => $offer->otherInformation,
             ];
 
-        // Activation et publication
+            // Activation et publication
             $a = &$offer->status;
             $activated = $a === 'pending' ? 'pending' : intval($a);
             if ($activated === 0 || $activated === 1) {
@@ -675,11 +675,17 @@ add_action('rest_api_init', function () {
             $term_name = stripslashes($_POST['title']);
             if (empty($term_name) && !taxonomy_exists($taxonomy))
                return new WP_REST_Response(['success' => false, 'message' => "Information manquant ou erroné"]);
+            // Vérifier si le term existe déja
+            $term = term_exists( $term_name, $taxonomy );
+            if ( 0 !== $term && null !== $term ) {
+               return new WP_REST_Response(['success' => true, 'message' => "Le term existe déja dans la base de donnée"]);
+            }
+            // Inserer le term
             $result = wp_insert_term($term_name, $taxonomy);
             if (is_wp_error($result)) {
                return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite. Si l'erreur persiste contacter l'administrateur"]);
             }
-        // Activer par default les termes ajouter dans le BO
+            // Activer par default les termes ajouter dans le BO
             update_term_meta($result['term_id'], 'activated', 1);
             return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été ajouter']);
          },

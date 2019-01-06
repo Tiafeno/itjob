@@ -217,17 +217,18 @@ add_action('init', function () {
   // Yoast filter
   add_filter('wpseo_metadesc', function ($description) {
     global $post;
-    switch ($post->post_type) {
-      case 'offers':
-        $mission = get_field( 'itjob_offer_profil', $post->ID );
-        return strip_tags($mission);
-        break;
-      
-      default:
-        # code...
-        break;
-    }
-    return $post->post_content;
+    if (is_object($post))
+      switch ($post->post_type) {
+        case 'offers':
+          $mission = get_field( 'itjob_offer_profil', $post->ID );
+          return strip_tags($mission);
+          break;
+        
+        default:
+          # code...
+          break;
+      }
+    return $description;
   }, PHP_INT_MAX);
 
   add_filter('wpseo_title', function ($title) {
