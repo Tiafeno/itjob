@@ -367,11 +367,23 @@ if ( ! class_exists( 'itJob' ) ) {
                                           AND ttx.taxonomy = 'job_sought'
                                           AND terms.name LIKE '%{$s}%'
                                         ))
-                                        OR (pt.ID IN (
-                                          SELECT {$wpdb->postmeta}.post_id
-                                          FROM {$wpdb->postmeta}
-                                          WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                                        ))";
+                                        OR (
+                                            pt.ID IN (
+                                            SELECT {$wpdb->postmeta}.post_id
+                                            FROM {$wpdb->postmeta}
+                                            WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
+                                           ) 
+                                            AND pt.ID IN (
+                                            SELECT {$wpdb->postmeta}.post_id as post_id
+                                            FROM {$wpdb->postmeta}
+                                            WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+                                           )
+                                           AND pt.ID IN (
+                                            SELECT {$wpdb->postmeta}.post_id as post_id
+                                            FROM {$wpdb->postmeta}
+                                            WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+                                          )
+                                        )";
                       /**
                        * Si une taxonomie est definie on effectuer une recherche sur le titre de l'article seulement si on
                        * le trouve pas dans l'emploi (job_sought) et l'ancien empoi rechercher.
@@ -484,10 +496,6 @@ if ( ! class_exists( 'itJob' ) ) {
        * Ajouter dans les variables global pour nom post-types le contenue du post
        */
       add_action( 'the_post', function ( $post_object ) {
-        $post_types = [ 'offers', 'company', 'candidate' ];
-        if ( ! in_array( $post_object->post_type, $post_types ) ) {
-          return;
-        }
         switch ( $post_object->post_type ) {
           case 'candidate':
             $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
