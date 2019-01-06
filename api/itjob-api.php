@@ -676,8 +676,8 @@ add_action('rest_api_init', function () {
             if (empty($term_name) && !taxonomy_exists($taxonomy))
                return new WP_REST_Response(['success' => false, 'message' => "Information manquant ou erroné"]);
             // Vérifier si le term existe déja
-            $term = term_exists( $term_name, $taxonomy );
-            if ( 0 !== $term && null !== $term ) {
+            $term = term_exists($term_name, $taxonomy);
+            if (0 !== $term && null !== $term) {
                return new WP_REST_Response(['success' => true, 'message' => "Le term existe déja dans la base de donnée"]);
             }
             // Inserer le term
@@ -832,7 +832,9 @@ add_action('rest_api_init', function () {
       ]
    );
 
-   register_rest_route( 'it-api', '/newsletters/',
+   register_rest_route(
+      'it-api',
+      '/newsletters/',
       [
       // Récuperer les newsletters
          [
@@ -908,11 +910,11 @@ add_action('rest_api_init', function () {
                      foreach ($results as $user) {
                         $user_data = get_userdata($user->ID);
                         if (in_array('company', $user_data->roles) || in_array('editor', $user_data->roles)) continue;
-                        $type_post = in_array('company', $user_data->roles) ? 'company': 'candidate';
+                        $type_post = in_array('company', $user_data->roles) ? 'company' : 'candidate';
                         $posts = get_posts(['post_type' => $type_post, 'author' => $user->ID, 'posts_per_page' => 1]);
                         if (empty($posts)) continue;
                         $postClient = reset($posts);
-                        $activated  = get_field('activated', $postClient->ID);
+                        $activated = get_field('activated', $postClient->ID);
                         if ($postClient->post_status === "publish" && !$activated) continue;
                         $senders[] = $user->user_email;
                      }
@@ -947,7 +949,7 @@ add_action('rest_api_init', function () {
 
                foreach ($senders as $sender) {
                   $to = $sender;
-                  wp_mail( $to, $subject, $content, $headers );
+                  wp_mail($to, $subject, $content, $headers);
                }
 
                return new WP_REST_Response(['success' => true, 'msg' => 'Newsletter envoyer avec succès', 'senders' => $senders]);
@@ -960,7 +962,9 @@ add_action('rest_api_init', function () {
    );
 
 
-   register_rest_route('it-api', '/blogs/',
+   register_rest_route(
+      'it-api',
+      '/blogs/',
       [
       // Récuperer les blogs
          [
@@ -1033,12 +1037,67 @@ add_action('rest_api_init', function () {
          'methods' => WP_REST_Server::READABLE,
          'callback' => function () {
             $Model = new \includes\model\itModel();
-
-            return new WP_REST_Response('Ok');
+            $start = $_REQUEST['start'];
+            $end = $_REQUEST['end'];
+            $start = date("Y-m-d H:i:s", (int)$start);
+            $end = date("Y-m-d H:i:s", (int)$end);
+            $results = $Model->get_beetween_ads($start, $end);
+            return new WP_REST_Response($results);
          },
          'permission_callback' => function ($data) {
             return current_user_can('delete_users');
          }
+      ],
+      [
+         'methods' => WP_REST_Server::CREATABLE,
+         'callback' => function () {
+            global $wpdb;
+
+            $ads = stripslashes($_POST['ads']);
+            $ads = json_decode($ads);
+            $table = $wpdb->prefix . 'ads';
+            $data = [
+               'title' => $ads->title,
+               'id_attachment' => (int)$ads->id_attachment,
+               'img_size' => $ads->img_size,
+               'start' => date($ads->start),
+               'end' => date($ads->end),
+               'classname' => $ads->className,
+               'id_user' => (int) $ads->id_user,
+               'position' => $ads->position,
+               'paid' => (int)$ads->paid,
+               'bill' => $ads->bill
+            ];
+            $format = ['%s', '%d', '%s', '%s', '%s', '%s', '%d', '%s', '%d', '%s'];
+            $result = $wpdb->insert($table, $data, $format);
+
+            return new WP_REST_Response($result);
+         },
+         'permission_callback' => function ($data) {
+            return current_user_can('delete_users');
+         }
+      ]
+   ]);
+
+   register_rest_route('it-api', '/get-company/(?P<query>\w+)', [
+      [
+         'methods' => WP_REST_Server::READABLE,
+         'callback' => function (WP_REST_Request $rq) {
+            global $wpdb;
+            $s = $rq['query'];
+            $sql = "SELECT * FROM $wpdb->posts pts 
+               WHERE pts.post_title LIKE '%{$s}%' 
+               AND post_type = 'company'
+               AND post_status = 'publish'
+               AND pts.ID IN  (
+                  SELECT {$wpdb->postmeta}.post_id as post_id
+                  FROM {$wpdb->postmeta}
+                  WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+               )";
+
+            $posts = $wpdb->get_results($sql);
+            return new WP_REST_Response($posts);
+         },
       ]
    ]);
 

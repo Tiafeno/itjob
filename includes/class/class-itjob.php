@@ -161,7 +161,6 @@ if ( ! class_exists( 'itJob' ) ) {
         $ads = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}ads` (
           `id_ads` BIGINT(20) NOT NULL AUTO_INCREMENT,
           `id_attachment` BIGINT(20) NOT NULL,
-          `img_link` longtext NULL DEFAULT NULL,
           `img_size` VARCHAR(250) NOT NULL DEFAULT 'full',
           `title` TEXT(255) NOT NULL,
           `start` DATETIME NOT NULL,

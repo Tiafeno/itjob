@@ -122,7 +122,8 @@ class vcAds
          return $content;
       } else {
          foreach ($Ads as $ad) {
-            $code = sprintf('[vc_single_image image="%d" img_link_target="_blank" img_size="%s" alignment="center"]', $ad->id_attachment, $ad->img_size);
+            $attachment = wp_get_attachment_image_src( $ad->attachment_id, 'full' );
+            $code = sprintf('[vc_single_image image="%d" img_link_target="_blank" img_size="%s" alignment="center"]', $attachment[0], $ad->img_size);
             echo do_shortcode( $code );
          }
       }

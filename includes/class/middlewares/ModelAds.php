@@ -11,7 +11,7 @@ trait ModelAds
     public function __construct()
     {
         global $wpdb;
-        $this->Table = $wpdb->prefix . 'publicity';
+        $this->Table = $wpdb->prefix . 'ads';
     }
 
     public function get_ads_by_position($position, $paid = 1)
@@ -32,6 +32,18 @@ trait ModelAds
         $ads = $wpdb->get_row("SELECT * FROM {$this->Table} WHERE id_ads = {$id_ads}");
 
         return $ads;
+    }
+
+    public function get_beetween_ads($start, $end)
+    {
+        global $wpdb;
+        $sql = "SELECT * FROM $this->Table as ads 
+                    WHERE ads.start 
+                    BETWEEN CAST('$start' AS DATE) AND CAST('$end' AS DATE)
+                    OR ads.end BETWEEN CAST('$start' AS DATE) AND CAST('$end' AS DATE)
+                    OR ads.start <= CAST('$start' AS DATE) <= ads.end";
+        $results = $wpdb->get_results($sql);
+        return $results;
     }
 
 }
