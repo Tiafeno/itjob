@@ -2,7 +2,6 @@
 
 function itjob_pagination() {
   global $wp_query;
-  print_r($wp_query);
   $total = $wp_query->max_num_pages;
 
   echo '<div class="navigation">';
