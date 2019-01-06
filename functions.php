@@ -234,7 +234,7 @@ add_action('init', function () {
 
   add_filter('wpseo_title', function ($title) {
     global $post;
-    if (is_object($post))
+    if (is_object($post) && !is_archive())
       switch ($post->post_type) {
         case 'offers':
           $regions      = wp_get_post_terms( $post->ID, 'region', ["fields" => "all"] );
