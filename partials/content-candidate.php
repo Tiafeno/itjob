@@ -1,7 +1,5 @@
 <?php
 global $candidate;
-
-print_r($candidate);
 if ( ! $candidate->is_activated()) { return; }
 ?>
 <div class="col-md-12">
