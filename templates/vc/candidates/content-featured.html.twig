@@ -58,5 +58,57 @@
       </div>
     {% endfor %}
 
+    {% if candidates.length < 4 %}
+      <div class="col-md-3 col-sm-6 row-offer">
+
+        <div class="modal fade modal-featured-candidate" tabindex="-1" role="dialog" aria-labelledby="modalFeaturedCandidate" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Mettez votre CV à la une</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Veuillez contacter le service commercial aux numéros suivants:<br>
+                032 45 378 60 - 033 82 591 13 - 034 93 962 18.
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card ibox mb-4">
+          <div class="card-body" style="background-color: lightseagreen;">
+            <h4 class="card-title mb-4">
+              <a href="#modal-featured-candidate" data-toggle="modal" data-target=".modal-featured-candidate">
+                Mettez votre cv ici pour plus de visibilité
+              </a>
+            </h4>
+            <div style="min-height: 86px;">
+              <h4 class="card-title uk-margin-remove">
+                <div class="mb-2 d-flex load-25"></div>
+              </h4>
+              <div class="mb-1 mt-2 d-flex load-100">
+                <a  href="#modal-featured-candidate" data-toggle="modal" data-target=".modal-featured-candidate"
+                  style="font-size: 90px;margin: auto;">
+                  <i class="fa fa-plus-square" style="opacity: 0.6;"></i>
+                </a>
+              </div>
+
+            </div>
+          </div>
+          <div class="card-footer" style="background-color: darkcyan; min-height: 47px;">
+            <div class="d-flex align-items-center justify-content-between">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
   </div>
 </div>
