@@ -108,23 +108,17 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         return do_shortcode( "[vc_register_particular title='Créer votre compte itJob' redir='$redirect']" );
       }
 
-      if (!is_object($this->Candidate)) {
-        $this->User = wp_get_current_user();
-        if ( ! $this->Candidate instanceof Candidate && $this->User->ID !== 0) {
-          $this->Candidate = Candidate::get_candidate_by( $this->User->ID );
-        }
+      // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
+      $User = wp_get_current_user();
+      if (!in_array('candidate', $User->roles)) {
+        return $message_access_refused;
       }
-
+      
       $hasCV = get_field('itjob_cv_hasCV', $this->Candidate->getId());
       if ($hasCV && $this->Candidate->is_publish()) {
         return $Engine->render( '@VC/candidates/pending-cv.html.twig', [
           'offer_archive' => get_post_type_archive_link('offers')
         ] );
-      }
-
-      // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
-      if ( ! $this->Candidate || ! $this->Candidate->is_candidate() ) {
-        return $message_access_refused;
       }
 
       wp_enqueue_style( 'b-datepicker-3' );
