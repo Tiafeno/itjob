@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('WPBakeryShortCode')) {
   new \WP_Error('WPBakery', 'WPBakery plugins missing!');
 }
+
 use Http;
 use includes\model\itModel;
 use includes\object\jobServices;

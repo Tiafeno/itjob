@@ -43,12 +43,12 @@ require 'includes/class/middlewares/Register.php';
 require 'includes/class/middlewares/ModelInterest.php';
 require 'includes/class/middlewares/ModelNotice.php';
 require 'includes/class/middlewares/ModelCVLists.php';
+require 'includes/class/middlewares/ModelAds.php';
 
 // Model
 require 'includes/class/class-model.php';
 
 // widgets
-require 'includes/class/widgets/widget-publicity.php';
 require 'includes/class/widgets/widget-shortcode.php';
 require 'includes/class/widgets/widget-accordion.php';
 require 'includes/class/widgets/widget-header-search.php';
@@ -98,7 +98,8 @@ $elementsVC = (object)[
   'vcSlider' => require 'includes/visualcomposer/elements/class-slider.php',
   'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php',
-  'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
+  'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php',
+  'vcAds' => require 'includes/visualcomposer/elements/class-vc-ads.php'
 ];
 
 require 'includes/class/class-wp-city.php';

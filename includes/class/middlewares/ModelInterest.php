@@ -231,7 +231,7 @@ trait ModelInterest {
   public static function get_all() {
     global $wpdb;
     $interests = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cv_request" );
-
+    // TODO: Une erreur peut être provoquer s'il a des milliers de requete dans la base de donnée
     return $interests;
   }
 

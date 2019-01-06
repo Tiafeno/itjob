@@ -139,14 +139,14 @@ if ( ! class_exists( 'itJob' ) ) {
         // Cree une table pour les entreprise intereser par des candidats
         $cv_request = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_request (`id_cv_request` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
             `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , `status` VARCHAR(20) NOT NULL DEFAULT 'pending' , 
-            `id_attachment` BIGINT(20) NOT NULL DEFAULT 0,
+            `id_attachment` BIGINT(20) NOT NULL DEFAULT 0, `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
                          PRIMARY KEY (`id_cv_request`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_request );
 
         // Crée une table pour ajouter les CV dans la liste des entreprise
         // Pour les entreprise de membre standar, la liste se limite à 5 CV
         $cv_lists = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_lists (`id_lists` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
-                      `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
+                      `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                       PRIMARY KEY (`id_lists`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_lists );
 
@@ -157,6 +157,25 @@ if ( ! class_exists( 'itJob' ) ) {
             `notice` longtext NOT NULL COMMENT 'Contient l''object Notification',
             `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );";
         $wpdb->query($notice);
+
+        $ads = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}ads` (
+          `id_ads` BIGINT(20) NOT NULL AUTO_INCREMENT,
+          `id_attachment` BIGINT(20) NOT NULL,
+          `img_link` longtext NULL DEFAULT NULL,
+          `img_size` VARCHAR(250) NOT NULL DEFAULT 'full',
+          `title` TEXT(255) NOT NULL,
+          `start` DATETIME NOT NULL,
+          `end` DATETIME NOT NULL,
+          `classname` VARCHAR(50) NULL,
+          `id_user` BIGINT(20) UNSIGNED NOT NULL,
+          `position` VARCHAR(45) NULL DEFAULT 0,
+          `paid` TINYINT(1) NOT NULL DEFAULT 0,
+          `bill` VARCHAR(45) NULL COMMENT 'Numéro de facture',
+          `attr` LONGTEXT NULL,
+          `create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id_ads`)) ENGINE = InnoDB;";
+        
+        $wpdb->query($ads);
       } );
 
       // Add acf google map api
@@ -472,20 +491,6 @@ if ( ! class_exists( 'itJob' ) ) {
         switch ( $post_object->post_type ) {
           case 'candidate':
             $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
-            // Afficher les CV pour les comptes entreprise premium
-            $current_user = wp_get_current_user();
-            if ( $current_user->ID !== 0 && ! current_user_can( 'remove_users' ) ) {
-              if ( in_array( 'company', $current_user->roles ) ) {
-                $Company = Post\Company::get_company_by( $current_user->ID );
-                // Si le client en ligne est une entreprise on continue...
-                // On recupere le type du compte
-                $account = get_post_meta( $Company->getId(), 'itjob_meta_account', true );
-                // Si le compte de l'entreprise est premium
-                if ( (int) $account === 1 ) {
-                  $GLOBALS['candidate']->__client_premium_access();
-                }
-              }
-            }
             break;
 
           case 'offers':
@@ -576,7 +581,6 @@ if ( ! class_exists( 'itJob' ) ) {
         ) );
 
         // Register widget
-        register_widget( 'Widget_Publicity' );
         register_widget( 'Widget_Shortcode' );
         register_widget( 'includes\widgets\Widget_Accordion' );
         register_widget( 'Widget_Header_Search' );

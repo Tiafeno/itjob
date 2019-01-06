@@ -4,6 +4,7 @@
  * Template Name: Forgot Password
  */
 
+$action = "";
 if ( isset($_GET['action']) || !empty($_GET['action']) ) {
   $action = $_GET['action'];
   // Initialisation de la variable erreur
@@ -202,7 +203,7 @@ get_header();
                 })
                   .done(function (resp) {
                     var element = resp.success ? successMessage : errorMessage;
-                    element.html(resp.data).show();
+                    element.html(resp.data.msg).show();
                     submitButton.text('Envoyer');
                   });
 

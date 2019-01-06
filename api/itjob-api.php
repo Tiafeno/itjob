@@ -614,7 +614,7 @@ add_action('rest_api_init', function () {
             $term_count = wp_count_terms($taxonomy);
 
             $max_num_pages = ceil($term_count / $tpp);
-        // We can now get our terms and paginate it
+            // We can now get our terms and paginate it
             $args = [
                'taxonomy' => $taxonomy,
                'hide_empty' => false,
@@ -1021,6 +1021,20 @@ add_action('rest_api_init', function () {
          'callback' => function () {
             $result = count_users();
             return new WP_REST_Response($result);
+         },
+         'permission_callback' => function ($data) {
+            return current_user_can('delete_users');
+         }
+      ]
+   ]);
+
+   register_rest_route('it-api', '/ads', [
+      [
+         'methods' => WP_REST_Server::READABLE,
+         'callback' => function () {
+            $Model = new \includes\model\itModel();
+
+            return new WP_REST_Response('Ok');
          },
          'permission_callback' => function ($data) {
             return current_user_can('delete_users');

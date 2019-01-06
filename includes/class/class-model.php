@@ -2,20 +2,32 @@
 
 namespace includes\model;
 
+if (!defined('ABSPATH')) {
+  exit;
+}
+
 final class itModel {
   use \ModelInterest {
     \ModelInterest::__construct as private __interestConstruct;
   }
+
   use \ModelCVLists {
     \ModelCVLists::__construct as private __listConstruct;
   }
+
   use \ModelNotice {
     \ModelNotice::__construct as private __noticeConstruct;
   }
+
+  use \ModelAds {
+    \ModelAds::__construct as private __adsConstruct;
+  }
+
   public function __construct() {
     $this->__listConstruct();
     $this->__interestConstruct();
     $this->__noticeConstruct();
+    $this->__adsConstruct();
   }
 
   public function get_candidate_id_by_email( $email ) {

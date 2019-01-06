@@ -22,6 +22,7 @@ class apiCompany
       "paged" => $paged,
     ];
     $meta_query = [];
+    $tax_query = [];
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
       $search = stripslashes($_POST['search']['value']);
       $searchs = explode('|', $search);
@@ -94,7 +95,9 @@ class apiCompany
     }
     if (!empty($meta_query))
       $args = array_merge($args, ['meta_query' => $meta_query]);
-    $args = array_merge($args, ['tax_query' => $tax_query]);
+    
+    if (!empty($tax_query))
+      $args = array_merge($args, ['tax_query' => $tax_query]);
     //print_r($args);
     $the_query = new WP_Query($args);
     $entreprises = [];
