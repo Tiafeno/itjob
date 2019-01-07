@@ -181,17 +181,19 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
               }
               $rootScope.isSubmit = !$rootScope.isSubmit;
               const offerForm = new FormData();
+              let otherInfo = $rootScope.offers.otherinformation;
+              otherInfo = _.isUndefined(otherInfo) ? '' : otherInfo;
               offerForm.append('action', 'ajx_insert_offers');
               offerForm.append('post', $rootScope.offers.postpromote);
               offerForm.append('ctt', $rootScope.offers.contrattype);
-              offerForm.append('salary_proposed', typeof $rootScope.offers.proposedsallary === 'undefined' ? 0 : $rootScope.offers.proposedsallary);
+              offerForm.append('salary_proposed', _.isUndefined($rootScope.offers.proposedsallary) ? 0 : $rootScope.offers.proposedsallary);
               offerForm.append('region', parseInt($rootScope.offers.region));
               offerForm.append('country', parseInt($rootScope.offers.country));
               offerForm.append('ba', parseInt($rootScope.offers.branch_activity));
               offerForm.append('datelimit', $rootScope.offers.datelimit);
               offerForm.append('mission', $rootScope.offers.mission);
               offerForm.append('profil', $rootScope.offers.profil);
-              offerForm.append('other', $rootScope.offers.otherinformation);
+              offerForm.append('other', otherInfo);
 
               offerFactory
                 .sendPostForm(offerForm)

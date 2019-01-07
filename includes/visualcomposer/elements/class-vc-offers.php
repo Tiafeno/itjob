@@ -218,9 +218,12 @@ if ( ! class_exists( 'vcOffers' ) ):
       if ( $offer_id && $rateplan ) {
         $Offer = new Offers( (int) $offer_id );
         update_field( 'itjob_offer_rateplan', $rateplan, $Offer->ID );
+        if ($rateplan !== 'standard') {
+          // TODO: Ajouter une notification à l'administrateur pour une plan tarifaire non standard
+        }
         wp_send_json( [ 'success' => true ] );
       }
-      wp_send_json( [ 'success' => false, 'msg' => "Il est possible que cette erreur es dû à l’ID de l'offre" ] );
+      wp_send_json( [ 'success' => false, 'msg' => "Une erreur s'est produite. Impossible de trouver l'offre" ] );
     }
 
     /**
