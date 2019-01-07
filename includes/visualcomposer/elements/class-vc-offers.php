@@ -416,11 +416,11 @@ if ( ! class_exists( 'vcOffers' ) ):
         wp_enqueue_style( 'alertify' );
         wp_enqueue_style( 'b-datepicker-3' );
         wp_enqueue_style( 'themify-icons' );
-        wp_enqueue_style( 'froala' );
-        wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
         wp_enqueue_script( 'offers', get_template_directory_uri() . '/assets/js/app/offers/form.js',
           [
+            'tinymce',
             'angular',
+            'angular-ui-tinymce',
             'angular-ui-route',
             'angular-messages',
             'angular-aria',
@@ -428,7 +428,6 @@ if ( ! class_exists( 'vcOffers' ) ):
             'fr-datepicker',
             'sweetalert',
             'alertify',
-            'froala',
           ], $itJob->version, true );
 
         $redirection = Http\Request::getValue( 'redir' );

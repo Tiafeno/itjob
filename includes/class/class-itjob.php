@@ -665,8 +665,8 @@ if ( ! class_exists( 'itJob' ) ) {
         get_template_directory_uri() . '/assets/js/libs/angularjs/bower_components/angular-ui-select2/src/select2.js', ['jquery'], '1.7.2' );
       wp_register_script( 'ngFileUpload', get_template_directory_uri() . '/assets/js/libs/ngfileupload/ng-file-upload.min.js', [], '12.2.13', true );
 
-      wp_register_script( 'angular-froala', VENDOR_URL . '/froala-editor/src/angular-froala.js', [], '2.8.4' );
-      wp_register_script( 'froala', VENDOR_URL . '/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
+      wp_register_script( 'tinymce',  VENDOR_URL . '/tinymce/tinymce.js', null, "4.5.9");
+      wp_register_script( 'angular-ui-tinymce', VENDOR_URL . '/angular-ui-tinymce/dist/tinymce.min.js', null, '4.0.0' );
 
       // plugins depend
       wp_register_style( 'font-awesome', VENDOR_URL . '/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
@@ -719,12 +719,6 @@ if ( ! class_exists( 'itJob' ) ) {
 
       wp_register_style( 'alertify', VENDOR_URL . '/alertifyjs/dist/css/alertify.css' );
       wp_register_script( 'alertify', VENDOR_URL . '/alertifyjs/dist/js/alertify.js', [], '1.0.11', true );
-
-      wp_register_style( 'froala-editor', VENDOR_URL . '/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
-      wp_register_style( 'froala', VENDOR_URL . '/froala-editor/css/froala_style.min.css', [
-        'froala-editor',
-        'font-awesome'
-      ], '2.8.4' );
 
       // Register components adminca scripts
       wp_register_script( 'popper', VENDOR_URL . '/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );

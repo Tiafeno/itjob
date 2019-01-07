@@ -88,16 +88,16 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_enqueue_style( 'b-datepicker-3' );
       wp_enqueue_style( 'sweetalert' );
       wp_enqueue_style( 'ng-tags-bootstrap' );
-      wp_enqueue_style( 'froala' );
       wp_enqueue_style( 'alertify' );
-      wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
       // scripts
       wp_enqueue_script( 'sweetalert' );
       wp_enqueue_script( 'moment-locales' );
       wp_enqueue_script( 'jquery-validate' );
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
       wp_register_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
+        'tinymce',
         'angular',
+        'angular-ui-tinymce',
         'angular-ui-select2',
         'angular-aria',
         'angular-messages',
@@ -109,7 +109,7 @@ if ( ! class_exists( 'scClient' ) ) :
         'ng-tags',
         'b-datepicker',
         'fr-datepicker',
-        'froala'
+        
       ], $itJob->version, true );
 
       $client       = get_userdata( $this->User->ID );

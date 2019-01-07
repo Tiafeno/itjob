@@ -121,7 +121,7 @@
           <div class="input-group date">
             <span class="input-group-addon bg-white"><i class="fa fa-calendar"></i></span>
             <input ng-model="offers.datelimit" readonly="readonly" autocomplete="off" name="datelimit" class="form-control"
-              required>
+              placeholder="Ajouter une date limite de la candidature" required>
           </div>
         </div>
 
@@ -134,7 +134,7 @@
         Aucune coordonnée, ni nom d'entreprise ne peuvent être indiqués dans votre offre
       </div>
       <div class="mt-2">
-        <textarea froala="froalaOptions" name="mission" cols="8" ng-model="offers.mission" required></textarea>
+        <textarea required ng-model="offers.mission" cols="8" ui-tinymce="tinymceOptions" placeholder="Mission" name="mission"></textarea >
       </div>
     </div>
 
@@ -144,7 +144,7 @@
         Aucune coordonnée, ni nom d'entreprise ne peuvent être indiqués dans votre offre
       </div>
       <div class="mt-2">
-        <textarea froala="froalaOptions" name="profil" cols="8" ng-model="offers.profil" required></textarea>
+        <textarea required ng-model="offers.profil" cols="8" ui-tinymce="tinymceOptions" placeholder="Profil recherché pour les candidats" name="profil"></textarea >
       </div>
     </div>
 
@@ -154,7 +154,7 @@
         Aucune coordonnée, ni nom d'entreprise ne peuvent être indiqués dans votre offre
       </div>
       <div class="mt-2">
-        <textarea froala="froalaOptions" name="otherinformation" cols="8" ng-model="offers.otherinformation"></textarea>
+        <textarea  ng-model="offers.otherinformation" cols="8" ui-tinymce="tinymceOptions" placeholder="Autres informations" name="otherinformation"></textarea >
       </div>
     </div>
 

@@ -1,13 +1,4 @@
-angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
-  .value('froalaConfig', {
-    toolbarInline: false,
-    quickInsertTags: null,
-    wordAllowedStyleProps: ['text-decoration', 'height', 'padding', 'margin', 'text-align'],
-    wordDeniedAttrs: ['class'],
-    wordPasteModal: false,
-    wordPasteKeepFormatting: true,
-    toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
-  })
+angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'])
   .value('alertifyConfig', {
     notifier: {
       delay: 5,
@@ -94,7 +85,10 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
             this.$onInit = function () {
               $scope.abranchs = _.clone(abranchs);
               $scope.regions = _.clone(regions);
-
+              $scope.tinymceOptions = {
+                plugins: '',
+                toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code'
+              };
               $rootScope.searchCityFn = (city) => {
                 if (!_.isUndefined($rootScope.offers.region)) {
                   let region = parseInt($rootScope.offers.region);

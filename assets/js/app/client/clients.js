@@ -1,9 +1,4 @@
-const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
-  .value('froalaConfig', {
-    toolbarInline: false,
-    quickInsertTags: null,
-    toolbarButtons: ['bold', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
-  })
+const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinymce', 'ngRoute', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
   .factory('clientFactory', ['$http', function ($http) {
     return {
       getCity: function () {
@@ -180,12 +175,17 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
       },
       controller: ['$scope', '$http', '$q', function ($scope, $http, $q) {
         const self = this;
+        $scope.tinymceOptions = {
+          plugins: '',
+          toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code'
+        };
         /**
          * 0: Nouvelle experience
          * 1: Modifier l'experience
          * 2: Supprimer l'experience
          */
         $scope.mode = null;
+        $scope.status = '';
         $scope.Exp = {};
         $scope.abranchs = [];
         $scope.newExperience = {};
@@ -229,13 +229,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
          * Ajouter une nouvelle expérience
          */
         $scope.addNewExperience = () => {
-          console.info("Model new experience init");
           $scope.mode = 0;
           $scope.newExperience.position_currently_works = true;
           $scope.newExperience.validated = false;
           $q.all([$scope.abranchFn()]).then(data => {
             $scope.abranchs = _.clone(data[0]);
-            UIkit.modal('#modal-new-experience-overflow').show();
+            jQuery('#modal-new-experience-overflow').modal('show');
           });
 
         };
@@ -282,7 +281,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
                   if (response.success) {
                     $scope.status = "Expérience ajouter avec succès";
                     window.setTimeout(() => {
-                      UIkit.modal('#modal-new-experience-overflow').hide();
+                      jQuery('#modal-new-experience-overflow').modal('hide');
                       $scope.newExperience = {};
                     }, 1200);
                   } else {
@@ -455,8 +454,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
           $scope.status = '';
         });
 
-        UIkit.util.on('#modal-new-experience-overflow', 'hide', e => {
+        jQuery('#modal-new-experience-overflow').on('hidden.bs.modal', e => {
           e.preventDefault();
+          $scope.status = '';
           $scope.newExperience = {};
         });
 
