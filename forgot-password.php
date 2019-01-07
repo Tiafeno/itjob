@@ -159,8 +159,8 @@ get_header();
             messages: {
               pwd: {
                 required: "Ce champ est obligatoire",
-                pwdpattern: "Votre mot de passe doit comporter un minimum de 8 caractères, " +
-                "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
+                pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, comprenant des chiffres et des lettres minuscules et"+
+                " majuscules,ainsi qu'un caractère spécial (-*/@+\_%$=).",
               },
               cpwd: {
                 required: "Ce champ est obligatoire",
