@@ -724,6 +724,7 @@ if ( ! class_exists( 'scClient' ) ) :
 
     /**
      * Function ajax
+     * Récuperer les candidatures d'un candidat
      */
     public function get_candidacy() {
       if ( ! is_user_logged_in() ) {
@@ -989,6 +990,7 @@ if ( ! class_exists( 'scClient' ) ) :
         // candidate
         $notification = get_field( 'itjob_cv_notifEmploi', $this->Candidate->getId() );
         $Candidate    = Candidate::get_candidate_by( $User->ID );
+        $Candidate->_activated = $Candidate->is_activated();
         $Candidate->isMyCV();
         $alerts = explode( ',', $notification['job_sought'] );
         wp_send_json( [

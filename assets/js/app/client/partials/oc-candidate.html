@@ -346,8 +346,9 @@
                         #[[Candidate.reference]]
                       </a>
                     </h2>
-                    <span class="badge badge-pill ng-binding badge-pink" ng-if="Candidate.state === 'pending'">En
-                      attente de validation</span>
+                    <span class="badge badge-pink" ng-if="Candidate.state === 'pending'">En attente de validation</span>
+                    <span class="badge badge-blue" ng-if="Candidate.state === 'publish' && Candidate._activated === true">En ligne</span>
+                    <span class="badge badge-danger" ng-if="Candidate.state === 'publish' && Candidate._activated !== true">Désactiver</span>
                     <div class="mb-4"></div>
                     <!-- Emploi rechercher -->
                     <job-search jobs="Candidate.jobSought"></job-search>
