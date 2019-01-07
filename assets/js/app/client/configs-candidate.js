@@ -61,7 +61,6 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         let dateEnd = experience.exp_dateEnd;
         date = _.isNull(dateEnd) ||_.isEmpty(dateEnd) || dateEnd === 'Invalid date' ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
       }
-      console.log(experience);
       date = date.indexOf('/') > -1 ? moment(date) :  moment(date, 'MMMM YYYY', 'fr');
       return date.format('MMMM YYYY');
     }
