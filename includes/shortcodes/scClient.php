@@ -1004,10 +1004,17 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
-    private function __get_company_offers() {
+    public function __get_company_offers($Company = null) {
       $resolve      = [];
-      $User         = wp_get_current_user();
-      $user_company = Company::get_company_by( $User->ID );
+      if ($Company === null) {
+        $User         = wp_get_current_user();
+        $Company = Company::get_company_by( $User->ID );
+      } else {
+        if (!$Company instanceof Company) {
+          return false;
+        }
+      }
+      
       $offers       = get_posts( [
         'posts_per_page' => - 1,
         'post_type'      => 'offers',
@@ -1015,7 +1022,7 @@ if ( ! class_exists( 'scClient' ) ) :
         'order'          => 'ASC',
         'post_status'    => [ 'publish', 'pending' ],
         'meta_key'       => 'itjob_offer_company',
-        'meta_value'     => $user_company->ID,
+        'meta_value'     => $Company->ID,
         'meta_compare'   => '='
       ] );
       foreach ( $offers as $offer ) {

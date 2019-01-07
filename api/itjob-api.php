@@ -235,6 +235,18 @@ add_action('rest_api_init', function () {
                         return new WP_REST_Response(['success' => true, 'msg' => 'Ce compte est déja un compte ' . $type]);
                      }
                      break;
+                  
+                  case 'collect_offers':
+                     global  $shortcode;
+                     return new WP_REST_Response([
+                        'companyInfo' => [
+                           'id' => $Company->getId(),
+                           'name' => $Company->title,
+                           'activated' => $Company->isValid(),
+                        ],
+                        'offers' => $shortcode->scClient->__get_company_offers($Company)
+                     ]);
+                     break;
 
                   default:
                      break;
@@ -707,7 +719,7 @@ add_action('rest_api_init', function () {
             $action = $request['action'];
             if ($action) {
                switch ($action) {
-            // Metre à jour une term
+                  // Metre à jour une term
                   case 'update':
                      $term = $_REQUEST['term'];
                      $term = json_decode(stripslashes($term));
@@ -721,7 +733,7 @@ add_action('rest_api_init', function () {
 
                      break;
             
-            // Supprimer une terme dans la liste
+                  // Supprimer une terme dans la liste
                   case 'delete':
                      $term = $_REQUEST['term'];
                      $term = json_decode(stripslashes($term));
@@ -799,9 +811,7 @@ add_action('rest_api_init', function () {
    ]);
 
   // Uploader un fichier ou un image dans le site
-   register_rest_route(
-      'it-api',
-      '/upload/',
+   register_rest_route('it-api', '/upload/',
       [
          [
             'methods' => WP_REST_Server::CREATABLE,
@@ -815,15 +825,15 @@ add_action('rest_api_init', function () {
                }
                $file = $_FILES["upload"];
 
-          // Let WordPress handle the upload.
-          // Remember, 'file' is the name of our file input in our form above.
-          // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
+               // Let WordPress handle the upload.
+               // Remember, 'file' is the name of our file input in our form above.
+               // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
                $attachment_id = media_handle_upload('upload', 0);
                if (is_wp_error($attachment_id)) {
-          // There was an error uploading the image.
+               // There was an error uploading the image.
                   return new WP_REST_Response(['success' => false, 'msg' => $attachment_id->get_error_message()]);
                } else {
-          // The image was uploaded successfully!
+               // The image was uploaded successfully!
                   return new WP_REST_Response(['attachment_id' => $attachment_id, 'success' => true]);
                }
             },
@@ -832,9 +842,7 @@ add_action('rest_api_init', function () {
       ]
    );
 
-   register_rest_route(
-      'it-api',
-      '/newsletters/',
+   register_rest_route('it-api', '/newsletters/',
       [
       // Récuperer les newsletters
          [
@@ -962,9 +970,7 @@ add_action('rest_api_init', function () {
    );
 
 
-   register_rest_route(
-      'it-api',
-      '/blogs/',
+   register_rest_route('it-api', '/blogs/',
       [
       // Récuperer les blogs
          [
