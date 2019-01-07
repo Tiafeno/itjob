@@ -200,7 +200,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
           moment.locale('fr');
           let experiences = _.clone($scope.Candidate.experiences);
           $scope.Candidate.experiences = _.map(experiences, (experience) => {
-            if (_.isEmpty(experience.exp_dateBegin) && !_.isUndefined(experience.old_value)) {
+            if (_.isEmpty(experience.exp_dateBegin) && experience.exp_dateBegin === 'Invalid date' && !_.isUndefined(experience.old_value)) {
               let oldValue = experience.old_value;
               if (!_.isEmpty(oldValue.exp_dateBegin) && !_.isEmpty(oldValue.exp_branch_activity)) {
                 experience.exp_dateBegin = moment(oldValue.exp_dateBegin).format('MM/DD/YYYY');

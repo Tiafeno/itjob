@@ -55,11 +55,11 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       let date;
       if (handler === 'begin') {
         let dateBegin = experience.exp_dateBegin;
-        date = _.isNull(dateBegin) || _.isEmpty(dateBegin) ? experience.old_value.exp_dateBegin : experience.exp_dateBegin;
+        date = _.isNull(dateBegin) || _.isEmpty(dateBegin) || dateBegin === 'Invalid date' ? experience.old_value.exp_dateBegin : experience.exp_dateBegin;
         
       } else {
         let dateEnd = experience.exp_dateEnd;
-        date = _.isNull(dateEnd) ||_.isEmpty(dateEnd) ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
+        date = _.isNull(dateEnd) ||_.isEmpty(dateEnd) || dateBegin === 'Invalid date' ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
       }
       console.log(experience);
       date = date.indexOf('/') > -1 ? moment(date) :  moment(date, 'MMMM YYYY', 'fr');
