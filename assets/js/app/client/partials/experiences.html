@@ -313,8 +313,8 @@
               [[ experience.exp_company ]]
             </h6>
             <div class="d-flex align-items-center font-13">
-              <span class="text-muted">[[ experience.exp_dateBegin|moment ]] -
-                <span ng-if="experience.exp_dateEnd">[[experience.exp_dateEnd|moment]]</span>
+              <span class="text-muted">[[ experience | experience_date: 'begin' ]] -
+                <span ng-if="experience.exp_dateEnd">[[experience | experience_date: 'end']]</span>
                 <span ng-if="!experience.exp_dateEnd">Aujourd'hui</span>
               </span>
             </div>

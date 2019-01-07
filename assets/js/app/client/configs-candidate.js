@@ -49,6 +49,21 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       return moment(entry, "MM/DD/YYYY", "fr").format("MMMM, YYYY");
     }
   }])
+  .filter('experience_date', [function () {
+    return (experience, handler) => {
+      if (!_.isObject(experience)) return experience;
+      let date;
+      if (handler === 'begin') {
+        date = _.isNull(experience.exp_dateBegin) ? experience.old_value.exp_dateBegin : experience.exp_dateBegin;
+        
+      } else {
+        date = _.isNull(experience.exp_dateEnd) ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
+      }
+
+      date = date.indexOf('/') > -1 ? moment(date) :  moment(date, 'MMMM YYYY', 'fr');
+      return date.format('MMMM YYYY');
+    }
+  }])
   .filter('moment_birthday', [function () {
     return (entry) => {
       if (_.isEmpty(entry)) return entry;
