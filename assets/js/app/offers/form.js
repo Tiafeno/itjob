@@ -63,7 +63,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                 if (data.success) {
                   swal({
                     title: 'Reussi',
-                    text: "Votre offre a été envoyé avec succès",
+                    text: "Votre offre a été enregistré avec succès et en cours de validation. Nous vous enverrons une notification quand elle sera prête. merci",
                     type: "info",
                   }, () => {
                     window.location.href = itOptions.urlHelper.redir;
