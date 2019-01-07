@@ -54,12 +54,14 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       if (!_.isObject(experience)) return experience;
       let date;
       if (handler === 'begin') {
-        date = _.isNull(experience.exp_dateBegin) ? experience.old_value.exp_dateBegin : experience.exp_dateBegin;
+        let dateBegin = experience.exp_dateBegin;
+        date = _.isNull(dateBegin) || _.isEmpty(dateBegin) ? experience.old_value.exp_dateBegin : experience.exp_dateBegin;
         
       } else {
-        date = _.isNull(experience.exp_dateEnd) ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
+        let dateEnd = experience.exp_dateEnd;
+        date = _.isNull(dateEnd) ||_.isEmpty(dateEnd) ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
       }
-
+      console.log(experience);
       date = date.indexOf('/') > -1 ? moment(date) :  moment(date, 'MMMM YYYY', 'fr');
       return date.format('MMMM YYYY');
     }
