@@ -17,7 +17,7 @@ class Mailing {
   public $logo;
   private $no_reply_email = "no-reply@itjobmada.com>";
   private $no_reply_notification_email = "no-reply-notification@itjobmada.com";
-  private $dashboard_url = "http://itjob.falicrea.com/wp-admin";
+  private $dashboard_url = "https://admin.itjobmada.com";
 
   public function __construct() {
     add_action( 'init', [ &$this, 'onInit' ] );
@@ -195,14 +195,14 @@ class Mailing {
       $oc_id   = jobServices::page_exists( 'Espace client' );
       $oc_url  = get_the_permalink( $oc_id );
       $content .= $Engine->render( '@MAIL/confirm-added-cv.html.twig', [
-        'user_data'          => [
+        'user_data'   => [
           'title'     => $Candidate->title,
           'full_name' => $privateInfo->firstname . ' ' . $privateInfo->lastname
         ],
         'greeting' => is_array($Candidate->greeting) ? $Candidate->greeting['label'] : '',
-        'oc_url'             => $oc_url,
-        'home_url'           => home_url( "/" ),
-        'logo' => $this->logo[0],
+        'oc_url'   => $oc_url,
+        'home_url' => home_url( "/" ),
+        'logo'     => $this->logo[0],
         'archive_offers_url' => get_post_type_archive_link( 'offers' )
       ] );
     } catch ( \Twig_Error_Loader $e ) {
@@ -348,7 +348,7 @@ class Mailing {
     if ( ! is_null( $template ) ) {
       try {
         $args    = array_merge( $args, [
-          'dashboard_url' => "#dashboard",
+          'dashboard_url' => $this->dashboard_url,
           'home_url'      => home_url( "/" )
         ] );
         $content .= $Engine->render( "@MAIL/admin/notification-admin-{$template}.html.twig", $args );
@@ -807,7 +807,7 @@ class Mailing {
         'logo'      => esc_url( $logo[0] ),
         'company'   => $Company,
         'offer'     => $Offer,
-        'admin_url' => admin_url( '/' ),
+        'admin_url' => $this->dashboard_url,
         'home_url'  => home_url( "/" )
       ];
       $content .= $Engine->render( "@MAIL/admin/notification-new-offer.html.twig", $args );
