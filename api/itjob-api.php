@@ -215,7 +215,7 @@ add_action('rest_api_init', function () {
                      if (is_null($status)) new WP_REST_Response('Parametre manquant');
                      $status = (int)$status;
                      if ($Company->post_status === 'pending' && $status === 1) {
-                        wp_update_post(['ID' => $Company->getId(), 'post_status' => 'publish'], true);
+                        // Entreprise désactiver
                      }
                      $status = (int)$status;
                      update_field('activated', $status, $Company->getId());
@@ -223,7 +223,7 @@ add_action('rest_api_init', function () {
                         do_action('notice-change-company-status', $Company->getId(), $status);
                         do_action('confirm_validate_company', $Company->getId());
                      }
-
+                     wp_update_post(['ID' => $Company->getId(), 'post_status' => 'publish'], true);
                      return new WP_REST_Response(['success' => true, 'msg' => "Entreprise mis à jour avec succès"]);
                      break;
 
