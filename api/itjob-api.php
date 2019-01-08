@@ -224,7 +224,7 @@ add_action('rest_api_init', function () {
                         do_action('confirm_validate_company', $Company->getId());
                      }
 
-                     return new WP_REST_Response("Entreprise mis à jour avec succès");
+                     return new WP_REST_Response(['success' => true, 'msg' => "Entreprise mis à jour avec succès"]);
                      break;
 
                   case 'account':
