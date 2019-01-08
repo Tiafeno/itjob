@@ -192,9 +192,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
         $scope.months = clientService.months;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
         $scope.dateEndRange = [];
-
+        $scope.loading = false;
         $scope.loadExperiences = false;
-        $scope.loadTrainings = false;
 
         this.$onInit = () => {
           moment.locale('fr');
@@ -222,7 +221,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
 
             return training;
           });
-          $scope.loadTrainings = true;
         };
 
         /**
@@ -230,7 +228,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
          */
         $scope.addNewExperience = () => {
           $scope.mode = 0;
-          $scope.newExperience.position_currently_works = true;
+          $scope.newExperience.position_currently_works = false;
           $scope.newExperience.validated = false;
           $q.all([$scope.abranchFn()]).then(data => {
             $scope.abranchs = _.clone(data[0]);
@@ -273,6 +271,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
          */
         $scope.submitNewExperienceForm = (isValid) => {
           if (!isValid || !$scope.newExperienceForm.$dirty) return;
+          $scope.loading = true;
           self.formatFormEntry($scope.newExperience)
             .then(Experience => {
               // Mettre à jour l'expérience
@@ -287,6 +286,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                   } else {
                     $scope.status = response.msg;
                   }
+                  $scope.loading = false;
                 });
             });
         };

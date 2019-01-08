@@ -237,9 +237,9 @@ add_action('rest_api_init', function () {
                         return new WP_REST_Response(['success' => true, 'msg' => 'Ce compte est déja un compte ' . $type]);
                      }
                      break;
-                  
+
                   case 'collect_offers':
-                     global  $shortcode;
+                     global $shortcode;
                      return new WP_REST_Response([
                         'companyInfo' => [
                            'id' => $Company->getId(),
@@ -563,11 +563,19 @@ add_action('rest_api_init', function () {
                      $prepare = $wpdb->prepare($sql, $User->ID);
                      $rows = $wpdb->get_results($prepare);
                      $Notifications = [];
+                     $Template = new \includes\object\NotificationTpl();
                      foreach ($rows as $row) {
-                        $Notice = unserialize($row->notice);
+                        // Récuper les variables
+                        $needle = unserialize($row->needle);
+
+                        $Notice = new stdClass();
                         $Notice->ID = $row->id_notice;
                         $Notice->date_create = $row->date_create;
                         $Notice->status = $row->status;
+                        $Notice->guid = $row->guid;
+                        $tpl = $Template->tpls[(int)$row->template];
+                        $Notice->title = vsprintf($tpl, $needle);
+
                         $Notifications[] = $Notice;
                      }
 
@@ -814,7 +822,9 @@ add_action('rest_api_init', function () {
    ]);
 
   // Uploader un fichier ou un image dans le site
-   register_rest_route('it-api', '/upload/',
+   register_rest_route(
+      'it-api',
+      '/upload/',
       [
          [
             'methods' => WP_REST_Server::CREATABLE,
@@ -845,7 +855,9 @@ add_action('rest_api_init', function () {
       ]
    );
 
-   register_rest_route('it-api', '/newsletters/',
+   register_rest_route(
+      'it-api',
+      '/newsletters/',
       [
       // Récuperer les newsletters
          [
@@ -973,7 +985,9 @@ add_action('rest_api_init', function () {
    );
 
 
-   register_rest_route('it-api', '/blogs/',
+   register_rest_route(
+      'it-api',
+      '/blogs/',
       [
       // Récuperer les blogs
          [
@@ -1072,7 +1086,7 @@ add_action('rest_api_init', function () {
                'start' => date($ads->start),
                'end' => date($ads->end),
                'classname' => $ads->className,
-               'id_user' => (int) $ads->id_user,
+               'id_user' => (int)$ads->id_user,
                'position' => $ads->position,
                'paid' => (int)$ads->paid,
                'bill' => $ads->bill

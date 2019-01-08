@@ -50,7 +50,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
           }],
           driveLicences: ['$q', function ($q) {
             // Permis de conduire (Schema)
-            const licences = [{
+            const licences = [
+              {
                 _id: 0,
                 label: "A`",
                 slug: "a_"
@@ -374,6 +375,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
           forceParse: false,
           autoclose: true
         });
+
+        jQuery('[data-toggle="popover"]').popover();
       }
     }
   })

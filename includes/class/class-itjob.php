@@ -153,8 +153,10 @@ if ( ! class_exists( 'itJob' ) ) {
         $notice = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}notices (
             `id_notice` bigint(20) PRIMARY KEY AUTO_INCREMENT,
             `id_user` bigint(20) NOT NULL,
+            `template` TINYINT(1) NOT NULL DEFAULT 0,
             `status` boolean DEFAULT false,
-            `notice` longtext NOT NULL COMMENT 'Contient l''object Notification',
+            `needle` longtext NOT NULL COMMENT 'Contient les variables dans une array',
+            `guid` varchar(255)	NOT NULL DEFAULT '',
             `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );";
         $wpdb->query($notice);
 
