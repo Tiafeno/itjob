@@ -166,11 +166,20 @@ if (!class_exists('vcRegisterParticular')) :
     if (is_wp_error($result)) {
       wp_send_json(['success' => false, 'msg' => $result->get_error_message()]);
     }
-      // Ajouter un titre au CV
-    $post_id = (int)$result;
-    wp_update_post(['ID' => $post_id, 'post_title' => 'CV' . $post_id]);
 
-      // save repeater field
+    // Récupérer l'incrementation des CV
+    $cvIncrement = get_field('cv_increment', 'option');
+    $cvIncrement = (int) $cvIncrement;
+    
+    $post_id = (int)$result;
+    $Id = $cvIncrement === 0 ? $post_id : $cvIncrement;
+    // Ajouter un titre au CV
+    wp_update_post(['ID' => $post_id, 'post_title' => 'CV' . $Id]);
+
+    $cvIncrement += 1;
+    update_field('cv_increment', $cvIncrement, $post_id);
+
+    // save repeater field
     $value = [];
     $phones = json_decode($form->cellphone);
     foreach ($phones as $row => $phone) {
@@ -184,9 +193,11 @@ if (!class_exists('vcRegisterParticular')) :
 
       // featured: Envoie une email de confirmation pour le changement de mot de passe
     $user = get_user_by('email', trim($form->email));
+
+    // Envoyer une email pour une nouvelle utilisateur
     do_action('register_user_particular', $user->ID);
 
-      // Ne pas activer le CV de l'utilisateur
+    // Ne pas activer le CV de l'utilisateur
     update_field('activated', 0, $post_id);
 
     wp_send_json(['success' => true, 'msg' => 'Vous avez réussi votre inscription']);

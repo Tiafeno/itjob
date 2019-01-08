@@ -203,6 +203,7 @@ if ( ! class_exists( 'vcOffers' ) ):
       wp_set_post_terms( $post_id, [ (int) $form->country ], 'city' );
 
       do_action('notice-admin-new-offer', $post_id);
+      do_action('create_pending_offer_mail', $post_id);
       
       wp_send_json( [ 'success' => true, 'offer' => new Offers( $post_id ) ] );
     }

@@ -285,7 +285,6 @@ final class apiCandidate
     }
   }
 
-  // TODO: Mettre à jours le candidat et le validé
   public function update_candidate(WP_REST_Request $request)
   {
     $candidate_id = (int)$request['id'];

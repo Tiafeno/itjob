@@ -79,12 +79,13 @@ add_action('rest_api_init', function () {
                   case 'activated':
                      $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
                      if (is_null($status)) new WP_REST_Response('Parametre manquant');
-              // Seul l'adminstrateur peuvent modifier cette option
+                     // Seul l'adminstrateur peuvent modifier cette option
                      if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
 
                      $status = (int)$status;
-                     if ($Candidate->state === 'pending' && $status === 1) {
+                     if ($status === 1) {
                         wp_update_post(['ID' => $Candidate->getId(), 'post_status' => 'publish'], true);
+                        do_action('confirm_validate_candidate', $Candidate->getId());
                      }
                      update_field('activated', (int)$status, $Candidate->getId());
 
@@ -95,7 +96,7 @@ add_action('rest_api_init', function () {
                      $featured = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
                      $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;
 
-              // Seul l'adminstrateur peuvent modifier cette option
+                     // Seul l'adminstrateur peuvent modifier cette option
                      if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
                      if (is_null($featured) || is_null($dateLimit)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
                      $featured = (int)$featured;
@@ -220,6 +221,7 @@ add_action('rest_api_init', function () {
                      update_field('activated', $status, $Company->getId());
                      if ($status) {
                         do_action('notice-change-company-status', $Company->getId(), $status);
+                        do_action('confirm_validate_company', $Company->getId());
                      }
 
                      return new WP_REST_Response("Entreprise mis à jour avec succès");
@@ -357,6 +359,7 @@ add_action('rest_api_init', function () {
                      update_field('activated', (int)$status, $Offer->ID);
                      if ($status) {
                         do_action('notice-change-offer-status', $Offer, $status);
+                        do_action('confirm_validate_offer', $offer_id);
                      }
                      return new WP_REST_Response("Offre mis à jour avec succès");
 

@@ -24,11 +24,15 @@ class Mailing {
   }
 
   public function onInit() {
-    $oc_id               = jobServices::page_exists( 'Espace client' );
+    $oc_id          = jobServices::page_exists( 'Espace client' );
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
     $this->espace_client = get_the_permalink( $oc_id );
     $this->logo = $logo;
+
+    // On active ou désactive l'envoie des mails
+    $option_mailing = get_field('save_post_mailing', 'option');
+    if ($option_mailing) return true;
 
     // Uses: do_action() Calls 'user_register' hook when creating a new user giving the user's ID
     //add_action( 'user_register', [ &$this, 'register_user' ], 10, 1 );
@@ -42,47 +46,21 @@ class Mailing {
     add_action( 'new_validate_term', [ &$this, 'notif_admin_new_validate_term' ], 10, 1 );
     add_action( 'email_application_validation', [ &$this, 'email_application_validation' ], 10, 1 );
 
+    // Envoyer une email pour administrateur pour informer un nouvelle offre
+    add_action( 'create_pending_offer_mail', [&$this, 'create_new_pending_offer_mail'], 10, 1);
+
     add_action( 'confirm_validate_offer', [&$this, 'confirm_validate_offer'], 10, 1);
+    // Envoyer une email de confirmation de validation de CV
     add_action( 'confirm_validate_candidate', [&$this, 'confirm_validate_candidate'], 10, 1);
+    // Envoyer une email de confirmation de validation de compte professionnel
     add_action( 'confirm_validate_company', [&$this, 'confirm_validate_company'], 10, 1);
     // Envoyer une email au commercial et a l'administrateur
     // pour notifier une inscription ou un nouveau utilisateur
     add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
 
     add_action( 'acf/save_post', function ( $post_id ) {
-      $option_mailing = get_field('save_post_mailing', 'option');
-      if ($option_mailing) return true;
       $post_type   = get_post_type( $post_id );
       $post_status = get_post_status( $post_id );
-      switch ( $post_type ):
-        case 'offers':
-          switch ( $post_status ) {
-            case 'pending':
-              $this->notification_for_new_pending_offer( $post_id );
-              break;
-            case 'publish':
-              $this->confirm_validate_offer( $post_id );
-              // $this->alert_for_new_offer( $post_id );
-              break;
-          }
-          break;
-        case 'candidate':
-          switch ( $post_status ) {
-            case 'publish':
-              $this->confirm_validate_candidate( $post_id );
-              // $this->alert_for_new_candidate( $post_id );
-              break;
-          }
-          break;
-        case 'company':
-          switch ( $post_status ) {
-            case 'publish':
-              $this->confirm_validate_company( $post_id );
-              break;
-          }
-          break;
-      endswitch;
-
 
     }, 20, 1 );
   }
@@ -294,15 +272,9 @@ class Mailing {
     }
     // Les address email des administrateurs qui recoivent les notifications
     // La valeur de cette option est un tableau
-    $admin_notification_emails = get_field( 'admin_editor_user', 'option' ); // Return array of user (WP_User)
     $admin_email               = get_field( 'admin_mail', 'option' ); // return string (mail)
-    if ( empty( $admin_notification_emails ) ) {
-      $admin_email = strpos( $admin_email, ',' ) ? explode( ',', $admin_email ) : $admin_email;
-
-      return $admin_email;
-    }
-
-    return is_array( $admin_notification_emails ) ? $admin_notification_emails : $admin_email;
+    $admin_email = strpos( $admin_email, ',' ) ? explode( ',', $admin_email ) : $admin_email;
+    return $admin_email;
   }
 
 
@@ -319,7 +291,6 @@ class Mailing {
    * @call class-itjob.php (line 91), user_register hook
    *
    * @param int $user_id - L'identification du client
-   *
    * @return bool|mixed
    */
   public function new_register_user( $user_id ) {
@@ -666,8 +637,9 @@ class Mailing {
     }
   }
 
-  // Envoyer un mail au candidat
-  // Administrateur a validé le CV
+  /**
+   * Envoyer un mail au candidat pour une notification de validation par l'administrateur
+   */
   public function confirm_validate_candidate( $candidat_id ) {
     global $Engine;
     if ( ! is_user_logged_in() ) {
@@ -680,6 +652,9 @@ class Mailing {
       return false;
     }
 
+    /**
+     * Crée une notification au candidat
+     */
     do_action('notice_publish_cv', (int)$candidat_id);
 
     $to        = $email;
@@ -707,7 +682,10 @@ class Mailing {
     }
     $sender = wp_mail( $to, $subject, $content, $headers );
     if ( $sender ) {
-      // Mail envoyer avec success
+      /**
+       * Envoyer une alert au professionnel abonnée
+       */
+      $this->alert_for_new_candidate( $post_id );
       return true;
     } else {
       // Erreur d'envoie
@@ -789,6 +767,7 @@ class Mailing {
     $sender = wp_mail( $to, $subject, $content, $headers );
     if ( $sender ) {
       // Mail envoyer avec success
+      $this->alert_for_new_offer( $offer_id );
       return true;
     } else {
       // Erreur d'envoie
@@ -797,7 +776,7 @@ class Mailing {
   }
 
   // Envoyer une notification a l'administrateur pour une nouvelle offre publier dans le site  
-  public function notification_for_new_pending_offer( $offer_id ) {
+  public function create_new_pending_offer_mail( $offer_id ) {
     global $Engine;
     if ( ! is_numeric( $offer_id ) ) {
       return false;
@@ -946,7 +925,6 @@ class Mailing {
    * Notifier les entreprises si le candidate correspont a ce qu'ils recherchent
    *
    * @param int $candidate_id
-   *
    * @return bool
    */
   public function alert_for_new_candidate( $candidate_id ) {
