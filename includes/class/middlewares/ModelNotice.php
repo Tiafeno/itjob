@@ -66,7 +66,7 @@ trait ModelNotice {
       $Notice->ID          = $row->id_notice;
       $Notice->date_create = $row->date_create;
       $Notice->status      = $row->status;
-      $Notice->guid      = $row->guid;
+      $Notice->guid        = $row->guid;
 
       $tpl      = $Template->tpls[(int)$row->template];
       $Notice->title = vsprintf($tpl, $needle);
