@@ -11,7 +11,8 @@ if (!defined('ABSPATH')) {
 }
 
 // Un nouveau CV portant la référence « ".$cvs->reference." » a été inséré 
-final class NotificationTpl {
+final class NotificationTpl
+{
   public $tpls;
   public function __construct()
   {
@@ -48,7 +49,7 @@ final class NotificationHelper
       add_action('notice-publish-cv', [&$this, 'notice_publish_cv'], 10, 1);
       add_action('notice-publish-offer', [&$this, 'notice_publish_offer'], 10, 1);
       add_action('notice-candidate-selected-cv', [&$this, 'notice_candidate_selected_cv'], 10, 2);
-      
+
       add_action('notice-change-request-status', [&$this, 'notice_change_request_status'], 10, 2);
       add_action('notice-change-company-status', [&$this, 'notice_change_company_status'], 10, 2);
       add_action('notice-change-offer-status', [&$this, 'notice_change_offer_status'], 10, 2);
@@ -76,7 +77,7 @@ final class NotificationHelper
   {
     $Model = new itModel();
     $Candidate = new Candidate((int)$id_cv);
-    
+
     $Author = $Candidate->getAuthor();
     $firstname = $Candidate->getFirstName();
 
@@ -96,7 +97,7 @@ final class NotificationHelper
     $Model = new itModel();
     // Company
     $Company = new Company((int)$id_cv);
-    
+
     $Notice = new \stdClass();
     $Notice->tpl_msg = 2;
     $Notice->needle = [$Company->title];
@@ -174,7 +175,7 @@ final class NotificationHelper
       $Company = new Company($postCompany->ID);
 
       $companyNotice = new \stdClass();
-      
+
       $companyNotice->tpl_msg = 6;
       $companyNotice->needle = [$Candidate->title, $Offer->title];
       $companyNotice->guid = $Candidate->candidate_url . "?ref=notif";
@@ -186,7 +187,7 @@ final class NotificationHelper
     $Notice->tpl_msg = 7;
     $Notice->needle = [$Offer->title];
     $Notice->guid = "/offer/{$id_offer}/edit";
-    
+
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
       $Model->added_notice($admin->ID, $Notice);
@@ -209,7 +210,7 @@ final class NotificationHelper
     $Author = $Candidate->getAuthor();
 
     $candidateNotice = new \stdClass();
-    
+
     $candidateNotice->tpl_msg = 8;
     $candidateNotice->needle = [$Offer->title];
     $candidateNotice->guid = $Offer->offer_url . "?ref=notif";
@@ -219,7 +220,7 @@ final class NotificationHelper
     $Notice = new \stdClass();
 
     $Notice->tpl_msg = 9;
-    $Notice->needle  = [$Candidate->title];
+    $Notice->needle = [$Company->title, $Candidate->title];
     $Notice->guid = "/offer/{$Interest->id_offer}/edit";
 
     $Administrators = $this->get_user_administrator();
@@ -268,18 +269,18 @@ final class NotificationHelper
 
     $companyNotice = new \stdClass();
     $companyNotice->guid = $Candidate->candidate_url . "?ref=notif";
-    
+
 
     $candidateNotice = new \stdClass();
     $candidateNotice->guid = $Offer->offer_url . "?ref=notif";
-    
+
 
     switch ($Interest->status) {
       case 'validated':
 
         $companyNotice->tpl_msg = 11;
         $companyNotice->needle = [$Candidate->reference, $Offer->title];
-        
+
         $candidateNotice->tpl_msg = 12;
         $candidateNotice->needle = [$Offer->title];
         break;
@@ -306,9 +307,9 @@ final class NotificationHelper
   public function notice_change_company_status($id_company, $status = null)
   {
     if (!is_numeric($id_company) || is_null($status)) return false;
-    $Model   = new itModel();
+    $Model = new itModel();
     $Company = new Company($id_company);
-    $Notice  = new \stdClass();
+    $Notice = new \stdClass();
     $Notice->guid = "?ref=notif";
     $Notice->tpl_msg = 15;
     $Notice->needle = [];
@@ -335,7 +336,8 @@ final class NotificationHelper
     }
   }
 
-  public function notice_candidate_selected_cv( $id_candidate, $id_offer ) {
+  public function notice_candidate_selected_cv($id_candidate, $id_offer)
+  {
     // Candidate
     $Model = new itModel();
     $Offer = new Offers((int)$id_offer);
