@@ -627,8 +627,9 @@ if ( ! class_exists( 'scClient' ) ) :
           'exp_city'         => $experience->exp_city,
           'exp_company'      => $experience->exp_company,
           'exp_positionHeld' => $experience->exp_positionHeld,
-          'exp_branch_activity' => (int)$experience->abranch,
+          'exp_branch_activity' => (int)$experience->exp_branch_activity,
           'exp_mission'      => $experience->exp_mission,
+          'old_value'        => isset($experience->old_value) ? $experience->old_value : ['exp_dateBegin' => '', 'exp_dateEnd' => '', 'exp_branch_activity' => ''],
           'validated'        => $experience->validated
         ];
       }

@@ -237,7 +237,8 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         $scope.loading = false;
 
         this.$onInit = () => {
-          $scope.form.softwares = $scope.softwareLists = _.clone($scope.softwares);
+          $scope.form.softwares = _.clone($scope.softwares);
+          $scope.softwareLists = _.clone($scope.softwares);
           console.info('Init collect softwares');
         };
 
