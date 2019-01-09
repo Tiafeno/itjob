@@ -262,7 +262,7 @@
                                 <span class="text-white">PROFESIONNELS</span>
                               </a>
                               <span class="text-center d-block font-weight-light pl-2 admin-featured-desc">
-                                Se connecter ou s'inscrire ( Recruteur ou informateur )
+                                Se connecter ou s'inscrire ( Recruteur ou formateur )
                               </span>
                             </div>
 
