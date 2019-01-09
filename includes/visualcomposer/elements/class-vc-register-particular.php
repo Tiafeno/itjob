@@ -177,7 +177,7 @@ if (!class_exists('vcRegisterParticular')) :
     wp_update_post(['ID' => $post_id, 'post_title' => 'CV' . $Id]);
 
     $cvIncrement += 1;
-    update_field('cv_increment', $cvIncrement, $post_id);
+    update_field('cv_increment', $cvIncrement, 'option');
 
     // save repeater field
     $value = [];
