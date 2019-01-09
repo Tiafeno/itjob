@@ -754,6 +754,17 @@ add_action('rest_api_init', function () {
                      return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été effacer dans la base de donnée', 'data' => $term]);
 
                      break;
+                  
+                  case 'replace':
+                     $params = $_REQUEST['params'];
+                     $params = json_decode(stripslashes($params));
+
+                     $result = wp_delete_term($term_id, $params->taxonomy, ['default' => $params->by, true]);
+                     if (is_wp_error($result))
+                        return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite. Si l'erreur persiste contacter l'administrateur"]);
+                     return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été remplacer']);
+
+                     break;
                }
 
             } else {
@@ -1121,6 +1132,36 @@ add_action('rest_api_init', function () {
             $posts = $wpdb->get_results($sql);
             return new WP_REST_Response($posts);
          },
+      ]
+   ]);
+
+   register_rest_route('it-api', '/tax/search/(?P<taxonomy>\w+)/(?P<QUERY>\w+)', [
+      [
+         'methods' => WP_REST_Server::READABLE,
+         'callback' => function (WP_REST_Request $rq) {
+            $terms = [];
+            $term_args = array(
+               'taxonomy' => $rq['taxonomy'],
+               'hide_empty' => false,
+               'fields' => 'all',
+               'count' => true,
+               'name__like' => $rq['QUERY']
+            );
+            $term_query = new WP_Term_Query($term_args);
+
+            foreach ($term_query->terms as $term) {
+               $activated = get_term_meta( $term->term_id, 'activated', true );
+               if (!$activated) continue;
+               $terms[] = [
+                  'activated' => $activated,
+                  'name' => $term->name,
+                  'slug' => $term->slug,
+                  'term_id' => $term->term_id
+               ];
+            }
+
+            return new WP_REST_Response($terms);
+         }
       ]
    ]);
 

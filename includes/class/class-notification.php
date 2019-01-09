@@ -44,20 +44,20 @@ final class NotificationHelper
   public function __construct()
   {
     add_action('init', function () {
-      add_action('notice-candidate-postuled', [&$this, 'notice_candidate_postuled'], 10, 2);
-      add_action('notice-interest', [&$this, 'notice_interest'], 10, 1);
-      add_action('notice-publish-cv', [&$this, 'notice_publish_cv'], 10, 1);
-      add_action('notice-publish-offer', [&$this, 'notice_publish_offer'], 10, 1);
+      add_action('notice-candidate-postuled',    [&$this, 'notice_candidate_postuled'], 10, 2);
+      add_action('notice-interest',              [&$this, 'notice_interest'], 10, 1);
+      add_action('notice-publish-cv',            [&$this, 'notice_publish_cv'], 10, 1);
+      add_action('notice-publish-offer',         [&$this, 'notice_publish_offer'], 10, 1);
       add_action('notice-candidate-selected-cv', [&$this, 'notice_candidate_selected_cv'], 10, 2);
 
       add_action('notice-change-request-status', [&$this, 'notice_change_request_status'], 10, 2);
       add_action('notice-change-company-status', [&$this, 'notice_change_company_status'], 10, 2);
-      add_action('notice-change-offer-status', [&$this, 'notice_change_offer_status'], 10, 2);
-      add_action('request-premium-account', [&$this, 'request_premium_account'], 10, 1);
+      add_action('notice-change-offer-status',   [&$this, 'notice_change_offer_status'], 10, 2);
+      add_action('request-premium-account',      [&$this, 'request_premium_account'], 10, 1);
 
-      add_action('notice-admin-create-cv', [&$this, 'notice_admin_create_cv'], 10, 1);
-      add_action('notice-admin-new-offer', [&$this, 'notice_admin_new_offer'], 10, 1);
-      add_action('notice-admin-update-cv', [&$this, 'notice_admin_update_cv'], 10, 1);
+      add_action('notice-admin-create-cv',   [&$this, 'notice_admin_create_cv'], 10, 1);
+      add_action('notice-admin-new-offer',   [&$this, 'notice_admin_new_offer'], 10, 1);
+      add_action('notice-admin-update-cv',   [&$this, 'notice_admin_update_cv'], 10, 1);
       add_action('notice-admin-new-company', [&$this, 'notice_admin_new_company'], 10, 1);
 
       // On change la status d'une notification

@@ -322,6 +322,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
           });
           Experiences.push({
             exp_positionHeld: model.position,
+            exp_branch_activity: model.abranch,
             exp_company: model.company,
             exp_country: model.country,
             exp_city: model.city,
