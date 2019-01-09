@@ -11,5 +11,5 @@ if ( function_exists( 'get_field' ) ):
   define( 'REGISTER_CANDIDATE_PAGE_ID', get_field( 'register_candidate_page_id', 'option' ) );
   define( 'REGISTER_PARTICULAR_PAGE_ID', get_field( 'register_particular_page_id', 'option' ) );
 else:
-  die( "Unable to active ACF Plugin" );
+  echo "Unable to active ACF Plugin";
 endif;

@@ -101,14 +101,22 @@ if ( ! class_exists( 'vcSearch' ) ):
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
+
           $software = get_terms( 'software', [
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
+
           $sub_data = [
             'languages' => $langage,
             'softwares' => $software
           ];
+
+          $add_cv_link = get_the_permalink( REGISTER_CANDIDATE_PAGE_ID );
+          $add_offer_link = get_the_permalink( ADD_OFFER_PAGE );
+          
+          $data['add_cv_link'] = $add_cv_link;
+          $data['add_offer_link'] = $add_offer_link;
 
           $data = array_merge( $data, $sub_data );
 
