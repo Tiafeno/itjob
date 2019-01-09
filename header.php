@@ -179,6 +179,12 @@
       font: 13px "Poppins",Helvetica,Arial,sans-serif !important;
       padding: 0 0 0 14px !important;
     }
+    .admin-featured-desc {
+      white-space: normal;
+      font-size: 12px;
+      margin-top: 10px;
+      color: rgba(253, 254, 255, 0.65);
+    }
   </style>
 </head>
 <body <?php body_class(); ?> >
@@ -239,16 +245,28 @@
                         <div class="dropdown-arrow"></div>
                         <div class="dropdown-header">
                           <div class="admin-menu-features">
-                            <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/candidate?redir='.$oc_url) ?>">
-<!--                              <i class="fa fa-user-tie"></i>-->
-                              <img src="<?= get_template_directory_uri() ?>/img/icons/user-solid.svg" />
-                              <span class="text-white">PARTICULIERS</span>
-                            </a>
+                            <div class="admin-features-item">
+                              <a class="text-uppercase" href="<?= home_url('/connexion/candidate?redir='.$oc_url) ?>">
+  <!--                              <i class="fa fa-user-tie"></i>-->
+                                <img src="<?= get_template_directory_uri() ?>/img/icons/user-solid.svg" />
+                                <span class="text-white">PARTICULIERS</span>
+                              </a>
+                              <span class="text-center d-block font-weight-light admin-featured-desc">
+                                Se connecter ou s'inscrire (demandeur d'emploi...)
+                              </span>
+                            </div>
 
-                            <a class="admin-features-item text-uppercase" href="<?= home_url('/connexion/company?redir='.$oc_url) ?>">
-                              <img src="<?= get_template_directory_uri() ?>/img/icons/user-tie-solid.svg" />
-                              <span class="text-white">PROFESIONNELS</span>
-                            </a>
+                            <div class="admin-features-item">
+                              <a class="text-uppercase" href="<?= home_url('/connexion/company?redir='.$oc_url) ?>">
+                                <img src="<?= get_template_directory_uri() ?>/img/icons/user-tie-solid.svg" />
+                                <span class="text-white">PROFESIONNELS</span>
+                              </a>
+                              <span class="text-center d-block font-weight-light pl-2 admin-featured-desc">
+                                Se connecter ou s'inscrire ( Recruteur ou informateur )
+                              </span>
+                            </div>
+
+                            
                           </div>
                         </div>
 

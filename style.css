@@ -209,6 +209,8 @@ ul.it-home-menu li.current-menu-item>a {
   color: #ffffff;
 }
 
-.select2-container--default .select2-selection--multiple, .select2-container--default .select2-selection--single {
+.select2-container--default .select2-selection--multiple, 
+.search-element-default input,
+.select2-container--default .select2-selection--single {
   border: 1px solid rgb(0, 0, 0) !important;
 }
