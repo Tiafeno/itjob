@@ -5,15 +5,16 @@
       <iframe src="https://www.youtube-nocookie.com/embed/nu8AL588a1o" width="560" height="315" frameborder="0" uk-video></iframe>
     </div>
   </div>
-  <div class="page-heading mb-5">
+  <div class="page-heading mb-4">
     <h4 class="page-title">FORMULAIRE ENTREPRISE</h4>
     <h6>Vous pouvez aussi <a href="#modal-media-youtube" uk-toggle class="text-blue">regarder la vidéo explicative</a>.</h6>
   </div>
   <div class="col-md-12 pl-0" ng-show="!_.isNull(itOptions.urlHelper.redir)">
-    <div class="alert alert-warning alert-dismissable fade show has-icon"><i class="la la-warning alert-icon"></i>
-      Veuillez vous connecter en tant que professionnel pour déposer un offre. <a ng-href="[[login_url]]" class="uk-text-bold">Se connecter</a>
+    <div class="fade show has-icon">
+      Si vous avez déjà un compte. <a ng-href="[[login_url]]" class="uk-text-bold">Se connecter à un compte existant</a>
     </div>
   </div>
+  <hr>
   <div class="ibox-body">
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Nom de l'entreprise ou société <span style="color: red">*</span></label>

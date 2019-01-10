@@ -1,6 +1,13 @@
 <form class="ibox-body p-5" name="pcForm" ng-submit="formSubmit(pcForm.$valid)" novalidate>
   <h4 class="font-light text-center">Créer votre compte itJob</h4>
-  <p class="text-center mb-5">Accéder à nos services.</p>
+  <p class="text-center mb-4">Accéder à nos services.</p>
+
+  <div class="ibox-header">
+    <p class="text-center">Si vous avez déjà un compte 
+      <a href="{{ uri.singin }}?redir={{uri.redir}}" class="text-blue font-bold ml-2"> Se connecter à un compte existant</a>
+    </p>
+  </div>
+  <hr>
 
   <div class="alert alert-warning alert-dismissable fade show  has-icon" ng-show="error">
     <i class="la la-info-circle alert-icon"></i>
@@ -170,6 +177,3 @@
   </div>
 
 </form>
-<div class="ibox-footer">
-  <p class="text-center"><a href="{{ uri.singin }}?redir={{uri.redir}}" class="text-blue ml-2">Se connecter à un compte existant</a></p>
-</div>
