@@ -451,7 +451,7 @@ add_action('rest_api_init', function () {
          'permission_callback' => function ($data) {
             $ref = isset($_REQUEST['ref']) ? stripslashes(urldecode($_REQUEST['ref'])) : false;
             if (!$ref) return false;
-            return ($ref === 'update_date_limit') ? current_user_can('edit_posts') : current_user_can('remove_users');
+            return ($ref === 'update_date_limit' || $ref === 'collect') ? current_user_can('edit_posts') : current_user_can('remove_users');
          },
          'args' => array(
             'id' => array(
@@ -510,7 +510,9 @@ add_action('rest_api_init', function () {
                return new WP_REST_Response("Offre {$message} avec succès");
             }
          },
-         'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+         'permission_callback' => function ($data) {
+            return current_user_can('edit_posts');
+         },
          'args' => array(
             'id' => array(
                'validate_callback' => function ($param, $request, $key) {
