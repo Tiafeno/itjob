@@ -36,7 +36,7 @@ final class NotificationTpl
     $this->tpls[18] = "Votre photo n'a pas été validée. Veuillez ajouter une photo professionnelle";
     $this->tpls[19] = "Un CV pour reference « %1\$s » viens d'ajouter une image de profil";
     $this->tpls[20] = "Un logiciel vient d'être ajouté « %1\$s »";
-    $this->tpls[21] = "Un métier vient d'être ajouté « %1\$s »";
+    $this->tpls[21] = "Un métier vient d'être ajouté « <b>%1\$s</b> »";
   }
 }
 
