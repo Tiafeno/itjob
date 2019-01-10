@@ -73,6 +73,7 @@ class Mailing {
    * @return bool
    */
   public function register_user_company( $user_id ) {
+    // TODO: Envoyer une email à l'administrateur
     global $Engine;
     $User = new \WP_User( $user_id );
     if ( in_array( 'company', $User->roles ) ) {
@@ -86,7 +87,7 @@ class Mailing {
       $content   = '';
       try {
         $Company   = Company::get_company_by( $User->ID );
-        $greeting  = isset( $Company->greeting['value'] ) ? $Company->greeting['value'] : "Mr/Mme/Mlle";
+        $greeting  = isset( $Company->greeting['value'] ) ? $Company->greeting['value'] : "Mr/Mme";
         $con_query = add_query_arg( [
           'action' => "rp",
           "token"  => $User->user_pass,
@@ -139,7 +140,7 @@ class Mailing {
       try {
         $reset_key = get_password_reset_key( $User );
         $Candidate = Candidate::get_candidate_by( $User->ID );
-        $greeting  = isset( $Candidate->greeting['value'] ) ? $Candidate->greeting['value'] : "Mr/Mme/Mlle";
+        $greeting  = isset( $Candidate->greeting['value'] ) ? $Candidate->greeting['value'] : "Mr/Mme";
         $con_query = add_query_arg( [
           'action' => "validation",
           "key"    => $reset_key,

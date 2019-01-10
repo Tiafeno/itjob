@@ -12,6 +12,12 @@ require_once 'class/class-api-offer.php';
 require_once 'class/class-api-helper.php';
 require_once 'class/class-api-company.php';
 
+
+function check_values($post_ID, $post_after, $post_before){
+}
+
+add_action( 'post_updated', 'check_values', 10, 3 );
+
 /**
  * WP_REST_Server::READABLE = ‘GET’
  * WP_REST_Server::EDITABLE = ‘POST, PUT, PATCH’
@@ -836,36 +842,36 @@ add_action('rest_api_init', function () {
    ]);
 
   // Uploader un fichier ou un image dans le site
-   register_rest_route('it-api', '/upload/',
-      [
-         [
-            'methods' => WP_REST_Server::CREATABLE,
-            'callback' => function (WP_REST_Request $req) {
+   // register_rest_route('it-api', '/upload/',
+   //    [
+   //       [
+   //          'methods' => WP_REST_Server::CREATABLE,
+   //          'callback' => function (WP_REST_Request $req) {
 
-               require_once(ABSPATH . 'wp-admin/includes/image.php');
-               require_once(ABSPATH . 'wp-admin/includes/file.php');
-               require_once(ABSPATH . 'wp-admin/includes/media.php');
-               if (empty($_FILES)) {
-                  return new WP_REST_Response(false);
-               }
-               $file = $_FILES["upload"];
+   //             require_once(ABSPATH . 'wp-admin/includes/image.php');
+   //             require_once(ABSPATH . 'wp-admin/includes/file.php');
+   //             require_once(ABSPATH . 'wp-admin/includes/media.php');
+   //             if (empty($_FILES)) {
+   //                return new WP_REST_Response(false);
+   //             }
+   //             $file = $_FILES["upload"];
 
-               // Let WordPress handle the upload.
-               // Remember, 'file' is the name of our file input in our form above.
-               // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
-               $attachment_id = media_handle_upload('upload', 0);
-               if (is_wp_error($attachment_id)) {
-               // There was an error uploading the image.
-                  return new WP_REST_Response(['success' => false, 'msg' => $attachment_id->get_error_message()]);
-               } else {
-               // The image was uploaded successfully!
-                  return new WP_REST_Response(['attachment_id' => $attachment_id, 'success' => true]);
-               }
-            },
-            'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
-         ]
-      ]
-   );
+   //             // Let WordPress handle the upload.
+   //             // Remember, 'file' is the name of our file input in our form above.
+   //             // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
+   //             $attachment_id = media_handle_upload('upload', 0);
+   //             if (is_wp_error($attachment_id)) {
+   //             // There was an error uploading the image.
+   //                return new WP_REST_Response(['success' => false, 'msg' => $attachment_id->get_error_message()]);
+   //             } else {
+   //             // The image was uploaded successfully!
+   //                return new WP_REST_Response(['attachment_id' => $attachment_id, 'success' => true]);
+   //             }
+   //          },
+   //          'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+   //       ]
+   //    ]
+   // );
 
    register_rest_route('it-api', '/newsletters/',
       [
