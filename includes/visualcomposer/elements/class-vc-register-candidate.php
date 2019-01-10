@@ -426,6 +426,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       if ( is_wp_error( $attachment_id ) ) {
         // There was an error uploading the image.
+        do_action('notice-admin-new-featured-image', $this->Candidate->getId());
         wp_send_json( [ 'success' => false, 'msg' => $attachment_id->get_error_message() ] );
       } else {
         // The image was uploaded successfully!

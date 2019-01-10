@@ -34,6 +34,7 @@ final class NotificationTpl
     $this->tpls[16] = "Votre offre « <b>%1\$s</b> » a bien été validée";
     $this->tpls[17] = "Votre CV viens d'être selectionné sur l'offre: <b>%1\$s</b>";
     $this->tpls[18] = "Votre photo n'a pas été validée. Veuillez ajouter une photo professionnelle";
+    $this->tpls[19] = "Un CV pour reference « %1\$s » viens d'ajouter une image de profil";
   }
 }
 
@@ -58,6 +59,7 @@ final class NotificationHelper
       add_action('notice-admin-new-offer', [&$this, 'notice_admin_new_offer'], 10, 1);
       add_action('notice-admin-update-cv', [&$this, 'notice_admin_update_cv'], 10, 1);
       add_action('notice-admin-new-company', [&$this, 'notice_admin_new_company'], 10, 1);
+      add_action('notice-admin-new-featured-image', [&$this, 'notice_admin_new_featured_image'], 10, 1);
 
       // On change la status d'une notification
       if (isset($_GET['ref'])) {
@@ -123,11 +125,11 @@ final class NotificationHelper
     }
   }
 
-  public function notice_admin_update_cv($id_cv)
+  public function notice_admin_update_cv($id_candidate)
   {
     $Model = new itModel();
     // Company
-    $Candidate = new Candidate((int)$id_cv);
+    $Candidate = new Candidate((int)$id_candidate);
 
     $Notice = new \stdClass();
     $Author = $Candidate->getAuthor();
@@ -135,7 +137,7 @@ final class NotificationHelper
 
     $Notice->tpl_msg = 4;
     $Notice->needle = [$firstname, $Candidate->title];
-    $Notice->guid = "/candidate/{$id_cv}/edit";
+    $Notice->guid = "/candidate/{$id_candidate}/edit";
 
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
@@ -143,6 +145,22 @@ final class NotificationHelper
     }
   }
 
+  public function notice_admin_new_featured_image($id_candidate) {
+    $Model     = new itModel();
+    $Candidate = new Candidate((int)$id_candidate);
+    $Notice    = new \stdClass();
+
+    $Notice->guid = "/candidate/{$id_candidate}/edit";
+    $Notice->tpl_msg = 19;
+    $Notice->needle = [$Candidate->title];
+
+    $Author = $Candidate->getAuthor();
+    $Model->added_notice($Author->ID, $Notice);
+  }
+
+  /**
+   * Le CV est validé
+   */
   public function notice_publish_cv($id_cv)
   {
     $id_cv = (int)$id_cv;
@@ -363,6 +381,8 @@ final class NotificationHelper
 
     $Model->added_notice($Author->ID, $Notice);
   }
+
+
 
   public function get_user_administrator()
   {
