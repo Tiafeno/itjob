@@ -35,6 +35,8 @@ final class NotificationTpl
     $this->tpls[17] = "Votre CV viens d'être selectionné sur l'offre: <b>%1\$s</b>";
     $this->tpls[18] = "Votre photo n'a pas été validée. Veuillez ajouter une photo professionnelle";
     $this->tpls[19] = "Un CV pour reference « %1\$s » viens d'ajouter une image de profil";
+    $this->tpls[20] = "Un logiciel vient d'être ajouté « %1\$s »";
+    $this->tpls[21] = "Un métier vient d'être ajouté « %1\$s »";
   }
 }
 
@@ -60,6 +62,8 @@ final class NotificationHelper
       add_action('notice-admin-update-cv', [&$this, 'notice_admin_update_cv'], 10, 1);
       add_action('notice-admin-new-company', [&$this, 'notice_admin_new_company'], 10, 1);
       add_action('notice-admin-new-featured-image', [&$this, 'notice_admin_new_featured_image'], 10, 1);
+      add_action('notice-admin-new-software', [&$this, 'notice_admin_new_software'], 10, 1);
+      add_action('notice-admin-new-job_sought', [&$this, 'notice_admin_new_job'], 10, 1);
 
       // On change la status d'une notification
       if (isset($_GET['ref'])) {
@@ -154,9 +158,40 @@ final class NotificationHelper
     $Notice->tpl_msg = 19;
     $Notice->needle = [$Candidate->title];
 
-    $Author = $Candidate->getAuthor();
-    $Model->added_notice($Author->ID, $Notice);
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
   }
+
+  public function notice_admin_new_software($aTerm) {
+    $Model     = new itModel();
+    $Notice    = new \stdClass();
+    $Term = get_term((int)$aTerm['term_id']);
+    $Notice->guid = "/taxonomy/software";
+    $Notice->tpl_msg = 20;
+    $Notice->needle = [$Term->name];
+
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
+  }
+
+  public function notice_admin_new_job($aTerm) {
+    $Model     = new itModel();
+    $Notice    = new \stdClass();
+    $Term = get_term((int)$aTerm['term_id']);
+    $Notice->guid = "/taxonomy/job_sought";
+    $Notice->tpl_msg = 21;
+    $Notice->needle = [$Term->name];
+
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
+  }
+
 
   /**
    * Le CV est validé

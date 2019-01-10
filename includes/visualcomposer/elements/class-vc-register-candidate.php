@@ -392,6 +392,10 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           // Désactiver le term qu'on viens d'ajouter
           if ( ! is_wp_error( $term ) ) {
             update_term_meta( $term['term_id'], 'activated', 0 );
+            if ($taxonomy === 'software' || $taxonomy === "job_sought") {
+              do_action('notice-admin-new-' . $taxonomy, $term);
+            }
+
             array_push( $tabContainer, (int) $term['term_id'] );
           }
           // TODO: Envoyer un mail pour notifier des nouveaux terms
