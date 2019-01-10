@@ -13,10 +13,17 @@ require_once 'class/class-api-helper.php';
 require_once 'class/class-api-company.php';
 
 
-function check_values($post_ID, $post_after, $post_before){
+function post_updated_values($post_ID, $post_after, $post_before) {
+   $post_type = get_post_type( $post_ID );
+   if ($post_type === 'candidate') {
+      $featured_image = (int)get_post_meta( $post_ID, '_thumbnail_id', true );
+      if (!$featured_image) {
+         do_action('notice-request-featured-image', $post_ID);
+      }
+   }
 }
 
-add_action( 'post_updated', 'check_values', 10, 3 );
+add_action( 'post_updated', 'post_updated_values', 10, 3 );
 
 /**
  * WP_REST_Server::READABLE = ‘GET’
@@ -29,7 +36,7 @@ add_action('rest_api_init', function () {
 
   // Ajouter des informations utilisateur dans la reponse
    add_filter('jwt_auth_token_before_dispatch', function ($data, $user) {
-    // Tells wordpress the user is authenticated
+      // Tells wordpress the user is authenticated
       wp_set_current_user($user->ID);
       $user_data = get_userdata($user->ID);
       $data['data'] = $user_data;

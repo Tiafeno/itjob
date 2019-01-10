@@ -33,9 +33,7 @@ final class NotificationTpl
     $this->tpls[15] = "Votre compte a été validée";
     $this->tpls[16] = "Votre offre « <b>%1\$s</b> » a bien été validée";
     $this->tpls[17] = "Votre CV viens d'être selectionné sur l'offre: <b>%1\$s</b>";
-
-    // Featured
-    $this->tpls[18] = "";
+    $this->tpls[18] = "Votre photo n'a pas été validée. Veuillez ajouter une photo professionnelle";
   }
 }
 
@@ -44,20 +42,21 @@ final class NotificationHelper
   public function __construct()
   {
     add_action('init', function () {
-      add_action('notice-candidate-postuled',    [&$this, 'notice_candidate_postuled'], 10, 2);
-      add_action('notice-interest',              [&$this, 'notice_interest'], 10, 1);
-      add_action('notice-publish-cv',            [&$this, 'notice_publish_cv'], 10, 1);
-      add_action('notice-publish-offer',         [&$this, 'notice_publish_offer'], 10, 1);
+      add_action('notice-candidate-postuled', [&$this, 'notice_candidate_postuled'], 10, 2);
+      add_action('notice-interest', [&$this, 'notice_interest'], 10, 1);
+      add_action('notice-publish-cv', [&$this, 'notice_publish_cv'], 10, 1);
+      add_action('notice-publish-offer', [&$this, 'notice_publish_offer'], 10, 1);
       add_action('notice-candidate-selected-cv', [&$this, 'notice_candidate_selected_cv'], 10, 2);
+      add_action('notice-request-featured-image', [&$this, 'notice_request_featured_image'], 10, 1);
 
       add_action('notice-change-request-status', [&$this, 'notice_change_request_status'], 10, 2);
       add_action('notice-change-company-status', [&$this, 'notice_change_company_status'], 10, 2);
-      add_action('notice-change-offer-status',   [&$this, 'notice_change_offer_status'], 10, 2);
-      add_action('request-premium-account',      [&$this, 'request_premium_account'], 10, 1);
+      add_action('notice-change-offer-status', [&$this, 'notice_change_offer_status'], 10, 2);
+      add_action('request-premium-account', [&$this, 'request_premium_account'], 10, 1);
 
-      add_action('notice-admin-create-cv',   [&$this, 'notice_admin_create_cv'], 10, 1);
-      add_action('notice-admin-new-offer',   [&$this, 'notice_admin_new_offer'], 10, 1);
-      add_action('notice-admin-update-cv',   [&$this, 'notice_admin_update_cv'], 10, 1);
+      add_action('notice-admin-create-cv', [&$this, 'notice_admin_create_cv'], 10, 1);
+      add_action('notice-admin-new-offer', [&$this, 'notice_admin_new_offer'], 10, 1);
+      add_action('notice-admin-update-cv', [&$this, 'notice_admin_update_cv'], 10, 1);
       add_action('notice-admin-new-company', [&$this, 'notice_admin_new_company'], 10, 1);
 
       // On change la status d'une notification
@@ -346,6 +345,21 @@ final class NotificationHelper
     $Notice->guid = $Offer->offer_url . "?ref=notif";
     $Notice->tpl_msg = 17;
     $Notice->needle = [$Offer->title];
+
+    $Model->added_notice($Author->ID, $Notice);
+  }
+
+  public function notice_request_featured_image($id_candidate)
+  {
+    // Candidate
+    $Model = new itModel();
+    $Candidate = new Candidate((int)$id_candidate);
+    $Author = $Candidate->getAuthor();
+    $Notice = new \stdClass();
+    $espace_client_url = get_the_permalink( ESPACE_CLIENT_PAGE );
+    $Notice->guid = $espace_client_url. "?ref=notif";
+    $Notice->tpl_msg = 18;
+    $Notice->needle = [];
 
     $Model->added_notice($Author->ID, $Notice);
   }
