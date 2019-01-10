@@ -384,6 +384,8 @@ add_action('rest_api_init', function () {
                            $It->type = $Interest->type;
                            $It->status = $Interest->status;
                            $It->id_request = $Interest->id_cv_request;
+                           $It->lm_link = $Interest->type === 'apply' ? ($Interest->id_attachment ? parse_url(wp_get_attachment_url(( (int)$Interest->id_attachment ))) : false) : false;
+                           $It->lm_name =  $Interest->type === 'apply' ? ($Interest->id_attachment ? get_the_title( (int)$Interest->id_attachment) : false) : false;
                            $It->candidate = new \includes\post\Candidate($Interest->id_candidate, true);
                            $Response[] = $It;
                         }

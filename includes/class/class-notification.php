@@ -95,7 +95,6 @@ final class NotificationHelper
   public function notice_admin_new_company($id_company)
   {
     $Model = new itModel();
-    // Company
     $Company = new Company((int)$id_company);
 
     $Notice = new \stdClass();
