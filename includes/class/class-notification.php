@@ -96,7 +96,7 @@ final class NotificationHelper
   {
     $Model = new itModel();
     // Company
-    $Company = new Company((int)$id_cv);
+    $Company = new Company((int)$id_company);
 
     $Notice = new \stdClass();
     $Notice->tpl_msg = 2;

@@ -227,6 +227,7 @@ add_action('rest_api_init', function () {
                      return new WP_REST_Response(['success' => true, 'msg' => "Entreprise mis à jour avec succès"]);
                      break;
 
+                  // Absolete: Paramétre transferer pour les offres
                   case 'account':
                      $type = isset($_REQUEST['type']) ? (int)$_REQUEST['type'] : null;
                      if (is_null($type)) new WP_REST_Response('Parametre manquant');
@@ -274,7 +275,7 @@ add_action('rest_api_init', function () {
             $company = json_decode($company);
             $currentCompany = get_post($company_id);
             $form = [
-               'itjob_meta_account' => (int)$company->account,
+               //'itjob_meta_account' => (int)$company->account,
                'itjob_company_address' => $company->address,
                'itjob_company_greeting' => $company->greeting,
                'itjob_company_name' => $company->name,
@@ -833,9 +834,7 @@ add_action('rest_api_init', function () {
    ]);
 
   // Uploader un fichier ou un image dans le site
-   register_rest_route(
-      'it-api',
-      '/upload/',
+   register_rest_route('it-api', '/upload/',
       [
          [
             'methods' => WP_REST_Server::CREATABLE,
@@ -866,9 +865,7 @@ add_action('rest_api_init', function () {
       ]
    );
 
-   register_rest_route(
-      'it-api',
-      '/newsletters/',
+   register_rest_route('it-api', '/newsletters/',
       [
       // Récuperer les newsletters
          [
@@ -996,9 +993,7 @@ add_action('rest_api_init', function () {
    );
 
 
-   register_rest_route(
-      'it-api',
-      '/blogs/',
+   register_rest_route('it-api', '/blogs/',
       [
       // Récuperer les blogs
          [
