@@ -781,12 +781,11 @@ class Mailing {
     global $Engine;
 
     $Offer = new Offers( (int)$offer_id );
-    $User  = wp_get_current_user();
-    if ( $User->ID !== 0 ) {
-      $Company = Company::get_company_by( $User->ID );
-    } else {
+    if ( ! is_user_logged_in() ) {
       return false;
     }
+    $User  = wp_get_current_user();
+    $Company = Company::get_company_by( $User->ID );
     // $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $admin_emails = $this->getModeratorEmail();
     $custom_logo_id = get_theme_mod( 'custom_logo' );
