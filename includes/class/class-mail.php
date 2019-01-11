@@ -241,7 +241,7 @@ class Mailing {
       $content        = '';
       try {
         $args    = array_merge( $args, [
-          'dashboard_url' => "#dashboard",
+          'dashboard_url' => $this->dashboard_url,
           'home_url'      => home_url( "/" )
         ] );
         $content .= $Engine->render( "@MAIL/admin/notification-new-cv.html.twig", $args );
@@ -779,10 +779,8 @@ class Mailing {
   // Envoyer une notification a l'administrateur pour une nouvelle offre publier dans le site  
   public function create_new_pending_offer_mail( $offer_id ) {
     global $Engine;
-    if ( ! is_numeric( $offer_id ) ) {
-      return false;
-    }
-    $Offer = new Offers( $offer_id );
+
+    $Offer = new Offers( (int)$offer_id );
     $User  = wp_get_current_user();
     if ( $User->ID !== 0 ) {
       $Company = Company::get_company_by( $User->ID );
@@ -791,13 +789,9 @@ class Mailing {
     }
     // $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $admin_emails = $this->getModeratorEmail();
-    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
-    if ( ! $admin_emails ) {
-      return false;
-    }
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-    $to             = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $to             = &$admin_emails;
     $headers        = [];
     $headers[]      = 'Content-Type: text/html; charset=UTF-8';
     $headers[]      = "From: ItJobMada <{$this->no_reply_email}>";

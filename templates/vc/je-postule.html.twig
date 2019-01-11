@@ -31,12 +31,35 @@
       });
       $( "#postuleForm" ).validate({
         rules: {
+          confirmaction: {
+            required: false
+          },
           motivation: {
-            required: true,
-            extension: "pdf|doc|odt|csv|docx|rtf|dot"
+            required: {
+              depends: function(element) {
+                return !$("#confirmaction").is(":checked");
+              }
+            },
+            extension: "pdf|doc|odt|csv|docx|rtf|dot",
           }
         }
       });
+
+
+      // Add click event handler to button
+      $( '#motivation' ).change( function () {
+        var $i = $( '#motivation' ), // Put file input ID here
+          input = $i[0]; // Getting the element from jQuery
+        if ( input.files && input.files[0] ) {
+          file = input.files[0]; // The file
+          //$( '#file-content' ).append( $( '<div/>' ).html( fr.result ) );
+          console.log(file);
+        } else {
+          // Handle errors here
+          alert( "File not selected or browser incompatible." )
+        }
+      } );
+
     });
   })(jQuery);
 </script>
@@ -56,20 +79,35 @@
       </div>
     </div>
 
-    <div class="mb-5">
-      <div class="row">
-        <div class="col-md-2">
+    <div class="row mb-4">
+      <div class="col-sm-12 mb-4 row">
+        <div class="col-sm-2">
           <div class="file-input-plus file-input"><i class="la la-plus-circle"></i>
             <input type="file" name="motivation" id="motivation">
           </div>
         </div>
-        <div class="col-md-10">
+        <div class="col-sm-10">
           <h6>Ajouter une lettre de motivation</h6>
           <p>Type de fichier: pdf, doc, docx, odt, rtf & dot</p>
+
+          <div class="row">
+            <div class="col-sm-12">
+              <div id="file-content"></div>
+            </div>
+          </div>
         </div>
       </div>
-
+      
+      <div class="col-sm-12 mb-4">
+        <div class="form-group">
+          <label class="checkbox checkbox-grey checkbox-ebony">
+            <input id="confirmaction" name="confirmaction" type="checkbox">
+            <span class="input-span"></span> Envoyer ma lettre de motivation plus tard
+          </label>
+        </div>
+      </div>
     </div>
+
 
     <div class="text-center mb-4">
       <input type="hidden" name="action" value="send_apply">
