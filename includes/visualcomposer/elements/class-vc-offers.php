@@ -189,7 +189,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         'post_status'  => 'pending',
         'post_author'  => $User->ID,
         'post_type'    => 'offers'
-      ] );
+      ], true );
       if ( is_wp_error( $result ) ) {
         wp_send_json( [ 'success' => false, 'msg' => $result->get_error_message() ] );
       }
