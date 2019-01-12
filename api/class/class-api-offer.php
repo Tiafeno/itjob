@@ -113,6 +113,13 @@ final class apiOffer
         $response = new \includes\post\Offers($offer->ID, true);
         $response->_featured = (int)$response->isFeatured();
         $response->_featuredDateLimit = $response->_featured ? get_field('itjob_offer_featured_datelimit', $offer->ID) : null;
+
+        $Company =  $response->getCompany();
+        $rspCompany = new \stdClass();
+        $rspCompany->name = $Company->post_title;
+        $rspCompany->ID = $Company->ID;
+        $response->_company = $rspCompany;
+
         return $response;
       }, $the_query->posts);
 

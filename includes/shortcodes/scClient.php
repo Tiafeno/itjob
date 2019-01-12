@@ -1024,13 +1024,19 @@ if ( ! class_exists( 'scClient' ) ) :
         'order'          => 'ASC',
         'post_status'    => [ 'publish', 'pending' ],
         'meta_key'       => 'itjob_offer_company',
-        'meta_value'     => $Company->ID,
+        'meta_value'     => $Company->getId(),
         'meta_compare'   => '='
       ] );
       foreach ( $offers as $offer ) {
-        $_offer = new Offers( $offer->ID );
-        $_offer->__get_access();
-        array_push( $resolve, $_offer );
+        $objOffer = new Offers( $offer->ID );
+        $objOffer->__get_access();
+
+        $rspCompany = new \stdClass();
+        $rspCompany->name = $Company->title;
+        $rspCompany->ID = $Company->getId();
+        $objOffer->_company = $rspCompany;
+
+        array_push( $resolve, $objOffer );
       }
 
       return $resolve;

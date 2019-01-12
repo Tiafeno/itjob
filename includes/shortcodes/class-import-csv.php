@@ -1115,6 +1115,10 @@ if (!class_exists('scImport')) :
         }
         break;
 
+      case 'candidate_add_town':
+        
+        break;
+
       case 'offer_update_activity_area':
         // offre file content
         list( $id_offer, $id_user ) = $lines;

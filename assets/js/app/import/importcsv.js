@@ -288,6 +288,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Utilisateurs - Candidat Information"
       },
       {
+        _id: 15,
+        slug: 'candidate_add_town',
+        label: "Utilisateur - Ajouter les villes pour les candidats"
+      },
+      {
         _id: 10,
         slug: 'user_candidate_status',
         label: "Utilisateurs - Candidat Status (information)"
