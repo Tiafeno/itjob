@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use includes\object as Obj;
+use includes\model\itModel;
 
 final class Offers implements \iOffer {
   // Added Trait Class
@@ -217,6 +218,10 @@ final class Offers implements \iOffer {
     delete_field( 'itjob_offer_mission', $this->ID );
     delete_field( 'itjob_offer_otherinformation', $this->ID );
     delete_field( 'itjob_offer_featured', $this->ID );
+
+    $Model = new itModel();
+    $Model->remove_interest($this->ID);
+
   }
 
   public function isFeatured() {
