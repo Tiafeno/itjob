@@ -141,7 +141,7 @@ if (!class_exists('vcRegisterParticular')) :
     if (!$userEmail) return false;
     $userExist = get_user_by('email', $userEmail);
     if ($userExist || !is_email( $userEmail )) {
-      wp_send_json(['success' => false, 'msg' => 'L\'adresse e-mail ou l\'utilisateur existe déja']);
+      wp_send_json(['success' => false, 'msg' => 'L\'adresse e-mail valide refusé ou existe déja pour un autre compte']);
     }
 
     $form = (object)[

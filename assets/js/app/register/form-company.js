@@ -33,12 +33,11 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
         controller: ['$rootScope', '$scope', 'companyFactory', 'companyService', function ($rootScope, $scope, companyFactory, companyService) {
           $scope.login_url = itOptions.Helper.login;
           $scope.addPhone = function () {
-            $rootScope.company.cellphone.push({id: $rootScope.countPhone, value: ''});
-            $rootScope.countPhone += 1;
+            $rootScope.company.cellphone.push({id: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10), value: ''});
           };
           $scope.removePhone = function (id) {
             $rootScope.company.cellphone = _.filter($rootScope.company.cellphone, function (cellphone) {
-              return cellphone.id != id;
+              return cellphone.id !== id;
             });
           };
           $scope.submitForm = function (isValid) {
@@ -267,7 +266,6 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
     }
   }])
   .controller('formController', ['$scope', '$rootScope', 'abranchs', 'regions', 'allCity', function ($scope, $rootScope, abranchs, regions, allCity) {
-    $rootScope.countPhone = 1;
     $rootScope.isSubmit = !1;
     $rootScope.abranchs = _.clone(abranchs);
     $rootScope.regions = _.clone(regions);

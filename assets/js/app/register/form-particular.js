@@ -132,7 +132,6 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       $scope.uri = {};
       $scope.uri.singin = itOptions.urlHelper.singin;
       $scope.uri.redir = itOptions.urlHelper.redir;
-      $scope.countPhone = 1;
       $scope.particularForm = {};
       $scope.particularForm.greeting = 'mr';
       $scope.particularForm.cellphone = [{
@@ -141,14 +140,13 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       }];
       $scope.addPhone = function () {
         $scope.particularForm.cellphone.push({
-          id: $scope.countPhone,
+          id: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10),
           value: ''
         });
-        $scope.countPhone += 1;
       };
       $scope.removePhone = function (id) {
         $scope.particularForm.cellphone = _.filter($scope.particularForm.cellphone, function (cellphone) {
-          return cellphone.id != id;
+          return cellphone.id !== id;
         });
       };
       $scope.formSubmit = function (isValid) {
