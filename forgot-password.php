@@ -202,9 +202,9 @@ get_header();
                   data: {email: forgotEmail, action: "forgot_password"}
                 })
                   .done(function (resp) {
+                    submitButton.text('Envoyer');
                     var element = resp.success ? successMessage : errorMessage;
                     element.html(resp.data.msg).show();
-                    submitButton.text('Envoyer');
                   });
 
               }

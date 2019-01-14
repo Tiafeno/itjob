@@ -427,19 +427,19 @@ if ( ! class_exists( 'scClient' ) ) :
      */
     public function forgot_password() {
       if ( is_user_logged_in() ) {
-        wp_send_json_error( "Vous ne pouvez pas effectuer cette action" );
+        wp_send_json_error( ["msg" => "Vous ne pouvez pas effectuer cette action"] );
       }
       $email = Http\Request::getValue( 'email' );
       if ( ! $email || ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-        wp_send_json_error( "Paramétre non valide" );
+        wp_send_json_error( ["msg" => "Paramétre non valide"] );
       }
       $user = get_user_by( 'email', $email );
       if ( ! $user ) {
-        wp_send_json_error( "Votre recherche ne donne aucun résultat. Veuillez réessayer avec d’autres adresse email." );
+        wp_send_json_error( ['msg' => "Votre recherche ne donne aucun résultat. Veuillez réessayer avec d’autres adresse email."] );
       }
       $reset_key = get_password_reset_key( $user );
       if ( is_wp_error( $reset_key ) ) {
-        wp_send_json_error( $reset_key->get_error_message() );
+        wp_send_json_error( ['msg' => $reset_key->get_error_message() ]);
       }
       // Envoyer un email à l'utilisateur
       do_action( 'forgot_my_password', $email, $reset_key );
