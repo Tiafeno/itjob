@@ -72,6 +72,14 @@ if ( ! class_exists( 'itJob' ) ) {
         }
       } );
 
+      add_action( 'delete_post', function ($post_id) {
+        $pst = get_post( $post_id );
+        if ($pst->post_type === "attachment") {
+          $Model = new itModel();
+          $Model->remove_attachment($pst->ID);
+        }
+      }, 10 );
+
       // Effacer le candidat ou l'entreprise si on supprime l'utilisateur
       add_action( 'delete_user', function ( $user_id ) {
         $user_obj = get_userdata( $user_id );

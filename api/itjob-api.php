@@ -704,7 +704,25 @@ add_action('rest_api_init', function () {
 
             if (isset($_REQUEST['search']) && !empty($_REQUEST['search']['value'])) {
                $s = $_REQUEST['search']['value'];
-               $args = array_merge($args, ['search' => $s]);
+               if (strpos($s, "|") !== false) {
+                  $params = explode('|', $s);
+                  $activated = (int) $params[1];
+                  $args = array_merge($args, [
+                     "meta_query" => [
+                        [
+                           'key' => "activated",
+                           'value' => (int)$activated
+                        ]
+                     ]
+                  ]);
+
+                  if (!empty($params[0]) && $params[0] !== ' ') {
+                     $args = array_merge($args, ['search' => $params[0]]);
+                  }
+                  
+               } else {
+                  $args = array_merge($args, ['search' => $s]);
+               }
             }
             $contents = [];
             $term_query = new WP_Term_Query($args);

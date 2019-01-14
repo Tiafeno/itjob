@@ -119,6 +119,12 @@ trait ModelInterest {
     return $rows;
   }
 
+  public function remove_attachment( $id_attachment ) {
+    global $wpdb;
+    $result = $wpdb->update($this->requestTable, ['id_attachment' => 0], ['id_attachment' => (int)$id_attachment], ['%d'], ['%d']);
+    return $result;
+  }
+
   /**
    * Cette fonction permet de retourner une requete
    *
