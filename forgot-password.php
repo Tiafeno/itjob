@@ -226,7 +226,7 @@ $forgot_password = Http\Request::getValue( 'forgot_password', 0 );
             <span class="auth-head-icon"><i class="la la-key"></i></span>
           </div>
           <form class="ibox-body pt-0" id="forgot-form" action="" method="POST">
-            <h4 class="font-strong text-center mb-4">Identifiant et/ou mot de passe oublié(s)</h4>
+            <h4 class="font-strong text-center mb-4">Mot de passe oublié</h4>
             <p class="mb-4">
               Veuillez saisir votre adresse de messagerie.
               Un lien permettant de créer un nouveau mot de passe vous sera envoyé par e-mail.
