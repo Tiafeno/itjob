@@ -52,7 +52,7 @@ trait ModelNotice {
       $id_user = $User->ID;
     }
     global $wpdb;
-    $sql           = "SELECT * FROM {$this->noticeTable} WHERE id_user = %d ORDER BY date_create DESC LIMIT 15";
+    $sql           = "SELECT * FROM {$this->noticeTable} WHERE id_user = %d ORDER BY date_create DESC LIMIT 25";
     $prepare       = $wpdb->prepare( $sql, $id_user );
     $rows          = $wpdb->get_results( $prepare );
     $Notifications = [];

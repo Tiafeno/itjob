@@ -108,7 +108,7 @@ class vcAds
 
       $Ads = $Model->get_ads_by_position($position);
       if (empty($Ads)) {
-         $preview = get_template_directory_uri() . "/img/ads/" . $size . '.jpg';
+         $preview = get_template_directory_uri() . "/img/position/" . $size . '.jpg';
          $sizes = \explode('x', $size);
          $width = $sizes[0];
          $height = $sizes[1];

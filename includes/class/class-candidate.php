@@ -137,9 +137,7 @@ final class Candidate extends UserParticular implements \iCandidate {
    * Verifier si le CV est publier (valider) ou autres
    */
   public function is_publish() {
-    $post_status = [ 'pending', 'draft', 'private', 'trash' ];
-
-    return ! in_array( $this->postType, $post_status ) ? 1 : 0;
+    return $this->state === 'publish';
   }
 
   public function acfElements() {

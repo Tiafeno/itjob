@@ -1,5 +1,8 @@
 <?php
 use includes\object\jobServices;
+use includes\model\itModel;
+use includes\post\Candidate;
+use includes\vc\vcRegisterCandidate;
 
 if (!defined('ABSPATH')) {
    exit;
@@ -13,17 +16,18 @@ require_once 'class/class-api-helper.php';
 require_once 'class/class-api-company.php';
 
 
-function post_updated_values($post_ID, $post_after, $post_before) {
-   $post_type = get_post_type( $post_ID );
+function post_updated_values($post_ID, $post_after, $post_before)
+{
+   $post_type = get_post_type($post_ID);
    if ($post_type === 'candidate') {
-      $featured_image = (int)get_post_meta( $post_ID, '_thumbnail_id', true );
+      $featured_image = (int)get_post_meta($post_ID, '_thumbnail_id', true);
       if (!$featured_image) {
          do_action('notice-request-featured-image', $post_ID);
       }
    }
 }
 
-add_action( 'post_updated', 'post_updated_values', 10, 3 );
+add_action('post_updated', 'post_updated_values', 10, 3);
 
 /**
  * WP_REST_Server::READABLE = ‘GET’
@@ -77,7 +81,7 @@ add_action('rest_api_init', function () {
             $ref = isset($_REQUEST['ref']) ? stripslashes($_REQUEST['ref']) : false;
             if ($ref) {
                $candidate_id = (int)$request['id'];
-               $Candidate = new \includes\post\Candidate($candidate_id);
+               $Candidate = new Candidate($candidate_id);
                if (is_null($Candidate->title)) {
                   return new WP_Error('no_candidate', 'Aucun candidate ne correpond à cette id', array('status' => 404));
                }
@@ -128,6 +132,20 @@ add_action('rest_api_init', function () {
                      update_field('archived', $archived, $Candidate->getId());
 
                      return new WP_REST_Response(['success' => true, 'msg' => "Candidate mise à jour avec succès"]);
+                     break;
+                  
+                  case 'coverletter':
+                     $Model = new itModel();
+                     $lm = []; // Lettre de motivation
+                     $requests = $Model->collect_candidate_request($Candidate->getId());
+                     foreach ($requests as $request) {
+                        if ((int)$request->id_attachment !== 0) {
+                           $attachment = get_post((int) $request->id_attachment);
+                           $lm[] = $attachment;
+                        }
+                     }
+
+                     return new WP_REST_Response($lm);
                      break;
 
                   default:
@@ -397,8 +415,8 @@ add_action('rest_api_init', function () {
                            $It->type = $Interest->type;
                            $It->status = $Interest->status;
                            $It->id_request = $Interest->id_cv_request;
-                           $It->lm_link = $Interest->type === 'apply' ? ($Interest->id_attachment ? parse_url(wp_get_attachment_url(( (int)$Interest->id_attachment ))) : false) : false;
-                           $It->lm_name =  $Interest->type === 'apply' ? ($Interest->id_attachment ? get_the_title( (int)$Interest->id_attachment) : false) : false;
+                           $It->lm_link = $Interest->type === 'apply' ? ($Interest->id_attachment ? parse_url(wp_get_attachment_url(((int)$Interest->id_attachment))) : false) : false;
+                           $It->lm_name = $Interest->type === 'apply' ? ($Interest->id_attachment ? get_the_title((int)$Interest->id_attachment) : false) : false;
                            $It->candidate = new \includes\post\Candidate($Interest->id_candidate, true);
                            $Response[] = $It;
                         }
@@ -644,26 +662,33 @@ add_action('rest_api_init', function () {
          'callback' => function (WP_REST_Request $rq) {
             if (!isset($_REQUEST['length']) || !isset($_REQUEST['start'])) return;
             global $wpdb;
+
             $length = (int)$_REQUEST['length'];
             $start = (int)$_REQUEST['start'];
+            $sort = $_REQUEST['sort'][0];
+            $columns = $_REQUEST['columns'];
+
             $terms_per_page = $length;
             $tpp = filter_var($terms_per_page, FILTER_VALIDATE_INT);
             $taxonomy = filter_var($rq['taxonomy'], FILTER_SANITIZE_STRING);
-
-            if (!taxonomy_exists($taxonomy))
-               return false;
+            if (!taxonomy_exists($taxonomy)) return false;
             $term_count = wp_count_terms($taxonomy);
-
             $max_num_pages = ceil($term_count / $tpp);
             // We can now get our terms and paginate it
             $args = [
                'taxonomy' => $taxonomy,
                'hide_empty' => false,
-               'orderby' => 'ID',
-               'order' => 'DESC',
                'number' => $length,
                'offset' => $start
             ];
+
+            if (!empty($sort['column'])) {
+               $index = (int)$sort['column'];
+               $field = $columns[$index]['data'];
+               if ($field === 'term_id' || $field === 'name') {
+                  $args = array_merge($args, ['orderby' => $field, 'order' => $sort['dir'], ]);
+               }
+            }
 
             if (isset($_REQUEST['search']) && !empty($_REQUEST['search']['value'])) {
                $s = $_REQUEST['search']['value'];
@@ -772,7 +797,7 @@ add_action('rest_api_init', function () {
                      return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été effacer dans la base de donnée', 'data' => $term]);
 
                      break;
-                  
+
                   case 'replace':
                      $params = $_REQUEST['params'];
                      $params = json_decode(stripslashes($params));
@@ -882,7 +907,9 @@ add_action('rest_api_init', function () {
    //    ]
    // );
 
-   register_rest_route('it-api', '/newsletters/',
+   register_rest_route(
+      'it-api',
+      '/newsletters/',
       [
       // Récuperer les newsletters
          [
@@ -1010,7 +1037,9 @@ add_action('rest_api_init', function () {
    );
 
 
-   register_rest_route('it-api', '/blogs/',
+   register_rest_route(
+      'it-api',
+      '/blogs/',
       [
       // Récuperer les blogs
          [
@@ -1162,7 +1191,7 @@ add_action('rest_api_init', function () {
             $term_query = new WP_Term_Query($term_args);
 
             foreach ($term_query->terms as $term) {
-               $activated = get_term_meta( $term->term_id, 'activated', true );
+               $activated = get_term_meta($term->term_id, 'activated', true);
                if (!$activated) continue;
                $terms[] = [
                   'activated' => $activated,

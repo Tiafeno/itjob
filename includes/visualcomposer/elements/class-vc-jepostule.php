@@ -143,18 +143,16 @@ if (!class_exists('jePostule')) :
     if (!is_user_logged_in()) {
         // Le client est non connecter
       do_action('add_notice', '<i class="la la-warning alert-icon"></i> Pour pouvoir postuler à cette offre, vous devez vous connecter ou créer un compte', 'info');
-
       return do_shortcode("[itjob_login role='candidate' redir='{$current_uri}']");
     } else {
         // Le client est connecter
       $User = wp_get_current_user();
-      $Candidate = Candidate::get_candidate_by($User->ID);
-      if (!$Candidate || !$Candidate->is_candidate()) {
+      if (!in_array('candidate', $User->roles)) {
         return $message_access_refused;
       }
+      $Candidate = Candidate::get_candidate_by($User->ID);
       if (!$Candidate->hasCV()) {
         do_action('add_notice', "Vous devez créer un CV avant de postuler", "warning");
-
         return do_shortcode("[vc_register_candidate redir='{$current_uri}']");
       }
 
