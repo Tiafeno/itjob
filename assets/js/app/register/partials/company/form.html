@@ -114,7 +114,7 @@
           </div>
           <div class="col-sm-2">
             <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" tabindex="0"
-                    data-toggle="tooltip" data-placement="left" title="Enlever ce numero"
+                    data-toggle="tooltip" ng-show="!$first" data-placement="left" title="Enlever ce numero"
                     ng-click="removePhone(phone.id)">
               <i class="la la-minus-circle"></i></button>
           </div>
@@ -180,7 +180,7 @@
              ng-show="formCompany.email.$invalid && formCompany.email.$touched">
           <div ng-message="required">Adresse email est obligatoire.</div>
           <div ng-message="pattern">Veuillez entrer une adresse e-mail valide</div>
-          <div ng-message="mail">L'adresse e-mail existe déja</div>
+          <div ng-message="mail">Adresse email valide refusée ou déjà enregistrée pour un autre compte.</div>
         </div>
       </div>
     </div>

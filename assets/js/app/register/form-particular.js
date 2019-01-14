@@ -1,37 +1,41 @@
 angular.module('formParticular', ['ui.router', 'ngMessages'])
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     //$interpolateProvider.startSymbol('[[').endSymbol(']]');
-    var states = [
-      {
-        name: 'form',
-        url: '/form',
-        component: 'formComponent',
-        resolve: {
-          region: function (services) {
-            return services.getRegion();
-          },
-          allCity: function (services) {
-            return services.getCity();
-          }
+    var states = [{
+      name: 'form',
+      url: '/form',
+      component: 'formComponent',
+      resolve: {
+        region: function (services) {
+          return services.getRegion();
+        },
+        allCity: function (services) {
+          return services.getCity();
         }
       }
-    ];
+    }];
     // Loop over the state definitions and register them
     states.forEach(function (state) {
       $stateProvider.state(state);
     });
-    $urlServiceProvider.rules.otherwise({state: 'form'});
+    $urlServiceProvider.rules.otherwise({
+      state: 'form'
+    });
   })
   .service('services', ["$http", function ($http) {
     return {
       getRegion: function () {
-        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=region', {cache: true})
+        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=region', {
+            cache: true
+          })
           .then(function (resp) {
             return resp.data;
           });
       },
       getCity: function () {
-        return $http.get(itOptions.ajax_url + '?action=get_city', {cache: true})
+        return $http.get(itOptions.ajax_url + '?action=get_city', {
+            cache: true
+          })
           .then(function (resp) {
             return resp.data;
           });
@@ -40,19 +44,28 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         return $http({
           url: itOptions.ajax_url,
           method: "POST",
-          headers: {'Content-Type': undefined},
+          headers: {
+            'Content-Type': undefined
+          },
           data: formData
         });
       },
       mailExists: function (email) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
           if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-            $http.get(itOptions.ajax_url + '?action=ajx_user_exist&log=' + email, {cache: true})
+            $http.get(itOptions.ajax_url + '?action=ajx_user_exist&mail=' + email, {
+                cache: true
+              })
               .then(function (resp) {
-                resolve(resp.data ? true : false);
+                var data = _.clone(resp.data);
+                if (data.success) {
+                  reject(data.data);
+                } else {
+                  resolve(data.data);
+                }
               });
           } else {
-            resolve(false);
+            reject(false);
           }
         });
       }
@@ -66,11 +79,18 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         element.bind('blur', function () {
           services
             .mailExists(element.val())
-            .then(function (status) {
-              scope.$apply(function () {
-                model.$setValidity('mail', !status);
-              });
-            })
+            .then(
+              function (status) {
+                scope.$apply(function () {
+                  model.$setValidity('mail', true);
+                });
+              },
+              function (error) {
+                console.log(error);
+                scope.$apply(function () {
+                  model.$setValidity('mail', false);
+                });
+              })
         });
       }
     }
@@ -96,7 +116,10 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
     $scope.error = false;
   }])
   .component('formComponent', {
-    bindings: {region: '<', allCity: '<'},
+    bindings: {
+      region: '<',
+      allCity: '<'
+    },
     templateUrl: itOptions.partials_url + '/particular/form.html?ver=' + itOptions.version,
     controllerAs: 'formulaire',
     controller: function ($scope, services) {
@@ -112,9 +135,15 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       $scope.countPhone = 1;
       $scope.particularForm = {};
       $scope.particularForm.greeting = 'mr';
-      $scope.particularForm.cellphone = [{ id: 0, value: ''}];
+      $scope.particularForm.cellphone = [{
+        id: 0,
+        value: ''
+      }];
       $scope.addPhone = function () {
-        $scope.particularForm.cellphone.push({id: $scope.countPhone, value: ''});
+        $scope.particularForm.cellphone.push({
+          id: $scope.countPhone,
+          value: ''
+        });
         $scope.countPhone += 1;
       };
       $scope.removePhone = function (id) {
@@ -186,7 +215,9 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
           var dataContains = data.text.toLowerCase();
           var searchTyping = _.clone(params.term);
           if (!_.isUndefined($scope.particularForm.region) && !_.isEmpty($scope.particularForm.region)) {
-            var region = _.findWhere(self.regions, {term_id: parseInt($scope.particularForm.region)});
+            var region = _.findWhere(self.regions, {
+              term_id: parseInt($scope.particularForm.region)
+            });
             var findRegion = region.name.toLowerCase();
             searchTyping += ` ${findRegion} `;
           }

@@ -215,6 +215,7 @@ add_filter('wp_nav_menu_args', function ($args) {
 
 
 add_action('init', function () {
+  //var_dump(is_email( $mail ));
   // Yoast filter
   add_filter('wpseo_metadesc', function ($description) {
     global $post;

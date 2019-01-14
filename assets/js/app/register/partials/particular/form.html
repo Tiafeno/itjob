@@ -33,7 +33,7 @@
 
     <div class="row mb-1">
       <div class="col-md-6 sol-sm-6 mt-2 form-group">
-        <label class="form-control-label">Votre prénom</label>
+        <label class="form-control-label">Votre prénom <span style="color: red">*</span></label>
         <input class="form-control" type="text" name="firstname" ng-model="particularForm.firstname" autocomplete="off" placeholder="Prénom" required>
         <div ng-messages="pcForm.firstname.$error" ng-show="pcForm.firstname.$invalid && pcForm.firstname.$touched"
              class="alert alert-pink" role="alert">
@@ -41,7 +41,7 @@
         </div>
       </div>
       <div class="col-md-6 sol-sm-6 mt-2 form-group">
-        <label class="form-control-label">Votre nom</label>
+        <label class="form-control-label">Votre nom <span style="color: red">*</span></label>
         <input class="form-control" type="text" name="lastname" ng-model="particularForm.lastname" autocomplete="off" placeholder="Nom" required>
         <div ng-messages="pcForm.lastname.$error" ng-show="pcForm.lastname.$invalid && pcForm.lastname.$touched"
              class="alert alert-pink" role="alert">
@@ -53,7 +53,7 @@
     <div class="row mb-1">
       <div class="col-md-6 form-group">
         <div class="form-group" id="birthday">
-          <label class="font-normal">Date de naissance</label>
+          <label class="font-normal">Date de naissance <span style="color: red">*</span></label>
           <div class="input-group date">
             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
             <input class="form-control" name="birthdayDate" readonly="readonly" ng-model="particularForm.birthdayDate" type="text" value="" autocomplete="off" placeholder="Date de naissance">
@@ -64,7 +64,7 @@
 
     <div class="row mb-4">
       <div class="col-md-6 form-group">
-        <label class="form-control-label">Région</label>
+        <label class="form-control-label">Région <span style="color: red">*</span></label>
         <select class="form-control find" name="region" ng-model="particularForm.region" title="Région" required>
           <option></option>
           <option ng-repeat="rg in formulaire.region" value="{{rg.term_id}}">{{rg.name}}</option>
@@ -74,7 +74,7 @@
 
     <div class="row mb-4">
       <div class="col-md-6 form-group">
-        <label class="form-control-label">Code postal ou nom d'une ville</label>
+        <label class="form-control-label">Code postal ou nom d'une ville <span style="color: red">*</span></label>
         <select class="form-control input-mode country"
                 ng-disabled="!particularForm.region"
                 name="country"
@@ -90,7 +90,7 @@
 
     <div class="row mb-1">
       <div class="col-md-8 form-group">
-        <label class="form-control-label">Adresse</label>
+        <label class="form-control-label">Adresse <span style="color: red">*</span></label>
         <input class="form-control" type="text" name="address" ng-model="particularForm.address" autocomplete="off"
                placeholder="" required>
         <div ng-messages="pcForm.address.$error" ng-show="pcForm.address.$invalid && pcForm.address.$touched"
@@ -101,7 +101,7 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Numéros de téléphone</label>
+      <label class="col-sm-4 col-form-label">Numéros de téléphone <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <div ng-form="setPhone" ng-repeat="phone in particularForm.cellphone track by phone.id" class="form-group row">
           <div class="col-sm-10 pr-0">
@@ -119,7 +119,7 @@
           </div>
           <div class="col-sm-2">
             <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" tabindex="0"
-                    data-toggle="tooltip" data-placement="left" title="Enlever ce numero"
+                    data-toggle="tooltip" ng-show="!$first" data-placement="left" title="Enlever ce numero"
                     ng-click="removePhone(phone.id)">
               <i class="la la-minus-circle"></i></button>
           </div>
@@ -143,21 +143,21 @@
 
     <div class="row mb-1">
       <div class="col-md-6 form-group">
-        <label class="form-control-label">Votre adresse email</label>
+        <label class="form-control-label">Votre adresse email <span style="color: red">*</span></label>
         <input class="form-control" type="text" name="email" ng-mail="particularForm.email" ng-model="particularForm.email" autocomplete="off"
                placeholder="Votre adresse email" ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/" required>
         <div ng-messages="pcForm.email.$error" ng-show="pcForm.email.$invalid && pcForm.email.$touched"
              class="alert alert-pink" role="alert">
           <div ng-message="required">Veuillez saisir une adresse email.</div>
           <div ng-message="pattern">Vérifiez l'adresse email, son format n'est pas valide.</div>
-          <div ng-message="mail">Votre adresse e-mail est déjà enregistrée dans un autre compte.</div>
+          <div ng-message="mail">Adresse email valide refusée ou déjà enregistrée pour un autre compte.</div>
         </div>
       </div>
     </div>
 
     <div class="row mb-1 form-group">
       <div class="col-md-6 sol-sm-6 mt-1">
-        <label class="form-control-label">Mot de passe</label>
+        <label class="form-control-label">Mot de passe <span style="color: red">*</span></label>
         <input class="form-control" type="password" name="pwd" ng-model="particularForm.pwd" autocomplete="off"
                ng-pattern="/^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/" placeholder="Ex: Papaparse29@" required>
         <span style="color: red" class="help-block uk-text-small">Votre mot de passe doit comporter 8 caractères minimum, 

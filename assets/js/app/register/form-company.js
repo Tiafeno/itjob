@@ -195,7 +195,12 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
             companyFactory
               .checkLogin(email)
               .then(function (resp) {
-                resolve(resp.data ? true : false);
+                var data = _.clone(resp.data);
+                if (data.success) {
+                  reject(data.data);
+                } else {
+                  resolve(data.data);
+                }
               });
           } else {
             resolve(false);
@@ -244,11 +249,19 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
         element.bind('blur', function () {
           companyService
             .mailCheck(element.val())
-            .then(function (status) {
-              scope.$apply(function () {
-                model.$setValidity('mail', !status);
-              });
-            })
+            .then(
+              function (status) {
+                scope.$apply(function () {
+                  model.$setValidity('mail', true);
+                });
+              },
+              function (error) {
+                console.log(error);
+                scope.$apply(function () {
+                  model.$setValidity('mail', false);
+                });
+              }
+            )
         });
       }
     }

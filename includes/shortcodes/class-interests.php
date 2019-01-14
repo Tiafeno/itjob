@@ -33,27 +33,25 @@ class scInterests
     add_action('wp_ajax_get_current_user_offers', [&$this, 'get_current_user_offers']);
     add_action('wp_ajax_nopriv_get_current_user_offers', [&$this, 'get_current_user_offers']);
     add_action('wp_ajax_download_pdf', [&$this, 'download_pdf']);
+    add_action('wp_ajax_nopriv_download_pdf', [&$this, 'download_pdf']);
   }
 
-  public function download_pdf()
+
+  /**
+   * Télécharger le CV par un entreprise
+   */
+  public function download_pdf( )
   {
-    global $Engine;
-
-    // create new PDF document
-    require get_template_directory() . '/libs/tcpdf/vendor/autoload.php';
-    $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-    $pdf->SetCreator(PDF_CREATOR);
-
-
     $ErrorMessage = "Une erreur s'est produite";
-    $User = wp_get_current_user();
+    /* $User = wp_get_current_user();
     if ($User->ID === 0 || !in_array('company', $User->roles)) return $ErrorMessage;
-    $Entreprise = Company::get_company_by($User->ID);
+    $Entreprise = Company::get_company_by($User->ID); */
     $candidate_id = Http\Request::getValue('id');
     if (!$candidate_id) {
       wp_send_json_error($ErrorMessage);
     }
     $Candidate = new Candidate($candidate_id);
+    $Candidate->__get_access();
 
     // Une systéme pour limiter la visualisation des CV
     // Verifier si le compte de l'entreprise est sereine ou standart
@@ -69,34 +67,23 @@ class scInterests
       wp_send_json_error("Accès non autoriser");
     }
 
-    $Candidate->__client_premium_access();
-    $name = $Candidate->privateInformations->firstname . " " . $Candidate->privateInformations->lastname;
-    $pdf->SetAuthor($name);
-    $pdf->SetTitle($Candidate->reference);
-    $pdf->SetSubject($Candidate->reference);
+    return self::get_cv_proformat($Candidate);
+    
+  }
 
-    // set default header data
-    $logo = get_template_directory() . '/img/logo.png';
-    $site = get_site_url();
-    $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . $Candidate->reference, "ItJobMada - {$site}");
-    // set header and footer fonts
-    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-    // set auto page breaks
-    $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
+  /**
+   * Télécharger le CV par le bais d'une classe object
+   */
+  public static function get_cv_proformat($Candidate = null) {
+    global $Engine;
 
-    // set image scale factor
-    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-    // set font
-    $pdf->SetFont('DejaVuSerifCondensed', '', 10);
-
-    // add a page
-    $pdf->AddPage();
+    // create new PDF document
+    require get_template_directory() . '/libs/pdfcrowd/pdfcrowd.php';
+    $client = new \Pdfcrowd\HtmlToPdfClient("ddpixel", "d6f0bc2d93bd50ca240406e51e3a8279");
 
     $html = '';
     try {
-      $html .= $Engine->render('@SC/cv-candidate.html.twig', [
+      $html .= $Engine->render('@SC/download-template-cv.html.twig', [
         'candidate' => $Candidate,
       ]);
     } catch (Twig_Error_Loader $e) {
@@ -105,13 +92,20 @@ class scInterests
       echo $e->getRawMessage();
       exit;
     }
-    // output the HTML content
-    $pdf->writeHTML($html, true, false, true, false, '');
-    // reset pointer to the last page
-    $pdf->lastPage();
 
-    //Close and output PDF document
-    $pdf->Output(get_template_directory() . "/contents/pdf/itjobmada_{$Candidate->reference}.pdf", 'FI');
+    // run the conversion and write the result to a file
+    
+    $pathFile = get_template_directory() . "/contents/pdf/itjobmada_{$Candidate->reference}.pdf";
+    if (file_exists($pathFile)){
+      chmod($pathFile, 0777);
+      //@unlink($pathFile);
+    }
+      
+    $client->setPageMargins('5mm', '0mm', '0mm', '0mm');
+    $client->setPageSize('A4');
+    $client->setOrientation('portrait');
+    $client->convertStringToFile($html, $pathFile);
+    return $pathFile;
   }
 
   /**

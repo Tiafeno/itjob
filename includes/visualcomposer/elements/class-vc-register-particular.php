@@ -234,7 +234,7 @@ if (!class_exists('vcRegisterParticular')) :
     $post = get_post($post_id);
       // (WP_User|false) WP_User object on success, false on failure.
     $isUser = get_user_by('email', $email);
-    if ($isUser) {
+    if ($isUser || !is_email($email)) {
       return $value;
     }
 

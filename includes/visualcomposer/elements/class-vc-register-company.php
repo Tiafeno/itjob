@@ -64,7 +64,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       // Verifier si l'utilisateur existe déja; Si oui, retourner la valeur
       // (WP_User|false) WP_User object on success, false on failure.
       $userExist = get_user_by( 'email', $userEmail );
-      if ( $userExist ) {
+      if ( $userExist || !is_email($userEmail) ) {
         return $value;
       }
       $args    = [
@@ -121,18 +121,22 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
      */
     public function ajx_user_exist() {
       if ( ! \wp_doing_ajax() ) {
-        return;
+        return false;
       }
       if ( is_user_logged_in() ) {
-        return;
+        return false;
       }
-      $log = Http\Request::getValue( 'log', false );
-      if ( filter_var( $log, FILTER_VALIDATE_EMAIL ) ) {
-        $usr = get_user_by( 'email', $log );
+      $email = Http\Request::getValue( 'mail', false );
+      if ( filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+        if ( ! is_email( $email )) wp_send_json_error( "L'adresse email est incorrect ou refuser" );
+
+        $usr = get_user_by( 'email', $email );
+        if ($usr)
+         wp_send_json_success( "L'utilisateur existe déja");
+        wp_send_json_error( "L'utilisateur n'existe pas" );
       } else {
-        $usr = get_user_by( 'login', $log );
+        wp_send_json_error("L'adresse email n'est pas valide");
       }
-      wp_send_json( $usr );
     }
 
     public function ajx_get_branch_activity() {
