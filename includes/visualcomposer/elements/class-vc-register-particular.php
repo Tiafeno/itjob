@@ -140,7 +140,7 @@ if (!class_exists('vcRegisterParticular')) :
     $userEmail = Http\Request::getValue('email', false);
     if (!$userEmail) return false;
     $userExist = get_user_by('email', $userEmail);
-    if ($userExist) {
+    if ($userExist || !is_email( $userEmail )) {
       wp_send_json(['success' => false, 'msg' => 'L\'adresse e-mail ou l\'utilisateur existe déja']);
     }
 

@@ -211,7 +211,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       }
 
       $userEmail = Http\Request::getValue( 'email', false );
-      if ( ! $userEmail ) wp_send_json_error("Veillez remplir le formulaire correctement");
+      if ( ! $userEmail || !is_email( $userEmail ) ) wp_send_json_error("Veillez remplir le formulaire correctement");
       $userExist = get_user_by( 'email', $userEmail );
       if ( $userExist ) {
         wp_send_json_error( 'L\'adresse e-mail ou l\'utilisateur existe déja');
