@@ -43,9 +43,9 @@ class scInterests
   public function download_pdf( )
   {
     $ErrorMessage = "Une erreur s'est produite";
-    /* $User = wp_get_current_user();
+    $User = wp_get_current_user();
     if ($User->ID === 0 || !in_array('company', $User->roles)) return $ErrorMessage;
-    $Entreprise = Company::get_company_by($User->ID); */
+    $Entreprise = Company::get_company_by($User->ID);
     $candidate_id = Http\Request::getValue('id');
     if (!$candidate_id) {
       wp_send_json_error($ErrorMessage);
@@ -66,9 +66,7 @@ class scInterests
       !$itModel->list_exist($Entreprise->getId(), $Candidate->getId())) {
       wp_send_json_error("Accès non autoriser");
     }
-
     return self::get_cv_proformat($Candidate);
-    
   }
 
   /**
@@ -76,7 +74,6 @@ class scInterests
    */
   public static function get_cv_proformat($Candidate = null) {
     global $Engine;
-
     // create new PDF document
     require get_template_directory() . '/libs/pdfcrowd/pdfcrowd.php';
     $client = new \Pdfcrowd\HtmlToPdfClient("ddpixel", "d6f0bc2d93bd50ca240406e51e3a8279");
@@ -92,20 +89,19 @@ class scInterests
       echo $e->getRawMessage();
       exit;
     }
-
     // run the conversion and write the result to a file
-    
-    $pathFile = get_template_directory() . "/contents/pdf/itjobmada_{$Candidate->reference}.pdf";
-    if (file_exists($pathFile)){
-      chmod($pathFile, 0777);
-      //@unlink($pathFile);
+    $pathFile = "/contents/pdf/itjobmada_{$Candidate->reference}.pdf";
+    $absFile = get_template_directory() . $pathFile;
+    if (file_exists($absFile)){
+      chmod($absFile, 0777);
+      @unlink($absFile);
     }
       
     $client->setPageMargins('5mm', '0mm', '0mm', '0mm');
     $client->setPageSize('A4');
     $client->setOrientation('portrait');
-    $client->convertStringToFile($html, $pathFile);
-    return $pathFile;
+    $client->convertStringToFile($html, $absFile);
+    return get_template_directory_uri(  ) . $pathFile;
   }
 
   /**
