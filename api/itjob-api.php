@@ -301,7 +301,9 @@ add_action('rest_api_init', function () {
                return new WP_REST_Response(false);
             }
          },
-         'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+         'permission_callback' => function ($data) {
+            return current_user_can('delete_posts');
+         },
          'args' => array(
             'id' => array(
                'validate_callback' => function ($param, $request, $key) {
@@ -481,7 +483,7 @@ add_action('rest_api_init', function () {
          'permission_callback' => function ($data) {
             $ref = isset($_REQUEST['ref']) ? stripslashes(urldecode($_REQUEST['ref'])) : false;
             if (!$ref) return false;
-            return ($ref === 'update_date_limit' || $ref === 'collect') ? current_user_can('edit_posts') : current_user_can('remove_users');
+            return ($ref === 'update_date_limit' || $ref === 'collect' || $ref === 'request') ? current_user_can('edit_posts') : current_user_can('remove_users');
          },
          'args' => array(
             'id' => array(
@@ -639,7 +641,7 @@ add_action('rest_api_init', function () {
 
          },
          'permission_callback' => function ($data) {
-            return current_user_can('edit_posts');
+            return current_user_can('delete_posts');
          },
          'args' => array(
             'id' => array(
@@ -827,7 +829,7 @@ add_action('rest_api_init', function () {
                      return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été effacer dans la base de donnée', 'data' => $term]);
 
                      break;
-
+                  // Remplacer le term par une autre
                   case 'replace':
                      $params = $_REQUEST['params'];
                      $params = json_decode(stripslashes($params));
@@ -844,7 +846,9 @@ add_action('rest_api_init', function () {
                return new WP_REST_Response(['success' => false, 'message' => 'Une erreur s\'est produite']);
             }
          },
-         'permission_callback' => [new permissionCallback(), 'private_data_permission_check'],
+         'permission_callback' => function ($data) {
+            return current_user_can('edit_posts');
+         },
          'args' => [
             'id' => array(
                'validate_callback' => function ($param, $request, $key) {
@@ -869,7 +873,6 @@ add_action('rest_api_init', function () {
             $action = isset($_REQUEST['action']) ? stripslashes(urldecode($_REQUEST['action'])) : false;
             if ($action) {
                switch ($action) {
-
                   case 'change_status':
                      $status = $_REQUEST['val'];
                      $activated = $status === 'pending' ? 'pending' : intval($status);
@@ -937,9 +940,7 @@ add_action('rest_api_init', function () {
    //    ]
    // );
 
-   register_rest_route(
-      'it-api',
-      '/newsletters/',
+   register_rest_route('it-api', '/newsletters/',
       [
       // Récuperer les newsletters
          [
@@ -1067,9 +1068,7 @@ add_action('rest_api_init', function () {
    );
 
 
-   register_rest_route(
-      'it-api',
-      '/blogs/',
+   register_rest_route('it-api', '/blogs/',
       [
       // Récuperer les blogs
          [
