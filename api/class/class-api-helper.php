@@ -26,9 +26,9 @@ final class apiHelper
       array_map(function ($term) use (&$rTerm, $taxonomy) {
         if ($taxonomy === "software" || $taxonomy === 'job_sought') {
           $activated = get_term_meta( $term->term_id, 'activated', true );
-          if ($activated) {
-            $rTerm[] = $term;
-          }
+          $name = $activated ? $term->name : $term->name . ' (En attente)';
+          $term->name = $name;
+          $rTerm[] = $term;
         } else {
           $rTerm[] = $term;
         }
