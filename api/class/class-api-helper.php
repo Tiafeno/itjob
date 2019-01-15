@@ -22,8 +22,17 @@ final class apiHelper
         return $term;
       }, ARRAY_FILTER_USE_BOTH);
     } else {
-      array_map(function ($term) use (&$rTerm) {
-        $rTerm[] = $term;
+      
+      array_map(function ($term) use (&$rTerm, $taxonomy) {
+        if ($taxonomy === "software" || $taxonomy === 'job_sought') {
+          $activated = get_term_meta( $term->term_id, 'activated', true );
+          if ($activated) {
+            $rTerm[] = $term;
+          }
+        } else {
+          $rTerm[] = $term;
+        }
+        
       }, $terms);
     }
 
