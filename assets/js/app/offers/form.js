@@ -87,7 +87,15 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
               $scope.tinymceOptions = {
                 language: 'fr_FR',
                 menubar: false,
-                plugins: ['lists'],
+                plugins: ['lists', 'paste'],
+                theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
+                paste_auto_cleanup_on_paste : true,
+                paste_remove_styles_if_webkit: true,
+                paste_remove_styles: true,
+                paste_postprocess : function(pl, o) {
+                  // Content DOM node containing the DOM structure of the clipboard
+                  
+                },
                 content_css: [
                   '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i',
                   itOptions.template_url + '/assets/vendors/tinymce/css/content.min.css'
