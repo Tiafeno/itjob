@@ -206,11 +206,9 @@ get_header();
                     var element = resp.success ? successMessage : errorMessage;
                     element.html(resp.data.msg).show();
                   });
-
               }
             });
         }
-
       })
     })(jQuery);
   </script>
