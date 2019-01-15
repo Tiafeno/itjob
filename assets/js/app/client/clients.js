@@ -483,7 +483,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
               $scope.Notices = _.map(query.data, (data) => {
                 data.status = parseInt(data.status);
                 data.ID = parseInt(data.ID);
-                data.url = `${data.url}&notif_id=${data.ID}`;
+                data.url = `${data.guid}&notif_id=${data.ID}`;
                 return data;
               });
               $scope.Loading = false;
