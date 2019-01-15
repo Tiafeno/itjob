@@ -1,0 +1,28 @@
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
+
+#tinymce.mce-content-body {
+  margin: 20px;
+  font-family: Montserrat !important;
+  font-size: 14px;
+  color: #626262
+}
+
+#tinymce.mce-content-body a {
+  color: #626262
+}
+
+#tinymce.mce-content-body h2 {
+  font-family: Montserrat;
+  font-size: 2em;
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #1976d2
+}
+
+#tinymce.mce-content-body h3 {
+  font-family: Montserrat;
+  font-size: 1.5em;
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #626262
+}

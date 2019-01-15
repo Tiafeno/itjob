@@ -8,8 +8,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
   })
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
-    const states = [
-      {
+    const states = [{
         name: 'form',
         templateUrl: itOptions.partials_url + '/form.html?ver=' + itOptions.version,
         url: '/form',
@@ -39,7 +38,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
           offer: ['$q', '$rootScope', function ($q, $rootScope) {
             // for test
             //return $q.resolve(true);
-            
+
             if (typeof $rootScope.offers === 'undefined' || _.isEmpty($rootScope.offers)) {
               return $q.reject({
                 redirect: 'form.add-offer'
@@ -86,13 +85,22 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
               $scope.abranchs = _.clone(abranchs);
               $scope.regions = _.clone(regions);
               $scope.tinymceOptions = {
-                plugins: '',
-                toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code'
+                language: 'fr_FR',
+                menubar: false,
+                plugins: ['lists'],
+                content_css: [
+                  '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i',
+                  itOptions.template_url + '/assets/vendors/tinymce/css/content.min.css'
+                ],
+                selector: 'textarea',
+                toolbar: 'undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat '
               };
               $rootScope.searchCityFn = (city) => {
                 if (!_.isUndefined($rootScope.offers.region)) {
                   let region = parseInt($rootScope.offers.region);
-                  rg = _.findWhere($scope.regions, {term_id: region});
+                  rg = _.findWhere($scope.regions, {
+                    term_id: region
+                  });
                   if (rg) {
                     if (city.name.indexOf(rg.name) > -1) {
                       return true;
