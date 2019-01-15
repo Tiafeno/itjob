@@ -66,15 +66,20 @@ final class NotificationHelper
       add_action('notice-admin-new-job_sought', [&$this, 'notice_admin_new_job'], 10, 1);
 
       // On change la status d'une notification
-      if (isset($_GET['ref'])) {
-        $ref = $_GET['ref'];
-        if ($ref === 'notif') {
-          $id_notice = (int)$_GET['notif_id'];
-          if (!$id_notice) return false;
-          $Model = new itModel();
-          $Model->change_notice_status($id_notice);
+      function notification() {
+        if (isset($_GET['ref'])) {
+          $ref = $_GET['ref'];
+          if ($ref === 'notif') {
+            if (!isset($_GET['notif_id'])) return;
+            $id_notice = (int)$_GET['notif_id'];
+            if (!$id_notice) return false;
+            $Model = new itModel();
+            $Model->change_notice_status($id_notice);
+          }
         }
       }
+      
+      notification();
     });
   }
 
