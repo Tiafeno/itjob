@@ -27,8 +27,8 @@ abstract class UserParticular {
    * @return bool
    */
   public function hasCV() {
-    $activated = get_field( 'itjob_cv_hasCV', $this->getId() );
-    return $this->has_cv = (bool) $activated;
+    $hasCV = get_field( 'itjob_cv_hasCV', $this->getId() );
+    return $this->has_cv = (bool) $hasCV;
   }
 
   public function getId() {

@@ -432,6 +432,7 @@ add_action('rest_api_init', function () {
                            $It->lm_link = $Interest->type === 'apply' ? ($Interest->id_attachment ? parse_url(wp_get_attachment_url(((int)$Interest->id_attachment))) : false) : false;
                            $It->lm_name = $Interest->type === 'apply' ? ($Interest->id_attachment ? get_the_title((int)$Interest->id_attachment) : false) : false;
                            $It->candidate = new \includes\post\Candidate($Interest->id_candidate, true);
+                           $It->date_add = $Interest->date_add;
                            $Response[] = $It;
                         }
                         return new WP_REST_Response($Response);
