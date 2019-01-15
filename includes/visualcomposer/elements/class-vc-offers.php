@@ -397,10 +397,10 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
       // featured: Verifier si l'utilicateur est une entreprise
       // Réfuser l'access s'il n'est pas une entreprise
-      /* if ( ! itjob_current_user_is_company() ) {
+      if ( ! itjob_current_user_is_company() ) {
         return '<div class="alert alert-danger"><strong>Validation</strong>
         <br>Vous ne pouvez pas ajouté une offre pour le moment car votre compte est en cours de validation. <br>Veuillez reessayer plus tard. Merci </div>';
-      } */
+      }
 
 
       // Params extraction
