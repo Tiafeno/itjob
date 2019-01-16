@@ -316,19 +316,21 @@ if ( ! class_exists( 'vcOffers' ) ):
         /** @var STRING $title - Titre de l'element VC */
         /** @var STRING $orderby */
         /** @var STRING $order */
+        $offers = $itJob->services->getRecentlyPost( 'offers', 4, [
+          // Afficher seulement les offres activé
+          [
+            'key'     => 'activated',
+            'compare' => '=',
+            'value'   => 1,
+            'type'    => 'NUMERIC'
+          ]
+        ] );
         return $Engine->render( '@VC/offers/offers.html.twig', [
           'title'             => $title,
-          'offers'            => $itJob->services->getRecentlyPost( 'offers', 4, [
-            // Afficher seulement les offres activé
-            [
-              'key'     => 'activated',
-              'compare' => '=',
-              'value'   => 1,
-              'type'    => 'NUMERIC'
-            ]
-          ] ),
+          'offers'            => $offers,
           'archive_offer_url' => get_post_type_archive_link( 'offers' )
         ] );
+        print_r($offers);
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
       } catch ( \Twig_Error_Syntax $e ) {
