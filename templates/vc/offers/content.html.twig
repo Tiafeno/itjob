@@ -6,12 +6,12 @@
         <div class="card ibox mb-4">
           <div class="card-body">
             <h4 class="card-title mb-4">
-              <a href="{{ offer.offer_url }}">{{ offer.postPromote|capitalize }}</a>
+              <a href="{{ offer.offer_url }}">{{ offer.postPromote|striptags|raw|capitalize }}</a>
             </h4>
             <div class="">
               <h4 class="card-title uk-margin-remove">Mission: </h4>
               <p class="text-description mt-2">
-                {{ offer.mission|striptags[:100] }} {% if offer.mission|striptags|length > 100 %}...{% endif %}
+                {{ offer.mission|striptags|raw[:100] }} {% if offer.mission|striptags|length > 100 %}...{% endif %}
               </p>
             </div>
             <div class="card-information pt-3">
