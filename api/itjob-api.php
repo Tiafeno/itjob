@@ -501,7 +501,7 @@ add_action('rest_api_init', function () {
             $offer = stripslashes($_REQUEST['offer']);
             $offer = json_decode($offer);
             $currentOffer = get_post($offer->ID);
-            $dateTime = DateTime::createFromFormat("m/d/Y", $offer->date_limit);
+            $dateTime = DateTime::createFromFormat("d/m/Y", $offer->date_limit);
             $acfDateLimit = $dateTime->format('Ymd');
             $form = [
                'post' => $offer->post,
