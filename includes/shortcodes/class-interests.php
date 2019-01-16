@@ -80,7 +80,10 @@ class scInterests
 
     $html = '';
     try {
+      $custom_logo_id = get_theme_mod( 'custom_logo' );
+      $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $html .= $Engine->render('@SC/download-template-cv.html.twig', [
+        'logo' => $logo[0],
         'candidate' => $Candidate,
       ]);
     } catch (Twig_Error_Loader $e) {

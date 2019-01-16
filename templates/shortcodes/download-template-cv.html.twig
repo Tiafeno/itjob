@@ -223,19 +223,19 @@ a[x-apple-data-detectors=true] {
     <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color: #FFFFFF;"><![endif]-->
 
     <div style="background-color:transparent;">
-      <div style="Margin: 0 auto;min-width: 320px;max-width: 800px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #0068A5;" class="block-grid mixed-two-up no-stack">
+      <div style="Margin: 0 auto;min-width: 320px;max-width: 800px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: #0068A5; position: relative" class="block-grid mixed-two-up no-stack">
         <div style="border-collapse: collapse;display: table;width: 100%;background-color:#0068A5;">
           <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="background-color:transparent;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width: 800px;"><tr class="layout-full-width" style="background-color:#0068A5;"><![endif]-->
 
               <!--[if (mso)|(IE)]><td align="center" width="267" style="background-color:#0068A5; width:267px; padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:0px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
-            <div class="col num4" style="display: table-cell;vertical-align: top;max-width: 320px;min-width: 264px;">
-              <div style="background-color: #0068A5; width: 100% !important;">
+            <div class="col num4" style="display: table-cell;vertical-align: top;max-width: 320px;min-width: 264px">
+              <div style="background-color: #0068A5; width: 100% !important; min-height: 980px">
               <!--[if (!mso)&(!IE)]><!--><div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:0px; padding-right: 0px; padding-left: 0px;"><!--<![endif]-->
 
             {% if candidate.privateInformations.avatar is not empty %}
-                    <div align="center" class="img-container center fixedwidth " style="padding-right: 0px;  padding-left: 0px;">
+                    <div align="left" class="img-container center fixedwidth " style="padding-right: 0px;  padding-left: 10px;">
 <!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px;line-height:0px;"><td style="padding-right: 0px; padding-left: 0px;" align="center"><![endif]-->
-  <img class="center fixedwidth" align="center" border="0" src="{{ candidate.privateInformations.avatar[0] }}" alt="Image" title="Image" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: 0;height: auto;float: none;width: 100%;max-width: 133.5px" width="133.5">
+  <img class="center fixedwidth" align="left" border="0" src="{{ candidate.privateInformations.avatar[0] }}" alt="Image" title="Image" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: 0;height: auto;float: none;width: 100%;max-width: 133.5px" width="133.5">
 <!--[if mso]></td></tr></table><![endif]-->
 </div>
 {% endif %}
@@ -244,7 +244,7 @@ a[x-apple-data-detectors=true] {
                     <div class="">
 	<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 25px; padding-bottom: 10px;"><![endif]-->
 	<div style="color:#FFFFFF;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 25px; padding-bottom: 10px;">	
-		<div style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px"><strong>CONTACTER</strong></p><p style="margin: 0;font-size: 14px;line-height: 17px">&#160;</p>
+		<div style="font-size:12px;line-height:14px;color:#FFFFFF;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px"><strong>CONTACTE</strong></p><p style="margin: 0;font-size: 14px;line-height: 17px">&#160;</p>
             
             {% for phone in candidate.privateInformations.cellphone %}
             <p style="margin: 0;font-size: 14px;line-height: 17px">{{phone}} 
@@ -256,7 +256,7 @@ a[x-apple-data-detectors=true] {
 	<!--[if mso]></td></tr></table><![endif]-->
 </div>
                   
-            {% if candidate.softwares is not empty or candidate.softwares is not null %}
+            {% if candidate.softwares is not empty and candidate.softwares is not null %}
                     <div class="">
 	<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 20px; padding-bottom: 10px;"><![endif]-->
 	<div style="color:#FFFFFF;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 20px; padding-bottom: 10px;">	
@@ -288,6 +288,19 @@ a[x-apple-data-detectors=true] {
 	</div>
 	<!--[if mso]></td></tr></table><![endif]-->
 </div>
+                  <div style="position: absolute;display: block;bottom: 10px;top: inherit;left: 55px;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif; font-size: 12px">
+                      <div style="color: white">
+                          
+                          <div align="center" class="img-container center fixedwidth " style="padding-right: 0px;  padding-left: 10px; margin-bottom: 15px">
+<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px;line-height:0px;"><td style="padding-right: 0px; padding-left: 0px;" align="center"><![endif]-->
+  <img class="center fixedwidth" align="center" border="0" src="{{ logo }}" alt="Image" title="Image" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: 0;height: auto;float: none;width: 100%;max-width: 110px" width="110">
+<!--[if mso]></td></tr></table><![endif]-->
+</div>
+                          
+                      www.itjobmada.com
+                  </div>
+                </div>
+                  
                   
               <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
               </div>
@@ -295,9 +308,9 @@ a[x-apple-data-detectors=true] {
               <!--[if (mso)|(IE)]></td><td align="center" width="533" style="background-color:#F2F8F9; width:533px; padding-right: 0px; padding-left: 10px; padding-top:5px; padding-bottom:5px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><![endif]-->
             <div class="col num8" style="display: table-cell;vertical-align: top;min-width: 320px;max-width: 528px;">
               <div style="background-color: #F2F8F9; width: 100% !important;">
-              <!--[if (!mso)&(!IE)]><!--><div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 0px; padding-left: 10px;"><!--<![endif]-->
+              <!--[if (!mso)&(!IE)]><!--><div style="border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top:5px; padding-bottom:5px; padding-right: 0px; padding-left: 10px; min-height: 1000px"><!--<![endif]-->
 
-                  
+                  {% set pI = candidate.privateInformations %}
                     <div class="">
 	<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 0px;"><![endif]-->
 	<div style="color:#555555;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:150%; padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 0px;">	
@@ -305,14 +318,25 @@ a[x-apple-data-detectors=true] {
             <p style="margin: 0;font-size: 14px;line-height: 21px">
             <strong>
             <span style="font-size: 24px; line-height: 36px;">
-                {{ candidate.privateInformations.firstname }} {{ candidate.privateInformations.lastname }}</span>
+                {{ pI.firstname }} {{ pI.lastname }}</span>
             </strong>
             </p>
         </div>	
 	</div>
 	<!--[if mso]></td></tr></table><![endif]-->
 </div>
-                  
+                  <div class="">
+	<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 0px;"><![endif]-->
+	<div style="color:#555555;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif; padding-right: 10px; padding-left: 10px; padding-top: 5px; padding-bottom: 0px;">	
+		<div style="font-size:12px;line-height:18px;font-family:Montserrat, 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;color:#555555;text-align:left;">
+            <p style="margin: 0;font-size: 12px;">
+            <span style="">
+                Reférence: <strong style="font-style: normal; text-transform: uppercase">{{ candidate.reference }}</strong></span>
+            </p>
+        </div>	
+	</div>
+	<!--[if mso]></td></tr></table><![endif]-->
+</div>
                   
                     <div class="">
 	<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 0px;"><![endif]-->
@@ -324,6 +348,18 @@ a[x-apple-data-detectors=true] {
 	<!--[if mso]></td></tr></table><![endif]-->
 </div>
                   
+                  <div class="">
+	<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px;"><![endif]-->
+	<div style="color:#555555;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px;">	
+		<div style="font-size:12px;line-height:14px;color:#555555;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px"><span style="font-size: 12px; line-height: 14px;">Date de naissance: 
+            {% if candidate.privateInformations.birthday_date is not empty %} 
+                    {{ candidate.privateInformations.birthday_date }}
+                {% else %}
+                    Non renseigner
+            {% endif %} </span></p></div>	
+	</div>
+	<!--[if mso]></td></tr></table><![endif]-->
+</div>
                   
                     <div class="">
 	<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px;"><![endif]-->
@@ -339,6 +375,28 @@ a[x-apple-data-detectors=true] {
 </div>
                   
                   
+                
+                    <div class="">
+	<!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px;"><![endif]-->
+	<div style="color:#555555;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:120%; padding-right: 10px; padding-left: 10px; padding-top: 5px; padding-bottom: 5px;">	
+		<div style="font-size:12px;line-height:14px;color:#555555;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 17px"><span style="font-size: 12px; line-height: 14px;">Adresse: 
+            {% set address = candidate.privateInformations.address %}
+            {% if address is not empty %} 
+                    {{ address.address }} <br>
+                    {% if address.country is not empty %} 
+                        {{ address.country.name }} <br>
+                    {% endif %}
+                    {% if address.region is not empty %} 
+                        {{ address.region.name }}
+                    {% endif %}
+                {% else %}
+                    Non renseigner
+            {% endif %} </span></p></div>	
+	</div>
+	<!--[if mso]></td></tr></table><![endif]-->
+</div>
+                  
+                
                     
 <table border="0" cellpadding="0" cellspacing="0" width="100%" class="divider " style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;min-width: 100%;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
     <tbody>
