@@ -50,6 +50,11 @@ function itjob_filter_engine( $Engine ) {
     return $badge;
   }));
 
+  $Engine->addFilter(new Twig_SimpleFilter('datei18n', function ($date) {
+    $date = date_i18n('j F', strtotime($date));
+    return $date;
+  }));
+
   return true;
 }
 ?>
