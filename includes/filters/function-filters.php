@@ -51,7 +51,8 @@ function itjob_filter_engine( $Engine ) {
   }));
 
   $Engine->addFilter(new Twig_SimpleFilter('datei18n', function ($date) {
-    $date = date_i18n('j F', strtotime($date));
+    if (!strpos($date, '/')) return $date;
+    $date = date_i18n('F Y', strtotime($date));
     return $date;
   }));
 

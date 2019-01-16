@@ -491,7 +491,7 @@ a[x-apple-data-detectors=true] {
 	<div style="color:#555555;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;line-height:150%; padding-right: 10px; padding-left: 10px; padding-top: 15px; padding-bottom: 15px;">	
 		<div style="font-size:12px;line-height:18px;color:#555555;font-family:'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif;text-align:left;"><p style="margin: 0;font-size: 14px;line-height: 21px"><span style="font-size: 13px; line-height: 19px;"><strong>{{ train.training_establishment }}</strong> à {{ train.training_city }}, {{ train.training_country }}</span></p><p style="margin: 0;font-size: 14px;line-height: 21px">{{ train.training_diploma }}</p>
             <p style="margin: 0;font-size: 14px;line-height: 21px">
-                <span style="font-size: 13px; line-height: 19px;">{{ train.training_dateBegin }} - {{ train.training_dateEnd }}</span>
+                <span style="font-size: 13px; line-height: 19px;">{{ train.training_dateBegin | datei18n }} - {{ train.training_dateEnd | datei18n }}</span>
             </p>
         </div>	
 	</div>
