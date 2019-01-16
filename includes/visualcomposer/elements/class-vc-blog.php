@@ -147,7 +147,7 @@ if ( ! class_exists( 'vcBlog' ) ):
         setup_postdata( $blog );
         array_push( $blogs, [
           'thumbnail' => get_the_post_thumbnail_url($blog, 'medium'),
-          'title'     => get_the_title($blog),
+          'title'     => apply_filters('the_title', get_the_title($blog)),
           'date'      => get_the_date("d M Y", $blog),
           'content'   => apply_filters('the_content', $blog->post_content),
           'permalink' => get_the_permalink($blog)
