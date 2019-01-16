@@ -47,11 +47,11 @@
                     </tr>
                     <tr>
                       <td>Mission:</td>
-                      <td>{{ offer.mission|striptags }} {% if offer.mission|length > 65 %}...{% endif %}</td>
+                      <td>{{ offer.mission|striptags|raw[:65]|convert_encoding('UTF-8', 'ISO-8859-1') }} {% if offer.mission|length > 65 %}...{% endif %}</td>
                     </tr>
                     <tr>
                       <td>Profil:</td>
-                      <td>{{ offer.profil|striptags }} {% if offer.profil|length > 65 %}...{% endif %}</td>
+                      <td>{{ offer.profil|striptags|raw[:65]|convert_encoding('UTF-8', 'ISO-8859-1') }} {% if offer.profil|length > 65 %}...{% endif %}</td>
                     </tr>
                     </tbody>
                   </table>
