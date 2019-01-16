@@ -169,8 +169,10 @@ final class Offers implements \iOffer {
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
     $this->proposedSalary   = get_field( 'itjob_offer_proposedsallary', $this->ID );
     $this->contractType     = get_field( 'itjob_offer_contrattype', $this->ID );
-    $this->profil           = get_field( 'itjob_offer_profil', $this->ID ); // WYSIWYG
-    $this->mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
+    $profil           = get_field( 'itjob_offer_profil', $this->ID ); // WYSIWYG
+    $this->profil     = apply_filters( 'the_content', $profil );
+    $mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
+    $this->mission    = apply_filters( 'the_content', $mission );
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
     $featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
     $this->featured = boolval($featured);
