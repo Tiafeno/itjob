@@ -325,6 +325,7 @@ if ( ! class_exists( 'vcOffers' ) ):
             'type'    => 'NUMERIC'
           ]
         ] );
+
         return $Engine->render( '@VC/offers/offers.html.twig', [
           'title'             => $title,
           'offers'            => $offers,

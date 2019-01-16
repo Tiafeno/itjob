@@ -56,6 +56,8 @@ function itjob_filter_engine( $Engine ) {
     return $date;
   }));
 
+  $Engine->addFilter(new Twig_SimpleFilter('html_entity_decode', 'html_entity_decode'));
+
   return true;
 }
 ?>
