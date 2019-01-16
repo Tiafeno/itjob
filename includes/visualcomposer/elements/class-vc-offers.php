@@ -330,7 +330,6 @@ if ( ! class_exists( 'vcOffers' ) ):
           'offers'            => $offers,
           'archive_offer_url' => get_post_type_archive_link( 'offers' )
         ] );
-        print_r($offers);
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
       } catch ( \Twig_Error_Syntax $e ) {
