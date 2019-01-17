@@ -217,6 +217,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
               term_id: parseInt($scope.particularForm.region)
             });
             var findRegion = region.name.toLowerCase();
+            findRegion = findRegion === "amoron'i mania" ? 'mania' : findRegion;
             searchTyping += ` ${findRegion} `;
           }
 
