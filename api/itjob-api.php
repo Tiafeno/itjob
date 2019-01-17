@@ -119,7 +119,7 @@ add_action('rest_api_init', function () {
                      $featured = (int)$featured;
                      update_field('itjob_cv_featured', $featured, $Candidate->getId());
                      if ($featured) {
-                        update_field('itjob_cv_featured_datelimit', date("Y-m-d H:i:s", strtotime($dateLimit)), $Candidate->getId());
+                        update_field('itjob_cv_featured_datelimit', date("Y-m-d H:i:s", (int)$dateLimit), $Candidate->getId());
                      }
 
                      return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
@@ -448,7 +448,7 @@ add_action('rest_api_init', function () {
                      $featured = (int)$featured;
                      update_field('itjob_offer_featured', $featured, $Offer->ID);
                      if ($featured) {
-                        update_field('itjob_offer_featured_datelimit', date("Y-m-d H:i:s", strtotime($dateLimit)), $Offer->ID);
+                        update_field('itjob_offer_featured_datelimit', date("Y-m-d H:i:s", (int)$dateLimit), $Offer->ID);
                      }
 
                      return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);

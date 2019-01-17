@@ -106,7 +106,10 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
               let region = parseInt($rootScope.company.region);
               rg = _.findWhere($rootScope.regions, {term_id: region});
               if (rg) {
-                if (city.name.indexOf(rg.name) > -1) {
+                let cityname = city.name.toLowerCase();
+                let regionname = rg.name.toLowerCase();
+                regionname = regionname === "amoron'i mania" ? "mania" : regionname;
+                if (cityname.indexOf(regionname) > -1) {
                   return true;
                 }
               }
