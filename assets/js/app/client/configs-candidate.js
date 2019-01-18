@@ -264,9 +264,9 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
               if (!data.success) {
                 $scope.status = data.data;
               } else {
-                alertify.success(data.data);
                 $scope.softwareLists = _.clone($scope.form.softwares);
-                //UIkit.modal('#modal-software-editor-overflow').hide();
+                UIkit.modal('#modal-software-editor-overflow').hide();
+                alertify.success(data.data);
               }
             });
         };
@@ -327,6 +327,11 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
           jQuery(".select2_demo_1").select2({
             placeholder: 'Compétence (ex: Analyses de données)'
           });
+        });
+
+        UIkit.util.on('#modal-software-editor-overflow', 'hide', (e) => {
+          e.preventDefault();
+          
         });
 
       }]
