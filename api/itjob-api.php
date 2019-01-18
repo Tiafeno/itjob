@@ -2,6 +2,7 @@
 use includes\object\jobServices;
 use includes\model\itModel;
 use includes\post\Candidate;
+use includes\post\Company;
 use includes\vc\vcRegisterCandidate;
 
 if (!defined('ABSPATH')) {
@@ -1166,14 +1167,14 @@ add_action('rest_api_init', function () {
             $data = [
                'title' => $ads->title,
                'id_attachment' => (int)$ads->id_attachment,
-               'img_size' => $ads->img_size,
-               'start' => date($ads->start),
-               'end' => date($ads->end),
+               'img_size'  => $ads->img_size,
+               'start'     => date($ads->start),
+               'end'       => date($ads->end),
                'classname' => $ads->className,
-               'id_user' => (int)$ads->id_user,
-               'position' => $ads->position,
-               'paid' => (int)$ads->paid,
-               'bill' => $ads->bill
+               'id_user'   => (int)$ads->id_user,
+               'position'  => $ads->position,
+               'paid'      => (int)$ads->paid,
+               'bill'      => $ads->bill
             ];
             $format = ['%s', '%d', '%s', '%s', '%s', '%s', '%d', '%s', '%d', '%s'];
             $result = $wpdb->insert($table, $data, $format);
@@ -1181,7 +1182,47 @@ add_action('rest_api_init', function () {
             return new WP_REST_Response($result);
          },
          'permission_callback' => function ($data) {
-            return current_user_can('delete_users');
+            return current_user_can('edit_posts');
+         }
+      ]
+   ]);
+
+   register_rest_route('it-api', '/ads/(?P<id>\d+)', [
+      [
+         'methods' => WP_REST_Server::DELETABLE,
+         'callback' => function (WP_REST_Request $rq) {
+            global $wpdb;
+            $table = $wpdb->prefix . 'ads';
+            $adsId = (int) $rq['id'];
+            $ads = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id_ads = %d", $adsId));
+            if ($ads) {
+               if ($ads->id_attachment !== 0 && !empty($ads->id_attachment) && !is_null($ads->id_attachment) ) {
+                  wp_delete_attachment( (int)$ads->id_attachment, true );
+               }
+            }
+            $result = $wpdb->delete( $wpdb->prefix . 'ads', array( 'id_ads' => $adsId ) );
+            return new WP_REST_Response($result);
+         }
+      ],
+      [
+         'methods' => WP_REST_Server::CREATABLE,
+         'callback' => function (WP_REST_Request $rq) {
+            global $wpdb;
+            $adsId = (int) $rq['id'];
+            $ads = stripslashes($_POST['ads']);
+            $ads = json_decode($ads);
+            $table = $wpdb->prefix . 'ads';
+            $data = [
+               'title'     => $ads->title,
+               'start'     => date($ads->start),
+               'end'       => date($ads->end),
+               'img_size'  => $ads->img_size,
+               'classname' => $ads->className,
+               'position'  => $ads->position,
+               'paid'      => (int)$ads->paid
+            ];
+            $result = $wpdb->update($table, $data, ['id_ads' => $adsId], ['%s', '%s', '%s', '%s', '%s',  '%s', '%d' ], ['%d']);
+            return new WP_REST_Response($result);
          }
       ]
    ]);
@@ -1192,7 +1233,7 @@ add_action('rest_api_init', function () {
          'callback' => function (WP_REST_Request $rq) {
             global $wpdb;
             $s = $rq['query'];
-            $sql = "SELECT * FROM $wpdb->posts pts 
+            $sql = "SELECT pts.ID FROM $wpdb->posts pts 
                WHERE pts.post_title LIKE '%{$s}%' 
                AND post_type = 'company'
                AND post_status = 'publish'
@@ -1203,7 +1244,11 @@ add_action('rest_api_init', function () {
                )";
 
             $posts = $wpdb->get_results($sql);
-            return new WP_REST_Response($posts);
+            $entreprises = [];
+            foreach ($posts as $post) {
+               $entreprises[] = new Company((int)$post->ID);
+            }
+            return new WP_REST_Response($entreprises);
          },
       ]
    ]);

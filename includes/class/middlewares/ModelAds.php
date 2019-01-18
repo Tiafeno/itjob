@@ -14,14 +14,14 @@ trait ModelAds
         $this->Table = $wpdb->prefix . 'ads';
     }
 
-    public function get_ads_by_position($position, $paid = 1)
+    public function get_ads_by_position($position, $date, $paid = 1)
     {
         global $wpdb;
-        if (!empty($position)) return false;
-        $query = "SELECT * FROM {$this->Table} WHERE position = %s AND paid = %d";
-        $ads = $wpdb->get_results($wpdb->prepare($query, $position, $paid));
-
-        return $ads;
+        if (empty($position)) return false;
+        $query = "SELECT * FROM {$this->Table} as ads WHERE ads.position = %s AND ads.paid = %d
+                    AND CAST('%s' AS DATE) BETWEEN ads.start AND ads.end";
+        $ads = $wpdb->get_results($wpdb->prepare($query, $position, $paid, $date));
+;        return $ads;
 
     }
 

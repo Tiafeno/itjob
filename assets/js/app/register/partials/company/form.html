@@ -84,14 +84,12 @@
       </div>
     </div>
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Téléphone fixe de l'entreprise <span style="color: red">*</span></label>
+      <label class="col-sm-4 col-form-label">Téléphone fixe de l'entreprise</label>
       <div class="col-sm-6">
         <input class="form-control" name="phone" ng-model="company.phone" ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/" type="text"
-               placeholder="Téléphone fixe de l'entreprise"
-               required>
+               placeholder="Téléphone fixe de l'entreprise">
         <div ng-messages="formCompany.phone.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.phone.$invalid && formCompany.phone.$touched">
-          <div ng-message="required">Ce champ est obligatoire.</div>
           <div ng-message="pattern">Numéro de téléphone invalide</div>
         </div>
       </div>

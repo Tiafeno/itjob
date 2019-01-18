@@ -105,8 +105,8 @@ class vcAds
 
       $Model = new \includes\model\itModel();
       if (null == $position) return null;
-
-      $Ads = $Model->get_ads_by_position($position);
+      $dateNow = date_i18n('Y-m-d H:i:s');
+      $Ads = $Model->get_ads_by_position($position, $dateNow);
       if (empty($Ads)) {
          $preview = get_template_directory_uri() . "/img/position/" . $size . '.jpg';
          $sizes = \explode('x', $size);
@@ -122,8 +122,10 @@ class vcAds
          return $content;
       } else {
          foreach ($Ads as $ad) {
-            $attachment = wp_get_attachment_image_src( $ad->attachment_id, 'full' );
-            $code = sprintf('[vc_single_image image="%d" img_link_target="_blank" img_size="%s" alignment="center"]', $attachment[0], $ad->img_size);
+            $attachment = wp_get_attachment_image_src( $ad->id_attachment, 'full' );
+            $code = "<div class='mt-4'>";
+            $code .= sprintf('[vc_single_image image="%d" img_link_target="_blank" img_size="%s" alignment="center"]', $ad->id_attachment, $ad->img_size);
+            $code .= "</div>";
             echo do_shortcode( $code );
          }
       }
