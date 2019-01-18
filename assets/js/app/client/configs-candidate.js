@@ -44,25 +44,27 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
     }
   }])
   .filter('moment', [function () {
+    moment.locale('fr');
     return (entry) => {
       if (_.isEmpty(entry)) return entry;
-      return moment(entry, "MM/DD/YYYY", "fr").format("MMMM, YYYY");
+      return moment(entry, "MM/DD/YYYY", true).format("MMMM YYYY");
     }
   }])
   .filter('experience_date', [function () {
+    moment.locale('fr');
     return (experience, handler) => {
       if (!_.isObject(experience)) return experience;
       let date;
       if (handler === 'begin') {
         let dateBegin = experience.exp_dateBegin;
         date = _.isNull(dateBegin) || _.isEmpty(dateBegin) || dateBegin === 'Invalid date' ? experience.old_value.exp_dateBegin : experience.exp_dateBegin;
-        
       } else {
         let dateEnd = experience.exp_dateEnd;
         date = _.isNull(dateEnd) ||_.isEmpty(dateEnd) || dateEnd === 'Invalid date' ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
       }
-      date = date.indexOf('/') > -1 ? moment(date) :  moment(date, 'MMMM YYYY', 'fr');
-      return date.format('MMMM YYYY');
+      date = _.isNull(date) ? '' : date;
+      date = date.indexOf('/') > -1 ? moment(date) :  moment(date, 'MMMM YYYY', true);
+      return date.isValid() ? date.format('MMMM YYYY') : 'n/a';
     }
   }])
   .filter('moment_birthday', [function () {

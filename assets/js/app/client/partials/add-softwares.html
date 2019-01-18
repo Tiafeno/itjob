@@ -21,7 +21,7 @@
           </div>
           <div ng-show="!loading">
             <div class="form-group">
-              <tags-input ng-model="tags" max-lenght="1" max-tags="1" on-tag-adding="onAddedTag($tag)" display-property="name"
+              <tags-input ng-model="tags" paste-split-pattern="[,;|/\:.*_•]" max-lenght="1" max-tags="1" on-tag-adding="onAddedTag($tag)" display-property="name"
                           placeholder="Logiciel (ex: QGIS)" replace-spaces-with-dashes="false">
                 <auto-complete source="querySoftware($query)"
                                load-on-focus="false"

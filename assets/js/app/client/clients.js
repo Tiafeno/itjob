@@ -199,21 +199,31 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
           moment.locale('fr');
           let experiences = _.clone($scope.Candidate.experiences);
           $scope.Candidate.experiences = _.map(experiences, (experience) => {
-            if (_.isEmpty(experience.exp_dateBegin) && experience.exp_dateBegin === 'Invalid date' && !_.isUndefined(experience.old_value)) {
-              let oldValue = experience.old_value;
-              if (!_.isEmpty(oldValue.exp_dateBegin) && !_.isEmpty(oldValue.exp_branch_activity)) {
-                experience.exp_dateBegin = moment(oldValue.exp_dateBegin).format('MM/DD/YYYY');
-                experience.exp_dateEnd = moment(oldValue.exp_dateEnd).format('MM/DD/YYYY');
-              }
+            let oldValue = experience.old_value;
+            let begin = _.isNull(experience.exp_dateBegin) || _.isEmpty(experience.exp_dateBegin) ? oldValue.exp_dateBegin : experience.exp_dateBegin;
+            begin = _.isNull(begin) || _.isEmpty(begin) ? '' : begin;
+            let __bg = begin.indexOf('/') > -1 ? moment(begin) : (begin.indexOf(' ') > -1 ? moment(begin, 'MMMM YYYY', true) : moment(begin));
+            if (__bg.isValid()) {
+              begin = __bg.format('MM/DD/YYYY');
             }
-            
+
+            let end = _.isNull(experience.exp_dateEnd) || _.isEmpty(experience.exp_dateEnd) ? oldValue.exp_dateEnd : experience.exp_dateEnd;
+            end = _.isNull(end) || _.isEmpty(end) ? '' : end;
+            let __nd = end.indexOf('/') > -1 ? moment(end) : (end.indexOf(' ') > -1 ? moment(end, 'MMMM YYYY', true) : moment(end));
+            if (__nd.isValid()) {
+              end = __nd.format('MM/DD/YYYY');
+            }
+            experience.exp_dateBegin = begin;
+            experience.exp_dateEnd = end;
+
             return experience;
           });
           $scope.loadExperiences = true;
 
           $scope.Candidate.trainings = _.map($scope.Candidate.trainings, (training) => {
             let dateBegin = training.training_dateBegin;
-            if (moment(dateBegin, "MM/DD/YYYY", "fr").format() === 'Invalid date') {
+            let mmBg = moment(dateBegin, "MM/DD/YYYY", true);
+            if (!mmBg.isValid()) {
               let dateEnd = training.training_dateEnd;
               training.training_dateBegin = moment(dateBegin).format('MM/DD/YYYY');
               training.training_dateEnd = moment(dateEnd).format('MM/DD/YYYY');
@@ -604,7 +614,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
               }, 1200);
 
             }
-          }, (error) => {});
+          }, (error) => {
+            $scope.profilEditor.loading = false;
+          });
       };
 
       $scope.onSubmitCandidateInformation = (isValid) => {
@@ -629,7 +641,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
               }, 1200);
 
             }
-          }, (error) => {});
+          }, (error) => {  $scope.profilEditor.loading = false; });
       };
 
       self.send
@@ -672,7 +684,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                   $scope.profilEditor.form.region = $scope.Company.region.term_id;
                 }
                 UIkit.modal('#modal-information-editor').show();
-              })
+              }, error => {
+                swal('Information', "Erreur de chargement de la page. Récupération de la page en cours...", 'info');
+                setTimeout(() => {
+                  location.reload();
+                }, 2000);
+              });
           }
 
         } else {
@@ -852,6 +869,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
             } else {
               alertify.success('Enregistrer avec succès')
             }
+          }, error => {
+            alertify.error("Une erreur s'est produite,  veuillez réessayer ultérieurement.");
+            $scope.alertLoading = false;
           });
       };
 
@@ -1007,12 +1027,16 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
             },
             data: formData
           })
-          .then(resp => {
+          .then(
+            resp => {
             let data = resp.data;
             if (!data.success) return;
             UIkit.modal('#modal-candidate-profil-editor').hide();
             $scope.profilEditor.loading = false;
             location.reload();
+          }, error => {
+            swall("Erreur", "Une erreur s'est produite, veuillez réessayer ultérieurement.", "error");
+            $scope.profilEditor.loading = false;
           })
       };
 
