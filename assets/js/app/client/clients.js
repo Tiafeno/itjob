@@ -176,8 +176,22 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
       controller: ['$scope', '$http', '$q', function ($scope, $http, $q) {
         const self = this;
         $scope.tinymceOptions = {
-          plugins: '',
-          toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code'
+          language: 'fr_FR',
+          menubar: false,
+          content_css: [
+            '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i',
+            '//www.tinymce.com/css/codepen.min.css'
+          ],
+          content_style: ".mce-content-body p { margin: 5px 0; }",
+          inline: false,
+          statusbar: true,
+          resize: true,
+          browser_spellcheck: true,
+          height: 320,
+          min_height: 230,
+          selector: 'textarea',
+          toolbar: 'undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat ',
+          plugins: ['lists'],
         };
         /**
          * 0: Nouvelle experience
@@ -641,7 +655,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
               }, 1200);
 
             }
-          }, (error) => {  $scope.profilEditor.loading = false; });
+          }, (error) => {
+            $scope.profilEditor.loading = false;
+          });
       };
 
       self.send
@@ -1029,15 +1045,15 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
           })
           .then(
             resp => {
-            let data = resp.data;
-            if (!data.success) return;
-            UIkit.modal('#modal-candidate-profil-editor').hide();
-            $scope.profilEditor.loading = false;
-            location.reload();
-          }, error => {
-            swall("Erreur", "Une erreur s'est produite, veuillez réessayer ultérieurement.", "error");
-            $scope.profilEditor.loading = false;
-          })
+              let data = resp.data;
+              if (!data.success) return;
+              UIkit.modal('#modal-candidate-profil-editor').hide();
+              $scope.profilEditor.loading = false;
+              location.reload();
+            }, error => {
+              swall("Erreur", "Une erreur s'est produite, veuillez réessayer ultérieurement.", "error");
+              $scope.profilEditor.loading = false;
+            })
       };
 
       UIkit.util.on('#modal-candidate-profil-editor', 'show', function (e) {
