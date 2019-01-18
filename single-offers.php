@@ -33,7 +33,7 @@ wp_enqueue_style('offers');
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
       <div uk-grid>
-        <div class="uk-width-3-4@s">
+        <div class="uk-width-2-3@s">
           <!--     Vérifier s'il y a une postulation en cours     -->
           <?php do_action('send_apply_offer') ?>
           <?php do_action('get_notice'); ?>
@@ -129,7 +129,7 @@ wp_enqueue_style('offers');
           endwhile;
           ?>
         </div>
-        <div class="uk-width-1-4@s">
+        <div class="uk-width-1-3@s">
           <!--     Sidebar here ...     -->
           <?php
           if (is_active_sidebar('single-offer-sidebar')) {

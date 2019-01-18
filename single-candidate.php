@@ -63,7 +63,7 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
       <div uk-grid>
-        <div class="uk-width-3-4@s bg-transparent">
+        <div class="uk-width-2-3@s bg-transparent">
           <!--          Content here ... -->
           <?php
           while ( have_posts() ) : the_post();
@@ -357,7 +357,7 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
           endwhile;
           ?>
         </div>
-        <div class="uk-width-1-4@s">
+        <div class="uk-width-1-3@s">
           <!--     Sidebar here ...     -->
           <div class="widget-top">
             <?php
