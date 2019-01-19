@@ -75,10 +75,10 @@ class scInterests
   public static function get_cv_proformat($Candidate = null) {
     global $Engine;
     // create new PDF document
-    /* require get_template_directory() . '/libs/pdfcrowd/pdfcrowd.php';
-    $client = new \Pdfcrowd\HtmlToPdfClient("ddpixel", "d6f0bc2d93bd50ca240406e51e3a8279"); */
+    require get_template_directory() . '/libs/pdfcrowd/pdfcrowd.php';
+    $client = new \Pdfcrowd\HtmlToPdfClient("ddpixel", "d6f0bc2d93bd50ca240406e51e3a8279");
 
-    $mpdf = new \Mpdf\Mpdf();
+    //$mpdf = new \Mpdf\Mpdf();
 
     $html = '';
     try {
@@ -101,12 +101,12 @@ class scInterests
       chmod($absFile, 0777);
       @unlink($absFile);
     }
-    $mpdf->WriteHTML($html);
-    $mpdf->Output();
-    /* $client->setPageMargins('5mm', '0mm', '0mm', '0mm');
+    // $mpdf->WriteHTML($html);
+    // $mpdf->Output();
+    $client->setPageMargins('5mm', '0mm', '0mm', '0mm');
     $client->setPageSize('A4');
     $client->setOrientation('portrait');
-    $client->convertStringToFile($html, $absFile); */
+    $client->convertStringToFile($html, $absFile);
 
     return get_template_directory_uri(  ) . $pathFile;
   }

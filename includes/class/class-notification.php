@@ -171,6 +171,9 @@ final class NotificationHelper
     }
   }
 
+  /**
+   * Quand un candidat viens d'ajouter un logiciel
+   */
   public function notice_admin_new_software($aTerm, $Candidate) {
     $Model     = new itModel();
     $Notice    = new \stdClass();
@@ -185,6 +188,9 @@ final class NotificationHelper
     }
   }
 
+  /**
+   * Quand un candidat viens d'ajouter un métier
+   */
   public function notice_admin_new_job($aTerm, $Candidate) {
     $Model     = new itModel();
     $Notice    = new \stdClass();
@@ -201,7 +207,7 @@ final class NotificationHelper
 
 
   /**
-   * Le CV est validé
+   * Quand l'administrateur vient de publier et activer le CV
    */
   public function notice_publish_cv($id_cv)
   {

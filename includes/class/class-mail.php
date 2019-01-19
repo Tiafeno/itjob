@@ -768,6 +768,7 @@ class Mailing {
     $sender = wp_mail( $to, $subject, $content, $headers );
     if ( $sender ) {
       // Mail envoyer avec success
+      // Envoyer une alerte au candidait conserner
       $this->alert_for_new_offer( $offer_id );
       return true;
     } else {
