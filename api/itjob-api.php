@@ -696,17 +696,20 @@ add_action('rest_api_init', function () {
             $args = [
                'taxonomy' => $taxonomy,
                'hide_empty' => false,
+               'meta_key' => 'activated',
+               'orderby' => 'meta_value_num',
+               'order' => 'ASC',
                'number' => $length,
                'offset' => $start
             ];
 
-            if (!empty($sort['column'])) {
-               $index = (int)$sort['column'];
-               $field = $columns[$index]['data'];
-               if ($field === 'term_id' || $field === 'name') {
-                  $args = array_merge($args, ['orderby' => $field, 'order' => $sort['dir'], ]);
-               }
-            }
+            // if (!empty($sort['column'])) {
+            //    $index = (int)$sort['column'];
+            //    $field = $columns[$index]['data'];
+            //    if ($field === 'term_id' || $field === 'name') {
+            //       $args = array_merge($args, ['orderby' => $field, 'order' => $sort['dir'], ]);
+            //    }
+            // }
 
             if (isset($_REQUEST['search']) && !empty($_REQUEST['search']['value'])) {
                $s = $_REQUEST['search']['value'];
