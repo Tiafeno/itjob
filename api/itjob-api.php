@@ -612,7 +612,7 @@ add_action('rest_api_init', function () {
                      $User = wp_get_current_user();
                      if ($User->ID === 0) return new WP_REST_Response(['success' => false, 'body' => "Utilisateur non definie"]);
                      global $wpdb;
-                     $sql = "SELECT * FROM {$wpdb->prefix}notices WHERE id_user = %d ORDER BY date_create DESC LIMIT 30";
+                     $sql = "SELECT * FROM {$wpdb->prefix}notices WHERE id_user = %d ORDER BY date_create DESC LIMIT 100";
                      $prepare = $wpdb->prepare($sql, $User->ID);
                      $rows = $wpdb->get_results($prepare);
                      $Notifications = [];
