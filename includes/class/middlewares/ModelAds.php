@@ -19,7 +19,7 @@ trait ModelAds
         global $wpdb;
         if (empty($position)) return false;
         $query = "SELECT * FROM {$this->Table} as ads WHERE ads.position = %s AND ads.paid = %d
-                    AND CAST('%s' AS DATE) BETWEEN ads.start AND ads.end";
+                    AND '%s' BETWEEN ads.start AND ads.end";
         $ads = $wpdb->get_results($wpdb->prepare($query, $position, $paid, $date));
 ;        return $ads;
 
