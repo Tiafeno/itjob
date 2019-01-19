@@ -304,8 +304,7 @@
                 "doctrine/collections": "^1.0",
                 "doctrine/common": "^2.6",
                 "phpunit/phpunit": "^4.1"
-            },
-            "type": "library",
+         },"type": "library",
             "autoload": {
                 "psr-4": {
                     "DeepCopy\\": "src/DeepCopy/"
@@ -326,6 +325,7 @@
                 "object",
                 "object graph"
             ],
+
             "time": "2017-10-19T19:58:43+00:00"
         },
         {
