@@ -129,6 +129,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         self.regions = _.clone($scope.formulaire.region);
       };
       $scope.error = false;
+      $scope.buttonDisable = false;
       $scope.uri = {};
       $scope.uri.singin = itOptions.urlHelper.singin;
       $scope.uri.redir = itOptions.urlHelper.redir;
@@ -153,7 +154,14 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         if ($scope.pcForm.$invalid) {
           angular.forEach($scope.pcForm.$error, function (field) {
             angular.forEach(field, function (errorField) {
-              errorField.$setTouched();
+              errorField = (typeof errorField.$setTouched !== 'function') ? errorField.$error.required : errorField;
+              if (_.isArray(errorField)) {
+                angular.forEach(errorField, function (error) {
+                  error.$setTouched();
+                });
+              } else {
+                errorField.$setTouched();
+              }
             });
           });
           $scope.pcForm.email.$validate();
@@ -161,6 +169,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         }
 
         if (!isValid) return;
+        $scope.buttonDisable = true;
         // Submit form here ...
         var particularData = new FormData();
         particularData.append('action', 'insert_user_particular');
@@ -172,7 +181,8 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         $scope.error = false;
         services
           .sendPostForm(particularData)
-          .then(function (resp) {
+          .then(
+            function (resp) {
             var status = resp.data;
             var _type = status.success ? 'info' : 'error';
             swal({
@@ -180,17 +190,21 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
               text: status.msg,
               type: _type,
             }, function () {
+              $scope.buttonDisable = false;
               if (status.success) {
                 var redirection = itOptions.urlHelper.redir;
                 window.location.href = _.isNull(redirection) ? itOptions.urlHelper.singin : redirection;
               }
               if (!status.success) $scope.error = true;
             });
+          }, function (error) {
+            $scope.buttonDisable = false;
+            $scope.error = true;
           })
       };
 
       $scope.$watch('particularForm', value => {
-        console.log(value);
+
       }, true);
       //  JQLite
       var jqSelects = jQuery("select.form-control.find");

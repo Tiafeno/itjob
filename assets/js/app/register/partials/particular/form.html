@@ -105,8 +105,7 @@
       <div class="col-sm-6">
         <div ng-form="setPhone" ng-repeat="phone in particularForm.cellphone track by phone.id" class="form-group row">
           <div class="col-sm-10 pr-0">
-            <input class="form-control mt-1" name="cellphone" ng-model="phone.value"
-                   type="text"
+            <input class="form-control mt-1" name="cellphone" ng-model="phone.value" type="text"
                    ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/"
                    placeholder="Numéro de téléphone" required>
 
@@ -160,7 +159,13 @@
         <label class="form-control-label">Mot de passe <span style="color: red">*</span></label>
         <input class="form-control" type="password" name="pwd" ng-model="particularForm.pwd" autocomplete="off"
                ng-pattern="/^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/" placeholder="Ex: Papaparse29@" required>
-        <span style="color: red" class="help-block uk-text-small">Votre mot de passe doit comporter 8 caractères minimum, 
+        <div ng-messages="pcForm.pwd.$error" ng-show="pcForm.pwd.$invalid && pcForm.pwd.$touched"
+             class="alert alert-pink" role="alert">
+          <div ng-message="required">Veuillez saisir votre mot de passe.</div>
+          <div ng-message="pattern">Votre mot de passe doit comporter 8 caractères minimum, 
+            comprenant des chiffres et des lettres minuscules et majuscules,ainsi qu'un caractère spécial (-*/@+\_%$=).</div>
+        </div>
+        <span class="text-muted help-block font-11 mt-2">Votre mot de passe doit comporter 8 caractères minimum, 
           comprenant des chiffres et des lettres minuscules et majuscules,ainsi qu'un caractère spécial (-*/@+\_%$=).</span>
       </div>
       <div class="col-md-6 sol-sm-6 mt-1">
