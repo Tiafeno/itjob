@@ -12,6 +12,9 @@ final class apiHelper
     $rTerm = [];
     $terms = get_terms($taxonomy, [
       'hide_empty' => false,
+      'meta_key' => 'activated',
+      'orderby' => 'meta_value_num',
+      'order' => 'DESC',
       'fields' => 'all'
     ]);
     if ($taxonomy === 'city') {
