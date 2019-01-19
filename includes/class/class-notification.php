@@ -35,8 +35,8 @@ final class NotificationTpl
     $this->tpls[17] = "Votre CV viens d'être selectionné sur l'offre: <b>%1\$s</b>";
     $this->tpls[18] = "Votre photo n'a pas été validée. Veuillez ajouter une photo professionnelle";
     $this->tpls[19] = "Un CV pour reference « %1\$s » viens d'ajouter une image de profil";
-    $this->tpls[20] = "Un logiciel vient d'être ajouté « <b>%1\$s</b> »";
-    $this->tpls[21] = "Un métier vient d'être ajouté « <b>%1\$s</b> »";
+    $this->tpls[20] = "Un logiciel vient d'être ajouté « <b>%1\$s</b> » par <b>%2\$s</b>";
+    $this->tpls[21] = "Un métier vient d'être ajouté « <b>%1\$s</b> » par <b>%2\$s</b>";
   }
 }
 
@@ -62,8 +62,10 @@ final class NotificationHelper
       add_action('notice-admin-update-cv', [&$this, 'notice_admin_update_cv'], 10, 1);
       add_action('notice-admin-new-company', [&$this, 'notice_admin_new_company'], 10, 1);
       add_action('notice-admin-new-featured-image', [&$this, 'notice_admin_new_featured_image'], 10, 1);
-      add_action('notice-admin-new-software', [&$this, 'notice_admin_new_software'], 10, 1);
-      add_action('notice-admin-new-job_sought', [&$this, 'notice_admin_new_job'], 10, 1);
+
+      // at add_term_submit() in class-vc-register-candidate.php and update_candidate_softwares() in scClient.php
+      add_action('notice-admin-new-software', [&$this, 'notice_admin_new_software'], 10, 2);
+      add_action('notice-admin-new-job_sought', [&$this, 'notice_admin_new_job'], 10, 2);
 
       // On change la status d'une notification
       function notification() {
@@ -169,13 +171,13 @@ final class NotificationHelper
     }
   }
 
-  public function notice_admin_new_software($aTerm) {
+  public function notice_admin_new_software($aTerm, $Candidate) {
     $Model     = new itModel();
     $Notice    = new \stdClass();
     $Term = get_term((int)$aTerm['term_id']);
     $Notice->guid = "/taxonomy/software";
     $Notice->tpl_msg = 20;
-    $Notice->needle = [$Term->name];
+    $Notice->needle = [$Term->name, $Candidate->title];
 
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
@@ -183,13 +185,13 @@ final class NotificationHelper
     }
   }
 
-  public function notice_admin_new_job($aTerm) {
+  public function notice_admin_new_job($aTerm, $Candidate) {
     $Model     = new itModel();
     $Notice    = new \stdClass();
     $Term = get_term((int)$aTerm['term_id']);
     $Notice->guid = "/taxonomy/job_sought";
     $Notice->tpl_msg = 21;
-    $Notice->needle = [$Term->name];
+    $Notice->needle = [$Term->name, $Candidate->title];
 
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {

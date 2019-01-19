@@ -627,8 +627,9 @@ add_action('rest_api_init', function () {
                         $Notice->status = $row->status;
                         $Notice->guid = $row->guid;
                         $tpl = $Template->tpls[(int)$row->template];
-                        $Notice->title = vsprintf($tpl, $needle);
-
+                        set_error_handler(function($errno, $errstr) {  });
+                        $Notice->title = @vsprintf($tpl, $needle);
+                        if (!$Notice->title) continue;
                         $Notifications[] = $Notice;
                      }
 

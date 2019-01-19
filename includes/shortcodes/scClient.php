@@ -401,7 +401,7 @@ if ( ! class_exists( 'scClient' ) ) :
             // Désactiver le term qu'on viens d'ajouter
             if ( ! is_wp_error( $term ) ) {
               update_term_meta( $term['term_id'], 'activated', 0 );
-              do_action('notice-admin-new-software', $term);
+              do_action('notice-admin-new-software', $term, $this->Candidate);
               $notValidTerms[] = $term;
               array_push( $softContainer, (int) $term['term_id'] );
             } else {
