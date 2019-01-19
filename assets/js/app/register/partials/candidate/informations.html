@@ -27,13 +27,12 @@
         <div pre-upload class="p-relative">
           <div class="p-absolute ml-4" style="width: 125px; bottom: -62px;">
             <div class="uk-text-bold d-flex">Photo
-              <span data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" 
-                data-content="Sur la photo votre visage doit être net, humaine et naturelle donc <b>une photo professionnelle</b>">
-                <i class="fa fa-question-circle ml-1" style="font-size: 18px;cursor: pointer"></i>
-              </span>
             </div>
             <button type="file" ngf-select="uploadFiles($file, $invalidFiles)"
             accept="image/*" class="btn" ngf-max-size="2MB">Choisir un fichier</button>
+          </div>
+          <div class="ml-4 mt-2 font-11">
+            Sur la photo votre visage doit être nette, humaine et naturelle <b>pas de selfie</b> ou d’<b>effet</b> et <b>décorations</b> donc une photo professionnelle
           </div>
         </div>
       </div>
@@ -42,7 +41,7 @@
     <div class="row mb-1">
       <div class="col-md-12 form-group">
         <div class="form-group" id="jobsought">
-          <label class="font-normal">Emploi recherché ou vœux <span style="color: red">*</span></label>
+          <label class="font-normal">Emploi recherché ou métier <span style="color: red">*</span></label>
             <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
           <tags-input ng-model="formData.jobSougths" paste-split-pattern="[,;|/\:.*_]" max-lenght="2" max-tags="2"
                       display-property="name" placeholder="Emploi recherché"
@@ -62,7 +61,7 @@
             </div>
           </script>
             <p class="mention-text col-md-8 mt-1">
-              Ajouter un vœux s'il ne ﬁgure pas dans la liste. Valider par “ENTRER” ou le virgule “,”
+              Ajouter un métier s'il ne ﬁgure pas dans la liste. Valider par “ENTRER” ou le virgule “,”
               et <b>éviter les fautes d'orthographe. Vous avez droit à seulement deux (2) voeux</b>
             </p>
         </div>

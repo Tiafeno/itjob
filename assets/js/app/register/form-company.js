@@ -45,7 +45,14 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
             if ($scope.formCompany.$invalid) {
               angular.forEach($scope.formCompany.$error, function (field) {
                 angular.forEach(field, function (errorField) {
-                  errorField.$setTouched();
+                  errorField = (typeof errorField.$setTouched !== 'function') ? errorField.$error.required : errorField;
+                  if (_.isArray(errorField)) {
+                    angular.forEach(errorField, function (error) {
+                      error.$setTouched();
+                    });
+                  } else {
+                    errorField.$setTouched();
+                  }
                 });
               });
               $scope.formCompany.email.$validate();
