@@ -29,7 +29,7 @@ $candidate = null;
 // Variable pour les alerts
 $it_alerts = [];
 
-require 'includes/itjob-configs.php';
+require 'includes/configs.php';
 require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
 

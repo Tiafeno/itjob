@@ -150,15 +150,11 @@ add_action('rest_api_init', function () {
                      break;
 
                   case 'downloadpdf':
-                     if (current_user_can('remove_user')) {
-                        global $shortcode;
-                        $Candidate->__get_access();
-                        $file = $shortcode->scInterests::get_cv_proformat($Candidate);
-                        $response = ['success' => true, 'message' => "Téléchargement en cours ...", 'filepath' => $file ];
-                     } else {
-                        $response = ['success' => false, "message" => "Vous n'avez pas l'autorisation de télécharger le CV"];
-                     }
-                     return new WP_REST_Response($response);
+                     $link = DOWNLOAD_CV_PAGE;
+                     return new WP_REST_Response([
+                        'link' => $link,
+                        'key'  => get_field('bo_key', 'option')
+                     ]);
                      break;
 
                   default:

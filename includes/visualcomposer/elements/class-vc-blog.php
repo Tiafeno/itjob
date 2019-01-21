@@ -69,6 +69,16 @@ if ( ! class_exists( 'vcBlog' ) ):
                 'admin_label' => true,
                 'weight'      => 0
               ),
+              array(
+                'type'        => 'textfield',
+                'class'       => 'vc-ij-archived-link',
+                'heading'     => 'Lien pour voir les articles',
+                'param_name'  => 'link',
+                'value'       => '',
+                'description' => "Ajouter un lien e.g: https://www.itjobmada.com/les-articles",
+                'admin_label' => true,
+                'weight'      => 0
+              ),
             )
           )
         );
@@ -91,7 +101,8 @@ if ( ! class_exists( 'vcBlog' ) ):
           array(
             'title'     => "Articles recommandés",
             'post_type' => 'post',
-            'category'  => 'blog'
+            'category'  => 'blog',
+            'link'      => ''
           ),
           $attrs
         )
@@ -99,6 +110,7 @@ if ( ! class_exists( 'vcBlog' ) ):
       /** @var STRING $post_type */
       $post_type = ! ( empty( $post_type ) ) ? $post_type : 'post';
       $category = ! ( empty( $category ) ) ? $category : 'blog';
+      $link = ! ( empty( $link ) ) ? $link : '';
       $contents  = $this->getBlogContents( $post_type, $category );
       try {
         /** @var STRING $title - Titre de l'element VC */
@@ -106,7 +118,7 @@ if ( ! class_exists( 'vcBlog' ) ):
         return $Engine->render( "@VC/blog.html.twig", [
           'title'    => $title,
           'contents' => $contents,
-          'archive_link' => get_post_type_archive_link($post_type)
+          'archive_link' => $link
         ] );
       } catch ( \Twig_Error_Loader $e ) {
       } catch ( \Twig_Error_Runtime $e ) {
