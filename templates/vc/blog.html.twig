@@ -10,7 +10,9 @@
       <div class="col-md-4">
         <div class="card mb-4">
           <div class="rel">
+          {% if content.thumbnail is not empty or content.thumbnail is not null %}
             <img class="card-img-top" src="{{ content.thumbnail }}" alt="image" />
+          {% endif %}
             <div class="fab fab-bottom card-overlay-fab">
               <button class="btn btn-primary btn-icon-only btn-circle btn-air" data-toggle="button"><i class="ti-share-alt fab-icon"></i><i class="la la-close fab-icon-active"></i></button>
               <ul class="fab-menu">
@@ -28,7 +30,7 @@
             <h4 class="card-title mb-2">
               <a href="{{ content.permalink }}" class="text-dark">{{ content.title|striptags|raw }}</a>
             </h4>
-            <p class="text-light" style="min-height: 180px">{{ content.content|striptags|raw }}</p>
+            <p class="text-light" style="min-height: 180px">{{ content.content|striptags|raw[:250] }}</p>
             <div class="d-flex align-items-center justify-content-between">
               <div class="text-primary"></div>
               <div>
