@@ -57,6 +57,13 @@ function itjob_filter_engine( $Engine ) {
   }));
 
   $Engine->addFilter(new Twig_SimpleFilter('html_entity_decode', 'html_entity_decode'));
+  $Engine->addFilter(new Twig_SimpleFilter('base64_image', function ($img) {
+    // Read image path, convert to base64 encoding
+    $imgData = base64_encode(file_get_contents($img));
+    $type = pathinfo($img, PATHINFO_EXTENSION);
+    $src = 'data: '.$type.';base64,'.$imgData;
+    return $src;
+  }));
 
   return true;
 }
