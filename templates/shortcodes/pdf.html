@@ -2,7 +2,7 @@
   function genPDF() {
       var container = document.querySelector("#body");
       jQuery('#loading').show();
-      html2canvas(container, {scale: 2}).then(canvas => {
+      html2canvas(container, {scale: 2, allowTaint : true}).then(canvas => {
         var img = canvas.toDataURL("image/png");
         
         var imgWidth = 630; 
