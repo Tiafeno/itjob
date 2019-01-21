@@ -149,7 +149,7 @@ class scInterests
     wp_enqueue_script( 'html2canvas', get_template_directory_uri() . '/assets/js/html2canvas/html2canvas.min.js', null, "1.5.3" );
     wp_enqueue_script( 'convertor', get_template_directory_uri() . '/assets/js/convertor.js', null, "0.0.1" );
 
-    $Candidate->__client_premium_access();
+    $Candidate->__();
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
     try {

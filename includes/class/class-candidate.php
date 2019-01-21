@@ -248,6 +248,12 @@ final class Candidate extends UserParticular implements \iCandidate {
     return $this->__client_premium_access();
   }
 
+  public function __() {
+    $this->getJobNotif();
+    $this->getTrainingNotif();
+    $this->getInformations();
+  }
+
   /**
    * Récuperer les terms
    */
