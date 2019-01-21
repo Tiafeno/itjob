@@ -122,7 +122,7 @@ class scInterests
     $Candidate = new Candidate($candidate_id);
     if ( is_user_logged_in() ) {
       // Autoriser l'administratuer et les commercials
-      if ( in_array('administrator', $User->roles) || is_array('editor', $User->roles) )
+      if ( in_array('administrator', $User->roles) || in_array('editor', $User->roles) )
       {
         // Autoriser l'administratuer et les commercials
       } else {
