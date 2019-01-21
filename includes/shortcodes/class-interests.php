@@ -122,20 +122,26 @@ class scInterests
     $Candidate = new Candidate($candidate_id);
     if ( is_user_logged_in() ) {
       // Autoriser l'administratuer et les commercials
-      $Entreprise = Company::get_company_by($User->ID);
-      if ( ! in_array('company', $User->roles) || ! $Candidate->is_candidate() || ! $Entreprise->is_company()) {
-        return "<p class='text-center mt-4 badge badge-pink'>Vous n'avez pas l'autorisation nécessaire pour voir le contenue de cette page</p>";
+      if ( in_array('administrator', $User->roles) || is_array('editor', $User->roles) )
+      {
+        // Autoriser l'administratuer et les commercials
+      } else {
+        $Entreprise = Company::get_company_by($User->ID);
+        if ( ! in_array('company', $User->roles) || ! $Candidate->is_candidate() || ! $Entreprise->is_company()) {
+          return "<p class='text-center mt-4 badge badge-pink'>Vous n'avez pas l'autorisation nécessaire pour voir le contenue de cette page</p>";
+        }
+    
+        // Verifier si l'entreprise a l'access au informations du candidat
+        // FEATURED: Verifier si le CV est dans la liste de l'entreprise
+        $Model = new itModel();
+        if ( ! $Model->interest_access($Candidate->getId(), $Entreprise->getId()) ||
+          ! $Model->list_exist($Entreprise->getId(), $Candidate->getId())) {
+          do_action('add_notice', "<p class='text-center font-15 badge badge-warning'>Action non autoriser.</p>", 'default', false);
+          do_action('get_notice');
+          return;
+        }
       }
-  
-      // Verifier si l'entreprise a l'access au informations du candidat
-      // FEATURED: Verifier si le CV est dans la liste de l'entreprise
-      $Model = new itModel();
-      if ( ! $Model->interest_access($Candidate->getId(), $Entreprise->getId()) ||
-        ! $Model->list_exist($Entreprise->getId(), $Candidate->getId())) {
-        do_action('add_notice', "<p class='text-center font-15 badge badge-warning'>Action non autoriser.</p>", 'default', false);
-        do_action('get_notice');
-        return;
-      }
+      
     }
     
     wp_enqueue_style( 'poppins', "https://fonts.googleapis.com/css?family=Poppins:300,400,700,800" );
