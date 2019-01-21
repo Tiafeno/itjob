@@ -126,9 +126,9 @@ try {
 
   /** @var Object $Engine */
   $Engine = new Twig_Environment($loader, array(
-    'debug' => WP_DEBUG,
+    'debug' => false,
     'cache' => TWIG_TEMPLATE_PATH . '/cache',
-    'auto_reload' => WP_DEBUG
+    'auto_reload' => true
   ));
   // Ajouter des filtres
   itjob_filter_engine($Engine);
