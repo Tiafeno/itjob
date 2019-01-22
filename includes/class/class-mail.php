@@ -45,6 +45,7 @@ class Mailing {
     add_action( 'alert_when_company_interest', [ &$this, 'alert_when_company_interest' ], 10, 2 );
     add_action( 'new_validate_term', [ &$this, 'notif_admin_new_validate_term' ], 10, 1 );
     add_action( 'email_application_validation', [ &$this, 'email_application_validation' ], 10, 1 );
+    add_action( 'update_cv', [ &$this, 'update_cv'], 10, 1);
 
     // Envoyer une email pour administrateur pour informer un nouvelle offre
     add_action( 'create_pending_offer_mail', [&$this, 'create_new_pending_offer_mail'], 10, 1);
@@ -377,6 +378,31 @@ class Mailing {
     } else {
       return false;
     }
+  }
+
+  /**
+   * Envoyer un email au administrateur pour les modifications effectuer 
+   */
+  public function update_cv( $candidate_id = null ) {
+    $Candidate = new Candidate((int)$candidat_id);
+    $firstname = $Candidate->getFirstName();
+    $admin_emails = $this->getModeratorEmail();
+    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
+    if ( ! $admin_emails ) {
+      return false;
+    }
+    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $subject   = "Le CV « {$Candidate->title} » a reçus une modification";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = 'Bonjour, <br/>';
+    $content   .= "<p>{$firstname} viens de modifier son CV portant la reférence « {$Candidate->title} »";
+    $content   .= "<p>Voir la modification: <a href='{$this->dashboard_url}/candidate/'>Back office</a> </p> <br/>";
+    $content   .= 'A bientôt. <br/><br/><br/>';
+    $content   .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+    // Envoyer un mail à l'entreprise
+    wp_mail( $to, $subject, $content, $headers );
   }
 
   /**

@@ -183,11 +183,15 @@ final class Company implements \iCompany {
     $this->address      = get_field( 'itjob_company_address', $this->ID );
     $this->nif          = get_field( 'itjob_company_nif', $this->ID );
     $this->stat         = get_field( 'itjob_company_stat', $this->ID );
-    $this->newsletter   = get_field( 'itjob_company_newsletter', $this->ID );
+
+    $newsletter   = get_field( 'itjob_company_newsletter', $this->ID );
+    $this->newsletter = is_null($newsletter) || empty($newsletter) ? false : ($newsletter ? true : false);
+
     $this->notification = get_field( 'itjob_company_notification', $this->ID );
     $this->phone        = get_field( 'itjob_company_phone', $this->ID );
-    $this->account      = get_post_meta( $this->ID, 'itjob_meta_account', true );
-    $this->account      = empty( $this->account ) ? 0 : (int)$this->account;
+
+    $account      = get_post_meta( $this->ID, 'itjob_meta_account', true );
+    $this->account      = empty( $account ) ? 0 : (int)$account;
 
     $cellphones = get_field( 'itjob_company_cellphone', $this->ID );
     $this->cellphones = [];

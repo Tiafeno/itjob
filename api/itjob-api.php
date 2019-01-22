@@ -968,73 +968,61 @@ add_action('rest_api_init', function () {
          [
             'methods' => WP_REST_Server::CREATABLE,
             'callback' => function () {
-               $post = stripslashes($_REQUEST['post']);
-               $post = json_decode($post); // {title: '', content: '', for?: 'welcome'}
-               $query = json_decode(stripslashes($_REQUEST['query']));
-               if (empty($post->title)) return new WP_REST_Response(['success' => false]);
-               global $Engine;
-               $senders = [];
-               switch ($post->for) {
-                  // Pour tous les utilisateurs une message de bienvenue
-                  case 'welcome':
-                     $subject = "Bonjour";
-                     $user_query = new WP_User_Query(
-                        array(
-                           //'role__not_in' => ['Administrator', 'Editor'],
-                           'number' => (int)$query->number,
-                           'offset' => (int)$query->offset
-                        )
-                     );
-                     $results = $user_query->get_results();
-                     foreach ($results as $user) {
-                        $user_data = get_userdata($user->ID);
-                        if (in_array('company', $user_data->roles) || in_array('editor', $user_data->roles)) continue;
-                        $type_post = in_array('company', $user_data->roles) ? 'company' : 'candidate';
-                        $posts = get_posts(['post_type' => $type_post, 'author' => $user->ID, 'posts_per_page' => 1]);
-                        if (empty($posts)) continue;
-                        $postClient = reset($posts);
-                        $activated = get_field('activated', $postClient->ID);
-                        if ($postClient->post_status === "publish" && !$activated) continue;
-                        $senders[] = $user->user_email;
+               $no_reply = "no-reply@itjobmada.com";
+               $subject = \Http\Request::getValue('subject');
+               $content = \Http\Request::getValue('content');
+               $to = \Http\Request::getValue('to', null); // Post type value (candidat, company ou '')
+               $role__in = ['company', 'candidate'];
+               if (!empty($to) && !is_null($to)) {
+                  if (!in_array($to, $role__in)) return new WP_REST_Response(['success' => false, 'message' => 'Utilisateur non definie', 'value' => $to]);
+               } else {
+                  $to = &$role__in;
+               }
+               
+               $args = [
+                  'role' => $to, 
+                  'fields' => 'email'
+               ];
+               $user_query = new \WP_User_Query( $args );
+               $total = $user_query->total_users;
+               $return = [];
+
+               for ($inc = 1; $inc < $total; $inc += 25) {
+                  $argUsers = [ 'role' => $to, 'fields' => 'all', 'number' => 25, 'offset' => $inc];
+                  $Users = new \WP_User_Query($argUsers);
+                  if (!empty($Users->get_results())) {
+                     foreach ($Users->get_results() as $user) {
+                        if (empty($user->user_email)) continue;
+                        // Vérifier si l'utilisateur est abonnée au newsletter
+                        if ($to === "candidate") {
+                           $Candidate = Candidate::get_candidate_by($user->ID);
+                           if (!$Candidate->newsletter) continue;
+                        }
+                        if ($to === "company") {
+                           $Company = Company::get_company_by($user->ID);
+                           if (!$Company->newsletter) continue;
+                        }
+                        $return[]       = $user->user_email;
+                        $to             = $user->user_email;
+                        $headers        = [];
+                        $headers[]      = 'Content-Type: text/html; charset=UTF-8';
+                        $headers[]      = "From: ItJobMada <{$no_reply}>";
+                        $subject        = $subject;
+                        $sender = wp_mail( $to, $subject, $content, $headers );
+                        if ( $sender ) {
+                           continue;
+                        } else {
+                           break;
+                        }
                      }
-                     break;
-
-                  default:
-                     # code...
-                     break;
-               }
-               // Teste
-               // $senders = ['contact@falicrea.com'];
-               if (empty($senders)) return new WP_REST_Response(['success' => false, 'message' => "Aucun envoie n'a pu être effectuer"]);
-               $content = '';
-               try {
-                  $oc_id = jobServices::page_exists('Espace client');
-                  $logo_id = get_theme_mod('custom_logo');
-                  $logo = wp_get_attachment_image_src($logo_id, 'full');
-                  $args = [
-                     'CLIENT_AREA_LINK' => get_the_permalink($oc_id),
-                     'logo' => $logo[0]
-                  ];
-                  $content .= $Engine->render("@MAIL/newsletters/welcome.html", $args);
-               } catch (Twig_Error_Loader $e) {
-               } catch (Twig_Error_Runtime $e) {
-               } catch (Twig_Error_Syntax $e) {
-                  return new WP_REST_Response(['success' => false, 'message' => $e->getRawMessage()]);
+                  }
+                  
                }
 
-               $headers = [];
-               $headers[] = 'Content-Type: text/html; charset=UTF-8';
-               $headers[] = "From: ITJobMada <no-reply-notification@itjobmada.com>";
-
-               foreach ($senders as $sender) {
-                  $to = $sender;
-                  wp_mail($to, $subject, $content, $headers);
-               }
-
-               return new WP_REST_Response(['success' => true, 'msg' => 'Newsletter envoyer avec succès', 'senders' => $senders]);
+               return new WP_REST_Response(['success' => true, 'users' => $return]);
             },
             'permission_callback' => function ($data) {
-               return current_user_can('delete_users');
+               return true;
             }
          ]
       ]
