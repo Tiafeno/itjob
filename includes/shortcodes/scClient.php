@@ -671,7 +671,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'training_city'          => $training->training_city,
           'training_country'       => $training->training_country,
           'training_establishment' => $training->training_establishment,
-          'validated' => $training->validated
+          'validated'              => $training->validated
         ];
       }
       update_field( 'itjob_cv_trainings', $new_trainings, $this->Candidate->getId() );

@@ -981,7 +981,7 @@ add_action('rest_api_init', function () {
                
                $args = [
                   'role' => $to, 
-                  'fields' => 'email'
+                  'fields' => 'all'
                ];
                $user_query = new \WP_User_Query( $args );
                $total = $user_query->total_users;

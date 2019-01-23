@@ -221,7 +221,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
   .factory('companyFactory', ['$http', '$q', function ($http, $q) {
     return {
       checkLogin: function (log) {
-        return $http.get(itOptions.ajax_url + '?action=ajx_user_exist&log=' + log, {cache: true});
+        return $http.get(itOptions.ajax_url + '?action=ajx_user_exist&mail=' + log, {cache: true});
       },
       sendPostForm: function (formData) {
         return $http({

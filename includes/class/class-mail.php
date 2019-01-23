@@ -43,7 +43,6 @@ class Mailing {
     add_action( 'forgot_my_password', [ &$this, 'forgot_my_password' ], 10, 2 );
     add_action( 'alert_admin_postuled_offer', [ &$this, 'alert_admin_postuled_offer' ], 10, 1 );
     add_action( 'alert_when_company_interest', [ &$this, 'alert_when_company_interest' ], 10, 2 );
-    add_action( 'new_validate_term', [ &$this, 'notif_admin_new_validate_term' ], 10, 1 );
     add_action( 'email_application_validation', [ &$this, 'email_application_validation' ], 10, 1 );
     add_action( 'update_cv', [ &$this, 'update_cv'], 10, 1);
 
@@ -173,7 +172,7 @@ class Mailing {
   }
 
   /**
-   * Envoyer un email quand un CV viens d'être ajouter
+   * Envoyer un email quand un CV viens d'être ajouter à l'utilisateur et au administrateur
    * @call class-vc-register-candidate.php (line 333)
    *
    * @param int $candidate_id - Post candidate id
@@ -265,7 +264,7 @@ class Mailing {
   }
 
   /**
-   * Récuperer les adresses email de l'administrateur ou les moderateurs
+   * Récuperer les adresses email de l'administrateur et les moderateurs
    * @return array|string - Array of email string or empty content
    */
   protected function getModeratorEmail() {
@@ -279,17 +278,8 @@ class Mailing {
     return $admin_email;
   }
 
-
-  // TODO: Envoyer une notification pour des term non valide
-  public function notif_admin_new_validate_term( $terms = [] ) {
-    global $Engine;
-    if ( empty( $terms ) ) {
-      return false;
-    }
-  }
-
   /**
-   * Cree une notification pour les nouvelles utilisateur
+   * Cree une notification pour les nouvelles utilisateur particulier ou professionel
    * @call class-itjob.php (line 91), user_register hook
    *
    * @param int $user_id - L'identification du client
@@ -381,7 +371,7 @@ class Mailing {
   }
 
   /**
-   * Envoyer un email au administrateur pour les modifications effectuer 
+   * Envoyer un email au administrateur pour les modifications effectuer au CV
    */
   public function update_cv( $candidate_id = null ) {
     $Candidate = new Candidate((int)$candidat_id);
@@ -609,11 +599,7 @@ class Mailing {
     }
   }
 
-
-  /**
-   * Envoyer un mail a l'administrateur pour l'informer qu'une entreprise s'interesse
-   * a un candidat.
-   */
+  // Envoyer un mail a l'administrateur pour l'informer qu'une entreprise s'interesse a un candidat.
   public function alert_when_company_interest( $candidat_id, $offer_id ) {
     global $Engine;
     if ( ! is_user_logged_in() ) {
@@ -666,9 +652,7 @@ class Mailing {
     }
   }
 
-  /**
-   * Envoyer un mail au candidat pour une notification de validation par l'administrateur
-   */
+  // Envoyer un mail au candidat pour une notification de validation par l'administrateur
   public function confirm_validate_candidate( $candidat_id ) {
     global $Engine;
     if ( ! is_user_logged_in() ) {
