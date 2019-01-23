@@ -62,7 +62,7 @@ add_action('tous_les_jours', function () {
          « <strong>{$interest->candidate->title}</strong> » sur l'offre <b>{$interest->offer->postPromote}</b> à {$interest->date}.</p>";
     }
     if (empty($pendingInterests))
-        $msg .= "<p>Aucun</p>";
+        $msg .= "<b>Aucun</b>";
     $msg .= "<br>";
     $msg .= "A bientôt. <br/><br/><br/>";
     $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
@@ -82,10 +82,10 @@ add_action('tous_les_jours', function () {
     foreach ($pendingApply as $apply) {
         $name = $apply->candidate->getFirstName();
         $msg .= "<p> * <strong>{$name}</strong> portant la reférence « <strong>{$apply->candidate->title}</strong> »
-         à postuler sur l'offre <strong>{$apply->offer->postPromote}</strong> à {$apply->date}</p>.";
+         à postuler sur l'offre <strong>{$apply->offer->postPromote}</strong> à {$apply->date}.</p>";
     }
     if (empty($pendingApply))
-        $msg .= "<p>Aucun</p>";
+        $msg .= "<b>Aucun</b>";
     $msg .= "<br>";
     $msg .= "A bientôt. <br/><br/><br/>";
     $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
@@ -107,7 +107,7 @@ add_action('tous_les_jours', function () {
         $msg .= "<p> * <strong>{$candidate['name']}</strong> portant la reférence « <strong>{$candidate['reference']}</strong> ». </p>";
     }
     if (empty($candidats))
-        $msg .= "<p>Aucun</p>";
+        $msg .= "<b>Aucun</b>";
     $msg .= "<br>";
     $msg .= "A bientôt. <br/><br/><br/>";
     $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
