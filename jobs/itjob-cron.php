@@ -7,7 +7,23 @@
 require_once 'model/class-cron-model.php';
 require_once 'class/class-cron.php';
 
-add_action('action_scheduler_update_featured_offer', function () {
+function getModerators() {
+    // Les address email des administrateurs qui recoivent les notifications
+    // La valeur de cette option est un tableau
+    $admin_email = get_field( 'admin_mail', 'option' ); // return string (mail)
+    $admin_email = strpos( $admin_email, ',' ) ? explode( ',', $admin_email ) : $admin_email;
+
+    return $admin_email;
+}
+
+/**
+ * Action @tous_les_jours: 
+ */
+
+/**
+ * Cette action permet de supprimer un offre à la une si la date limite est atteinte
+ */
+add_action('tous_les_jours', function () {
     $cronModel = new cronModel();
     $featuredOffers = $cronModel->getFeaturedOffers();
     foreach ($featuredOffers as $offer) {
@@ -20,4 +36,84 @@ add_action('action_scheduler_update_featured_offer', function () {
             }
         }
     }
+});
+
+/**
+ * Cette action permet d'envoyer des mails au administrateurs du site tous les jours
+ * les taches en attente.
+ */
+add_action('tous_les_jours', function () {
+    $itCron = new itCron();
+    $admin_emails = getModerators();
+    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
+    if ( ! $admin_emails ) {
+      return false;
+    }
+
+    /**
+     * Envoyer les CV modifiers qui sont en attente
+     */
+    $candidats = $itCron->getPendingEditingCV();
+    $msg = "Bonjour, <br/>";
+    $msg .= "<p>Voici donc ci dessous les CV avec des modifications en attente:</p> <br/>";
+    foreach ($candidats as $candidate) {
+        $msg .= "<p> * <strong>{$candidate['name']}</strong> portant la reférence « <strong>{$candidate['reference']}</strong> ». </p>";
+    }
+    if (empty($candidats))
+        $msg .= "<p>Aucun</p>";
+    $msg .= "<br>";
+    $msg .= "A bientôt. <br/><br/><br/>";
+    $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $subject   = "Les CV avec des modifications en attente";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+    wp_mail( $to, $subject, $msg, $headers );
+
+    /**
+     * Envoyer les candidats que les entreprises s'interresent
+     */
+
+    $pendingInterests = $itCron->getPendingInterest();
+    $msg = "Bonjour, <br/>";
+    $msg .= "<p>Voici donc ci dessous les CV séléctionner en attente par des entreprises:</p> <br/>";
+    foreach ($pendingInterests as $interest) {
+        $msg .= "<p> * <strong>{$interest->company->title}</strong> s'interesse à un candidat pour réference
+         « <strong>{$interest->candidate->title}</strong> » sur l'offre <b>{$interest->offer->postPromote}</b> à {$interest->date}.</p>";
+    }
+    if (empty($pendingInterests))
+        $msg .= "<p>Aucun</p>";
+    $msg .= "<br>";
+    $msg .= "A bientôt. <br/><br/><br/>";
+    $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $subject   = "Les CV sélectionner en attente";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+    wp_mail( $to, $subject, $msg, $headers );
+
+    /**
+     * Envoyer les candidats qui ont postuler encore en attente
+     */
+    $pendingApply = $itCron->getPendingApply();
+    $msg = "Bonjour, <br/>";
+    $msg .= "<p>Voici donc ci dessous les candidats qui ont postuler encore en attente:</p> <br/>";
+    foreach ($pendingApply as $apply) {
+        $name = $apply->candidate->getFirstName();
+        $msg .= "<p> * <strong>{$name}</strong> portant la reférence « <strong>{$apply->candidate->title}</strong> »
+         à postuler sur l'offre <strong>{$apply->offer->postPromote}</strong> à {$apply->date}</p>.";
+    }
+    if (empty($pendingApply))
+        $msg .= "<p>Aucun</p>";
+    $msg .= "<br>";
+    $msg .= "A bientôt. <br/><br/><br/>";
+    $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $subject   = "Liste des postulants en attente";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+    wp_mail( $to, $subject, $msg, $headers );
 });

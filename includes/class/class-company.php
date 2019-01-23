@@ -185,7 +185,7 @@ final class Company implements \iCompany {
     $this->stat         = get_field( 'itjob_company_stat', $this->ID );
 
     $newsletter   = get_field( 'itjob_company_newsletter', $this->ID );
-    $this->newsletter = is_null($newsletter) || empty($newsletter) ? false : ($newsletter ? true : false);
+    $this->newsletter = boolval($newsletter);
 
     $this->notification = get_field( 'itjob_company_notification', $this->ID );
     $this->phone        = get_field( 'itjob_company_phone', $this->ID );
