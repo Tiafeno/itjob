@@ -485,9 +485,9 @@ if (!class_exists('scImport')) :
             $first_name = &$names;
             $last_name = '';
             $args = [
-              "user_pass" => $rows_object->password,
-              "user_login" => "user-{$rows_object->id_user}",
-              "user_email" => $rows_object->email,
+              "user_pass"    => $rows_object->password,
+              "user_login"   => "user-{$rows_object->id_user}",
+              "user_email"   => $rows_object->email,
               "display_name" => $rows_object->name,
               "first_name" => $first_name,
               "last_name" => $last_name,
@@ -538,12 +538,12 @@ if (!class_exists('scImport')) :
           case 22:
                 // FEATURED: Ajouter les utilisateurs pour role modérateur
             $args = [
-              "user_pass" => $rows_object->password,
-              "user_login" => "editor-{$rows_object->id_user}",
-              "user_email" => $rows_object->email,
+              "user_pass"    => $rows_object->password,
+              "user_login"   => "editor-{$rows_object->id_user}",
+              "user_email"   => $rows_object->email,
               "display_name" => $rows_object->name,
               "first_name" => $rows_object->name,
-              "role" => 'editor'
+              "role"       => 'editor'
             ];
             if (username_exists("editor-{$rows_object->id_user}")) {
               wp_send_json_success("Cet identifiant existe déjà !");

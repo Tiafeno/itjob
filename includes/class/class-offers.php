@@ -93,6 +93,7 @@ final class Offers implements \iOffer {
     $this->offer_url    = get_the_permalink( $output->ID );
     $this->offer_status = $output->post_status;
     $this->datePublication = get_the_date( 'j F, Y', $output );
+    $this->date_create  = $output->post_date;
     if ( $this->is_offer() ) {
       $this->id_offer = &$this->ID;
       $this->post_url = get_the_permalink( $this->ID );
