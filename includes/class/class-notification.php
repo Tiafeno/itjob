@@ -85,8 +85,7 @@ final class NotificationHelper
     });
   }
 
-  public function notice_admin_create_cv($id_cv)
-  {
+  public function notice_admin_create_cv($id_cv) {
     $Model = new itModel();
     $Candidate = new Candidate((int)$id_cv);
 
@@ -104,8 +103,7 @@ final class NotificationHelper
     }
   }
 
-  public function notice_admin_new_company($id_company)
-  {
+  public function notice_admin_new_company($id_company) {
     $Model = new itModel();
     $Company = new Company((int)$id_company);
 
@@ -209,8 +207,7 @@ final class NotificationHelper
   /**
    * Quand l'administrateur vient de publier et activer le CV
    */
-  public function notice_publish_cv($id_cv)
-  {
+  public function notice_publish_cv($id_cv) {
     $id_cv = (int)$id_cv;
     if (!$id_cv) return false;
     $Model = new itModel();
@@ -226,8 +223,7 @@ final class NotificationHelper
     return true;
   }
 
-  public function notice_candidate_postuled($id_cv, $id_offer)
-  {
+  public function notice_candidate_postuled($id_cv, $id_offer) {
     $Model = new itModel();
 
     // Company
@@ -260,8 +256,7 @@ final class NotificationHelper
     return true;
   }
 
-  public function notice_interest($id_cv_request)
-  {
+  public function notice_interest($id_cv_request) {
     if (!is_numeric($id_cv_request)) return false;
     $Interest = itModel::get_request($id_cv_request);
     if (is_null($Interest)) return null;
@@ -430,10 +425,7 @@ final class NotificationHelper
     $Model->added_notice($Author->ID, $Notice);
   }
 
-
-
-  public function get_user_administrator()
-  {
+  public function get_user_administrator() {
     $user_query = new \WP_User_Query(array('role__in' => ['Administrator', 'Editor']));
     return $user_query->get_results();
   }

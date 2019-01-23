@@ -622,6 +622,7 @@ class Mailing {
 
     $User            = wp_get_current_user();
     $current_company = Company::get_company_by( $User->ID );
+    $Offer  = new Offers((int) $offer_id);
     // @var array $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $admin_emails = $this->getModeratorEmail();
     $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
@@ -645,6 +646,7 @@ class Mailing {
         'company_name'       => $current_company->title,
         'candidat_firstname' => $Candidate->privateInformations->firstname,
         'candidat_reference' => $Candidate->title,
+        'post_promote'       => $Offer->postPromote,
         'logo'               => esc_url( $logo[0] ),
         'home_url'           => home_url( '/' ),
         'admin_url'          => $this->dashboard_url

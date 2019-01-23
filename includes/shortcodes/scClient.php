@@ -378,6 +378,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
+    /**
+     * Mettre à jour la liste des logiciels
+     */
     public function update_candidate_softwares() {
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         wp_send_json( false );
@@ -562,6 +565,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
+    /**
+     * Mettre à jours la liste des emplois recherché
+     */
     public function update_job_search() {
       global $itJob;
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
