@@ -175,6 +175,7 @@
         <input class="form-control" ng-mail="company.email" name="email" ng-model="company.email"
                ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/"
                type="text" placeholder="Ex: exemple@mail.com" required>
+        <div id="text-loading" class="badge badge-warning" style="font-size: 10px; margin-top: 2px">Chargement en cours ...</div>
         <div ng-messages="formCompany.email.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.email.$invalid && formCompany.email.$touched">
           <div ng-message="required">Adresse email est obligatoire.</div>

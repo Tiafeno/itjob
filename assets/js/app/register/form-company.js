@@ -180,6 +180,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
           });
 
           jQuery('[data-toggle="tooltip"]').tooltip();
+          jQuery('#text-loading').hide();
         }]
       }
     ];
@@ -201,18 +202,22 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       mailCheck: function (email) {
         return new Promise(function (resolve, reject) {
           if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            jQuery('#text-loading').show();
             companyFactory
               .checkLogin(email)
               .then(function (resp) {
                 var data = _.clone(resp.data);
                 if (data.success) {
                   reject(false);
+                  jQuery('#text-loading').hide();
                 } else {
                   resolve(true);
+                  jQuery('#text-loading').hide();
                 }
               });
           } else {
             reject(false);
+            jQuery('#text-loading').hide();
           }
         });
       }
