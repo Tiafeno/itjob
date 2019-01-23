@@ -314,7 +314,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           'training_country'       => $training->country,
           'training_city'          => $training->city,
           'training_diploma'       => $training->diploma,
-          'training_establishment' => $training->establishment
+          'training_establishment' => $training->establishment,
+          'validated'              => 0
         ];
       }
       update_field( 'itjob_cv_trainings', $trainings, $this->Candidate->getId() );
@@ -330,7 +331,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           'exp_company'      => $experience->company,
           'exp_positionHeld' => $experience->positionHeld,
           'exp_branch_activity' => (int)$experience->abranch,
-          'exp_mission'      => $experience->mission
+          'exp_mission'      => $experience->mission,
+          'validated'        => 0
         ];
       }
       update_field( 'itjob_cv_experiences', $experiences, $this->Candidate->getId() );

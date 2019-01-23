@@ -46,42 +46,33 @@ class cronModel
      * Récupérer les CV en attente de modifications
      */
     public function getPendingEditingCV() {
-        $args = [
-            'role' => 'candidate', 
-            'fields' => 'all'
-        ];
-        $user_query = new WP_User_Query( $args );
-        $total = $user_query->total_users;
+        global $wpdb;
         $return = [];
-        for ($inc = 1; $inc < $total; $inc += 25) {
-            $argUsers = [ 'role' => $to, 'fields' => 'all', 'number' => 25, 'offset' => $inc];
-            $Users = new WP_User_Query($argUsers);
-            if (!empty($Users->get_results())) {
-                foreach ($Users->get_results() as $user) {
-                    if (empty($user->user_email)) continue;
-                    // Vérifier si l'utilisateur est un candidat
-                    if ($to === "candidate") {
-                        $Candidate = includes\post\Candidate::get_candidate_by($user->ID);
-                    } else continue;
+        $sql = "SELECT * FROM $wpdb->posts pts WHERE pts.post_type = %s AND pts.post_status = %s
+        AND pts.ID IN (SELECT pta.post_id as post_id FROM $wpdb->postmeta pta WHERE pta.meta_key REGEXP '^itjob_cv_experiences_[0-9]{1,2}_validated' AND pta.meta_value = 0)
+        AND pts.ID IN (SELECT pta.post_id as post_id FROM $wpdb->postmeta pta WHERE pta.meta_key = 'itjob_cv_hasCV' AND pta.meta_value = 1)
+        AND pts.ID IN (SELECT pta.post_id as post_id FROM $wpdb->postmeta pta WHERE pta.meta_key = 'activated' AND pta.meta_value = 1)";
+        $prepare = $wpdb->prepare($sql , 'candidate', 'publish');
+        $rows    = $wpdb->get_results( $prepare );
+        foreach ($rows as $candidate) {
+            // Vérifier si l'utilisateur est un candidat
+            $Candidate = new includes\post\Candidate((int) $candidate->ID);
+            $pending = false;
+            
+            // On verifie si le candidat a une modification en attente
+            $Experiences = $Candidate->experiences;
+            $Formations  = $Candidate->trainings;
+            foreach ($Experiences as $experience) {
+                if (!$experience->validated) $pending = true;
+            }
 
-                    $pending = false;
-                    
-                    // On verifie si le candidat a une modification en attente
-                    $Experiences = $Candidate->experiences;
-                    $Formations  = $Candidate->trainings;
-                    foreach ($Experiences as $experience) {
-                        if (!$experience->validated) $pending = true;
-                    }
+            foreach ($Formations as $formation) {
+                if (!$formation->validated) $pending = true;
+            }
 
-                    foreach ($Formations as $formation) {
-                        if (!$formation->validated) $pending = true;
-                    }
-
-                    if (!$pending) continue;
-                    $name = $Candidate->getFirstName().' '.$Candidate->getLastName();
-                    $return[] = ['reference' => $Candidate->reference, 'name' => $name];
-                }
-            } 
+            if (!$pending) continue;
+            $name = $Candidate->getFirstName().' '.$Candidate->getLastName();
+            $return[] = ['reference' => $Candidate->reference, 'name' => $name];
         }
 
         return $return;
