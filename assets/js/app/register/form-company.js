@@ -63,8 +63,8 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
               .mailCheck($scope.company.email)
               .then(function (status) {
                 $rootScope.$apply(function () {
-                  $scope.formCompany.email.$setValidity('mail', !status);
-                  if (!status) {
+                  $scope.formCompany.email.$setValidity('mail', status);
+                  if (status) {
                     $rootScope.isSubmit = !$rootScope.isSubmit;
                     var companyForm = new FormData();
                     companyForm.append('action', 'ajx_insert_company');
@@ -199,20 +199,20 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
           });
       },
       mailCheck: function (email) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
           if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
             companyFactory
               .checkLogin(email)
               .then(function (resp) {
                 var data = _.clone(resp.data);
                 if (data.success) {
-                  reject(data.data);
+                  reject(false);
                 } else {
-                  resolve(data.data);
+                  resolve(true);
                 }
               });
           } else {
-            resolve(false);
+            reject(false);
           }
         });
       }
@@ -255,7 +255,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       require: 'ngModel',
       scope: true,
       link: function (scope, element, attrs, model) {
-        element.bind('blur', function () {
+        element.bind('keyup', function () {
           companyService
             .mailCheck(element.val())
             .then(
@@ -265,13 +265,13 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
                 });
               },
               function (error) {
-                console.log(error);
                 scope.$apply(function () {
                   model.$setValidity('mail', false);
                 });
               }
             )
         });
+
       }
     }
   }])
