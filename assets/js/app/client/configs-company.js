@@ -5,6 +5,7 @@ APPOC
       .when('/oc-company', {
         templateUrl: itOptions.Helper.tpls_partials + '/oc-company.html?ver=' + itOptions.version,
         controller: 'clientCtrl',
+        controllerAs: 'vm',
         resolve: {
           Client: ['$http', '$q', function ($http, $q) {
             let access = $q.defer();

@@ -102,7 +102,9 @@ add_action('rest_api_init', function () {
 
                      $status = (int)$status;
                      if ($status === 1) {
-                        wp_update_post(['ID' => $Candidate->getId(), 'post_status' => 'publish'], true);
+                        $post_date =  $Candidate->date_create;
+                        $post_date = date('Y-m-d H:i:s', strtotime($post_date));
+                        wp_update_post(['ID' => $Candidate->getId(), 'post_date' => $post_date, 'post_status' => 'publish'], true);
                         do_action('confirm_validate_candidate', $Candidate->getId());
                      }
                      update_field('activated', (int)$status, $Candidate->getId());
