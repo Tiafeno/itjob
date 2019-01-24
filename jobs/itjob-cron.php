@@ -56,10 +56,10 @@ add_action('tous_les_jours', function () {
 
     $pendingInterests = $cronModel->getPendingInterest();
     $msg = "Bonjour, <br/>";
-    $msg .= "<p>Voici donc ci dessous les CV séléctionner en attente par des entreprises:</p> <br/>";
+    $msg .= "<p>Voici la liste des candidats qui ont été sélectionnés par les recruteurs, en attente de validation :</p>";
     foreach ($pendingInterests as $interest) {
         $msg .= "<p> * <strong>{$interest->company->title}</strong> s'interesse à un candidat pour réference
-         « <strong>{$interest->candidate->title}</strong> » sur l'offre <b>{$interest->offer->postPromote}</b> à {$interest->date}.</p>";
+         « <strong>{$interest->candidate->title}</strong> » sur l'offre <b>{$interest->offer->postPromote}</b> ({$interest->offer->reference}) à {$interest->date}.</p>";
     }
     if (empty($pendingInterests))
         $msg .= "<b>Aucun</b>";
@@ -78,7 +78,7 @@ add_action('tous_les_jours', function () {
      */
     $pendingApply = $cronModel->getPendingApply();
     $msg = "Bonjour, <br/>";
-    $msg .= "<p>Voici donc ci dessous les candidats qui ont postuler encore en attente:</p> <br/>";
+    $msg .= "<p>Voici la liste des candidats qui ont postulé sur des offres, en attente de validation :</p> ";
     foreach ($pendingApply as $apply) {
         $name = $apply->candidate->getFirstName();
         $msg .= "<p> * <strong>{$name}</strong> portant la reférence « <strong>{$apply->candidate->title}</strong> »
@@ -102,7 +102,7 @@ add_action('tous_les_jours', function () {
      */
     $candidats = $cronModel->getPendingEditingCV();
     $msg = "Bonjour, <br/>";
-    $msg .= "<p>Voici donc ci dessous les CV avec des modifications en attente:</p> <br/>";
+    $msg .= "<p>Voici la liste des candidats qui ont modifié leurs CV, en attente de validation :</p> ";
     foreach ($candidats as $candidate) {
         $msg .= "<p> * <strong>{$candidate['name']}</strong> portant la reférence « <strong>{$candidate['reference']}</strong> ». </p>";
     }
