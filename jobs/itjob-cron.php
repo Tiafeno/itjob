@@ -83,7 +83,7 @@ add_action('tous_les_jours', function () {
     foreach ($pendingApply as $apply) {
         $name = $apply->candidate->getFirstName();
         $msg .= "<p> * <strong>{$name}</strong> portant la reférence « <strong>{$apply->candidate->title}</strong> »
-         à postuler sur l'offre <strong>{$apply->offer->postPromote}</strong> à {$apply->date}.</p>";
+         à postuler sur l'offre <b>{$apply->offer->postPromote}</b> ({$interest->offer->reference}) à {$apply->date}.</p>";
     }
     if (empty($pendingApply))
         $msg .= "<b>Aucun</b>";
@@ -123,5 +123,5 @@ add_action('tous_les_jours', function () {
 });
 
 add_action('tous_les_15_minutes', function () {
-    
+
 });
