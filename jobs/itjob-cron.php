@@ -71,6 +71,7 @@ add_action('tous_les_jours', function () {
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+    
     wp_mail( $to, $subject, $msg, $headers );
 
     /**
@@ -94,6 +95,7 @@ add_action('tous_les_jours', function () {
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+
     wp_mail( $to, $subject, $msg, $headers );
 
 
@@ -116,5 +118,10 @@ add_action('tous_les_jours', function () {
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+
     wp_mail( $to, $subject, $msg, $headers );
+});
+
+add_action('tous_les_15_minutes', function () {
+    
 });
