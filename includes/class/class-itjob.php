@@ -211,6 +211,12 @@ if ( ! class_exists( 'itJob' ) ) {
 
           if ( $query->is_search ) {
 
+            $User = wp_get_current_user();
+            if ($User->ID !== 0) {
+              if (in_array('administrator', $User->roles) || in_array('editor', $User->roles) || in_array('contributor', $User->roles))
+                return;
+            }
+
             $region  = Http\Request::getValue( 'rg' );
             $abranch = Http\Request::getValue( 'ab' );
             $s       = $_GET['s'];
@@ -470,7 +476,7 @@ if ( ! class_exists( 'itJob' ) ) {
           else {
             // Filtrer les candidates ou les offers ou les entreprises
             // Afficher seulement les candidates ou les offres ou les entreprises activer
-            $User = wp_get_current_user(  );
+            $User = wp_get_current_user();
             if ($User->ID !== 0) {
               if (in_array('administrator', $User->roles) || in_array('editor', $User->roles) || in_array('contributor', $User->roles))
                 return;
@@ -536,7 +542,8 @@ if ( ! class_exists( 'itJob' ) ) {
          * si la connexion c'est bien effectué.
          */
         /** @var bool $userRole */
-        $userRole = current_user_can( 'company' ) || current_user_can( 'candidate' );
+        $User = wp_get_current_user();
+        $userRole = in_array( 'company', $User->roles ) || in_array( 'candidate', $User->roles );
         $redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : home_url( '/' );
         if ( is_admin() && ! defined( 'DOING_AJAX' ) && $userRole ) {
           exit( wp_redirect( $redirect, 301 ) );
