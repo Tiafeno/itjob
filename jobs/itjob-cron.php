@@ -124,7 +124,6 @@ add_action('tous_les_jours', function () {
 
 add_action('tous_les_15_minutes', function () {
     // Mettre à jours la clé
-    $bo_key = get_field('bo_key', 'option');
     $now = date('Y-m-d H:i:s');
     $new_key = password_hash($now . rand(10, 80 * date('s')), PASSWORD_DEFAULT);
     update_field('bo_key', $new_key, 'option');
