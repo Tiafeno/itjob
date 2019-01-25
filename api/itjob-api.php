@@ -740,15 +740,32 @@ add_action('rest_api_init', function () {
             $rows = $wpdb->get_results($term_query->request);
             foreach ($term_query->get_terms() as $term) {
                if ($taxonomy !== 'language') {
-                  $activated = (int)get_term_meta($term->term_id, 'activated', true);
+                  $activated = get_term_meta((int)$term->term_id, 'activated', true);
+                  $activated = boolval($activated);
                } else {
                   $activated = 1;
+               }
+               $candidates = [];
+               if (!$activated) {
+                  $candidates = get_posts(array(
+                     'post_type' => 'candidate',
+                     'numberposts' => -1,
+                     'tax_query' => array(
+                       array(
+                         'taxonomy' => $taxonomy,
+                         'field' => 'id',
+                         'terms' => (int)$term->term_id, // Where term_id of Term 1 is "1".
+                         'include_children' => false
+                       )
+                     )
+                   ));
                }
                $contents[] = [
                   'term_id' => $term->term_id,
                   'name' => $term->name,
                   'slug' => $term->slug,
-                  'activated' => $activated
+                  'candidates' => $candidates,
+                  'activated' => intval($activated)
                ];
             }
             if (!empty($term_query) && !is_wp_error($term_query)) {
@@ -838,6 +855,7 @@ add_action('rest_api_init', function () {
                      return new WP_REST_Response(['success' => true, 'message' => 'Le term a bien été effacer dans la base de donnée', 'data' => $term]);
 
                      break;
+
                   // Remplacer le term par une autre
                   case 'replace':
                      $params = $_REQUEST['params'];

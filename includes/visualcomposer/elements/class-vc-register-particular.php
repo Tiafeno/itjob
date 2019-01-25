@@ -239,15 +239,15 @@ if (!class_exists('vcRegisterParticular')) :
     }
 
     $userFirstName = get_field('itjob_cv_firstname', $post_id);
-    $userLastName = get_field('itjob_cv_lastname', $post_id);
+    $userLastName  = get_field('itjob_cv_lastname', $post_id);
     $args = [
-      "user_pass" => substr(str_shuffle($this->chars), 0, 8),
+      "user_pass"  => substr(str_shuffle($this->chars), 0, 8),
       "user_login" => 'user-' . $post_id,
       "user_email" => $email,
       "display_name" => $post->post_title,
-      "first_name" => $userFirstName,
-      "last_name" => $userLastName,
-      "role" => $post_type
+      "first_name"   => $userFirstName,
+      "last_name"  => $userLastName,
+      "role"       => $post_type
     ];
       // Hook user_register fire ...
     $user_id = wp_insert_user($args);
