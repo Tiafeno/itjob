@@ -749,7 +749,7 @@ add_action('rest_api_init', function () {
                if (!$activated) {
                   $candidates = get_posts(array(
                      'post_type' => 'candidate',
-                     'suppress_filters' => true,
+                     'suppress_filters' => false,
                      'numberposts' => -1,
                      'tax_query' => array(
                        array(
