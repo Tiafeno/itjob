@@ -22,6 +22,7 @@ abstract class UserParticular {
   public $greeting;
   public $region;
   public $dateAdd;
+  public $date_create;
 
   /**
    * @return bool
