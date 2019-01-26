@@ -120,6 +120,28 @@ add_action('tous_les_jours', function () {
     $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
 
     wp_mail( $to, $subject, $msg, $headers );
+
+    /**
+     * Envoyer les CV en attente de validation
+     */
+    $candidats = $cronModel->getPendingCV();
+    $msg = "Bonjour, <br/>";
+    $msg .= "<p>Voici la liste des candidats en attente de validation :</p> ";
+    foreach ($candidats as $candidate) {
+        $msg .= "<p> * <strong>{$candidate['name']}</strong> portant la reférence « <strong>{$candidate['reference']}</strong> ». </p>";
+    }
+    if (empty($candidats))
+        $msg .= "<b>Aucun</b>";
+    $msg .= "<br>";
+    $msg .= "A bientôt. <br/><br/><br/>";
+    $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $subject   = "Les CV en attente de validation";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+
+    wp_mail( $to, $subject, $msg, $headers );
 });
 
 add_action('tous_les_15_minutes', function () {
