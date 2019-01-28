@@ -102,8 +102,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
               },
               pwd: {
                 required: "Ce champ est obligatoire",
-                pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, " +
-                  "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
+                pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, comprenant des chiffres et des lettres minuscules et"+
+                " majuscules, ainsi 1 caractère spécial (-*/@+\_%$=).",
               },
               confpwd: {
                 required: "Ce champ est obligatoire",
