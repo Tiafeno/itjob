@@ -258,6 +258,7 @@ $forgot_password = Http\Request::getValue( 'forgot_password', 0 );
           </div>
           <form class="ibox-body pt-0" id="change-password-form" action="" method="POST">
             <h4 class="font-strong text-center mb-4">Modifier mon mot de passe</h4>
+            
             <?php if ($errors->get_error_code()) : ?>
               <div class="alert alert-pink alert-dismissable fade show alert-outline has-icon"><i class="la la-info-circle alert-icon"></i>
                 <div class="d-flex align-items-center justify-content-between">
