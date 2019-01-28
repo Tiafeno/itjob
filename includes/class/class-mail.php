@@ -374,7 +374,7 @@ class Mailing {
    * Envoyer un email au administrateur pour les modifications effectuer au CV
    */
   public function update_cv( $candidate_id = null ) {
-    $Candidate = new Candidate((int)$candidat_id);
+    $Candidate = new Candidate((int)$candidate_id);
     $firstname = $Candidate->getFirstName();
     $admin_emails = $this->getModeratorEmail();
     $admin_emails = empty( $admin_emails ) ? false : $admin_emails;

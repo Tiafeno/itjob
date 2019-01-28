@@ -196,6 +196,43 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
       }]
     }
   }])
+  .directive('appFormation', [function () {
+    return {
+      restrict: 'E',
+      tempalteUrl: itOptions.Helper.tpls_partials + '/formation.html?ver=' + itOptions.version,
+      scope: true,
+      controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
+        $scope.Formations = [];
+        $scope.Loading = false;
+        self.Initialize = () => {
+          $scope.Loading = true;
+          $http.get(`${itOptions.Helper.ajax_url}?action=collect_formations`, {
+              cache: false
+            })
+            .then(resp => {
+              const query = resp.data;
+              if (query.success) {
+
+                const table = jQuery('#formation-table').DataTable({
+                  pageLength: 10,
+                  fixedHeader: false,
+                  responsive: false,
+                  "sDom": 'rtip',
+                  language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+                  }
+                });
+
+                $scope.Loading = false;
+              } else {
+                $scope.loading = false;
+              }
+            });
+        };
+        self.Initialize();
+      }]
+    }
+  }])
   .controller('clientCtrl', ['$scope', '$http', '$q', '$filter', 'clientFactory', 'clientService', 'Client', 'Upload',
     function ($scope, $http, $q, $filter, clientFactory, clientService, Client, Upload) {
       const self = this;

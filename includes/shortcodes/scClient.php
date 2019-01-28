@@ -59,6 +59,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_add_cv_list', [ &$this, 'add_cv_list' ] ); // Ajouter un candidat dans la liste de l'entreprise
         add_action( 'wp_ajax_get_candidat_interest_lists', [ &$this, 'get_candidat_interest_lists' ] );
         add_action( 'wp_ajax_collect_favorite_candidates', [ &$this, 'collect_favorite_candidates' ] );
+        add_action( 'wp_ajax_collect_formations', [ &$this, 'collect_formations' ] );
         add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
         add_action( 'wp_ajax_get_candidacy', [ &$this, 'get_candidacy' ] );
         add_action( 'wp_ajax_collect_current_user_notices', [ &$this, 'collect_current_user_notices' ] );
@@ -756,6 +757,34 @@ if ( ! class_exists( 'scClient' ) ) :
       } else {
         wp_send_json_error("Vous n'étes pas un candidat");
       }
+    }
+
+    /**
+     * Function ajax
+     * Récupérer les formations d'un utilisateur
+     */
+    public function collect_formations() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+
+      $User = wp_get_current_user(  );
+      $email = $User->user_email;
+      $args = [
+        'post_type' => 'formation',
+        'post_status' => 'any',
+        'meta_query' => [
+          [
+            'key' => 'email',
+            'value' => $email
+          ]
+        ]
+      ];
+
+      $formations = get_posts( $args );
+      
+      wp_send_json_success( $formations );
+
     }
 
     /**

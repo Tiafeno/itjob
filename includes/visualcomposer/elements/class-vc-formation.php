@@ -114,14 +114,14 @@ EOF;
       }
       $user_id = get_current_user_id();
       $form = (object)[
-         'title'  => wp_strip_all_tags(\Http\Request::getValue('title')),
+         'title' => wp_strip_all_tags(\Http\Request::getValue('title')),
          'region' => (int)\Http\Request::getValue('region'),
          'address' => \Http\Request::getValue('address'),
          'duration' => \Http\Request::getValue('duration'),
          'date_limit' => \Http\Request::getValue('date_limit'),
          'activity_area' => (int)\Http\Request::getValue('activity_area'),
-         'description' => \Http\Request::getValue('description'),
-         'establish_name' => \Http\Request::getValue('establish_name'),
+         'description'    => \Http\Request::getValue('description'),
+         'establish_name'   => \Http\Request::getValue('establish_name'),
       ];
       $wp_error = true;
 
@@ -133,6 +133,7 @@ EOF;
          'post_content' => $form->description,
          'post_excerpt' => $form->description
       ], $wp_error );
+      
       if (!is_wp_error( $thing )) {
          $post_id = &$thing;
          update_field('establish_name', $form->establish_name, $post_id);
@@ -143,6 +144,19 @@ EOF;
          // Ajouter les taxonomy
          wp_set_post_terms( $post_id, [ $form->activity_area ], 'branch_activity' );
          wp_set_post_terms( $post_id, [ $form->region ], 'region' );
+
+         // Ajouter son adresse email
+         $current_user = wp_get_current_user();
+         update_field('email', $current_user->user_email, $post_id);
+
+         $term = get_term($form->activity_area, 'branch_activity');
+         if ($term && $term instanceof WP_Term) {
+            update_field('reference', "{$term->slug}{$post_id}", $post_id);
+         }
+
+         // ********************* Notification ***********************
+         do_action('notice-new-formation', $post_id);
+         // *********************************************************
 
          wp_send_json_success( "Formation ajouter avec succès" );
       }
