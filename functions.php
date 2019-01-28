@@ -63,6 +63,7 @@ foreach ($interfaces as $interface) {
 }
 
 // post type object
+require_once 'includes/class/class-formation.php';
 require_once 'includes/class/class-offers.php';
 require_once 'includes/class/class-particular.php';
 require_once 'includes/class/class-company.php';
@@ -99,7 +100,8 @@ $elementsVC = (object)[
   'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php',
   'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php',
-  'vcAds' => require 'includes/visualcomposer/elements/class-vc-ads.php'
+  'vcAds' => require 'includes/visualcomposer/elements/class-vc-ads.php',
+  'vcFormation' => require 'includes/visualcomposer/elements/class-vc-formation.php'
 ];
 
 require 'includes/class/class-wp-city.php';
@@ -252,7 +254,8 @@ add_action('init', function () {
       }
     return $title;
   }, PHP_INT_MAX);
-  //var_dump($t);
+  
+  do_action('testUnits');
   //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
 //  header('Content-Type: text/csv');
 //  header('Content-Disposition: attachment; filename="emploi.csv"');

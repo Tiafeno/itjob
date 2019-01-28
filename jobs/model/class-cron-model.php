@@ -34,6 +34,30 @@ class cronModel
         return $results;
     }
 
+    public function getUserAdmin() {
+        $args = [
+            'role__in' => ['administrator', 'editor', 'contributor']
+        ];
+        $user_query = new WP_User_Query($args);
+        return $user_query;
+    }
+
+    public function deleteNoticeforLastDays($day = 15, $users = []) {
+        global $wpdb;
+        $today = date('Y-m-d H:i:s');
+        $lastDay = new DateTime("$today - $day day");
+        $lastDayString = $lastDay->format('Y-m-d H:i:s');
+        $query = '';
+        foreach ($users as $user) {
+            $endEl = end($users);
+            $query .= "$user->ID";
+            if ($endEl->ID !== $user->ID) $query .= ', ';
+        }
+        $sql = "DELETE FROM {$wpdb->prefix}notices as ntc WHERE ntc.date_create <= '$lastDayString' AND ntc.id_user IN ( $query )";
+        $rows = $wpdb->query( $sql );
+        
+        return $rows;
+    }
     
     /**
      * Récupérer les CV en attente de modifications

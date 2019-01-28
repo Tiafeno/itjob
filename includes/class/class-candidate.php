@@ -99,7 +99,6 @@ final class Candidate extends UserParticular implements \iCandidate {
       $args       = [
         'post_type'      => 'candidate',
         'post_status'    => [ 'publish', 'pending' ],
-        'posts_per_page' => - 1,
         'meta_key'       => 'itjob_cv_email',
         'meta_value'     => $usr->user_email,
         'meta_compare'   => '='

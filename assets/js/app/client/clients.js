@@ -31,7 +31,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
     ];
   }])
   .filter('Greet', [function () {
-    const Greeting = [{
+    const Greeting = [
+      {
         greeting: 'mrs',
         label: 'Madame'
       },
@@ -48,7 +49,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
     }
   }])
   .filter('Status', [function () {
-    const postStatus = [{
+    const postStatus = [
+      {
         slug: 'publish',
         label: 'Vérifier'
       },

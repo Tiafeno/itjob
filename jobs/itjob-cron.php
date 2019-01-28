@@ -150,3 +150,12 @@ add_action('tous_les_15_minutes', function () {
     $new_key = password_hash($now . rand(10, 80 * date('s')), PASSWORD_DEFAULT);
     update_field('bo_key', $new_key, 'option');
 });
+
+// Effacer les notifications des administrateur vieux de 15 jours
+add_action('tous_les_jours', function() {
+    $cronModel = new cronModel();
+    $user_query = $cronModel->getUserAdmin();
+    //An array containing a list of found users.
+    $users = $user_query->results;
+    $cronModel->deleteNoticeforLastDays(15, $users);
+});

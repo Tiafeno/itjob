@@ -1,0 +1,114 @@
+<style type="text/css">
+    form[name='fForm'] .form-control {
+      font-family: Poppins !important;
+      font-size: 12px;
+    }
+  </style>
+<form name="fForm" ng-submit="submitForm( fForm )" class="form-horizontal p-5" novalidate>
+    <div class="page-heading mb-4">
+      <h4 class="page-title">FORMULAIRE FORMATION</h4>
+    </div>
+    <hr>
+    <div class="ibox-body">
+        <div class="form-group mb-4 row">
+            <label class="col-sm-4 col-form-label">Formation <span style="color: red">*</span></label>
+            <div class="col-sm-6">
+              <input class="form-control" name="title" ng-model="Form.title" type="text" autocomplete="off" placeholder="Titre de la formation"
+                     required>
+              <div ng-messages="fForm.title.$error" role="alert" class="alert alert-pink"
+              ng-show="fForm.title.$touched && fForm.title.$invalid" ng-messages-multiple>
+                <div ng-message="required">Ajouter une titre pour votre formation.</div>
+              </div>
+            </div>
+          </div>
+      <div class="form-group mb-4 row">
+        <label class="col-sm-4 col-form-label">Nom de l'établissement <span style="color: red">*</span></label>
+        <div class="col-sm-6">
+          <input class="form-control" name="establish_name" ng-model="Form.establish_name" type="text" autocomplete="off" placeholder="Nom de l'établissement"
+                 required>
+          <div ng-messages="fForm.establish_name.$error" role="alert" class="alert alert-pink"
+          ng-show="fForm.establish_name.$touched && fForm.establish_name.$invalid" ng-messages-multiple>
+            <div ng-message="required">Le nom de l'établissement est obligatoire.</div>
+            <div ng-message-default>This field has an input error</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-4 row ">
+        <label class="col-sm-4 col-form-label ">Sécteur d'activité <span style="color: red">*</span></label>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <select class="form-control" name="activity_area" ng-model="Form.activity_area"
+                    title="Sécteur d'activité" required>
+              <option></option>
+              <option ng-repeat="area in sectorArea" value="{{area.term_id}}">{{area.name}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-4 row ">
+        <label class="col-sm-4 col-form-label ">Region <span style="color: red">*</span></label>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <select class="form-control" name="region" ng-model="Form.region"
+                    title="Region" required>
+              <option></option>
+              <option ng-repeat="region in regions" value="{{region.term_id}}">{{region.name}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-4 row">
+        <label class="col-sm-4 col-form-label">Adresse physique <span style="color: red">*</span></label>
+        <div class="col-sm-6">
+          <input class="form-control" name="address" ng-model="Form.address" type="text" placeholder="Adresse"
+                 required>
+          
+        </div>
+      </div>
+      <div class="form-group mb-4 row">
+        <label class="col-sm-4 col-form-label">Durée de la formation <span style="color: red">*</span></label>
+        <div class="col-sm-6">
+          <input class="form-control" name="duration" ng-model="Form.duration" type="text" placeholder="Durée" required>
+          <p class="mention-text mt-1">Exemple: 20 mois ou 2 ans ou 3 jours ou bien 1 semaines </p>
+        </div>
+      </div>
+      <div class="form-group mb-4 row">
+        <label class="col-sm-4 col-form-label">Date limite d'inscription <span style="color: red">*</span></label>
+        <div class="col-sm-6">
+          <input class="form-control date" name="date_limit" readonly="readonly" ng-model="Form.date_limit" type="text" placeholder="Date limite d'inscription"
+                 required>
+        </div>
+      </div>
+      <div class="form-group mb-4 row">
+        <label class="col-sm-4 col-form-label">Description <span style="color: red">*</span></label>
+        <div class="col-sm-6">
+          <textarea class="form-control" name="description" ng-model="Form.description" rows="8" type="text" placeholder="Description pour votre formation"
+                 ></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="ibox-body ibox-footer">
+      <div class="form-group mb-4 row ">
+        <label class="col-sm-10 col-form-label ">Es-que c'est une formation à distance?</label>
+        <div class="col-sm-8">
+          <label class="radio radio-grey radio-primary radio-inline">
+            <input type="radio" name="distance_learning" ng-model="Form.distance_learning" value="1">
+            <span class="input-span"></span>Oui</label>
+  
+          <label class="radio radio-grey radio-primary radio-inline">
+            <input type="radio" name="distance_learning" ng-model="Form.distance_learning" value="0">
+            <span class="input-span"></span>Non</label>
+        </div>
+      </div>
+    </div>
+    <div class="ibox-footer row">
+      <div class="col-sm-9 d-flex align-items-center">
+            <span class="text-muted text-left" style="font-size: 0.8rem">
+              Tous les champs marqués d'un <span style="color: red">*</span> sont obligatoires
+            </span>
+      </div>
+      <div class="col-sm-3 ml-sm-auto">
+        <button class="btn btn-success btn-block  mr-2" ng-disabled="isSubmit" type="submit">Ajouter</button>
+      </div>
+    </div>
+  </form>
