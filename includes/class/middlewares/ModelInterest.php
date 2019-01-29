@@ -81,6 +81,7 @@ trait ModelInterest {
       // Envoyer un mail pour informer la validation de cette offre
       do_action("email_application_validation", $request);
     }
+    // Crée une notification
     do_action("notice-change-request-status", (int)$id_request, $status);
     return $results;
   }

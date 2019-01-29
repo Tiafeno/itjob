@@ -418,10 +418,13 @@ add_action('rest_api_init', function () {
                      if (is_null($status) || is_null($id_request))
                         return new WP_Error("params", 'Parametre manquant');
                      $Model = new \includes\model\itModel();
+                     // Modifier la status de la requete
                      $result = $Model->update_interest_status((int)$id_request, $status);
+                     // Récupérer la réquete
                      $Request = $Model->get_request((int)$id_request);
                      // Ajouter le CV dans la liste de l'entreprise
-                     $Model->add_list((int) $Request->id_candidate, (int) $Request->id_company);
+                     if ($status === "validated")
+                        $Model->add_list((int) $Request->id_candidate, (int) $Request->id_company);
 
                   case 'request':
                      $Model = new \includes\model\itModel();
