@@ -109,7 +109,12 @@ trait ModelInterest {
     return $rows;
   }
 
-  // Cette fonction permet d'effacer les requetes sur une offre
+  /**
+   * Cette fonction permet d'effacer les requetes sur une offre
+   * 
+   * @param $id_offer - ID du post offer
+   * @return array
+   */
   public function remove_interest( $id_offer ) {
     global $wpdb;
     if (!is_user_logged_in() || !$id_offer) {
@@ -120,6 +125,12 @@ trait ModelInterest {
     return $rows;
   }
 
+  /**
+   * Effacer le piéce joint d'un candidat
+   * 
+   * @param int $id_attachment - ID de l'objet d'attachment
+   * @return $result - false|int
+   */
   public function remove_attachment( $id_attachment ) {
     global $wpdb;
     $result = $wpdb->update($this->requestTable, ['id_attachment' => 0], ['id_attachment' => (int)$id_attachment], ['%d'], ['%d']);

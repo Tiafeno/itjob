@@ -431,6 +431,7 @@ class Mailing {
       $content        .= $Engine->render( '@MAIL/admin/notification-admin-for-postuled-offer.html.twig', [
         'candidate_name' => $current_candidate->title,
         'offer_name'     => $offer->postPromote,
+        'offer_reference' => $offer->reference,
         'logo'           => $logo[0],
         'dashboard_url'  => $this->dashboard_url
       ] );
