@@ -110,7 +110,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                     term_id: region
                   });
                   if (rg) {
-                    if (city.name.indexOf(rg.name) > -1) {
+                    if (city.name.toLowerCase().indexOf(rg.name.toLowerCase()) > -1) {
                       return true;
                     }
                   }
