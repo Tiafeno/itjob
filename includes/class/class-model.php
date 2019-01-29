@@ -44,6 +44,16 @@ final class itModel {
     return $id;
   }
 
+  public function repair_table() {
+    global $wpdb;
+    $prepare = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cv_request WHERE type = %s AND status = %s", 'apply', 'validated' );
+    $rows    = $wpdb->get_results( $prepare );
+
+    foreach ($rows as $row) {
+      $this->add_list((int)$row->id_candidate, (int)$row->id_company);
+    }
+  }
+
   private function getPrepareSql($post_type, $meta_key, $meta_value) {
     global $wpdb;
     $sql = "SELECT pst.ID 

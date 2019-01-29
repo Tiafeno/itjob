@@ -274,6 +274,10 @@ add_action('init', function () {
   add_filter('wp_mail','wp_mail_fix_multiple_send', 1,1);
   
   do_action('testUnits');
+  
+  $Model = new includes\model\itModel();
+  add_action('repair_table', [$Model, 'repair_table'], 10);
+  do_action('repair_table');
   //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
 //  header('Content-Type: text/csv');
 //  header('Content-Disposition: attachment; filename="emploi.csv"');
