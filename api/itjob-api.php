@@ -421,9 +421,9 @@ add_action('rest_api_init', function () {
                      // Modifier la status de la requete
                      $result = $Model->update_interest_status((int)$id_request, $status);
                      // Récupérer la réquete
-                     $Request = $Model->get_request((int)$id_request);
+                     $Request = $Model::get_request((int)$id_request);
                      // Ajouter le CV dans la liste de l'entreprise
-                     if ($status === "validated")
+                     if ($status === "validated" && $Request->type === 'apply')
                         $Model->add_list((int) $Request->id_candidate, (int) $Request->id_company);
 
                   case 'request':
