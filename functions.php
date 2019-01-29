@@ -277,7 +277,7 @@ add_action('init', function () {
 
   $Model = new includes\model\itModel();
   add_action('repair_table', [$Model, 'repair_table'], 10);
-  //do_action('repair_table');
+  do_action('repair_table');
 
   //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
 //  header('Content-Type: text/csv');
