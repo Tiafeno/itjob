@@ -177,10 +177,9 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( is_null( $post_id ) ) {
         wp_send_json( false );
       }
-      $form = [
+      $form = (object)[
         // FEATURED: Modifier le titre de l'offre et son champ ACF
         'post'             => Http\Request::getValue( 'postPromote' ),
-        'datelimit'        => Http\Request::getValue( 'dateLimit' ),
         'contrattype'      => Http\Request::getValue( 'contractType' ),
         'profil'           => Http\Request::getValue( 'profil' ),
         'mission'          => Http\Request::getValue( 'mission' ),
@@ -195,6 +194,11 @@ if ( ! class_exists( 'scClient' ) ) :
       foreach ( $form as $key => $value ) {
         update_field( "itjob_offer_{$key}", $value, $post_id );
       }
+      // Mettre à jour la date limite
+      $datelimit =  Http\Request::getValue( 'dateLimit');
+      $dt = date('Ymd', strtotime($datelimit));
+      update_field('itjob_offer_datelimit', $dt, $post_id);
+
       wp_send_json( [ 'success' => true, 'offers' => $this->__get_company_offers() ] );
     }
 

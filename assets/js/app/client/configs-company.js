@@ -225,10 +225,10 @@ APPOC
             scope.collectDatatable();
           }, 1200);
           jQuery('.input-group.date').datepicker({
-            format: "mm/dd/yyyy",
+            format: "dd/mm/yyyy",
             language: "fr",
             startView: 2,
-            todayBtn: true,
+            todayBtn: false,
             keyboardNavigation: true,
             forceParse: false,
             startDate: new Date(),
@@ -259,6 +259,7 @@ APPOC
               if (_.isObject(val) && !_.isUndefined(val.term_id)) return val.term_id;
               if (_.isObject(val) && !_.isUndefined(val.post_title)) return val.ID;
               if (key === 'proposedSalary') return parseInt(val);
+              if (key === 'dateLimit') return moment(val, 'MM/DD/YYYY').format('DD/MM/YYYY');
               return val;
             });
             $scope.offerEditor.contractType = parseInt($scope.offerEditor.contractType.value) === 0 ? 'cdd' : 'cdi';
@@ -269,25 +270,32 @@ APPOC
           });
         };
         // Modifier une offre
-        $scope.editOffer = (offerId) => {
+        $scope.editOffer = (offerId, ev) => {
+          let element = ev.currentTarget;
           let offerForm = new FormData();
           let formObject = Object.keys($scope.offerEditor);
           offerForm.append('action', 'update_offer');
           offerForm.append('post_id', parseInt(offerId));
           formObject.forEach(function (property) {
             let propertyValue = Reflect.get($scope.offerEditor, property);
+            if (property === 'dateLimit') propertyValue = moment(propertyValue, 'DD/MM/YYYY').format('MM/DD/YYYY');
             offerForm.set(property, propertyValue);
           });
+          element.innerText = "Chargement ...";
           clientFactory
             .sendPostForm(offerForm)
             .then(resp => {
               let data = resp.data;
               if (data.success) {
                 // Mettre à jours la liste des offres
-                $scope.Offers = _.clone(data.offers);
+                let offers = _.clone(data.offers);
+                offers.dateLimit = moment(offers.dateLimit).format('DD/MM/YYYY');
+                $scope.Offers = offers;
+                element.innerText = "Enregistrer";
                 UIkit.modal('#modal-edit-offer-overflow').hide();
                 alertify.success("L'offre a été mise à jour avec succès");
               } else {
+                element.innerText = "Enregistrer";
                 alertify.error("Une erreur s'est produite pendant l'enregistrement");
               }
             });
@@ -353,7 +361,7 @@ APPOC
                 });
               } else {
                 $scope.error = query.data;
-                angular.element(el).text("Ajouter & Consulter");
+                angular.element(el).text("Voir la candidature");
               }
             });
         };
