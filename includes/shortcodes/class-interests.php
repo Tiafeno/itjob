@@ -134,7 +134,7 @@ class scInterests
         // Verifier si l'entreprise a l'access au informations du candidat
         // FEATURED: Verifier si le CV est dans la liste de l'entreprise
         $Model = new itModel();
-        if ( ! $Model->interest_access($Candidate->getId(), $Entreprise->getId()) ||
+        if ( ! $Model->interest_access($Candidate->getId(), $Entreprise->getId()) &&
           ! $Model->list_exist($Entreprise->getId(), $Candidate->getId())) {
           do_action('add_notice', "<p class='text-center font-15 badge badge-warning'>Action non autoriser.</p>", 'default', false);
           do_action('get_notice');

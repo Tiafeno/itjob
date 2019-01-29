@@ -388,7 +388,7 @@ class Mailing {
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
     $content   .= "<p>{$firstname} viens de modifier son CV portant la reférence « {$Candidate->title} »";
-    $content   .= "<p>Voir la modification: <a href='{$this->dashboard_url}/candidate/'>Back office</a> </p> <br/>";
+    $content   .= "<p>Voir la modification: <a href='{$this->dashboard_url}/candidate/{$candidate_id}/edit'>Back office</a> </p> <br/>";
     $content   .= 'A bientôt. <br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © 2018</p>";
     // Envoyer un mail à l'entreprise

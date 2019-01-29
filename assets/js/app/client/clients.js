@@ -199,7 +199,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
   .directive('appFormation', [function () {
     return {
       restrict: 'E',
-      tempalteUrl: itOptions.Helper.tpls_partials + '/formation.html?ver=' + itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/formation.html?ver=' + itOptions.version,
       scope: true,
       controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
         $scope.Formations = [];
@@ -212,11 +212,24 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
             .then(resp => {
               const query = resp.data;
               if (query.success) {
-
                 const table = jQuery('#formation-table').DataTable({
                   pageLength: 10,
                   fixedHeader: false,
                   responsive: false,
+                  data: query.data,
+                  columns: [
+                    {data: 'ID'},
+                    {data: 'reference'},
+                    {data: 'status', render: (data, type, row, meta) => {
+                      return data === 'pending' ? 'En attente' : 'Publier';
+                    }},
+                    {data: 'title'},
+                    {data: 'date_limit'},
+                    {data: 'establish_name'},
+                    {data: null, render: () => {
+                      return '<i class="fa fa-trash"></i> <i class="fa fa-pencil"></i>';
+                    }}
+                  ],
                   "sDom": 'rtip',
                   language: {
                     url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"

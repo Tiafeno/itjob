@@ -8,6 +8,7 @@ use includes\object\jobServices;
 use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
+use includes\post\Formation;
 
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
@@ -782,8 +783,12 @@ if ( ! class_exists( 'scClient' ) ) :
       ];
 
       $formations = get_posts( $args );
+      $results = [];
+      foreach ($formations as $formation) {
+        $results[] = new Formation( $formation->ID );
+      }
       
-      wp_send_json_success( $formations );
+      wp_send_json_success( $results );
 
     }
 

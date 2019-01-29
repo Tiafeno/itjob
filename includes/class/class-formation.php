@@ -5,9 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
 
-class Formation {
+final class Formation {
     private $address = null;
     private $email = null;
+    public $ID = 0;
+    public $status = null;
     public $establish_name = null;
     public $title = null;
     public $region = null;
@@ -15,15 +17,19 @@ class Formation {
     public $description = null;
     public $date_limit = null;
     public $date_create = null;
+    public $reference = null;
     public $distance_learning = false;
 
     public function __construct( $formation_id = null, $private_access = false ) {
       if (is_null($formation_id)) return false;
-      $post_status = get_post_status( $formation_id );
-      if ($post_status !== 'formation') return false;
+      $formation_id = (int)$formation_id;
+      $post_type = get_post_type( $formation_id );
+      if ($post_type !== 'formation') return false;
 
       $post_formation = get_post( (int) $formation_id );
+      $this->ID = $post_formation->ID;
       $this->title = $post_formation->post_title;
+      $this->status = $post_formation->post_status;
       $this->description = $post_formation->post_content;
       $this->date_create = $post_formation->post_date;
 
@@ -32,6 +38,8 @@ class Formation {
       $this->email          = get_field('email', $formation_id);
       $this->duration       = get_field('duration', $formation_id);
       $this->date_limit     = get_field('date_limit', $formation_id);
+      $this->reference      = get_field('reference', $formation_id);
+      $this->region         = wp_get_post_terms( $formation_id, 'region', [ "fields" => "all" ] );
       $distance_learning    = get_field('distance_learning', $formation_id);
       $this->distance_learning = boolval($distance_learning);
 

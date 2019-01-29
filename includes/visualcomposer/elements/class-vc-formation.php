@@ -126,14 +126,14 @@ EOF;
       $wp_error = true;
 
       $thing = wp_insert_post( [
-         'post_type' => 'formation',
+         'post_type'   => 'formation',
          'post_author' => $user_id,
          'post_status' => 'pending',
-         'post_title' =>  $form->title,
+         'post_title'  =>  $form->title,
          'post_content' => $form->description,
          'post_excerpt' => $form->description
       ], $wp_error );
-      
+
       if (!is_wp_error( $thing )) {
          $post_id = &$thing;
          update_field('establish_name', $form->establish_name, $post_id);
