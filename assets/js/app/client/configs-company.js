@@ -293,6 +293,10 @@ APPOC
             });
         };
 
+        $scope.featuredOffer = () => {
+          jQuery('#featured-dialog').modal('show');
+        }
+
         // Afficher les candidates qui ont postule
         $scope.viewApply = (offer_id) => {
           $scope.mode = 'manage';
