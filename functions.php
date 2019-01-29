@@ -254,6 +254,24 @@ add_action('init', function () {
       }
     return $title;
   }, PHP_INT_MAX);
+
+
+  function wp_mail_fix_multiple_send($args){
+      global $wp_mail_fix_multiple_send_already_send;
+      if (!isset($wp_mail_fix_multiple_send_already_send))
+        $wp_mail_fix_multiple_send_already_send = array();
+      $key = md5(implode('-',$args));
+      if(isset($wp_mail_fix_multiple_send_already_send[$key])){
+          $args['to'] = '';
+          $args['subject'] = '';
+          $args['message'] = '';
+      }
+      else {
+          $wp_mail_fix_multiple_send_already_send[$key] = 1;
+      }
+      return $args;
+  }
+  add_filter('wp_mail','wp_mail_fix_multiple_send', 1,1);
   
   do_action('testUnits');
   //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
