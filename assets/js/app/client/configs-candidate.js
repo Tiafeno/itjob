@@ -596,14 +596,37 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         };
 
         // @event Se déclanche quand un tag est ajouter dans l'input
-        $scope.onAddedTag = ($tag) => {
-          // Limiter le nombre des logiciels pour 10
-          if ($scope.form.softwares.length < 10) {
-            $scope.form.softwares.push($tag);
-          } else {
-            $scope.status = "Vous avez atteint la limite maximum. <b>Vous avez droit à seulement dix (10) logiciels</b>";
+        $scope.onAddingTag = ($tag) => {
+          $scope.status = null;
+          let isValid = true;
+          let splitTag = ',;|/\:.*_•';
+          for (let i in splitTag) {
+            let str = splitTag.charAt(i);
+            if ($tag.name.indexOf(str) > -1) {
+              isValid = false;
+              break;
+            }
           }
-          $scope.tags = '';
+          if (isValid) {
+            if (_.find($scope.form.softwares, (software) => { return software.name.toLowerCase() === $tag.name.toLowerCase() })) {
+              // Le logiciel existe déja dans la liste
+              $scope.status = "Logiciel déja présent dans votre liste";
+              return false;
+            }
+            // Limiter le nombre des logiciels pour 10
+            if ($scope.form.softwares.length < 10) {
+              $scope.form.softwares.push($tag);
+              setTimeout(() => { 
+                $scope.$apply(() => {
+                  $scope.tags = null; 
+                });
+              }, 200);
+            } else {
+              $scope.status = "Vous avez atteint la limite maximum. <b>Vous avez droit à seulement dix (10) logiciels</b>";
+              return false;
+            }
+          }
+          return isValid;
         };
 
         $scope.removeInList = (software) => {
@@ -655,7 +678,6 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
 
         UIkit.util.on('#modal-software-editor-overflow', 'hide', (e) => {
           e.preventDefault();
-          
         });
 
       }]

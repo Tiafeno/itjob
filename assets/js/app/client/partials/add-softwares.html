@@ -21,7 +21,7 @@
           </div>
           <div ng-show="!loading">
             <div class="form-group">
-              <tags-input ng-model="tags" add-on-paste="true" paste-split-pattern="[,;|/\:.*_•]" max-lenght="1" max-tags="1" on-tag-adding="onAddedTag($tag)" display-property="name"
+              <tags-input ng-model="tags" add-on-paste="true" paste-split-pattern="[,;|/\:.*_•]" max-lenght="1" max-tags="1" on-tag-adding="onAddingTag($tag)" display-property="name"
                           placeholder="Logiciel (ex: QGIS)" replace-spaces-with-dashes="false">
                 <auto-complete source="querySoftware($query)"
                                load-on-focus="false"
@@ -43,7 +43,7 @@
               <h6>Compétences suggérées en fonction de votre profil :</h6>
               <span class="badge badge-blue font-14 mr-2 mb-2" data-ng-click="removeInList(soft)" ng-repeat="soft in form.softwares">[[soft.name]]</span>
             </div>
-            <div><p class="text-description">Cliquer sur le logiciel pour l'effacer dans votre liste</p></div>
+            <div><p class="text-description">Cliquer sur le nom du logiciel pour l'effacer dans votre liste. Toujours enregistrer vos modifications</p></div>
 
           </div>
           <div ng-show="loading">
@@ -62,7 +62,7 @@
           </div>
           <div class="col-sm-8 uk-text-right">
             <button class="btn btn-default uk-modal-close" data-ng-click="abordModification()" type="button">Fermer</button>
-            <button class="btn btn-blue ml-4" ng-disabled="loading" type="submit">Enregistrer</button>
+            <button class="btn btn-blue ml-2" ng-disabled="loading" type="submit">Enregistrer</button>
           </div>
         </div>
       </div>
