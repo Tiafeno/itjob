@@ -39,7 +39,8 @@ add_action('tous_les_15_minutes', function () {
             foreach ($posts as $key => $post) {
                 if ($key === 0) continue;
                 $title = "CV{$Increment}";
-                wp_update_post([ 'ID' => (int)$post->ID, 'post_title' => $title ]);
+                $date_create = $post->post_date;
+                wp_update_post([ 'ID' => (int)$post->ID, 'post_title' => $title, 'post_date' => $date_create ]);
                 $Increment = $Increment + 1;
             } 
         }
