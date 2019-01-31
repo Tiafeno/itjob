@@ -16,6 +16,37 @@ function getModerators() {
     return $admin_email;
 }
 
+
+
+add_action('tous_les_15_minutes', function () {
+    // Mettre à jours la clé
+    $now = date('Y-m-d H:i:s');
+    $new_key = password_hash($now . rand(10, 80 * date('s')), PASSWORD_DEFAULT);
+    update_field('bo_key', $new_key, 'option');
+
+    // Corriger les doublons
+    global $wpdb;
+    $query_doublon = "SELECT COUNT(post_title) as nbr, ID, post_title, post_date FROM {$wpdb->posts} 
+        WHERE post_type = 'candidate' AND post_title REGEXP '(^CV).*$' GROUP BY post_title HAVING COUNT(post_title) > 1";
+    $rows = $wpdb->get_results($query_doublon);
+
+    if ($rows) {
+        $Increment = get_field('cv_increment', 'option');
+        $Increment = (int) $Increment;
+        foreach ($rows as $row) {
+            for ($i = 1; $i < (int)$row->nbr; $i++) {
+                if ($i === 1) continue;
+                $title = "CV{$Increment}";
+                wp_update_post([ 'ID' => (int)$row->ID, 'post_title' => $title ]);
+                $Increment = $Increment + 1;
+            }
+        }
+
+        update_field('cv_increment', $Increment, 'option');
+    }
+});
+
+
 /**
  * Action @tous_les_jours: 
  */
@@ -142,13 +173,6 @@ add_action('tous_les_jours', function () {
     $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
 
     wp_mail( $to, $subject, $msg, $headers );
-});
-
-add_action('tous_les_15_minutes', function () {
-    // Mettre à jours la clé
-    $now = date('Y-m-d H:i:s');
-    $new_key = password_hash($now . rand(10, 80 * date('s')), PASSWORD_DEFAULT);
-    update_field('bo_key', $new_key, 'option');
 });
 
 // Effacer les notifications des administrateur vieux de 15 jours
