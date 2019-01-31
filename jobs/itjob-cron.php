@@ -34,12 +34,14 @@ add_action('tous_les_15_minutes', function () {
         $Increment = get_field('cv_increment', 'option');
         $Increment = (int) $Increment;
         foreach ($rows as $row) {
-            for ($i = 1; $i < (int)$row->nbr; $i++) {
-                if ($i === 1) continue;
+            $sql = "SELECT * FROM {$wpdb->posts} WHERE post_title = '{$row->post_title}'";
+            $posts = $wpdb->get_results($sql);
+            foreach ($posts as $key => $post) {
+                if ($key === 0) continue;
                 $title = "CV{$Increment}";
-                wp_update_post([ 'ID' => (int)$row->ID, 'post_title' => $title ]);
+                wp_update_post([ 'ID' => (int)$post->ID, 'post_title' => $title ]);
                 $Increment = $Increment + 1;
-            }
+            } 
         }
 
         update_field('cv_increment', $Increment, 'option');
