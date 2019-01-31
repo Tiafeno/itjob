@@ -156,28 +156,25 @@ if (!class_exists('vcRegisterParticular')) :
       'email' => $userEmail
     ];
 
-      // Press CTRL + Q, for documentation
+    // Récupérer l'incrementation des CV
+    $Increment = get_field('cv_increment', 'option');
+    $Increment = (int) $Increment;
+
+    // Press CTRL + Q, for documentation
     $result = wp_insert_post([
+      'post_title' => 'CV' . $Increment,
       'post_content' => '',
       'post_status' => 'pending',
       'post_author' => 1,
       'post_type' => 'candidate'
-    ]);
+    ], true);
     if (is_wp_error($result)) {
       wp_send_json(['success' => false, 'msg' => $result->get_error_message()]);
     }
 
-    // Récupérer l'incrementation des CV
-    $cvIncrement = get_field('cv_increment', 'option');
-    $cvIncrement = (int) $cvIncrement;
-    
     $post_id = (int)$result;
-    $Id = $cvIncrement === 0 ? $post_id : $cvIncrement;
-    // Ajouter un titre au CV
-    wp_update_post(['ID' => $post_id, 'post_title' => 'CV' . $Id]);
-
-    $cvIncrement += 1;
-    update_field('cv_increment', $cvIncrement, 'option');
+    $Increment = $Increment + 1;
+    update_field('cv_increment', $Increment, 'option');
 
     // save repeater field
     $value = [];
