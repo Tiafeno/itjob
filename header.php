@@ -23,6 +23,29 @@
  * Contact: contact@falicrea.com
  */
 ?>
+<!-- 
+ * Copyright (c) 2018 Falicrea
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files, to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * Contact: contact@falicrea.com
+ -->
 <!DOCTYPE html>
 <html class="no-js" <?= language_attributes(); ?>>
 <head>
@@ -30,26 +53,6 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <!--	<meta name="viewport" content="width=device-width, initial-scale=1">-->
   <meta name="viewport" content="width=500">
-<!--  <link rel="apple-touch-icon" sizes="57x57" href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-57x57.png">-->
-<!--  <link rel="apple-touch-icon" sizes="60x60" href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-60x60.png">-->
-<!--  <link rel="apple-touch-icon" sizes="72x72" href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-72x72.png">-->
-<!--  <link rel="apple-touch-icon" sizes="76x76" href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-76x76.png">-->
-<!--  <link rel="apple-touch-icon" sizes="114x114"-->
-<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-114x114.png">-->
-<!--  <link rel="apple-touch-icon" sizes="120x120"-->
-<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-120x120.png">-->
-<!--  <link rel="apple-touch-icon" sizes="144x144"-->
-<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-144x144.png">-->
-<!--  <link rel="apple-touch-icon" sizes="152x152"-->
-<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-152x152.png">-->
-<!--  <link rel="apple-touch-icon" sizes="180x180"-->
-<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/apple-icon-180x180.png">-->
-<!--  <link rel="icon" type="image/png" sizes="192x192"-->
-<!--        href="--><?//= get_template_directory_uri() ?><!--/favicon/android-icon-192x192.png">-->
-<!--  <link rel="icon" type="image/png" sizes="32x32" href="--><?//= get_template_directory_uri() ?><!--/favicon/favicon-32x32.png">-->
-<!--  <link rel="icon" type="image/png" sizes="96x96" href="--><?//= get_template_directory_uri() ?><!--/favicon/favicon-96x96.png">-->
-<!--  <link rel="icon" type="image/png" sizes="16x16" href="--><?//= get_template_directory_uri() ?><!--/favicon/favicon-16x16.png">-->
-<!--  <link rel="manifest" href="--><?//= get_template_directory_uri() ?><!--/favicon/manifest.json">-->
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="<?= get_template_directory_uri() ?>/favicon/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
@@ -58,10 +61,9 @@
   <script src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/js/html5.js"></script>
   <![endif]-->
 
-  <!-- Place favicon.ico in the root directory -->
+  <?php wp_head(); ?>
 
   <!-- All css files are included here. -->
-  <?php wp_head(); ?>
   <style type="text/css">
     .header-top {
       background-color: #fff;
@@ -215,7 +217,6 @@
                 <div id="offcanvas-push" uk-offcanvas="mode: push; overlay: true">
                   <div class="uk-offcanvas-bar">
                     <button class="uk-offcanvas-close" type="button" uk-close></button>
-<!--                    <h3>MENU</h3>-->
                     <?php get_template_part('partials/principal', 'menu') ?>
                   </div>
                 </div>
@@ -247,7 +248,6 @@
                           <div class="admin-menu-features">
                             <div class="admin-features-item">
                               <a class="text-uppercase" href="<?= home_url('/connexion/candidate?redir='.$oc_url) ?>">
-  <!--                              <i class="fa fa-user-tie"></i>-->
                                 <img src="<?= get_template_directory_uri() ?>/img/icons/user-solid.svg" />
                                 <span class="text-white">PARTICULIERS</span>
                               </a>
@@ -265,8 +265,6 @@
                                 Se connecter ou s'inscrire ( Recruteur ou formateur )
                               </span>
                             </div>
-
-                            
                           </div>
                         </div>
 
