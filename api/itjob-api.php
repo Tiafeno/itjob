@@ -513,12 +513,12 @@ add_action('rest_api_init', function () {
             $acfDateLimit = $dateTime->format('Ymd');
             $form = [
                'post' => $offer->post,
-               'contrattype' => (int)$offer->contract,
+               'contrattype'     => (int)$offer->contract,
                'proposedsallary' => $offer->proposedsalary,
-               'abranch' => $offer->branch_activity,
+               'abranch'   => $offer->branch_activity,
                'datelimit' => $acfDateLimit,
-               'mission' => $offer->mission,
-               'profil' => $offer->profil,
+               'mission'   => $offer->mission,
+               'profil'    => $offer->profil,
                'otherinformation' => $offer->otherInformation,
             ];
 
@@ -529,7 +529,7 @@ add_action('rest_api_init', function () {
                update_field('activated', $activated, $currentOffer->ID);
                if ($activated && $currentOffer->post_status !== 'publish')
                   do_action('confirm_validate_offer', $currentOffer->ID);
-               $post_date = get_the_date('Y-m-d H:i:s', $Offer->ID);
+               $post_date = get_the_date('Y-m-d H:i:s', $offer->ID);
                $result = wp_update_post(['ID' => $currentOffer->ID, 'post_date' => $post_date, 'post_status' => 'publish'], true);
             } else {
                update_field('activated', 0, $currentOffer->ID);
@@ -947,7 +947,7 @@ add_action('rest_api_init', function () {
 
    register_rest_route('it-api', '/newsletters/',
       [
-      // Récuperer les newsletters
+         // Récuperer les newsletters
          [
             'methods' => WP_REST_Server::READABLE,
             'callback' => function (WP_REST_Request $request) {
@@ -996,7 +996,7 @@ add_action('rest_api_init', function () {
                return current_user_can('edit_posts');
             }
          ],
-      // Ajouter un newsletter
+         // Ajouter un newsletter
          [
             'methods' => WP_REST_Server::CREATABLE,
             'callback' => function () {
@@ -1059,7 +1059,6 @@ add_action('rest_api_init', function () {
          ]
       ]
    );
-
 
    register_rest_route('it-api', '/blogs/',
       [
@@ -1222,15 +1221,17 @@ add_action('rest_api_init', function () {
          'callback' => function (WP_REST_Request $rq) {
             global $wpdb;
             $s = $rq['query'];
+            $s = $wpdb->esc_like( $s );
+            $s = implode('|', explode(' ', $s));
             $sql = "SELECT pts.ID FROM $wpdb->posts pts 
-               WHERE pts.post_title LIKE '%{$s}%' 
-               AND post_type = 'company'
-               AND post_status = 'publish'
-               AND pts.ID IN  (
-                  SELECT {$wpdb->postmeta}.post_id as post_id
-                  FROM {$wpdb->postmeta}
-                  WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
-               )";
+               WHERE pts.post_title REGEXP '({$s}).*$' 
+                  AND post_type = 'company'
+                  AND post_status = 'publish'
+                  AND pts.ID IN  (
+                     SELECT {$wpdb->postmeta}.post_id as post_id
+                     FROM {$wpdb->postmeta}
+                        WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+                  )";
 
             $posts = $wpdb->get_results($sql);
             $entreprises = [];
