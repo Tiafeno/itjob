@@ -31,6 +31,15 @@ function post_updated_values($post_ID)
 
 add_action('post_updated', 'post_updated_values', 10, 3);
 
+add_action('rest_api_init', function () {
+  register_rest_field( 'formation', 'meta', array(
+    'update_callback' => function ($value, $object, $field_name) {
+      return update_field($field_name, $value, (int)$object['id']);
+    },
+    'schema' => null,
+  ));
+});
+
 /**
  * WP_REST_Server::READABLE = ‘GET’
  * WP_REST_Server::EDITABLE = ‘POST, PUT, PATCH’
@@ -709,9 +718,6 @@ add_action('rest_api_init', function () {
                return new WP_REST_Response(false);
             }
 
-         },
-         'permission_callback' => function ($data) {
-            return current_user_can('delete_posts');
          },
          'args' => array(
             'id' => array(
