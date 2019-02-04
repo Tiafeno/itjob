@@ -309,7 +309,7 @@ EOF;
       if ($result) {
         $Candidate = Candidate::get_candidate_by($User->ID);
         do_action('notice-admin-new-request-formation', $subject, $Candidate); // Notification
-        do_action('new-request-formation', $subject, $Candidate); // Email
+        do_action('new_request_formation', $subject, $Candidate); // Email
 
         wp_send_json_success("Votre demande a bien été soumise");
       } else {

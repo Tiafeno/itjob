@@ -59,6 +59,7 @@ class Mailing {
     // pour notifier une inscription ou un nouveau utilisateur
     add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
     add_action( 'email_new_formation', [ &$this, 'email_new_formation' ], 10, 1 );
+    add_action( 'new_request_formation', [ &$this, 'new_request_formation' ], 10, 2 );
 
     add_action( 'acf/save_post', function ( $post_id ) {
       $post_type   = get_post_type( $post_id );
@@ -280,6 +281,11 @@ class Mailing {
     return $admin_email;
   }
 
+  /**
+   * Cette fonction envoie les formation publier à l'administrateur
+   * @param $formation_id
+   * @return bool
+   */
   public function email_new_formation( $formation_id ) {
     $Formation = new Formation((int) $formation_id, true);
     $author = $Formation->__['author'];
@@ -300,6 +306,33 @@ class Mailing {
     $content   = 'Bonjour, <br/>';
     $content   .= "<p><b>{$Company->name}</b> viens de publier une formation « <b>{$Formation->title}</b> » portant la reférence « <b>{$Formation->reference}</b> »</p>";
     $content   .= "<p>Voir la formation: <a href='{$this->dashboard_url}/formation/{$Formation->ID}/edit'>Back office</a> </p> <br/>";
+    $content   .= 'A bientôt. <br/><br/><br/>';
+    $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
+    // Envoyer un mail à l'entreprise
+    wp_mail( $to, $subject, $content, $headers );
+  }
+
+  /**
+   * Envoyer à l'administrateur un mail pour une nouvelle demande de formation
+   * @param $subject string
+   * @param $Candidate Candidate
+   */
+  public function new_request_formation( $sujet, $Candidate ) {
+    $year = Date('Y');
+
+    $admin_emails = $this->getModeratorEmail();
+    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
+    if ( ! $admin_emails ) {
+      return false;
+    }
+    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $subject   = "Une nouvelle demande de formation sur ITJobMada";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = 'Bonjour, <br/>';
+    $content   .= "<p><b>{$Candidate->reference}</b> viens d'ajouter une demande de formation « <b>{$sujet}</b> »</p>";
+    $content   .= "<p>Voir la demande: <a href='{$this->dashboard_url}/request-formations'>Back office</a> </p> <br/>";
     $content   .= 'A bientôt. <br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     // Envoyer un mail à l'entreprise
