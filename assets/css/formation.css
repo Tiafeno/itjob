@@ -1,0 +1,50 @@
+.container-formation .container-formation-title {
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.container-formation .card .card-body .card-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.container-formation .card {
+  color: #ffffff;
+}
+
+.container-formation .card .card-footer {
+  background-color: #e6b529;
+}
+
+.container-formation .card .card-footer a.view i {
+  font-size: 23px;
+}
+
+.container-formation .card .card-information {
+  border-top: .1px solid #fff;
+}
+
+.container-formation .card-information .card-info {
+  font-size: 11.7px;
+  font-weight: lighter;
+  color: #f3f7f7 !important;
+}
+
+.container-formation .card a,
+.container-formation .card p,
+.container-formation .card h4,
+.container-formation .card h2,
+.container-formation .card h3,
+.container-formation .card h1 {
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.container-formation .card .card-body {
+  background-color: #dc8e29;
+}
+
+.container-formation .card .card-body .text-description {
+  font-weight: lighter;
+  font-family: 'Montserrat', sans-serif;
+}

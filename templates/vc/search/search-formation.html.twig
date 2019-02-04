@@ -1,0 +1,213 @@
+<style type="text/css">
+  form[name="search-formation"] {
+    background-color: rgba(255, 255, 255, 1);
+    padding: 2rem 2rem 1rem;
+    border-radius: 20px;
+  }
+  input[name='s'], .form-control {
+      font-family: 'Poppins', sans-serif;
+  }
+  .help-block.error {
+
+  }
+</style>
+<script type="text/javascript">
+  var askFormation; 
+  (function ($) {
+    $(document).ready(function () {
+      $(".modal-ask-formation").appendTo("body");
+      $(".modal-ask-formation")
+        .on("show.bs.modal", (ev) => {
+            tinymce.remove();
+            $('#ask_description').val('');
+
+            tinymce.init({
+              language: 'fr_FR',
+              menubar: false,
+              content_css: [
+                '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i'
+              ],
+              content_style: ".mce-content-body p { margin: 5px 0; }",
+              inline: false,
+              statusbar: true,
+              resize: true,
+              height: 220,
+              min_height: 230,
+              selector: '#ask_description',
+              toolbar: 'undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | outdent indent | removeformat ',
+              plugins: [],
+              required: true,
+              setup: function(ed) {
+                ed.on('submit', function(e) { ed.save(); });
+              }
+            });
+        })
+        .on('hide.bs.modal', ev => {
+          $('#ask_title').val('');
+          $('#ask_topic').val('');
+        })
+      
+    });
+
+    askFormation = function() {
+      $(".modal-ask-formation").modal('show');
+      $('#ask-formation')
+        .validate({
+          rules: {
+            title: {
+              required: true,
+            },
+            topic: {
+              required: true,
+            },
+            description: {
+              required: true,
+            },
+          },
+          messages: {
+            title: {
+              required: "Veuillez saisir un titre pour cette formation.",
+            },
+            topic: {
+              required: "Veuillez saisir une théme."
+            },
+          },
+          errorClass: "help-block error",
+          highlight: function (e) {
+          },
+
+          unhighlight: function (e) {
+          },
+
+          submitHandler: function (form) {
+            var buttonSubmit = $("#ask-formation button[type='submit']");
+            buttonSubmit.text('Chargement en cours ...');
+            buttonSubmit.attr('disabled', true);
+            $.ajax({
+                method: "POST",
+                url: '{{ admin_ajax }}',
+                dataType: "json",
+                data: {
+                  subject: $('#ask_title').val(), 
+                  topic: $('#ask_topic').val(), 
+                  description: tinyMCE.activeEditor.getContent(),
+                  action: "new_request_formation"
+                }
+              })
+                .done(function (resp) {
+                  var response = resp.data;
+                  $('.modal-ask-formation').modal('hide');
+                  if (resp.success) {
+                    swal('Succès', response, 'success');
+                  } else {
+                    swal('Erreur', response, 'warning');
+                  }
+                  
+                  buttonSubmit.text('Envoyer');
+                  buttonSubmit.attr('disabled', false);
+                });
+          }
+        });
+      
+      
+    };
+
+  })(jQuery);
+  
+</script>
+
+<div class="col-sm-6 d-flex">
+  <div class="modal fade modal-ask-formation" role="dialog">
+    <div class="modal-dialog" role="document">
+      <form id="ask-formation" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Demander une formation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-12 mb-2">
+              <label class="col-form-label ">Titre de la formation <span style="color: red">*</span></label>
+              <div class="form-group">
+                <div>
+                  <input autocomplete="off" id="ask_title" name="title" placeholder="Ex: Informatique bureautique" class="form-control" required>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 mb-2">
+              <label class="col-form-label ">Théme <span style="color: red">*</span></label>
+              <div class="form-group">
+                <div>
+                  <input autocomplete="off" id="ask_topic" name="topic" placeholder="Ex: Information ou Multimédia ou Langues..." class="form-control" required>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12 mt-4">
+              <label class="col-form-label">Veuillez détaillée votre demande <span style="color: red">*</span></label>
+              <div class="form-group">
+                <div>
+                  <textarea placeholder="Ajouter une description" id="ask_description" name="description" required></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <span class="text-muted text-left" style="font-size: 0.9rem">
+                Tous les champs marqués d'un <span style="color: red">*</span> sont obligatoires
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" >Envoyer</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<form name="search-formation" id="search-formation" action="{{ home_url }}" method="get" class="mr-4 mb-4">
+  <div class="row">
+    <div class="col-md-3 no-pd">
+      <div class="form-group">
+        <input class="form-control" name="s" value="{{ s }}" type="text" placeholder="Mot clé">
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <select class="form-control" name="ab" title="Secteur d'activité">
+          <option></option>
+
+          {% for abranch in abranchs %}
+            <option value="{{ abranch.term_id }}">{{ abranch.name }}</option>
+          {% endfor %}
+
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <select class="form-control" name="rg" title="Région">
+          <option></option>
+          {% for region in regions %}
+            <option value="{{ region.term_id }}">{{ region.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="col-md-2">
+      <input type="hidden" name="post_type" value="formation">
+      <button class="btn btn-blue btn-block">Trouver</button>
+    </div>
+  </div>
+</form>
+
+<div class="ibox-footer row">
+  <div class="col-sm-10 mr-sm-auto mb-4">
+    <button type="button" class="btn btn-rounded btn-blue mr-2" onclick="askFormation()">DEMANDER UNE FORMATION</button>
+    <a class="btn btn-rounded btn-success" href="{{ publish_formation_link }}">PUBLIER UNE FORMATION</a>
+  </div>
+</div>
+
