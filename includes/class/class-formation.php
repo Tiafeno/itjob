@@ -12,6 +12,7 @@ final
 class Formation
 {
   public  $ID                 = 0;
+  public  $activation         = 0;
   public  $title              = null;
   public  $featured           = 0;
   public  $featured_datelimit = null;
@@ -20,13 +21,14 @@ class Formation
   public  $status             = null;
   public  $establish_name     = null;
   public  $region             = null;
+  public  $activity_area      = null;
   public  $duration           = null;
   public  $description        = null;
   public  $date_limit         = null;
   public  $date_create        = null;
   public  $reference          = null;
   public  $distance_learning  = false;
-  private $address            = null;
+  public  $address            = null;
   private $email              = null;
 
   public
@@ -44,7 +46,8 @@ class Formation
     $this->description = $post_formation->post_content;
     $this->date_create = $post_formation->post_date;
     $this->formation_url = get_the_permalink($post_formation->ID);
-
+    $activation    = get_field('activated', $formation_id);
+    $this->activation = boolval($activation);
     $this->establish_name = get_field('establish_name', $formation_id);
     $this->address = get_field('address', $formation_id);
     $this->email = get_field('email', $formation_id);
@@ -52,7 +55,6 @@ class Formation
     $this->date_limit = get_field('date_limit', $formation_id); // Format: Y-m-d
     $this->reference = get_field('reference', $formation_id);
     $this->diploma = get_field('diploma', $formation_id);
-    $this->region = wp_get_post_terms($formation_id, 'region', ["fields" => "all"]);
     $distance_learning = get_field('distance_learning', $formation_id);
     $this->distance_learning = boolval($distance_learning);
     $featured = get_field('featured', $formation_id);
@@ -60,6 +62,9 @@ class Formation
     if ($featured) {
       $this->featured_datelimit = get_field('featured_datelimit', $formation_id); // Format: Y-m-d H:i:s
     }
+
+    $this->region = wp_get_post_terms($formation_id, 'region', ["fields" => "all"]);
+    $this->activity_area = wp_get_post_terms($formation_id, 'branch_activity', ["fields" => "all"]);
 
     if ($private_access) $this->get_private_informations();
   }

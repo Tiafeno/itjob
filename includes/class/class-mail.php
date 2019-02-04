@@ -5,6 +5,7 @@ namespace includes\mailing;
 use includes\object\jobServices;
 use includes\post\Candidate;
 use includes\post\Company;
+use includes\post\Formation;
 use includes\post\Offers;
 use Underscore\Types\Arrays;
 
@@ -57,6 +58,7 @@ class Mailing {
     // Envoyer une email au commercial et a l'administrateur
     // pour notifier une inscription ou un nouveau utilisateur
     add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
+    add_action( 'email_new_formation', [ &$this, 'email_new_formation' ], 10, 1 );
 
     add_action( 'acf/save_post', function ( $post_id ) {
       $post_type   = get_post_type( $post_id );
@@ -278,6 +280,32 @@ class Mailing {
     return $admin_email;
   }
 
+  public function email_new_formation( $formation_id ) {
+    $Formation = new Formation((int) $formation_id, true);
+    $author = $Formation->__['author'];
+    if (!in_array('company', $author->roles)) return false;
+    $Company = Company::get_company_by($author->ID);
+    $year = Date('Y');
+
+    $admin_emails = $this->getModeratorEmail();
+    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
+    if ( ! $admin_emails ) {
+      return false;
+    }
+    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $subject   = "{$Formation->reference} - Notification de l’insertion d’une nouvelle formation sur ITJobMada";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = 'Bonjour, <br/>';
+    $content   .= "<p><b>{$Company->name}</b> viens de publier une formation « <b>{$Formation->title}</b> » portant la reférence « <b>{$Formation->reference}</b> »</p>";
+    $content   .= "<p>Voir la formation: <a href='{$this->dashboard_url}/formation/{$Formation->ID}/edit'>Back office</a> </p> <br/>";
+    $content   .= 'A bientôt. <br/><br/><br/>';
+    $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
+    // Envoyer un mail à l'entreprise
+    wp_mail( $to, $subject, $content, $headers );
+  }
+
   /**
    * Cree une notification pour les nouvelles utilisateur particulier ou professionel
    * @call class-itjob.php (line 91), user_register hook
@@ -452,7 +480,6 @@ class Mailing {
       return false;
     }
   }
-
 
   // Envoyer un email à l'entreprise pour l'informer qu'un candidat à postuler
   private function email_company_for_postuled( $Candidate, $Offer ) {
@@ -660,7 +687,7 @@ class Mailing {
       return false;
     }
 
-    $email  = get_field( 'itjob_cv_email', $candidat_id );
+    $email  = get_field( 'itjob_cv_email', (int)$candidat_id );
     $author = get_user_by( 'email', $email );
     if ( ! $author ) {
       return false;
@@ -699,7 +726,7 @@ class Mailing {
       /**
        * Envoyer une alert au professionnel abonnée
        */
-      $this->alert_for_new_candidate( $post_id );
+      $this->alert_for_new_candidate( (int)$candidat_id );
       return true;
     } else {
       // Erreur d'envoie

@@ -402,13 +402,16 @@ add_action('rest_api_init', function () {
            [ 'ID' => (int)$id ], [ '%s' ], [ '%d' ] );
          $response = $result ? "Mise à jours effectuer avec succès" : false;
          return new WP_REST_Response($response);
-       }
+       },
+       'permission_callback' => function ($data) {
+         return current_user_can('edit_posts');
+       },
      )
    ]);
 
    register_rest_route('it-api', '/formations', [
      array(
-       'methods' => WP_REST_Server::READABLE,
+       'methods' => WP_REST_Server::CREATABLE,
        'callback' => [new apiFormation(), 'get_formations']
      )
    ]);
@@ -420,7 +423,10 @@ add_action('rest_api_init', function () {
     ),
     array(
       'methods' => WP_REST_Server::CREATABLE,
-      'callback' => [new apiFormation(), 'update_formation']
+      'callback' => [new apiFormation(), 'update_formation'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
     )
   ]);
 
@@ -1045,7 +1051,7 @@ add_action('rest_api_init', function () {
                $to = \Http\Request::getValue('to', null); // Post type value (candidat, company ou '')
                $role__in = ['company', 'candidate'];
                if (!empty($to) && !is_null($to)) {
-                  if (!in_array($to, $role__in)) return new WP_REST_Response(['success' => false, 'message' => 'Utilisateur non definie', 'value' => $to]);
+                  if (!in_array($to, $role__in)) return new WP_Error(403, 'Utilisateur non definie');
                } else {
                   $to = &$role__in;
                }
@@ -1093,7 +1099,7 @@ add_action('rest_api_init', function () {
                return new WP_REST_Response(['success' => true, 'users' => $return]);
             },
             'permission_callback' => function ($data) {
-               return true;
+               return current_user_can('edit_posts');
             }
          ]
       ]

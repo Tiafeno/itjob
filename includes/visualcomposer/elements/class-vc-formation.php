@@ -274,6 +274,7 @@ EOF;
       update_field('reference', strtoupper("FOM{$post_id}"), $post_id);
       // ********************* Notification ***********************
       do_action('notice-admin-new-formation', $post_id);
+      do_action('email_new_formation', $post_id);
       // *********************************************************
       wp_send_json_success("Formation ajouter avec succès");
     }

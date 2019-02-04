@@ -14,8 +14,9 @@ class apiFormation
   {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
-    $paged = isset($_POST['start']) ? ($start === 0 ? 1 : ($start + $length) / $length) : 1;
-    $posts_per_page = isset($_POST['length']) ? (int)$_POST['length'] : 20;
+    $find = $_POST['search'];
+    $paged = $start === 0 ? 1 : ($start + $length) / $length;
+    $posts_per_page = $length ? $length : 20;
     $args = [
       'post_type'      => 'formation',
       'post_status'    => 'any',
@@ -24,8 +25,8 @@ class apiFormation
       'orderby'        => 'ID',
       "paged"          => $paged
     ];
-    if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
-      $search = stripslashes($_POST['search']['value']);
+    if ( ! empty($find['value'])) {
+      $search = stripslashes($find['value']);
       $searchs = explode('|', $search);
       $meta_query = [];
       $tax_query = [];
@@ -131,9 +132,9 @@ class apiFormation
 
         case 'activated':
           $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
-          if (is_null($status)) new WP_REST_Response('Parametre manquant');
+          if (is_null($status)) new WP_Error(404, 'Parametre manquant');
           // Seul l'adminstrateur peuvent modifier cette option
-          if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
+          if (!current_user_can('delete_users')) return new WP_Error(403, "Votre compte ne vous permet pas de modifier cette fonctionnalité");
           $status = (int)$status;
           if ($status === 1) {
             $post_date = $Formation->date_create;
@@ -144,7 +145,7 @@ class apiFormation
           }
           update_field('activated', (int)$status, $Formation->ID);
 
-          return new WP_REST_Response("Formation mis à jour avec succès");
+          return new WP_REST_Response(['success' => true, 'message' => "Formation mis à jour avec succès"]);
           break;
 
         case 'featured':
@@ -184,8 +185,7 @@ class apiFormation
       'establish_name' => $objFormation->establish_name,
       'address'        => $objFormation->address,
       'duration'       => $objFormation->duration,
-      'reference'      => $objFormation->reference,
-      'date_limit'     => date('YYYY-MM-DD', strtotime($objFormation->date_limit))
+      'date_limit'     => date('Ymd', strtotime($objFormation->date_limit))
     ];
     foreach (get_object_vars($form) as $key => $value) {
       update_field($key, $value, $formation_id);
@@ -196,7 +196,12 @@ class apiFormation
       'post_title'   => $objFormation->title,
       'post_content' => $objFormation->description], true);
     if (is_wp_error($update_result)) return new WP_Error($update_result->get_error_code(), $update_result->get_error_message());
-    return new WP_REST_Response('Formation mis à jour avec succès');
+
+    wp_set_post_terms($formation_id, [$objFormation->activity_area], 'branch_activity');
+    wp_set_post_terms($formation_id, [$objFormation->region], 'region');
+
+    update_field('reference', strtoupper("FOM{$formation_id}"), $formation_id);
+    return new WP_REST_Response(['success' => true, 'message' => 'Formation mis à jour avec succès']);
   }
 
   // Demande de formation
