@@ -170,7 +170,7 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       $form = (object) [
         'post'            => Http\Request::getValue( 'post' ),
-//        'reference'       => Http\Request::getValue( 'reference' ),
+        // reference'       => Http\Request::getValue( 'reference' ),
         'ctt'             => Http\Request::getValue( 'ctt' ),
         'salary_proposed' => Http\Request::getValue( 'salary_proposed', 0 ),
         'region'          => Http\Request::getValue( 'region' ),
@@ -488,9 +488,9 @@ if ( ! class_exists( 'vcOffers' ) ):
       global $Engine;
       try {
         return $Engine->render( '@VC/offers/sidebar.html.twig', $args );
-      } catch ( Twig_Error_Loader $e ) {
-      } catch ( Twig_Error_Runtime $e ) {
-      } catch ( Twig_Error_Syntax $e ) {
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
         return $e->getRawMessage();
       }
 
@@ -507,9 +507,9 @@ if ( ! class_exists( 'vcOffers' ) ):
       global $Engine;
       try {
         return $Engine->render( '@VC/offers/content.html.twig', $args );
-      } catch ( Twig_Error_Loader $e ) {
-      } catch ( Twig_Error_Runtime $e ) {
-      } catch ( Twig_Error_Syntax $e ) {
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
         return $e->getRawMessage();
       }
     }

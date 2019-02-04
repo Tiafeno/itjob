@@ -61,10 +61,10 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         date = _.isNull(dateBegin) || _.isEmpty(dateBegin) || dateBegin === 'Invalid date' ? experience.old_value.exp_dateBegin : experience.exp_dateBegin;
       } else {
         let dateEnd = experience.exp_dateEnd;
-        date = _.isNull(dateEnd) ||_.isEmpty(dateEnd) || dateEnd === 'Invalid date' ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
+        date = _.isNull(dateEnd) || _.isEmpty(dateEnd) || dateEnd === 'Invalid date' ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
       }
       date = _.isNull(date) ? '' : date;
-      date = date.indexOf('/') > -1 ? moment(date) :  moment(date, 'MMMM YYYY', true);
+      date = date.indexOf('/') > -1 ? moment(date) : moment(date, 'MMMM YYYY', true);
       return date.isValid() ? date.format('MMMM YYYY') : 'n/a';
     }
   }])
@@ -608,7 +608,10 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
             }
           }
           if (isValid) {
-            if (_.find($scope.form.softwares, (software) => { return software.name.toLowerCase() === $tag.name.toLowerCase() })) {
+            let inSoftware = _.find($scope.form.softwares, (software) => {
+              return software.name.toLowerCase() === $tag.name.toLowerCase()
+            });
+            if (inSoftware) {
               // Le logiciel existe déja dans la liste
               $scope.status = "Logiciel déja présent dans votre liste";
               return false;
@@ -616,9 +619,9 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
             // Limiter le nombre des logiciels pour 10
             if ($scope.form.softwares.length < 10) {
               $scope.form.softwares.push($tag);
-              setTimeout(() => { 
+              setTimeout(() => {
                 $scope.$apply(() => {
-                  $scope.tags = null; 
+                  $scope.tags = null;
                 });
               }, 200);
             } else {

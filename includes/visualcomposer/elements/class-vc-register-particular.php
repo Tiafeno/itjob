@@ -133,7 +133,7 @@ if (!class_exists('vcRegisterParticular')) :
      * @func wp_doing_ajax
      * (bool) True if it's a WordPress Ajax request, false otherwise.
      */
-    if (!\wp_doing_ajax()) {
+    if (!wp_doing_ajax()) {
       return;
     }
 
@@ -222,7 +222,6 @@ if (!class_exists('vcRegisterParticular')) :
    */
   public function create_particular_user($value, $post_id)
   {
-
     $post_type = get_post_type($post_id);
     if ($post_type != 'candidate') {
       return $value;

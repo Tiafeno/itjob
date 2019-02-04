@@ -23,8 +23,8 @@ if (!defined('VENDOR_URL')) {
 $theme = wp_get_theme('itjob');
 
 // Utiliser ces variables apres la fonction: the_post()
-$offers = null;
-$company = null;
+$offers    = null;
+$company   = null;
 $candidate = null;
 // Variable pour les alerts
 $it_alerts = [];
@@ -47,6 +47,8 @@ require 'includes/class/middlewares/ModelAds.php';
 
 // Model
 require 'includes/class/class-model.php';
+include 'includes/class/model/class-model-request-formation.php';
+include 'includes/class/model/class-model-subscription-formation.php';
 
 // widgets
 require 'includes/class/widgets/widget-shortcode.php';
@@ -63,6 +65,7 @@ foreach ($interfaces as $interface) {
 }
 
 // post type object
+require_once 'includes/class/class-request-formation.php';
 require_once 'includes/class/class-formation.php';
 require_once 'includes/class/class-offers.php';
 require_once 'includes/class/class-particular.php';
@@ -217,7 +220,7 @@ add_filter('wp_nav_menu_args', function ($args) {
 
 
 add_action('init', function () {
-  //var_dump(is_email( $mail ));
+  
   // Yoast filter
   add_filter('wpseo_metadesc', function ($description) {
     global $post;
@@ -254,47 +257,12 @@ add_action('init', function () {
       }
     return $title;
   }, PHP_INT_MAX);
-
-
-  function wp_mail_fix_multiple_send($args){
-      global $wp_mail_fix_multiple_send_already_send;
-      if (!isset($wp_mail_fix_multiple_send_already_send))
-        $wp_mail_fix_multiple_send_already_send = array();
-      $key = md5(implode('-',$args));
-      if(isset($wp_mail_fix_multiple_send_already_send[$key])){
-          $args['to'] = '';
-          $args['subject'] = '';
-          $args['message'] = '';
-      }
-      else {
-          $wp_mail_fix_multiple_send_already_send[$key] = 1;
-      }
-      return $args;
-  }
-  add_filter('wp_mail','wp_mail_fix_multiple_send', 1,1);
   
   do_action('testUnits');
 
   $Model = new includes\model\itModel();
   add_action('repair_table', [$Model, 'repair_table'], 10);
   //do_action('repair_table');
-
-  //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
-//  header('Content-Type: text/csv');
-//  header('Content-Disposition: attachment; filename="emploi.csv"');
-//  $args = [
-//    'taxonomy' => 'job_sought',
-//    'hide_empty' =>false
-//  ];
-//  $terms = get_terms($args);
-//  $fp = fopen('php://output', 'wb');
-//  fputs($fp, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
-//  foreach ( $terms as $term ) {
-//    $val = [$term->term_id, $term->name];
-//    fputcsv($fp, $val, ';');
-//  }
-//  fclose($fp);
-//  exit;
 
 });
 

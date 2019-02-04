@@ -5,7 +5,7 @@
  */
 
 $action = "";
-if ( isset($_GET['action']) || !empty($_GET['action']) ) {
+if ( isset($_GET['action']) && !empty($_GET['action']) ) {
   $action = $_GET['action'];
   // Initialisation de la variable erreur
   $errors = new WP_Error();

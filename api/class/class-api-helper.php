@@ -7,7 +7,6 @@ final class apiHelper
   }
   public function get_taxonomy(WP_REST_Request $rq)
   {
-    // TODO: Envoyer seulement les terms activé pour certains taxonomy
     $taxonomy = $rq['taxonomy'];
     $rTerm = [];
     $terms = get_terms($taxonomy, [
@@ -15,7 +14,7 @@ final class apiHelper
       'fields' => 'all'
     ]);
     if ($taxonomy === 'city') {
-      $terms = array_filter($terms, function ($term, $key) use (&$rTerm) {
+      array_filter($terms, function ($term, $key) use (&$rTerm) {
         if ($term->parent !== 0) {
           $rTerm[] = $term;
         }

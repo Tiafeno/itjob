@@ -15,9 +15,10 @@ require_once 'class/class-api-candidate.php';
 require_once 'class/class-api-offer.php';
 require_once 'class/class-api-helper.php';
 require_once 'class/class-api-company.php';
+require_once 'class/class-api-formation.php';
 
 
-function post_updated_values($post_ID, $post_after, $post_before)
+function post_updated_values($post_ID)
 {
    $post_type = get_post_type($post_ID);
    if ($post_type === 'candidate') {
@@ -136,7 +137,7 @@ add_action('rest_api_init', function () {
 
                      return new WP_REST_Response(['success' => true, 'msg' => "Candidate mise à jour avec succès"]);
                      break;
-                  
+
                   case 'coverletter':
                      $Model = new itModel();
                      $lm = []; // Lettre de motivation
@@ -371,6 +372,58 @@ add_action('rest_api_init', function () {
       ),
    ]);
 
+   register_rest_route('it-api', '/request-formations', [
+     array(
+       'methods' => WP_REST_Server::READABLE,
+       'callback' => [new apiFormation(), 'get_request_formations']
+     )
+   ]);
+
+   register_rest_route('it-api', '/request-formations/(?P<id>\d+)', [
+     array(
+       'methods' => WP_REST_Server::READABLE,
+       'callback' => function (WP_REST_Request $rq) {
+          $rf_id = (int) $rq['id'];
+          if ($rf_id === 0) return new WP_Error(404, "L'identifiant de la demande n'est pas valide");
+          $request_formations = \includes\model\Model_Request_Formation::get_resources($rf_id);
+
+          return new WP_REST_Response($request_formations);
+       }
+     ),
+     array(
+       'methods' => WP_REST_Server::CREATABLE,
+       'callback' => function (WP_REST_Request $rq) {
+         global $wpdb;
+         $id = (int)$rq['id'];
+         $formation = stripslashes_deep($_REQUEST['formation']);
+         $objFormation = json_decode($formation);
+
+         $result = $wpdb->update( $wpdb->prefix . "request_training", [ 'subject' => $objFormation->subject ],
+           [ 'ID' => (int)$id ], [ '%s' ], [ '%d' ] );
+         $response = $result ? "Mise à jours effectuer avec succès" : false;
+         return new WP_REST_Response($response);
+       }
+     )
+   ]);
+
+   register_rest_route('it-api', '/formations', [
+     array(
+       'methods' => WP_REST_Server::READABLE,
+       'callback' => [new apiFormation(), 'get_formations']
+     )
+   ]);
+
+  register_rest_route('it-api', '/formation/(?P<id>\d+)', [
+    array(
+      'methods' => WP_REST_Server::READABLE,
+      'callback' => [new apiFormation(), 'formation_resources']
+    ),
+    array(
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => [new apiFormation(), 'update_formation']
+    )
+  ]);
+
    /**
     * Récuperer la liste des offres
     */
@@ -386,7 +439,7 @@ add_action('rest_api_init', function () {
             }
             $ref = isset($_REQUEST['ref']) ? stripslashes(urldecode($_REQUEST['ref'])) : false;
             if ($ref) {
-               switch ($ref) {
+              switch ($ref) {
                   case 'collect':
                      $companyPost = $Offer->getCompany();
                      $Offer->__info = new \includes\post\Company($companyPost->ID);
@@ -399,7 +452,7 @@ add_action('rest_api_init', function () {
                      if (is_null($status)) return new WP_REST_Response('Parametre manquant');
                      $status = (int)$status;
                      if ($Offer->offer_status === 'pending' && $status === 1) {
-                        $post_date =  get_the_date('Y-m-d H:i:s', $Company->getId());
+                        $post_date =  get_the_date('Y-m-d H:i:s', $Offer->ID);
                         wp_update_post(['ID' => $Offer->ID, 'post_date' => $post_date, 'post_status' => 'publish'], true);
                      }
                      $status = (int)$status;
@@ -502,7 +555,7 @@ add_action('rest_api_init', function () {
             ),
          ),
       ),
-    // Mettre à jours une offre
+      // Mettre à jours une offre
       array(
          'methods' => WP_REST_Server::EDITABLE,
          'callback' => function (WP_REST_Request $request) {
@@ -690,16 +743,9 @@ add_action('rest_api_init', function () {
 
             $length = (int)$_REQUEST['length'];
             $start = (int)$_REQUEST['start'];
-            $sort = $_REQUEST['sort'][0];
-            $columns = $_REQUEST['columns'];
 
-            $terms_per_page = $length;
-            $tpp = filter_var($terms_per_page, FILTER_VALIDATE_INT);
             $taxonomy = filter_var($rq['taxonomy'], FILTER_SANITIZE_STRING);
             if (!taxonomy_exists($taxonomy)) return false;
-            $term_count = wp_count_terms($taxonomy);
-            $max_num_pages = ceil($term_count / $tpp);
-            // We can now get our terms and paginate it
             $args = [
                'taxonomy' => $taxonomy,
                'hide_empty' => false,
@@ -710,16 +756,9 @@ add_action('rest_api_init', function () {
                'offset' => $start
             ];
 
-            // if (!empty($sort['column'])) {
-            //    $index = (int)$sort['column'];
-            //    $field = $columns[$index]['data'];
-            //    if ($field === 'term_id' || $field === 'name') {
-            //       $args = array_merge($args, ['orderby' => $field, 'order' => $sort['dir'], ]);
-            //    }
-            // }
-
             if (isset($_REQUEST['search']) && !empty($_REQUEST['search']['value'])) {
                $s = $_REQUEST['search']['value'];
+               $s = wp_unslash($s);
                if (strpos($s, "|") !== false) {
                   $params = explode('|', $s);
                   $activated = (int) $params[1];
@@ -735,13 +774,13 @@ add_action('rest_api_init', function () {
                   if (!empty($params[0]) && $params[0] !== ' ') {
                      $args = array_merge($args, ['search' => $params[0]]);
                   }
-                  
+
                } else {
                   $args = array_merge($args, ['search' => $s]);
                }
             }
             $contents = [];
-            
+
             $term_query = new WP_Term_Query($args);
             $rows = $wpdb->get_results($term_query->request);
             foreach ($term_query->get_terms() as $term) {
@@ -852,7 +891,7 @@ add_action('rest_api_init', function () {
                      return new WP_REST_Response(['success' => true, 'message' => 'Term mise à jour avec succès', 'data' => $term]);
 
                      break;
-            
+
                   // Supprimer une terme dans la liste
                   case 'delete':
                      $term = $_REQUEST['term'];
@@ -1010,9 +1049,9 @@ add_action('rest_api_init', function () {
                } else {
                   $to = &$role__in;
                }
-               
+
                $args = [
-                  'role' => $to, 
+                  'role' => $to,
                   'fields' => 'all'
                ];
                $user_query = new \WP_User_Query( $args );
@@ -1048,7 +1087,7 @@ add_action('rest_api_init', function () {
                         }
                      }
                   }
-                  
+
                }
 
                return new WP_REST_Response(['success' => true, 'users' => $return]);
@@ -1062,7 +1101,7 @@ add_action('rest_api_init', function () {
 
    register_rest_route('it-api', '/blogs/',
       [
-      // Récuperer les blogs
+         // Récuperer les blogs
          [
             'methods' => WP_REST_Server::READABLE,
             'callback' => function (WP_REST_Request $request) {

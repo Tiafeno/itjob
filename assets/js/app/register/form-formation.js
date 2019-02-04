@@ -63,25 +63,26 @@ angular.module('FormationApp', ['ui.router', 'ngMessages'])
       $scope.uri = {};
       $scope.Form = {};
       $scope.Form.distance_learning = '0';
-
+      // Envoyer le formulaire
       $scope.submitForm = function (Form) {
-        if (!Form.$valid) return false;
         if (Form.$invalid) {
           angular.forEach(Form.$error.required, function (required) {
-            angular.forEach(required, function (requiredModel) {
-              requiredModel.$setTouched();
-            });
+            required.$setTouched();
           });
           $scope.error = true;
         }
-
+        if (!Form.$valid) return false;
         $scope.buttonDisable = true;
-        // Submit form here ...
         var fData = new FormData();
         fData.append('action', 'new_formation');
         var particularFormObject = Object.keys($scope.Form);
         particularFormObject.forEach(function (property) {
-          fData.set(property, Reflect.get($scope.Form, property));
+          if (property === 'date_limit') {
+            var dateLimit = Reflect.get($scope.Form, property);
+            fData.set(property, moment(dateLimit, 'DD-MM-YYYY').format('YYYY-MM-DD'));
+          } else {
+            fData.set(property, Reflect.get($scope.Form, property));
+          }
         });
 
         $scope.error = false;
@@ -90,11 +91,10 @@ angular.module('FormationApp', ['ui.router', 'ngMessages'])
           .then(
             function (resp) {
               var status = resp.data;
-              var _type = status.success ? 'info' : 'error';
               swal({
                 title: 'Notification',
                 text: "Formation ajouter avec succès.",
-                type: _type,
+                type: status.success ? 'info' : 'error',
               }, function () {
                 $scope.buttonDisable = false;
                 if (status.success) {

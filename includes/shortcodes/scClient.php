@@ -187,9 +187,11 @@ if ( ! class_exists( 'scClient' ) ) :
         'otherinformation' => Http\Request::getValue( 'otherInformation' ),
         'abranch'          => Http\Request::getValue( 'branch_activity' ),
       ];
+      $offer = get_post($post_id);
       wp_update_post( [
         'ID'         => $post_id,
-        'post_title' => $form->post
+        'post_title' => $form->post,
+        'post_date'  => $offer->post_date
       ] );
       foreach ( $form as $key => $value ) {
         update_field( "itjob_offer_{$key}", $value, $post_id );
@@ -337,8 +339,7 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     // Mettre à jour la secteur d'activité pour les offres d'une entreprise definie
-    private function add_offers_branch_activity($company_id, $term)
-    {
+    private function add_offers_branch_activity($company_id, $term) {
       $args = [
         'post_type' => 'offers',
         'post_status' => ['publish', 'pending'],
@@ -772,7 +773,6 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( ! is_user_logged_in() ) {
         wp_send_json_error( 'Désolé, Votre session a expiré' );
       }
-
       $User = wp_get_current_user(  );
       $email = $User->user_email;
       $args = [
@@ -785,7 +785,6 @@ if ( ! class_exists( 'scClient' ) ) :
           ]
         ]
       ];
-
       $formations = get_posts( $args );
       $results = [];
       foreach ($formations as $formation) {
@@ -793,7 +792,6 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       
       wp_send_json_success( $results );
-
     }
 
     /**
@@ -1030,6 +1028,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'ListsCandidate' => $listsCandidate,
           'post_type'      => 'company',
           'Helper'         => [
+            'add_formation_url' => get_the_permalink(ADD_FORMATION_PAGE),
             'interest_page_uri' => get_the_permalink( $interest_page_id ),
             'archive_candidate_link' => get_post_type_archive_link('candidate')
           ]

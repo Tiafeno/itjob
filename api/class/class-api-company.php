@@ -100,7 +100,6 @@ class apiCompany
       $args = array_merge($args, ['tax_query' => $tax_query]);
     //print_r($args);
     $the_query = new WP_Query($args);
-    $entreprises = [];
     if ($the_query->have_posts()) {
       $entreprises = array_map(function ($entreprise) {
         $objCompany = new \includes\post\Company($entreprise->ID);

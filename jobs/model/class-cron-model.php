@@ -42,6 +42,23 @@ class cronModel
         return $user_query;
     }
 
+    public function getOffer5DaysLimitDate() {
+      global $wpdb;
+        $today = date('Y-m-d H:i:s');
+        $date5Days = new DateTime("$today - 5 day");
+        $date5DaysFormat = $date5Days->format('Ymd');
+        $sql = "SELECT pst.ID as offer_id FROM $wpdb->posts as pts 
+                    WHERE 
+                    pst.post_type = 'offers'
+                    pst.post_status = 'publish'
+                    pts.ID IN (SELECT {$wpdb->postmeta}.post_id as post_id 
+                        FROM {$wpdb->postmeta} 
+                        WHERE {$wpdb->postmeta}.meta_key REGEXP '(^itjob_offer_datelimit)$' AND {$wpdb->postmeta}.meta_value >= $date5DaysFormat)";
+        $rows = $wpdb->get_results($sql);
+
+        return $rows;
+    }
+
     public function deleteNoticeforLastDays($day = 15, $users = []) {
         global $wpdb;
         $today = date('Y-m-d H:i:s');

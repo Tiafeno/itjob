@@ -15,8 +15,7 @@ function getModerators() {
 
     return $admin_email;
 }
-
-
+ 
 
 add_action('tous_les_15_minutes', function () {
     // Mettre à jours la clé
@@ -70,6 +69,54 @@ add_action('tous_les_jours', function () {
             }
         }
     }
+
+    // Envoyer les offres avec date de fin d'inscription de 5 jours et 1 jours
+    $results = $cronModel->getOffer5DaysLimitDate();
+    $offers = [];
+    if ($results) {
+        $client_area_link = get_the_permalink(ESPACE_CLIENT_PAGE);
+        $year = Date('Y');
+        foreach ($results as $result) {
+            // Envoyer une mail de notification au entreprise
+            $Offer = new includes\post\Offers((int) $result->offer_id);
+            $msg = "Bonjour, <br/>";
+            $msg .= "<p>Nous vous informons que votre annonce « <b>{$Offer->postPromote}</b> » avec la référence « <b>{$Offer->reference}</b> » va bientôt expirer. <br>";
+            $msg .= "Si vous êtes toujours à la recherche du candidat idéal pensez à rallonger votre annonce ou optez pour une annonce à la une.</p>";
+            $msg .= "<br>";
+            $msg .= "<p>Pour toute modification rendez-vous dans l’espace client: <a href='{$client_area_link}' target='_blank'>Espace client</a></p>";
+            $msg .= "A bientôt. <br/><br/><br/>";
+            $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
+            $to        = $Offer->getAuthor()->user_email;
+            $subject   = "Date limite des annonces ";
+            $headers   = [];
+            $headers[] = 'Content-Type: text/html; charset=UTF-8';
+            $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+            
+            wp_mail( $to, $subject, $msg, $headers );
+
+            $offers[] = $Offer;
+        }
+
+        // Envoyer un mail au administrateur et modérateur
+        $msg = "Bonjour, <br/>";
+        $msg .= "Voici la liste des annonces qui vont expirer dans les prochains jours:</p>";
+        foreach ($offers as $offer) {
+          $msg .= "<p>* L'offre « <b>{$offer->postPromote}</b> » avec la référence « <b>{$offer->reference}</b> » éxpire {$offer->dateLimitFormat}.</p>";
+        }
+        $msg .= "<br>";
+        $msg .= "<p>Pour toute modification rendez-vous dans l’espace client: <a href='{$client_area_link}' target='_blank'>Espace client</a></p>";
+        $msg .= "A bientôt. <br/><br/><br/>";
+        $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
+        $subject   = "Date limite des annonces ";
+        $to = getModerators();
+        $headers   = [];
+        $headers[] = 'Content-Type: text/html; charset=UTF-8';
+        $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+        wp_mail( $to, $subject, $msg, $headers );
+    }
+
+    // liste des offres à prolonger la date limite de candidature
+    
 });
 
 /**
@@ -77,6 +124,7 @@ add_action('tous_les_jours', function () {
  * les taches en attente.
  */
 add_action('tous_les_jours', function () {
+    $year = Date('Y');
     $cronModel = new cronModel();
     $admin_emails = getModerators();
     $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
@@ -92,14 +140,14 @@ add_action('tous_les_jours', function () {
     $msg = "Bonjour, <br/>";
     $msg .= "<p>Voici la liste des candidats qui ont été sélectionnés par les recruteurs, en attente de validation :</p>";
     foreach ($pendingInterests as $interest) {
-        $msg .= "<p> * <strong>{$interest->company->title}</strong> s'interesse à un candidat pour réference
-         « <strong>{$interest->candidate->title}</strong> » sur l'offre <b>{$interest->offer->postPromote}</b> ({$interest->offer->reference}) à {$interest->date}.</p>";
+        $msg .= "<p> * <b>{$interest->company->title}</b> s'interesse à un candidat pour réference
+         « <b>{$interest->candidate->title}</b> » sur l'offre <b>{$interest->offer->postPromote}</b> ({$interest->offer->reference}) à {$interest->date}.</p>";
     }
     if (empty($pendingInterests))
         $msg .= "<b>Aucun</b>";
     $msg .= "<br>";
     $msg .= "A bientôt. <br/><br/><br/>";
-    $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+    $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
     $subject   = "Les CV sélectionner en attente";
     $headers   = [];
@@ -123,7 +171,7 @@ add_action('tous_les_jours', function () {
         $msg .= "<b>Aucun</b>";
     $msg .= "<br>";
     $msg .= "A bientôt. <br/><br/><br/>";
-    $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+    $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
     $subject   = "Liste des postulants en attente";
     $headers   = [];
@@ -146,7 +194,7 @@ add_action('tous_les_jours', function () {
         $msg .= "<b>Aucun</b>";
     $msg .= "<br>";
     $msg .= "A bientôt. <br/><br/><br/>";
-    $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+    $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
     $subject   = "Les CV avec des modifications en attente";
     $headers   = [];
@@ -168,7 +216,7 @@ add_action('tous_les_jours', function () {
         $msg .= "<b>Aucun</b>";
     $msg .= "<br>";
     $msg .= "A bientôt. <br/><br/><br/>";
-    $msg .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+    $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
     $subject   = "Les CV en attente de validation";
     $headers   = [];

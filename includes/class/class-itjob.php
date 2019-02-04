@@ -145,29 +145,39 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'after_switch_theme', function ( $new_theme ) {
         global $wpdb;
         // Cree une table pour les entreprise intereser par des candidats
-        $cv_request = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_request (`id_cv_request` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
-            `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , `status` VARCHAR(20) NOT NULL DEFAULT 'pending' , 
-            `id_attachment` BIGINT(20) NOT NULL DEFAULT 0, `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-                         PRIMARY KEY (`id_cv_request`)) ENGINE = InnoDB;";
+        $cv_request = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_request (
+          `id_cv_request` BIGINT(20) NOT NULL AUTO_INCREMENT , 
+          `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
+          `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
+          `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , 
+          `status` VARCHAR(20) NOT NULL DEFAULT 'pending' , 
+          `id_attachment` BIGINT(20) NOT NULL DEFAULT 0, 
+          `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+          PRIMARY KEY (`id_cv_request`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_request );
 
         // Crée une table pour ajouter les CV dans la liste des entreprise
         // Pour les entreprise de membre standar, la liste se limite à 5 CV
-        $cv_lists = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_lists (`id_lists` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
-                      `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                      PRIMARY KEY (`id_lists`)) ENGINE = InnoDB;";
+        $cv_lists = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_lists (
+          `id_lists` BIGINT(20) NOT NULL AUTO_INCREMENT , 
+          `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
+          `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
+          `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id_lists`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_lists );
 
+        // Cette table contiene les notifications
         $notice = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}notices (
-            `id_notice` bigint(20) PRIMARY KEY AUTO_INCREMENT,
-            `id_user` bigint(20) NOT NULL,
-            `template` TINYINT(1) NOT NULL DEFAULT 0,
-            `status` boolean DEFAULT false,
-            `needle` longtext NOT NULL COMMENT 'Contient les variables dans une array',
-            `guid` varchar(255)	NOT NULL DEFAULT '',
-            `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );";
+          `id_notice` bigint(20) PRIMARY KEY AUTO_INCREMENT,
+          `id_user` bigint(20) NOT NULL,
+          `template` TINYINT(1) NOT NULL DEFAULT 0,
+          `status` boolean DEFAULT false,
+          `needle` longtext NOT NULL COMMENT 'Contient les variables dans une array',
+          `guid` varchar(255)	NOT NULL DEFAULT '',
+          `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );";
         $wpdb->query($notice);
 
+        // Cette table contiene les informations sur les publicités
         $ads = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}ads` (
           `id_ads` BIGINT(20) NOT NULL AUTO_INCREMENT,
           `id_attachment` BIGINT(20) NOT NULL,
@@ -183,8 +193,32 @@ if ( ! class_exists( 'itJob' ) ) {
           `attr` LONGTEXT NULL,
           `create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (`id_ads`)) ENGINE = InnoDB;";
-        
         $wpdb->query($ads);
+
+        // Cette table contiene les demandes de formations effectuer par les candidats et particuliers
+        $request_training = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}request_training` (
+          `ID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+          `user_id` BIGINT(20) UNSIGNED NOT NULL,
+          `formation_id` BIGINT(20) UNSIGNED NULL,
+          `subject` VARCHAR(250) NOT NULL,
+          `topic` VARCHAR(250) NULL,
+          `description` LONGTEXT NOT NULL,
+          `validated` TINYINT(1) NOT NULL DEFAULT 0,
+          `disabled` TINYINT(1) NOT NULL DEFAULT 0,
+          `concerned` LONGTEXT NULL COMMENT 'Contient la liste des candidats dans une array',
+          `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`ID`)) ENGINE = InnoDB;";
+        $wpdb->query($request_training);
+
+        // Cette table contiene les donées pour les candidat qui s'inscrit au formation
+        $registration = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}registration_training` (
+          `ID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+          `formation_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+          `user_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+          `paid` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0:pending, 1:accepted & 2: refused',
+          `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`ID`)) ENGINE = InnoDB;";
+        $wpdb->query($registration);
       } );
 
       // Add acf google map api
@@ -227,6 +261,74 @@ if ( ! class_exists( 'itJob' ) ) {
             }
 
             switch ( $post_type ) {
+              CASE 'formation':
+                if ( $abranch ) {
+                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
+                  $tax_query[] = [
+                    'taxonomy'         => 'branch_activity',
+                    'field'            => 'term_id',
+                    'terms'            => (int) $abranch,
+                    'include_children' => false
+                  ];
+                }
+
+                if ( ! isset( $meta_query ) ) {
+                  $meta_query = $query->get( 'meta_query' );
+                }
+
+                if ( ! empty( $s ) ) {
+                  // Feature: Recherché aussi dans le profil recherché et mission
+
+                  add_filter('posts_where', function ( $where ) {
+                    global $wpdb;
+                    $s = \Http\Request::getValue('s');
+                    $s = $wpdb->esc_like( $s );
+                    $s = implode('|', explode(' ', $s));
+                    if (!is_admin()) {
+                      $where .= " 
+                      AND {$wpdb->posts}.ID IN (
+                          SELECT {$wpdb->postmeta}.post_id as post_id
+                            FROM {$wpdb->postmeta}
+                            WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+                        ) 
+                      AND ( 
+                        {$wpdb->posts}.post_title REGEXP '({$s}).*$'
+                        OR {$wpdb->posts}.post_content REGEXP '({$s}).*$'
+                        OR {$wpdb->posts}.ID IN (
+                          SELECT {$wpdb->postmeta}.post_id as post_id
+                              FROM {$wpdb->postmeta}
+                              WHERE {$wpdb->postmeta}.meta_key = 'reference' AND {$wpdb->postmeta}.meta_value REGEXP '({$s}).*$'
+                        ))";
+                    }
+
+                    return $where;
+                  });
+                }
+                
+                $meta_query = !is_array($meta_query) ? [] : $meta_query;
+                $meta_query[] = [
+                  [
+                    'key'     => 'activated',
+                    'value'   => 1,
+                    'compare' => '=',
+                  ],
+                ];
+
+                if ( isset( $meta_query ) && ! empty( $meta_query ) ):
+                  $query->set( 'meta_query', $meta_query );
+                  $query->meta_query = new \WP_Meta_Query( $meta_query );
+                endif;
+
+                if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
+                  $query->set( 'tax_query', $tax_query );
+                  $query->tax_query = new \WP_Tax_Query( $tax_query );
+                }
+
+                $query->query['s']      = '';
+                $query->query_vars['s'] = '';
+
+                BREAK;
               // Trouver des offres d'emplois
               CASE 'offers':
 
@@ -349,6 +451,7 @@ if ( ! class_exists( 'itJob' ) ) {
                     global $wpdb;
                     //global $wp_query;
                     $s = isset($_GET['s']) ? $_GET['s'] : '';
+                    $s = $wpdb->esc_like( $s );
                     if (!is_admin()) {
                       $where .= " AND {$wpdb->posts}.ID IN (
                                       SELECT
@@ -468,9 +571,9 @@ if ( ! class_exists( 'itJob' ) ) {
 
           } // .end if - search conditional
           else {
-            // Filtrer les candidates ou les offers ou les entreprises
+            // Filtrer les candidates ou les offers ou les entreprises et les formations
             // Afficher seulement les candidates ou les offres ou les entreprises activer
-            if ( $post_type === 'candidate' || $post_type === 'offers' || $post_type === 'company' ):
+            if ( $post_type === 'candidate' || $post_type === 'offers' || $post_type === 'company' || $post_type === 'formation' ):
               // Meta query
               if ( ! isset( $meta_query ) ) {
                 $meta_query = $query->get( 'meta_query' );
@@ -515,8 +618,8 @@ if ( ! class_exists( 'itJob' ) ) {
             $GLOBALS[ $post_object->post_type ] = new Post\Offers( $post_object->ID );
             break;
 
-          case 'company':
-            $GLOBALS[ $post_object->post_type ] = new Post\Company( $post_object->ID );
+          case 'formation':
+            $GLOBALS[ $post_object->post_type ] = new Post\Formation( $post_object->ID );
             break;
         }
       } );
@@ -679,7 +782,7 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_script( 'tinymce',  VENDOR_URL . '/tinymce/tinymce.js', null, "4.5.9");
       wp_register_script( 'angular-ui-tinymce', VENDOR_URL . '/angular-ui-tinymce/dist/tinymce.min.js', null, '4.0.0' );
 
-      // plugins depend
+      // Plugins depend
       wp_register_style( 'font-awesome', VENDOR_URL . '/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
       wp_register_style( 'line-awesome', VENDOR_URL . '/line-awesome/css/line-awesome.min.css', '', '1.1.0' );
       wp_register_style( 'themify-icons', VENDOR_URL . '/themify-icons/css/themify-icons.css', '', '1.1.0' );

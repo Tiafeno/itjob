@@ -178,7 +178,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
     public function update_user_cv() {
       global $itHelper;
       
-      if ( $_SERVER['REQUEST_METHOD'] != 'POST' || ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
+      if ( $_SERVER['REQUEST_METHOD'] != 'POST' || ! wp_doing_ajax() || ! is_user_logged_in() ) {
         return false;
       }
 

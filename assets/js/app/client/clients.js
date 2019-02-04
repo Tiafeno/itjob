@@ -212,22 +212,24 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
             .then(resp => {
               const query = resp.data;
               if (query.success) {
+                moment.locale('fr');
                 const table = jQuery('#formation-table').DataTable({
                   pageLength: 10,
                   fixedHeader: false,
                   responsive: false,
+                  dom: '<"top"i><"info"r>t<"bottom"flp><"clear">',
                   data: query.data,
                   columns: [
-                    {data: 'ID'},
                     {data: 'reference'},
                     {data: 'status', render: (data, type, row, meta) => {
-                      return data === 'pending' ? 'En attente' : 'Publier';
+                      var text =  data === 'pending' ? 'En attente' : 'Publier';
+                      return `<span class="badge badge-pill badge-default"> ${text} </span>`;
                     }},
                     {data: 'title'},
-                    {data: 'date_limit'},
+                    {data: 'date_limit', render: (data) => { return moment(data).format('LL'); }},
                     {data: 'establish_name'},
                     {data: null, render: () => {
-                      return '<i class="fa fa-trash"></i> <i class="fa fa-pencil"></i>';
+                      return '<i class="fa fa-pencil"></i>';
                     }}
                   ],
                   "sDom": 'rtip',

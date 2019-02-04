@@ -5,6 +5,7 @@ use includes\model\itModel;
 use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
+use includes\post\Formation;
 
 if (!defined('ABSPATH')) {
   exit;
@@ -37,6 +38,7 @@ final class NotificationTpl
     $this->tpls[19] = "Un CV pour reference « %1\$s » viens d'ajouter une image de profil";
     $this->tpls[20] = "Un logiciel vient d'être ajouté « <b>%1\$s</b> » par <b>%2\$s</b>";
     $this->tpls[21] = "Un métier vient d'être ajouté « <b>%1\$s</b> » par <b>%2\$s</b>";
+    $this->tpls[22] = "Une formation viens d'être ajouter <b>%1\$s</b> portant la reference <b>%2\$s</b>";
   }
 }
 
@@ -62,6 +64,7 @@ final class NotificationHelper
       add_action('notice-admin-update-cv', [&$this, 'notice_admin_update_cv'], 10, 1);
       add_action('notice-admin-new-company', [&$this, 'notice_admin_new_company'], 10, 1);
       add_action('notice-admin-new-featured-image', [&$this, 'notice_admin_new_featured_image'], 10, 1);
+      add_action('notice-admin-new-formation', [&$this, 'notice_admin_new_formation'], 10, 1);
 
       // at add_term_submit() in class-vc-register-candidate.php and update_candidate_softwares() in scClient.php
       add_action('notice-admin-new-software', [&$this, 'notice_admin_new_software'], 10, 2);
@@ -203,6 +206,19 @@ final class NotificationHelper
     }
   }
 
+  public function notice_admin_new_formation( $id_formation ) {
+    $Model     = new itModel();
+    $Notice    = new \stdClass();
+    $Formation = new Formation( (int) $id_formation );
+    $Notice->guid = "/formation/{$id_formation}/edit";
+    $Notice->tpl_msg = 22;
+    $Notice->needle = [$Formation->title, $Formation->reference];
+
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
+  }
 
   /**
    * Quand l'administrateur vient de publier et activer le CV

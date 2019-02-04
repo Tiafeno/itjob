@@ -81,8 +81,7 @@
             <div pre-upload class="p-relative">
               <div class="p-absolute" style="width: 125px; bottom: -62px;">
                 <div class="uk-text-bold d-flex">Photo
-                  <span data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" 
-                    data-content="Sur la photo votre visage doit être nette, humaine et naturelle pas 
+                  <span data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" data-content="Sur la photo votre visage doit être nette, humaine et naturelle pas 
                     de selfie ou d’effet et décorations   donc une photo professionnelle">
                     <i class="fa fa-question-circle ml-1" style="font-size: 18px;cursor: pointer"></i>
                   </span>
@@ -289,30 +288,25 @@
   </div>
   <div class="col-lg-8">
     <div class="mt-4">
-      <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
+      <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3" role="tablist" style="display: flex">
         <li class="nav-item">
-          <a class="nav-link active" data-target="#profil" data-toggle="tab">
+          <a class="nav-link active" data-target="#profil" aria-controls="profil" data-toggle="tab" role="tab">
             Profil
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-target="#cv" data-toggle="tab">
+          <a class="nav-link" data-target="#cv" aria-controls="cv" data-toggle="tab" role="tab">
             Mon CV
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-target="#formation" data-toggle="tab">
-            Mes formations
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" data-target="#candidacy" data-toggle="tab">
+          <a class="nav-link" data-target="#candidacy"  aria-controls="candidacy" data-toggle="tab" role="tab">
             Candidature(s)
           </a>
         </li>
       </ul>
       <div class="tab-content">
-        <div class="tab-pane fade active show" id="profil">
+        <div class="tab-pane fade active show" role="tabpanel" aria-labelledby="profil-tab" id="profil">
           <div class="page-content">
             <div class="ibox-body">
               <div class="row">
@@ -341,7 +335,7 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane fade" id="cv">
+        <div class="tab-pane fade" role="tabpanel" aria-labelledby="cv-tab" id="cv" aria-expanded="false">
           <div class="page-content">
             <div class="ibox-body">
               <div class="row">
@@ -354,7 +348,8 @@
                       </a>
                     </h2>
                     <span class="badge badge-pink" ng-if="Candidate.state === 'pending'">En attente de validation</span>
-                    <span class="badge badge-blue" ng-if="Candidate.state === 'publish' && Candidate._activated === true">En ligne</span>
+                    <span class="badge badge-blue" ng-if="Candidate.state === 'publish' && Candidate._activated === true">En
+                      ligne</span>
                     <span class="badge badge-danger" ng-if="Candidate.state === 'publish' && Candidate._activated !== true">Désactiver</span>
                     <div class="mb-4"></div>
                     <!-- Emploi rechercher -->
@@ -413,20 +408,15 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane fade" id="formation">
-            <div class="page-content">
-              <div class="ibox-body">
-                <app-formation></app-formation>
-              </div>
-            </div>
-          </div>
-        <div class="tab-pane fade" id="candidacy">
+        <div class="tab-pane fade" role="tabpanel" aria-labelledby="candidacy-tab" id="candidacy" aria-expanded="false">
           <div class="page-content">
             <div class="ibox-body">
+                <h3 class="font-bold mb-3">CANDIDATURES</h3>
               <candidacy></candidacy>
             </div>
           </div>
         </div>
+        
       </div>
     </div>
   </div>

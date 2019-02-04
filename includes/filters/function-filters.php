@@ -56,6 +56,11 @@ function itjob_filter_engine( $Engine ) {
     return $date;
   }));
 
+  $Engine->addFilter(new Twig_SimpleFilter('dateFormat', function ($date, $format = "l, j F Y") {
+    $date = date_i18n( $format, strtotime($date) );
+    return $date;
+  }));
+
   $Engine->addFilter(new Twig_SimpleFilter('html_entity_decode', 'html_entity_decode'));
   $Engine->addFilter(new Twig_SimpleFilter('base64_image', function ($img) {
     // Read image path, convert to base64 encoding

@@ -106,7 +106,7 @@ trait Register {
       'rewrite'         => [ 'slug' => 'formation' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-media-interactive',
-      'supports'        => [ 'title', 'content', 'thumbnail', 'custom-fields' ],
+      'supports'        => [ 'title', 'content', 'excerpt', 'thumbnail', 'custom-fields' ],
       'show_in_rest'    => true
     ] );
 
