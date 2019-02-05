@@ -136,7 +136,7 @@ class scInterests
         $Model = new itModel();
         if ( ! $Model->interest_access($Candidate->getId(), $Entreprise->getId()) &&
           ! $Model->list_exist($Entreprise->getId(), $Candidate->getId())) {
-          do_action('add_notice', "<p class='text-center font-15 badge badge-warning'>Action non autoriser.</p>", 'default', false);
+          do_action('add_notice', "<p class='text-center font-14 badge badge-warning'>Vous n'avez pas l'autorisation nécessaire pour voir le contenue de cette page</p>", 'default', false);
           do_action('get_notice');
           return;
         }
@@ -217,6 +217,8 @@ class scInterests
       }
 
     } else {
+      $redir = get_the_permalink($cv_id);
+      $singup_page_url = get_the_permalink((int)REGISTER_COMPANY_PAGE_ID);
       wp_send_json_error([
         'msg' => 'Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi',
         'status' => 'access',
