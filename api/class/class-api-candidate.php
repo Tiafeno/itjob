@@ -390,10 +390,18 @@ class apiCandidate
             'exp_country'         => $content->exp_country,
             'exp_mission'         => $content->exp_mission,
             'exp_branch_activity' => $content->exp_branch_activity,
-            'old_value'           => isset($content->old_value) ? $content->old_value : [],
             'validated'           => $content->validated // S'il y a une autre formation qui n'est pas validé?
-            // exp_branch_activity
           ];
+
+          if (isset($content->old_value)) {
+            $oldValue = $content->old_value;
+            $new_experiences['old_value'] = [
+              'exp_dateBegin' => $oldValue->exp_dateBegin,
+              'exp_dateEnd'   => $oldValue->exp_dateEnd,
+              'exp_branch_activity' => $oldValue->exp_branch_activity
+            ];
+          }
+
         }
         update_field('itjob_cv_experiences', $new_experiences, $Candidate->getId());
         $fields = get_field('itjob_cv_experiences', $Candidate->getId());
