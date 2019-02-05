@@ -32,4 +32,12 @@ final class Model_Subscription_Formation {
         $result = $wpdb->update( $wpdb->prefix . self::$table, [ 'paid' => $paid ], [ 'ID' => (int)$registration_id ], [ '%d' ], [ '%d' ] );
         return $result;
     }
+
+    public function get_paid( $formation_id, $user_id) {
+      global $wpdb;
+      if (!is_numeric($formation_id) || !is_numeric($user_id)) return false;
+      $table = $wpdb->prefix . self::$table;
+      $result = $wpdb->get_row( $wpdb->prepare("SELECT ID as registration_id, paid FROM $table WHERE formation_id = %d AND user_id = %d", $formation_id, $user_id));
+      return $result;
+    }
 }

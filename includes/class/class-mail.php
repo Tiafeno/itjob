@@ -55,11 +55,14 @@ class Mailing {
     add_action( 'confirm_validate_candidate', [&$this, 'confirm_validate_candidate'], 10, 1);
     // Envoyer une email de confirmation de validation de compte professionnel
     add_action( 'confirm_validate_company', [&$this, 'confirm_validate_company'], 10, 1);
+
+    add_action( 'confirm_accept_registration_formation', [&$this, 'confirm_accept_registration_formation'], 10, 2);
     // Envoyer une email au commercial et a l'administrateur
     // pour notifier une inscription ou un nouveau utilisateur
     add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
     add_action( 'email_new_formation', [ &$this, 'email_new_formation' ], 10, 1 );
     add_action( 'new_request_formation', [ &$this, 'new_request_formation' ], 10, 2 );
+    add_action( 'send_registration_formation', [ &$this, 'send_registration_formation' ], 10, 2 );
 
     add_action( 'acf/save_post', function ( $post_id ) {
       $post_type   = get_post_type( $post_id );
@@ -76,7 +79,6 @@ class Mailing {
    * @return bool
    */
   public function register_user_company( $user_id ) {
-    // TODO: Envoyer une email à l'administrateur
     global $Engine;
     $User = new \WP_User( $user_id );
     if ( in_array( 'company', $User->roles ) ) {
@@ -112,6 +114,20 @@ class Mailing {
       $sender = wp_mail( $to, $subject, $content, $headers );
       if ( $sender ) {
         // Mail envoyer avec success
+        // Envoyer un mail à l'administrateur
+        $year = Date('Y');
+        $admin_emails = $this->getModeratorEmail();
+        $to        = $admin_emails;
+        $subject   = "Notification inscription - {$Company->title}";
+        $headers   = [];
+        $headers[] = 'Content-Type: text/html; charset=UTF-8';
+        $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+        $content   = 'Bonjour, <br/>';
+        $content   .= "'Une inscription de <b>{$Company->title}</b> portant la réference « <b>{$Company->reference}</b> » en tant que entreprise a été éffectuée ";
+        $content   .= "<p>Espace admnistration: <a href='{$this->dashboard_url}/company-lists'>Back office</a> </p> <br/>";
+        $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
+        // Envoyer un mail à l'entreprise
+        wp_mail( $to, $subject, $content, $headers );
         return $user_id;
       } else {
         // Erreur d'envoie
@@ -299,12 +315,13 @@ class Mailing {
       return false;
     }
     $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
-    $subject   = "{$Formation->reference} - Notification de l’insertion d’une nouvelle formation sur ITJobMada";
+    $subject   = "{$Formation->reference} -  Notification de l’insertion d’une formation modulaire";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p><b>{$Company->name}</b> viens de publier une formation « <b>{$Formation->title}</b> » portant la reférence « <b>{$Formation->reference}</b> »</p>";
+    $content   .= "<p>Une  nouvelle formation modulaire « <b>{$Formation->title}</b> » portant la reférence 
+    « <b>{$Formation->reference}</b> » a été insérée sur le site ITJOBMada par <b>{$Company->title}</b></p>";
     $content   .= "<p>Voir la formation: <a href='{$this->dashboard_url}/formation/{$Formation->ID}/edit'>Back office</a> </p> <br/>";
     $content   .= 'A bientôt. <br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
@@ -331,7 +348,7 @@ class Mailing {
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p><b>{$Candidate->reference}</b> viens d'ajouter une demande de formation « <b>{$sujet}</b> »</p>";
+    $content   .= "<p><b>{$Candidate->reference}</b> viens d'inserée une demande de formation « <b>{$sujet}</b> »</p>";
     $content   .= "<p>Voir la demande: <a href='{$this->dashboard_url}/request-formations'>Back office</a> </p> <br/>";
     $content   .= 'A bientôt. <br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
@@ -438,11 +455,7 @@ class Mailing {
     $Candidate = new Candidate((int)$candidate_id);
     $firstname = $Candidate->getFirstName();
     $admin_emails = $this->getModeratorEmail();
-    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
-    if ( ! $admin_emails ) {
-      return false;
-    }
-    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $to        = $admin_emails;
     $subject   = "Le CV « {$Candidate->title} » a reçus une modification";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
@@ -841,13 +854,56 @@ class Mailing {
     $sender = wp_mail( $to, $subject, $content, $headers );
     if ( $sender ) {
       // Mail envoyer avec success
-      // Envoyer une alerte au candidait conserner
+      // Envoyer une alerte au candidat concerner
       $this->alert_for_new_offer( $offer_id );
       return true;
     } else {
       // Erreur d'envoie
       return false;
     }
+  }
+
+  public function confirm_accept_registration_formation($user_id, $formation_id) {
+    global $Engine;
+    if (!is_numeric($user_id)) return false;
+    $User = get_user_by('ID', $user_id);
+    if ($User) {
+      $Formation = new Formation(intval($formation_id));
+      // TODO: Envoyer par mail la confirmation d'inscription pour une formation
+    }
+  }
+
+  /**
+   * Envoyer à l'administrateur un notification quand un candidat s'inscrit sur une
+   * formation modulaire
+   *
+   * @param $user_id integer
+   * @param $formation_id integer
+   * @return bool
+   */
+  public function send_registration_formation( $user_id, $formation_id ) {
+    if (!is_numeric($user_id) || !is_numeric($formation_id)) return false;
+    $User = get_user_by('ID', $user_id);
+    if (!in_array('candidate', $User->roles)) return false;
+    $Candidate = Candidate::get_candidate_by($User->ID);
+    $Formation = new Formation((int)$formation_id);
+
+    $first_name = $Candidate->getFirstName();
+    $last_name = $Candidate->getLastName();
+
+    $admin_emails = $this->getModeratorEmail();
+    $to        = $admin_emails;
+    $subject   = "Notification d'inscription sur une formation modulaire";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = 'Bonjour, <br/>';
+    $content   .= "<p>{$first_name} {$last_name} viens de s'inscrire sur une formation modulaire « <b>{$Formation->title}</b> » portant la réference « <b>{$Formation->reference}</b> »";
+    $content   .= "<p>Voir la formation: <a href='{$this->dashboard_url}/formation/{$formation_id}/edit'>Back office</a> </p> <br/>";
+    $content   .= '<br/><br/><br/>';
+    $content   .= "<p style='text-align: center'>ITJobMada © 2018</p>";
+
+    wp_mail( $to, $subject, $content, $headers );
   }
 
   // Envoyer une notification a l'administrateur pour une nouvelle offre publier dans le site  
@@ -860,7 +916,6 @@ class Mailing {
     }
     $User  = wp_get_current_user();
     $Company = Company::get_company_by( $User->ID );
-    // $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $admin_emails = $this->getModeratorEmail();
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
@@ -1185,6 +1240,7 @@ class Mailing {
       ] );
     }
   }
+
 }
 
 return new Mailing();

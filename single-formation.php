@@ -51,6 +51,8 @@ wp_enqueue_style('offers');
                   $result = \includes\model\Model_Subscription_Formation::add_resources($args);
                   if (!$result) {
                     new WP_Error('broke', "Impossible d'ajouter votre inscription dans la base de donnée");
+                  } else {
+                    do_action("send_registration_formation", $user_id, $formation->ID);
                   }
                   break;
 

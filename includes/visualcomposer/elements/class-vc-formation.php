@@ -166,7 +166,7 @@ class vcFormation
     );
     $refused_access_msg = '<div class="text-left mt-5">';
     $refused_access_msg .= '<div class="font-bold text-left font-14 badge badge-pink">Seule un compte professionnel a le pouvoir d\'ajouté une formation. <br>';
-    $refused_access_msg .= 'Votre compte ne vous permet pas de publier une formation';
+    $refused_access_msg .= 'Votre compte ne vous permet pas de publier une formation. Vous devez se connecter avec votre compte professionnel.';
     $refused_access_msg .= '</div></div>';
     $redirection = Http\Request::getValue('redir');
     $redirection = $redirection ? $redirection : get_post_type_archive_link('candidate');

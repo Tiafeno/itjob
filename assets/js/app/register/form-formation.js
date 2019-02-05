@@ -93,7 +93,9 @@ angular.module('FormationApp', ['ui.router', 'ngMessages'])
               var status = resp.data;
               swal({
                 title: 'Notification',
-                text: "Formation ajouter avec succès.",
+                text: "Votre formation modulaire a bien été envoyée. " +
+                "Votre annonce sera validée par nos soins avant la mise en ligne sous 24 heures jours ouvrés et en ligne" +
+                " pour une durée de un mois .",
                 type: status.success ? 'info' : 'error',
               }, function () {
                 $scope.buttonDisable = false;

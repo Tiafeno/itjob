@@ -25,7 +25,7 @@ class apiFormation
       'orderby'        => 'ID',
       "paged"          => $paged
     ];
-    if ( ! empty($find['value'])) {
+    if (!empty($find['value'])) {
       $search = stripslashes($find['value']);
       $searchs = explode('|', $search);
       $meta_query = [];
@@ -130,6 +130,20 @@ class apiFormation
           return new WP_REST_Response($Formation);
           break;
 
+        case 'subscription':
+          $subscriptions = \includes\model\Model_Subscription_Formation::get_subscription($formation_id);
+          $results = [];
+          foreach ($subscriptions as $subscription) {
+            $User = get_userdata((int)$subscription->user_id);
+            if (in_array('candidate', $User->roles)) {
+              $results[] = [
+                'paid'      => (int)$subscription->paid,
+                'candidate' => \includes\post\Candidate::get_candidate_by($User->ID, 'user_id', true)];
+            }
+          }
+          return new WP_REST_Response($results);
+          break;
+
         case 'activated':
           $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
           if (is_null($status)) new WP_Error(404, 'Parametre manquant');
@@ -210,7 +224,9 @@ class apiFormation
    * Récuperer les demande d'offres
    * @return WP_REST_Response
    */
-  public function get_request_formations() {
+  public
+  function get_request_formations ()
+  {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
     $formations = \includes\model\Model_Request_Formation::collect_resources($start, $length);
@@ -218,3 +234,50 @@ class apiFormation
     return new WP_REST_Response($formations);
   }
 }
+
+add_action('rest_api_init', function () {
+  $post_type = "formation";
+  $formation_meta = ["diploma", "activated", "featured", "featured_datelimit", "date_limit", "duration", "establish_name"];
+  foreach ($formation_meta as $meta):
+    register_rest_field($post_type, $meta, array(
+      'update_callback' => function ($value, $object, $field_name) {
+        return update_post_meta((int)$object->ID, $field_name, $value);
+      },
+      'get_callback'    => function ($object, $field_name) {
+        $post_id = $object['id'];
+        return get_post_meta($post_id, $field_name, true);
+      },
+    ));
+  endforeach;
+
+  // Registration training
+  register_rest_field($post_type, 'registration', [
+    'update_callback' => function ($value, $object, $field_name) {
+      //e.g {'user_id': 15, 'paid': 1}
+      //Possible value of paid: 1, 0 & 2
+      $registrations = is_array($value) ? $value : [];
+      if (!empty($registrations)) {
+        $formation_id = (int)$object->ID;
+        $Model = new \includes\model\Model_Subscription_Formation();
+        foreach ($registrations as $registration) {
+          $user_id = intval($registration['user_id']);
+          $paid = $Model->get_paid($formation_id, $user_id);
+          if ($paid) {
+            $Model::update_paid($paid->registration_id, (int) $registration['paid']);
+          }
+
+          if (intval($registration['paid']) === 1) {
+            // Envoyer un mail à l'utilisateur
+            do_action('confirm_accept_registration_formation', $user_id, $formation_id);
+          }
+        }
+      }
+
+      return true;
+    },
+    'get_callback'    => function ($object, $field_name) {
+      return \includes\model\Model_Subscription_Formation::get_subscription($object['id']);
+    },
+  ]);
+
+});

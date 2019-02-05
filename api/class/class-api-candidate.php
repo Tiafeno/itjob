@@ -158,8 +158,10 @@ class apiCandidate
     $args = [
       'post_type'      => 'candidate',
       'post_status'    => 'any',
+      //'meta_key'       => 'ID',
+      //'orderby'        => 'meta_value_num',
+      'order_by'       => 'ID',
       'order'          => 'DESC',
-      'orderby'        => 'ID',
       "posts_per_page" => $posts_per_page,
       "paged"          => $paged,
     ];

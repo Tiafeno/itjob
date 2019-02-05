@@ -93,7 +93,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     return $this->author;
   }
 
-  public static function get_candidate_by( $value, $handler = 'user_id' ) {
+  public static function get_candidate_by( $value, $handler = 'user_id', $private_access = false ) {
     if ( $handler === 'user_id' ) {
       $usr        = get_user_by( 'id', (int) $value );
       $args       = [
@@ -109,7 +109,7 @@ final class Candidate extends UserParticular implements \iCandidate {
       }
       $candidate = reset( $candidates );
 
-      return new Candidate( $candidate->ID );
+      return new Candidate( $candidate->ID, boolval($private_access));
     } else {
       return false;
     }

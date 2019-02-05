@@ -143,7 +143,6 @@ class scInterests
           return;
         }
       }
-      
     }
     
     wp_enqueue_style( 'poppins', "https://fonts.googleapis.com/css?family=Poppins:300,400,700,800" );
