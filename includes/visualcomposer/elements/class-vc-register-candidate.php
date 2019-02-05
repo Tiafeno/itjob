@@ -342,6 +342,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       update_field( 'activated', 0, $this->Candidate->getId() );
       // Ajouter que l'utilisateur ou le candidate possède un CV
       update_field( 'itjob_cv_hasCV', 1, $this->Candidate->getId() );
+      add_post_meta($this->Candidate->getId(), 'date_create', date_i18n('Y-m-d H:i:s'));
       // Envoyer un email de confirmation
       do_action('submit_particular_cv', $this->Candidate->getId());
       do_action('notice-admin-create-cv', $this->Candidate->getId());
@@ -400,7 +401,6 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
             array_push( $tabContainer, (int) $term['term_id'] );
           }
-          // TODO: Envoyer un mail pour notifier des nouveaux terms
         }
       }
 

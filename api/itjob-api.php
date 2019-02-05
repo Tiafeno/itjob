@@ -458,8 +458,7 @@ add_action('rest_api_init', function () {
                      if (is_null($status)) return new WP_REST_Response('Parametre manquant');
                      $status = (int)$status;
                      if ($Offer->offer_status === 'pending' && $status === 1) {
-                        $post_date =  $Offer->date_create;
-                        wp_update_post(['ID' => $Offer->ID, 'post_date' => $post_date, 'post_status' => 'publish'], true);
+                        wp_update_post(['ID' => $Offer->ID,  'post_status' => 'publish'], true);
                      }
                      $status = (int)$status;
                      update_field('activated', (int)$status, $Offer->ID);

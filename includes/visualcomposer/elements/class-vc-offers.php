@@ -194,8 +194,8 @@ if ( ! class_exists( 'vcOffers' ) ):
         wp_send_json( [ 'success' => false, 'msg' => $result->get_error_message() ] );
       }
 
-      // update acf field
       $post_id = &$result;
+      add_post_meta($post_id, 'date_create', date_i18n('Y-m-d H:i:s'));
       $this->update_acf_field( $post_id, $form );
       // Ajouter 'standard' comme plan tarifaire de l'offre
       update_field( 'itjob_offer_rateplan', 'standard', $post_id );

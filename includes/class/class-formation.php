@@ -66,7 +66,13 @@ class Formation
     $this->region = wp_get_post_terms($formation_id, 'region', ["fields" => "all"]);
     $this->activity_area = wp_get_post_terms($formation_id, 'branch_activity', ["fields" => "all"]);
 
-    if ($private_access) $this->get_private_informations();
+    if ($private_access) {
+      $this->get_private_informations();
+    }
+  }
+
+  public function getSubscription() {
+
   }
 
   public function getId() {

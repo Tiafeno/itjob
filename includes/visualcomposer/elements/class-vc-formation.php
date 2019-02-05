@@ -272,6 +272,8 @@ EOF;
       $current_user = wp_get_current_user();
       update_field('email', $current_user->user_email, $post_id);
       update_field('reference', strtoupper("FOM{$post_id}"), $post_id);
+
+      add_post_meta($post_id, 'date_create', date_i18n('Y-m-d H:i:s'));
       // ********************* Notification ***********************
       do_action('notice-admin-new-formation', $post_id);
       do_action('email_new_formation', $post_id);
