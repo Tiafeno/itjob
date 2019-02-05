@@ -161,7 +161,7 @@ if (!class_exists('scImport')) :
     $sql = "SELECT * FROM {$wpdb->users} usr WHERE usr.ID != %d";
     $prepare = $wpdb->prepare($sql, 1); // Not delete admin user
     $users = $wpdb->get_results($prepare);
-
+    $count = 1;
     $posts_per_page = 20;
     $paged = count($users) / $posts_per_page;
     foreach ($users as $user) {
@@ -577,7 +577,6 @@ if (!class_exists('scImport')) :
         $id_user = (int)$id_user;
         $newsletter = (int)$newsletter;
         $notification = (int)$notification;
-        $activated = (int)$activated;
 
         if ((int)$id_user === 0) {
           wp_send_json_success("Passer sur une autre colonne");
@@ -1124,7 +1123,7 @@ if (!class_exists('scImport')) :
         list( $id_offer, $id_user ) = $lines;
         $User = $Helper->has_user((int)$id_user);
         if (!$User && !in_array('company', $User->roles)) {
-          wp_send_json_success("Utilisateur non inscrit, ID:" . $obj->id_user);
+          wp_send_json_success("Utilisateur non inscrit, ID:" . $id_user);
         }
         $args = [
           'post_type' => 'offers',

@@ -380,8 +380,8 @@ class apiCandidate
         break;
       case 'experience':
         $new_experiences = [];
-        foreach ($contents as $content) {
-          $new_experiences[] = [
+        foreach ($contents as $key => $content) {
+          $new_experiences[$key] = [
             'exp_dateBegin'       => $content->exp_dateBegin,
             'exp_dateEnd'         => $content->exp_dateEnd,
             'exp_positionHeld'    => $content->exp_positionHeld,
@@ -395,7 +395,7 @@ class apiCandidate
 
           if (isset($content->old_value)) {
             $oldValue = $content->old_value;
-            $new_experiences['old_value'] = [
+            $new_experiences[$key]['old_value'] = [
               'exp_dateBegin' => $oldValue->exp_dateBegin,
               'exp_dateEnd'   => $oldValue->exp_dateEnd,
               'exp_branch_activity' => $oldValue->exp_branch_activity
