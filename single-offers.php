@@ -41,7 +41,6 @@ wp_enqueue_style('offers');
           <?php
           while (have_posts()) : the_post();
           if (!$offers instanceof \includes\post\Offers) exit;
-         
 
           ?>
             <div class="offer-section">
