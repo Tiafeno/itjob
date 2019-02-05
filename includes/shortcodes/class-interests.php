@@ -105,6 +105,7 @@ class scInterests
 
     $candidate_id = (int)Http\Request::getValue('cvId');
     $key = Http\Request::getValue('key', null);
+    $hasKey = false;
     $ErrorMessage = "<p class='text-center mt-4'>Une erreur s'est produite</p>";
 
     $User = wp_get_current_user();
@@ -116,11 +117,12 @@ class scInterests
        */
       $backOfficeKey = get_field('bo_key', 'option');
       if ($backOfficeKey !== $key) return "<p class='text-center mt-4 badge badge-pink'>Votre clé a expiré ou vous n'avez pas l'accès a cette page veuillez réessayer</p>";
+      $hasKey = true;
     }
     if ( ! $candidate_id) return $ErrorMessage;
 
     $Candidate = new Candidate($candidate_id);
-    if ( is_user_logged_in() ) {
+    if ( is_user_logged_in() && !$hasKey ) {
       // Autoriser l'administratuer et les commercials
       if ( in_array('administrator', $User->roles) || in_array('editor', $User->roles) )
       {
