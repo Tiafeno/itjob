@@ -295,7 +295,7 @@ class Mailing {
     // Les address email des administrateurs qui recoivent les notifications
     // La valeur de cette option est un tableau
     $admin_email               = get_field( 'admin_mail', 'option' ); // return string (mail)
-    $admin_email = strpos( $admin_email, ',' ) ? explode( ',', $admin_email ) : $admin_email;
+    $admin_email = !$admin_email || empty($admin_email) ? "david@itjobmada.com" : $admin_email;
     return $admin_email;
   }
 
