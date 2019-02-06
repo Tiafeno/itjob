@@ -920,7 +920,7 @@ add_action('rest_api_init', function () {
                      $post_type = get_post_type($post_id);
                      if (is_numeric($activated)) {
                         update_field('activated', $activated, $post_id);
-                        if ($activated && $post_status !== 'publish') {
+                        if ($activated) {
                            $action = "confirm_validate_{$post_type}";
                            do_action($action, $post_id);
                         }
