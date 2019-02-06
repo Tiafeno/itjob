@@ -240,10 +240,6 @@ class Mailing {
 
       // $admin_emails - Contient les adresses email de l'admin et les moderateurs
       $admin_emails = $this->getModeratorEmail();
-      $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
-      if ( ! $admin_emails ) {
-        return false;
-      }
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $args           = [
@@ -289,12 +285,9 @@ class Mailing {
    * @return array|string - Array of email string or empty content
    */
   protected function getModeratorEmail() {
-    if ( ! is_user_logged_in() ) {
-      return [];
-    }
     // Les address email des administrateurs qui recoivent les notifications
     // La valeur de cette option est un tableau
-    $admin_email               = get_field( 'admin_mail', 'option' ); // return string (mail)
+    $admin_email = get_field( 'admin_mail', 'option' ); // return string (mail)
     $admin_email = !$admin_email || empty($admin_email) ? "david@itjobmada.com" : $admin_email;
     return $admin_email;
   }
@@ -340,11 +333,7 @@ class Mailing {
     $year = Date('Y');
 
     $admin_emails = $this->getModeratorEmail();
-    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
-    if ( ! $admin_emails ) {
-      return false;
-    }
-    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $to        = $admin_emails;
     $subject   = "Une nouvelle demande de formation sur ITJobMada";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
@@ -487,7 +476,7 @@ class Mailing {
     $offer = new Offers( $offer_id );
     // @var array $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $admin_emails = $this->getModeratorEmail();
-    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
+    $admin_emails = $admin_emails;
     if ( ! $admin_emails ) {
       return false;
     }
@@ -683,11 +672,7 @@ class Mailing {
     $Offer  = new Offers((int) $offer_id);
     // @var array $admin_emails - Contient les adresses email de l'admin et les moderateurs
     $admin_emails = $this->getModeratorEmail();
-    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
-    if ( ! $admin_emails ) {
-      return false;
-    }
-    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $to        = $admin_emails;
     $subject   = 'L\’Entreprise « ' . $current_company->title . ' » est intéressée par un candidat - ItJobMada';
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
