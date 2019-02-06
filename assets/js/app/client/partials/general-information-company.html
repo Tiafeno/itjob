@@ -138,7 +138,8 @@
       </div>
       <div class="row mb-2">
         <div class="col-6 text-muted">Numéros de téléphone:</div>
-        <div class="col-6">[[Entreprise.phone === 'undefined' ? '' : Entreprise.phone]] /
+        <div class="col-6">[[Entreprise.phone === 'undefined' ? '' : Entreprise.phone]]
+          <span ng-if="Entreprise.phone !== 'undefined' && Entreprise.phone !== ''">/</span>
           <span ng-repeat="cellphone in Entreprise.cellphones"> [[ cellphone ]]<span ng-if="!$last">/</span></span>
         </div>
       </div>
