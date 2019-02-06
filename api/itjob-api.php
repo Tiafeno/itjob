@@ -16,7 +16,7 @@ require_once 'class/class-api-offer.php';
 require_once 'class/class-api-helper.php';
 require_once 'class/class-api-company.php';
 require_once 'class/class-api-formation.php';
-
+require_once 'class/apiRequestFormation.php';
 
 function post_updated_values($post_ID)
 {
@@ -372,42 +372,6 @@ add_action('rest_api_init', function () {
       ),
    ]);
 
-   register_rest_route('it-api', '/request-formations', [
-     array(
-       'methods' => WP_REST_Server::READABLE,
-       'callback' => [new apiFormation(), 'get_request_formations']
-     )
-   ]);
-
-   register_rest_route('it-api', '/request-formations/(?P<id>\d+)', [
-     array(
-       'methods' => WP_REST_Server::READABLE,
-       'callback' => function (WP_REST_Request $rq) {
-          $rf_id = (int) $rq['id'];
-          if ($rf_id === 0) return new WP_Error(404, "L'identifiant de la demande n'est pas valide");
-          $request_formations = \includes\model\Model_Request_Formation::get_resources($rf_id);
-
-          return new WP_REST_Response($request_formations);
-       }
-     ),
-     array(
-       'methods' => WP_REST_Server::CREATABLE,
-       'callback' => function (WP_REST_Request $rq) {
-         global $wpdb;
-         $id = (int)$rq['id'];
-         $formation = stripslashes_deep($_REQUEST['formation']);
-         $objFormation = json_decode($formation);
-
-         $result = $wpdb->update( $wpdb->prefix . "request_training", [ 'subject' => $objFormation->subject ],
-           [ 'ID' => (int)$id ], [ '%s' ], [ '%d' ] );
-         $response = $result ? "Mise à jours effectuer avec succès" : false;
-         return new WP_REST_Response($response);
-       },
-       'permission_callback' => function ($data) {
-         return current_user_can('edit_posts');
-       },
-     )
-   ]);
 
    register_rest_route('it-api', '/formations', [
      array(

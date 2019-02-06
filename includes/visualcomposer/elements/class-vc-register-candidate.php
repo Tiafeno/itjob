@@ -271,7 +271,6 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         'projet'  => json_decode($form->projet)
       ];
       update_field( 'itjob_cv_centerInterest', $centerInterest, $this->Candidate->getId() );
-
       update_field( 'itjob_cv_newsletter', $form->newsletter, $this->Candidate->getId() );
 
       // Update drive licence field
@@ -349,7 +348,6 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       // Alerter les entreprises
      // $itHelper->Mailing->alert_for_new_candidate($this->Candidate->getId());
-
       wp_send_json( [ 'success' => true ] );
 
     } // .end update_user_cv

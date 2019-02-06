@@ -2,6 +2,10 @@
 
 namespace includes\model;
 
+if (!defined('ABSPATH')) {
+  exit;
+}
+
 final class Model_Request_Formation {
     public static $table = "request_training";
 
@@ -99,13 +103,25 @@ final class Model_Request_Formation {
         return $result;
     }
 
-    public static function collect_resources( $offset = 1, $number = 10) {
+    public static function collect_resources( $offset = 0, $number = 10) {
         global $wpdb;
-        $sql = "SELECT * FROM %s LIMIT %d, %d";
-        $prepare = $wpdb->prepare($sql, $wpdb->prefix . self::$table, $offset, $number);
+        $table = $wpdb->prefix . self::$table;
+        $sql = "SELECT * FROM `{$table}` ORDER BY validated ASC LIMIT %d, %d";
+        $prepare = $wpdb->prepare($sql, intval($offset), intval($number));
         $results = $wpdb->get_results($prepare);
+        $subscriber = [];
+        foreach ($results as $key => $result) {
+          $subscriber[$key] = $result;
+          $User = new \WP_User((int) $result->user_id);
+          unset($subscriber[$key]->user_id);
+          $subscriber[$key]->validated = intval($result->validated);
+          $subscriber[$key]->disabled = intval($result->disabled);
+          $subscriber[$key]->concerned = unserialize($result->concerned);
+          $subscriber[$key]->user = $User;
+        }
 
-        return $results;
+        $sql_count_formation = "SELECT COUNT(*) FROM `{$table}`";
+        return (object)['results' => $subscriber, 'founds' => $wpdb->get_var($sql_count_formation)];
     }
 
 }

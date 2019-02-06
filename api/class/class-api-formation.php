@@ -9,6 +9,75 @@
 final
 class apiFormation
 {
+
+  public
+  function formation_resources (WP_REST_Request $rq)
+  {
+    $ref = isset($_REQUEST['ref']) ? stripslashes($_REQUEST['ref']) : false;
+    if ($ref) {
+      $formation_id = (int)$rq['id'];
+      $Formation = new \includes\post\Formation($formation_id, true);
+      if (is_null($Formation->title)) {
+        return new WP_Error('no_formation', 'Aucune formation ne correpond à cette id', array('status' => 404));
+      }
+
+      switch ($ref) {
+        case 'collect':
+          return new WP_REST_Response($Formation);
+          break;
+
+        case 'subscription':
+          $subscriptions = \includes\model\Model_Subscription_Formation::get_subscription($formation_id);
+          $results = [];
+          foreach ($subscriptions as $subscription) {
+            $User = get_userdata((int)$subscription->user_id);
+            if (in_array('candidate', $User->roles)) {
+              $results[] = [
+                'paid'      => (int)$subscription->paid,
+                'candidate' => \includes\post\Candidate::get_candidate_by($User->ID, 'user_id', true)];
+            }
+          }
+          return new WP_REST_Response($results);
+          break;
+
+        case 'activated':
+          $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+          if (is_null($status)) new WP_Error(404, 'Parametre manquant');
+          // Seul l'adminstrateur peuvent modifier cette option
+          if (!current_user_can('delete_users')) return new WP_Error(403, "Votre compte ne vous permet pas de modifier cette fonctionnalité");
+          $status = (int)$status;
+          if ($status === 1) {
+            $post_date = $Formation->date_create;
+            $post_date = date('Y-m-d H:i:s', strtotime($post_date));
+            wp_update_post(['ID' => $Formation->ID, 'post_date' => $post_date, 'post_status' => 'publish'], true);
+            // Envoyer une email à l'entreprise
+            do_action('confirm_validate_formation', $Formation->ID);
+          }
+          update_field('activated', (int)$status, $Formation->ID);
+
+          return new WP_REST_Response(['success' => true, 'message' => "Formation mis à jour avec succès"]);
+          break;
+
+        case 'featured':
+          $featured = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
+          $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;
+          // Seul l'adminstrateur peuvent modifier cette option
+          if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
+          if (is_null($featured) || is_null($dateLimit)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
+          $featured = (int)$featured;
+          update_field('featured', $featured, $Formation->getId());
+          if ($featured) {
+            update_field('featured_datelimit', date("Y-m-d H:i:s", (int)$dateLimit), $Formation->getId());
+          }
+
+          return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
+          break;
+      }
+    } else {
+      return new WP_Error('no_reference', 'Parametre (ref) manquant', array('status' => 403));
+    }
+  }
+
   public
   function get_formations (WP_REST_Request $rq)
   {
@@ -114,74 +183,6 @@ class apiFormation
     }
   }
 
-  public
-  function formation_resources (WP_REST_Request $rq)
-  {
-    $ref = isset($_REQUEST['ref']) ? stripslashes($_REQUEST['ref']) : false;
-    if ($ref) {
-      $formation_id = (int)$rq['id'];
-      $Formation = new \includes\post\Formation($formation_id, true);
-      if (is_null($Formation->title)) {
-        return new WP_Error('no_formation', 'Aucune formation ne correpond à cette id', array('status' => 404));
-      }
-
-      switch ($ref) {
-        case 'collect':
-          return new WP_REST_Response($Formation);
-          break;
-
-        case 'subscription':
-          $subscriptions = \includes\model\Model_Subscription_Formation::get_subscription($formation_id);
-          $results = [];
-          foreach ($subscriptions as $subscription) {
-            $User = get_userdata((int)$subscription->user_id);
-            if (in_array('candidate', $User->roles)) {
-              $results[] = [
-                'paid'      => (int)$subscription->paid,
-                'candidate' => \includes\post\Candidate::get_candidate_by($User->ID, 'user_id', true)];
-            }
-          }
-          return new WP_REST_Response($results);
-          break;
-
-        case 'activated':
-          $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
-          if (is_null($status)) new WP_Error(404, 'Parametre manquant');
-          // Seul l'adminstrateur peuvent modifier cette option
-          if (!current_user_can('delete_users')) return new WP_Error(403, "Votre compte ne vous permet pas de modifier cette fonctionnalité");
-          $status = (int)$status;
-          if ($status === 1) {
-            $post_date = $Formation->date_create;
-            $post_date = date('Y-m-d H:i:s', strtotime($post_date));
-            wp_update_post(['ID' => $Formation->ID, 'post_date' => $post_date, 'post_status' => 'publish'], true);
-            // Envoyer une email à l'entreprise
-            do_action('confirm_validate_formation', $Formation->ID);
-          }
-          update_field('activated', (int)$status, $Formation->ID);
-
-          return new WP_REST_Response(['success' => true, 'message' => "Formation mis à jour avec succès"]);
-          break;
-
-        case 'featured':
-          $featured = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
-          $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;
-          // Seul l'adminstrateur peuvent modifier cette option
-          if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
-          if (is_null($featured) || is_null($dateLimit)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
-          $featured = (int)$featured;
-          update_field('featured', $featured, $Formation->getId());
-          if ($featured) {
-            update_field('featured_datelimit', date("Y-m-d H:i:s", (int)$dateLimit), $Formation->getId());
-          }
-
-          return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
-          break;
-      }
-    } else {
-      return new WP_Error('no_reference', 'Parametre (ref) manquant', array('status' => 403));
-    }
-  }
-
   /**
    * Mettre à jour la formation
    * @param WP_REST_Request $rq
@@ -216,22 +217,6 @@ class apiFormation
 
     update_field('reference', strtoupper("FOM{$formation_id}"), $formation_id);
     return new WP_REST_Response(['success' => true, 'message' => 'Formation mis à jour avec succès']);
-  }
-
-  // Demande de formation
-
-  /**
-   * Récuperer les demande d'offres
-   * @return WP_REST_Response
-   */
-  public
-  function get_request_formations ()
-  {
-    $length = (int)$_POST['length'];
-    $start = (int)$_POST['start'];
-    $formations = \includes\model\Model_Request_Formation::collect_resources($start, $length);
-
-    return new WP_REST_Response($formations);
   }
 }
 

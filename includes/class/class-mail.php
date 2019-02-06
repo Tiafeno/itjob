@@ -80,7 +80,8 @@ class Mailing {
    */
   public function register_user_company( $user_id ) {
     global $Engine;
-    $User = new \WP_User( $user_id );
+    if (!is_numeric($user_id)) return false;
+    $User = new \WP_User( (int)$user_id );
     if ( in_array( 'company', $User->roles ) ) {
       // Création d'un compte entreprise reussi
       $Company   = Company::get_company_by( $User->ID );
@@ -128,6 +129,7 @@ class Mailing {
         $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
         // Envoyer un mail à l'entreprise
         wp_mail( $to, $subject, $content, $headers );
+
         return $user_id;
       } else {
         // Erreur d'envoie
@@ -372,12 +374,8 @@ class Mailing {
       return false;
     }
     // $admin_emails - Contient les adresses email de l'admin et les moderateurs
-    $admin_emails = $this->getModeratorEmail();
-    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
-    if ( ! $admin_emails ) {
-      return false;
-    }
-    $to             = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $admin_emails   = $this->getModeratorEmail();
+    $to             = $admin_emails;
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
     $User           = get_user_by( 'ID', $user_id );
@@ -780,7 +778,7 @@ class Mailing {
     }
   }
 
-  // Envoyer un mail a l'entreprise pour la confirmationde validation
+  // Envoyer un mail a l'entreprise pour la confirmation de validation
   public function confirm_validate_company( $company_id ) {
     global $Engine;
     if ( ! is_user_logged_in() ) {
@@ -1051,26 +1049,16 @@ class Mailing {
    * @return bool
    */
   public function alert_for_new_candidate( $candidate_id ) {
-    global $Engine;
+    global $Engine, $wpdb;
     if ( ! is_int( $candidate_id ) ) {
       return false;
     }
     $Candidate = new Candidate( $candidate_id );
     if ( ! is_null( $Candidate->branch_activity ) ) {
-      $args                        = [
-        "post_type"      => "company",
-        "post_status"    => "publish",
-        "posts_per_page" => - 1,
-        "tax_query"      => [
-          [
-            'taxonomy' => 'branch_activity',
-            'field'    => 'term_id',
-            'terms'    => $Candidate->branch_activity->term_id
-          ]
-        ]
-      ];
-      $postCompany                 = get_posts( $args );
-      $jobs                        = Arrays::each( $Candidate->jobSought, function ( $job ) {
+
+      $sql = "SELECT * FROM {$wpdb->posts} as pts  WHERE pts.post_type ='company' AND pts.post_status = 'publish'";
+      $postCompany = $wpdb->get_results($sql, OBJECT);
+      $jobs        = Arrays::each( $Candidate->jobSought, function ( $job ) {
         return $job->name;
       } );
       $emploi_rechercher_candidate = implode( ' ', $jobs );
@@ -1081,7 +1069,7 @@ class Mailing {
         $company_alert = get_field( 'itjob_company_alerts', $company->getId() );
         $alerts        = explode( ',', $company_alert );
         $alerts        = Arrays::filter( $alerts, function ( $alert ) {
-          return empty( $value );
+          return !empty( $alert );
         } );
         // Recherche les alerts
         $alert_matches = $this->matches_alerts_content( $alerts, $emploi_rechercher_candidate );
@@ -1133,10 +1121,10 @@ class Mailing {
             return false;
           }
         }
-
-      } else {
-        return true;
       }
+
+      // Envoyer au abonnée au notification
+
     } // .end branch activity condition
   }
 
@@ -1156,7 +1144,6 @@ class Mailing {
         $alert = explode( ' ', $alert );
       }
       $pattern = '/';
-      // TODO: Il est préférable que le champ d'alert ne contient pas d'espace
       if ( is_array( $alert ) ) {
         Arrays::each( $alert, function ( $el, $index ) use ( &$pattern, $alert ) {
           $el      = strtolower( $el );
