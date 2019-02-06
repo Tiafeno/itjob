@@ -119,12 +119,12 @@ class Mailing {
         $year = Date('Y');
         $admin_emails = $this->getModeratorEmail();
         $to        = $admin_emails;
-        $subject   = "Notification inscription - {$Company->title}";
+        $subject   = "Inscription d'une nouvelle entreprise - {$Company->title}";
         $headers   = [];
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
         $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
         $content   = 'Bonjour, <br/>';
-        $content   .= "'Une inscription de <b>{$Company->title}</b> portant la réference « <b>{$Company->reference}</b> » en tant que entreprise a été éffectuée ";
+        $content   .= "Une inscription de « <b>{$Company->title}</b> » en tant que entreprise a été éffectuée ";
         $content   .= "<p>Espace admnistration: <a href='{$this->dashboard_url}/company-lists'>Back office</a> </p> <br/>";
         $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
         // Envoyer un mail à l'entreprise
@@ -368,19 +368,6 @@ class Mailing {
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
     $User           = get_user_by( 'ID', $user_id );
-    if ( in_array( 'company', $User->roles ) ) {
-      // L'utilisateur est une entreprise
-      $subject  = "Inscription d'une nouvelle entreprise - ItJobMada";
-      $Company  = Company::get_company_by( $User->ID );
-      $args     = [
-        'logo_url'  => $logo[0],
-        'reference' => $User->user_login,
-        'name'      => $Company->name,
-        'email'     => $Company->email
-      ];
-      $template = 'company';
-      $error    = false;
-    }
     if ( in_array( 'candidate', $User->roles ) ) {
       // L'utilisateur est un candidat
       $subject  = "Inscription d'un nouveau compte particulier - ItJobMada";
