@@ -1022,31 +1022,29 @@ class Mailing {
    */
   public function alert_for_new_candidate( $candidate_id ) {
     global $Engine, $wpdb;
-    if ( ! is_int( $candidate_id ) ) {
-      return false;
-    }
+    if ( ! is_numeric( $candidate_id ) ) { return false; }
     $Candidate = new Candidate( $candidate_id );
-    if ( ! is_null( $Candidate->branch_activity ) ) {
+    $sql = "SELECT * FROM {$wpdb->posts} as pts  WHERE pts.post_type ='company' AND pts.post_status = 'publish'";
+    $postCompany = $wpdb->get_results($sql, OBJECT);
+    $jobs        = Arrays::each( $Candidate->jobSought, function ( $job ) {
+      return $job->name;
+    } );
+    $emploi_rechercher_candidate = implode( ' ', $jobs );
+    $emploi_rechercher_candidate = strtolower( $emploi_rechercher_candidate );
+    $see_alerts                  = [];
+    foreach ( $postCompany as $pts ) {
+      $company       = new Company( $pts->ID );
 
-      $sql = "SELECT * FROM {$wpdb->posts} as pts  WHERE pts.post_type ='company' AND pts.post_status = 'publish'";
-      $postCompany = $wpdb->get_results($sql, OBJECT);
-      $jobs        = Arrays::each( $Candidate->jobSought, function ( $job ) {
-        return $job->name;
-      } );
-      $emploi_rechercher_candidate = implode( ' ', $jobs );
-      $emploi_rechercher_candidate = strtolower( $emploi_rechercher_candidate );
-      $see_alerts                  = [];
-      foreach ( $postCompany as $pts ) {
-        $company       = new Company( $pts->ID );
-        $company_alert = get_field( 'itjob_company_alerts', $company->getId() );
-        $alerts        = explode( ',', $company_alert );
-        $alerts        = Arrays::filter( $alerts, function ( $alert ) {
-          return !empty( $alert );
-        } );
+      if ( ! is_null( $Candidate->branch_activity ) ) {
+        $company_alert = get_field('itjob_company_alerts', $company->getId());
+        $alerts = explode(',', $company_alert);
+        $alerts = Arrays::filter($alerts, function ($alert) {
+          return !empty($alert);
+        });
         // Recherche les alerts
-        $alert_matches = $this->matches_alerts_content( $alerts, $emploi_rechercher_candidate );
-        if ( ! empty( $alert_matches ) ) {
-          $see_alerts[] = (object) [
+        $alert_matches = $this->matches_alerts_content($alerts, $emploi_rechercher_candidate);
+        if (!empty($alert_matches)) {
+          $see_alerts[] = (object)[
             'company' => [
               'ID'    => $company->getId(),
               'email' => $company->author->user_email
@@ -1054,75 +1052,70 @@ class Mailing {
             'alerts'  => $alert_matches
           ];
         }
+      }
 
-        // Envoyer au abonnée au notification
-        if (!$company->notification) continue;
-        $to        = $company->email;
-        $subject   = "Notification nouvelle candidat - ItJobMada";
+      // Envoyer au abonnée au notification
+      if (!$company->notification) continue;
+      $to        = $company->email;
+      $subject   = "Notification nouvelle candidat - ItJobMada";
+      $headers   = [];
+      $headers[] = 'Content-Type: text/html; charset=UTF-8';
+      $headers[] = "From: ItJobMada Notification <{$this->no_reply_notification_email}>";
+      $content   = '';
+      try {
+        $custom_logo_id = get_theme_mod( 'custom_logo' );
+        $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+        $content        .= $Engine->render( '@MAIL/notification-company-new-cv.html', [
+          'Year'      => Date('Y'),
+          'logo'      => $logo[0],
+          'candidate' => $Candidate
+        ] );
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
+        continue;
+      }
+      wp_mail( $to, $subject, $content, $headers );
+
+    } // .each company
+
+    // featured: Envoyer les emails
+    if ( ! empty( $see_alerts ) ) {
+      foreach ( $see_alerts as $see ) {
+        $to        = $see->company['email'];
+        $keys      = Arrays::each( $see->alerts, function ( $alert ) {
+          return $alert->alert;
+        } );
+        $keys      = implode( ', ', $keys );
+        $subject   = "Votre alerte - ItJobMada";
         $headers   = [];
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
-        $headers[] = "From: ItJobMada Notification <{$this->no_reply_notification_email}>";
+        $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
         $content   = '';
         try {
           $custom_logo_id = get_theme_mod( 'custom_logo' );
           $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-          $content        .= $Engine->render( '@MAIL/notification-company-new-cv.html', [
-            'Year'      => Date('Y'),
+          $content        .= $Engine->render( '@MAIL/notification-candidate-to-company.html.twig', [
+            'candidate' => $Candidate,
+            'alerts'    => $keys,
             'logo'      => $logo[0],
-            'candidate' => $Candidate
+            'home_url'  => home_url( "/" )
           ] );
         } catch ( \Twig_Error_Loader $e ) {
         } catch ( \Twig_Error_Runtime $e ) {
         } catch ( \Twig_Error_Syntax $e ) {
-          continue;
+          $content .= $e->getRawMessage();
         }
-        wp_mail( $to, $subject, $content, $headers );
-
-      } // .each company
-
-      // featured: Envoyer les emails
-      if ( ! empty( $see_alerts ) ) {
-        foreach ( $see_alerts as $see ) {
-          $to        = $see->company['email'];
-          $keys      = Arrays::each( $see->alerts, function ( $alert ) {
-            return $alert->alert;
-          } );
-          $keys      = implode( ', ', $keys );
-          $subject   = "Votre alerte - ItJobMada";
-          $headers   = [];
-          $headers[] = 'Content-Type: text/html; charset=UTF-8';
-          $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
-          $content   = '';
-          try {
-            $custom_logo_id = get_theme_mod( 'custom_logo' );
-            $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-            $content        .= $Engine->render( '@MAIL/notification-candidate-to-company.html.twig', [
-              'candidate' => $Candidate,
-              'alerts'    => $keys,
-              'logo'      => $logo[0],
-              'home_url'  => home_url( "/" )
-            ] );
-          } catch ( \Twig_Error_Loader $e ) {
-          } catch ( \Twig_Error_Runtime $e ) {
-          } catch ( \Twig_Error_Syntax $e ) {
-            $content .= $e->getRawMessage();
-          }
-          $sender = wp_mail( $to, $subject, $content, $headers );
-          if ( $sender ) {
-            // Mail envoyer avec success
-            return true;
-          } else {
-            // Erreur d'envoie
-            return false;
-          }
+        $sender = wp_mail( $to, $subject, $content, $headers );
+        if ( $sender ) {
+          // Mail envoyer avec success
+          return true;
+        } else {
+          // Erreur d'envoie
+          return false;
         }
       }
-
-
-
-
-
-    } // .end branch activity condition
+    }
   }
 
   /**

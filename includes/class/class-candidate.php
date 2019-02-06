@@ -287,8 +287,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     // Les tags sont ajouter par 'administrateur
     $this->tags = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
     // Le secteur d'activite du candidate
-    $this->branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "all" ] );
-    $this->branch_activity = is_array( $this->branch_activity ) && ! empty( $this->branch_activity ) ? $this->branch_activity[0] : null;
+    $branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "all" ] );
+    $this->branch_activity = is_array( $branch_activity ) && ! empty( $branch_activity ) ? $branch_activity[0] : null;
   }
 
   /**
