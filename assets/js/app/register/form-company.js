@@ -74,7 +74,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
                     companyForm.append('country', $rootScope.company.country);
                     companyForm.append('address', $rootScope.company.address);
                     companyForm.append('cellphone', JSON.stringify($rootScope.company.cellphone));
-                    companyForm.append('phone', $rootScope.company.phone);
+                    companyForm.append('phone', _.isUndefined($rootScope.company.phone) ? '' : $rootScope.company.phone);
                     companyForm.append('nif', $rootScope.company.nif);
                     companyForm.append('stat', $rootScope.company.stat);
                     companyForm.append('name', $rootScope.company.name);
