@@ -1067,7 +1067,7 @@ class Mailing {
           $custom_logo_id = get_theme_mod( 'custom_logo' );
           $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
           $content        .= $Engine->render( '@MAIL/notification-company-new-cv.html', [
-            'year'      => Date('Y'),
+            'Year'      => Date('Y'),
             'logo'      => $logo[0],
             'candidate' => $Candidate
           ] );
