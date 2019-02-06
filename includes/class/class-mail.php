@@ -1024,7 +1024,7 @@ class Mailing {
     global $Engine, $wpdb;
     if ( ! is_numeric( $candidate_id ) ) { return false; }
     $Candidate = new Candidate( $candidate_id );
-    $sql = "SELECT * FROM {$wpdb->posts} as pts  WHERE pts.post_type ='company' AND pts.post_status = 'publish'";
+    $sql = "SELECT ID FROM {$wpdb->posts} as pts  WHERE pts.post_type ='company' AND pts.post_status = 'publish'";
     $postCompany = $wpdb->get_results($sql, OBJECT);
     $jobs        = Arrays::each( $Candidate->jobSought, function ( $job ) {
       return $job->name;
@@ -1033,7 +1033,7 @@ class Mailing {
     $emploi_rechercher_candidate = strtolower( $emploi_rechercher_candidate );
     $see_alerts                  = [];
     foreach ( $postCompany as $pts ) {
-      $company       = new Company( $pts->ID );
+      $company = new Company( (int)$pts->ID );
 
       if ( ! is_null( $Candidate->branch_activity ) ) {
         $company_alert = get_field('itjob_company_alerts', $company->getId());
