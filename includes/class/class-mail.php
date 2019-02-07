@@ -1048,29 +1048,6 @@ class Mailing {
         }
       }
 
-      // Envoyer au abonnée au notification
-      if (!$company->notification) continue;
-      $to        = $company->email;
-      $subject   = "Notification nouvelle candidat - ItJobMada";
-      $headers   = [];
-      $headers[] = 'Content-Type: text/html; charset=UTF-8';
-      $headers[] = "From: ItJobMada Notification <{$this->no_reply_notification_email}>";
-      $content   = '';
-      try {
-        $custom_logo_id = get_theme_mod( 'custom_logo' );
-        $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-        $content        .= $Engine->render( '@MAIL/notification-company-new-cv.html', [
-          'Year'      => Date('Y'),
-          'logo'      => $logo[0],
-          'candidate' => $Candidate
-        ] );
-      } catch ( \Twig_Error_Loader $e ) {
-      } catch ( \Twig_Error_Runtime $e ) {
-      } catch ( \Twig_Error_Syntax $e ) {
-        continue;
-      }
-      wp_mail( $to, $subject, $content, $headers );
-
     } // .each company
 
     // featured: Envoyer les emails
