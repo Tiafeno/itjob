@@ -937,11 +937,6 @@ class Mailing {
           'key'     => 'itjob_cv_notifEmploi_notification',
           'value'   => 1,
           'compare' => '='
-        ],
-        [
-          'key'     => 'itjob_cv_notifEmploi_branch_activity',
-          'value'   => $Offer->branch_activity->term_id,
-          'compare' => '='
         ]
       ]
     ];
@@ -953,12 +948,11 @@ class Mailing {
     $rechercher    = strtolower( $rechercher );
     $see_alerts    = [];
     foreach ( $postCandidate as $pts ) {
-      $Candidate = new Candidate( $pts->ID );
-      $Candidate->__client_premium_access();
+      $Candidate = new Candidate( $pts->ID, true );
       $candidate_alerts = $Candidate->jobNotif['job_sought'];
       $alerts           = explode( ',', $candidate_alerts );
       $alerts           = Arrays::filter( $alerts, function ( $alert ) {
-        return empty( $value );
+        return $alert !== '' || !empty( $alert );
       } );
       $alert_matches    = $this->matches_alerts_content( $alerts, $rechercher );
       if ( ! empty( $alert_matches ) ) {
