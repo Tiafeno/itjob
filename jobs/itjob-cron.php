@@ -12,40 +12,67 @@ function getModerators() {
     // La valeur de cette option est un tableau
     $admin_email = get_field( 'admin_mail', 'option' ); // return string (mail)
     $admin_email = strpos( $admin_email, ',' ) ? explode( ',', $admin_email ) : $admin_email;
-
     return $admin_email;
+}
+function update_hash_key_field() {
+  // Mettre à jours la clé
+  $now = date('Y-m-d H:i:s');
+  $new_key = password_hash($now . rand(10, 80 * date('s')), PASSWORD_DEFAULT);
+  update_field('bo_key', $new_key, 'option');
+}
+function fix_duplicates_cv_reference() {
+  // Corriger les doublons
+  global $wpdb;
+  $query_doublon = "SELECT COUNT(post_title) as nbr, ID, post_title, post_date FROM {$wpdb->posts} 
+        WHERE post_type = 'candidate' AND post_title REGEXP '(^CV).*$' GROUP BY post_title HAVING COUNT(post_title) > 1";
+  $rows = $wpdb->get_results($query_doublon);
+
+  if ($rows) {
+    $Increment = get_field('cv_increment', 'option');
+    $Increment = (int) $Increment;
+    foreach ($rows as $row) {
+      $sql = "SELECT * FROM {$wpdb->posts} WHERE post_title = '{$row->post_title}'";
+      $posts = $wpdb->get_results($sql);
+      foreach ($posts as $key => $post) {
+        if ($key === 0) continue;
+        $title = "CV{$Increment}";
+        $date_create = $post->post_date;
+        wp_update_post([ 'ID' => (int)$post->ID, 'post_title' => $title, 'post_date' => $date_create ]);
+        $Increment = $Increment + 1;
+      }
+    }
+
+    update_field('cv_increment', $Increment, 'option');
+  }
+}
+function update_offer_featured() {
+  $cronModel = new cronModel();
+  $featuredOffers = $cronModel->getFeaturedOffers();
+  foreach ($featuredOffers as $offer) {
+    $isFeatured = $offer->isFeatured();
+    if ($isFeatured) {
+      $featuredDateLimit = $offer->featuredDateLimit;
+      if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
+        update_field('itjob_offer_featured', 0, $offer->ID);
+        update_field('itjob_offer_featured_datelimit', '', $offer->ID);
+      }
+    }
+  }
+}
+function remove_notice_after_5days() {
+  $cronModel = new cronModel();
+  $user_query = $cronModel->getUserAdmin();
+  //An array containing a list of found users.
+  $users = $user_query->results;
+  $cronModel->deleteNoticeforLastDays(5, $users);
 }
  
 
 add_action('tous_les_15_minutes', function () {
-    // Mettre à jours la clé
-    $now = date('Y-m-d H:i:s');
-    $new_key = password_hash($now . rand(10, 80 * date('s')), PASSWORD_DEFAULT);
-    update_field('bo_key', $new_key, 'option');
-
-    // Corriger les doublons
-    global $wpdb;
-    $query_doublon = "SELECT COUNT(post_title) as nbr, ID, post_title, post_date FROM {$wpdb->posts} 
-        WHERE post_type = 'candidate' AND post_title REGEXP '(^CV).*$' GROUP BY post_title HAVING COUNT(post_title) > 1";
-    $rows = $wpdb->get_results($query_doublon);
-
-    if ($rows) {
-        $Increment = get_field('cv_increment', 'option');
-        $Increment = (int) $Increment;
-        foreach ($rows as $row) {
-            $sql = "SELECT * FROM {$wpdb->posts} WHERE post_title = '{$row->post_title}'";
-            $posts = $wpdb->get_results($sql);
-            foreach ($posts as $key => $post) {
-                if ($key === 0) continue;
-                $title = "CV{$Increment}";
-                $date_create = $post->post_date;
-                wp_update_post([ 'ID' => (int)$post->ID, 'post_title' => $title, 'post_date' => $date_create ]);
-                $Increment = $Increment + 1;
-            } 
-        }
-
-        update_field('cv_increment', $Increment, 'option');
-    }
+    update_hash_key_field();
+    fix_duplicates_cv_reference();
+    // Effacer les notifications des administrateur vieux de 15 jours
+    remove_notice_after_5days();
 });
 
 
@@ -57,20 +84,10 @@ add_action('tous_les_15_minutes', function () {
  * Cette action permet de supprimer un offre à la une si la date limite est atteinte
  */
 add_action('tous_les_jours', function () {
-    $cronModel = new cronModel();
-    $featuredOffers = $cronModel->getFeaturedOffers();
-    foreach ($featuredOffers as $offer) {
-        $isFeatured = $offer->isFeatured();
-        if ($isFeatured) {
-            $featuredDateLimit = $offer->featuredDateLimit;
-            if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
-                update_field('itjob_offer_featured', 0, $offer->ID);
-                update_field('itjob_offer_featured_datelimit', '', $offer->ID);
-            }
-        }
-    }
+    update_offer_featured();
 
     // Envoyer les offres avec date de fin d'inscription de 5 jours et 1 jours
+    $cronModel = new cronModel();
     $results = $cronModel->getOffer5DaysLimitDate();
     $offers = [];
     if ($results) {
@@ -104,7 +121,7 @@ add_action('tous_les_jours', function () {
           $msg .= "<p>* L'offre « <b>{$offer->postPromote}</b> » avec la référence « <b>{$offer->reference}</b> » éxpire {$offer->dateLimitFormat}.</p>";
         }
         $msg .= "<br>";
-        $msg .= "<p>Pour toute modification rendez-vous dans l’espace client: <a href='{$client_area_link}' target='_blank'>Espace client</a></p>";
+        $msg .= "<p>Pour toute modification rendez-vous dans l’espace administration: <a href='https://admin.itjobmada.com/offer-lists' target='_blank'>Tableau de board</a></p>";
         $msg .= "A bientôt. <br/><br/><br/>";
         $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
         $subject   = "Date limite des annonces ";
@@ -114,8 +131,6 @@ add_action('tous_les_jours', function () {
         $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
         wp_mail( $to, $subject, $msg, $headers );
     }
-
-    // liste des offres à prolonger la date limite de candidature
     
 });
 
@@ -224,13 +239,4 @@ add_action('tous_les_jours', function () {
     $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
 
     wp_mail( $to, $subject, $msg, $headers );
-});
-
-// Effacer les notifications des administrateur vieux de 15 jours
-add_action('tous_les_jours', function() {
-    $cronModel = new cronModel();
-    $user_query = $cronModel->getUserAdmin();
-    //An array containing a list of found users.
-    $users = $user_query->results;
-    $cronModel->deleteNoticeforLastDays(15, $users);
 });
