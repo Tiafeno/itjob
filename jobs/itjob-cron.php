@@ -162,20 +162,15 @@ add_action('end_of_the_day', function () {
     $postCompany = $wpdb->get_results($queryCompany, OBJECT);
 
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-    $mail->addAddress('no-reply@itjobmada.com', 'ITJOB Team');
-    $mail->addReplyTo('info@itjobmada.com', 'Information');
-    if (false)
-      foreach ( $postCompany as $pts ) {
-        $company = new \includes\post\Company((int)$pts->ID);
+    $mail->addAddress('david@itjobmada.com', 'David Andrianaivo');
+    $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
+    foreach ( $postCompany as $pts ) {
+      $company = new \includes\post\Company((int)$pts->ID);
 
-        // Envoyer au abonnée au notification
-        if (!$company->notification) continue;
-        $sender = $company->author->user_email;
-        $mail->addBCC($sender);
-      }
-    if (true) {
-      $mail->addBCC('tiafenofnel@gmail.com');
-      $mail->addBCC('webmaster@falicrea.com');
+      // Envoyer au abonnée au notification seulement
+      if (!$company->notification) continue;
+      $sender = $company->author->user_email;
+      $mail->addBCC($sender);
     }
     $subject   = "Notification des nouveaux candidats - ItJobMada";
     $content   = '';
@@ -192,7 +187,7 @@ add_action('end_of_the_day', function () {
     } catch ( \Twig_Error_Syntax $e ) {
       return false;
     }
-
+    $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
     $mail->setFrom("no-reply@itjobmada.com", "ITJob Team");
     $mail->Body = $content;
