@@ -260,8 +260,9 @@ add_action('init', function () {
   
   do_action('testUnits');
 
-  $Model = new includes\model\itModel();
-  add_action('repair_table', [$Model, 'repair_table'], 10);
+//  $Model = new includes\model\itModel();
+//  add_action('repair_table', [$Model, 'repair_table'], 10);
+
 
 });
 

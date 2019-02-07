@@ -141,12 +141,10 @@ add_action('tous_les_15_minutes', function () {
 
 add_action('end_of_the_day', function () {
   global $wpdb, $Engine;
-  //$now = Date("Y-m-d");
-  $now = "2019-02-07";
-  $sql
-    = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = 'candidate' 
+  $today = Date("Y-m-d");
+  $sql = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = 'candidate' 
     AND pts.post_status = 'publish'
-    AND pts.post_date REGEXP '(^{$now})'
+    AND pts.post_date REGEXP '(^{$today})'
     AND pts.ID IN ( SELECT pm.post_id as ID FROM {$wpdb->postmeta} as pm WHERE pm.meta_key = 'activated' AND  pm.meta_value = 1 )
     AND pts.ID IN ( SELECT pm2.post_id as ID FROM {$wpdb->postmeta} as pm2 WHERE pm2.meta_key = 'itjob_cv_hasCV' AND pm2.meta_value = 1 )";
 
@@ -158,7 +156,7 @@ add_action('end_of_the_day', function () {
       $candidates[] = new \includes\post\Candidate( (int) $post->ID, true);
     }
 
-    $queryCompany = "SELECT ID FROM {$wpdb->posts} as pts  WHERE pts.post_type ='company' AND pts.post_status = 'publish'";
+    $queryCompany = "SELECT * FROM {$wpdb->posts} as pts  WHERE pts.post_type ='company' AND pts.post_status = 'publish'";
     $postCompany = $wpdb->get_results($queryCompany, OBJECT);
 
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
