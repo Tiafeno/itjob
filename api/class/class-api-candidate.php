@@ -225,7 +225,7 @@ class apiCandidate
                             pt.ID
                           FROM {$wpdb->posts} as pt
                           WHERE pt.post_type = 'candidate'
-                            AND TIME(pt.post_date) BETWEEN TIME('00:00:00') and TIME('24:00:00')
+                            AND (TIME(pt.post_date) BETWEEN TIME('00:00:00') and TIME('24:00:00'))
                             AND pt.post_date BETWEEN CAST('{$date[0]}' AS DATE) AND CAST('{$date[1]}' AS DATE)";
             $where .= ")"; //  .end AND
 
