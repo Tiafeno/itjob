@@ -42,6 +42,9 @@ class cronModel
         return $user_query;
     }
 
+    /**
+     * Recuperer les offres 5 jours avants 
+     */
     public function getOffer5DaysLimitDate() {
       global $wpdb;
         $today = date('Y-m-d H:i:s');
@@ -59,7 +62,10 @@ class cronModel
         return $rows;
     }
 
-    public function deleteNoticeforLastDays($day = 15, $users = []) {
+    /**
+     * Effacer les notifications
+     */
+    public function deleteNoticeforLastDays($day = 5, $users = []) {
         global $wpdb;
         $today = date('Y-m-d H:i:s');
         $lastDay = new DateTime("$today - $day day");
@@ -164,7 +170,7 @@ class cronModel
         foreach ($candidates as $candidate) {
             // Vérifier si l'utilisateur est un candidat
             $Candidate = new includes\post\Candidate((int) $candidate->ID);
-            $name = $Candidate->getFirstName().' '.$Candidate->getLastName();
+            $name = $Candidate->getFirstName() . ' ' . $Candidate->getLastName();
             $return[] = ['reference' => $Candidate->reference, 'name' => $name];
         }
 

@@ -66,27 +66,7 @@ function remove_notice_after_5days() {
   $users = $user_query->results;
   $cronModel->deleteNoticeforLastDays(5, $users);
 }
- 
-
-add_action('tous_les_15_minutes', function () {
-    update_hash_key_field();
-    fix_duplicates_cv_reference();
-    // Effacer les notifications des administrateur vieux de 15 jours
-    remove_notice_after_5days();
-});
-
-
-/**
- * Action @tous_les_jours: 
- */
-
-/**
- * Cette action permet de supprimer un offre à la une si la date limite est atteinte
- */
-add_action('tous_les_jours', function () {
-    update_offer_featured();
-
-    // Envoyer les offres avec date de fin d'inscription de 5 jours et 1 jours
+function review_offer_limit() {
     $cronModel = new cronModel();
     $results = $cronModel->getOffer5DaysLimitDate();
     $offers = [];
@@ -131,6 +111,52 @@ add_action('tous_les_jours', function () {
         $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
         wp_mail( $to, $subject, $msg, $headers );
     }
+}
+function newsletter_daily_company() {
+    
+}
+ 
+add_action('tous_les_15_minutes', function () {
+    // Mettre a jour la cle du telechargement
+    update_hash_key_field();
+    // Corriger les CV en doublons
+    fix_duplicates_cv_reference();
+    // Effacer les notifications des administrateur vieux de 15 jours
+    remove_notice_after_5days();
+});
+
+add_action('end_of_the_day', function() {
+    global $wpdb;
+    $now = Date("Y-m-d");
+    $sql = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = 'candidate' 
+    AND pts.post_status = 'publish'
+    AND pts.post_date REGEXP '(^{$now})'
+    AND pts.ID IN ( SELECT pm.post_id as ID FROM {$wpdb->postmeta} as pm WHERE pm.meta_key = 'activated' AND  pm.meta_value = 1 )
+    AND pts.ID IN ( SELECT pm2.post_id as ID FROM {$wpdb->postmeta} as pm2 WHERE pm2.meta_key = 'itjob_cv_hasCV' AND pm2.meta_value = 1 )";
+
+    $query = $wpdb->get_results($sql);
+    if (is_array($query) && !empty($query)) {
+        $posts = &$query;
+        $candidates = [];
+        foreach ($posts as $post) {
+            // TODO: Ajouter les candidates dans une tableau
+        }
+    }
+});
+
+
+/**
+ * Action @tous_les_jours: 
+ */
+
+/**
+ * Cette action permet de supprimer un offre à la une si la date limite est atteinte
+ */
+add_action('tous_les_jours', function () {
+    // Mettre a jour la position de l'offre
+    update_offer_featured();
+    // Envoyer les offres avec date de fin d'inscription de 5 jours et 1 jours
+    review_offer_limit();
     
 });
 
