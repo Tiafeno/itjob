@@ -48,15 +48,17 @@ class cronModel
     public function getOffer5DaysLimitDate() {
       global $wpdb;
         $today = date('Y-m-d H:i:s');
+        $todayDatetime = new DateTime($today);
         $date5Days = new DateTime("$today - 5 day");
         $date5DaysFormat = $date5Days->format('Ymd');
-        $sql = "SELECT pst.ID as offer_id FROM $wpdb->posts as pts 
+        $todayFormat = $todayDatetime->format('Ymd');
+        $sql = "SELECT pts.ID as offer_id FROM $wpdb->posts as pts 
                     WHERE 
-                    pst.post_type = 'offers'
-                    pst.post_status = 'publish'
-                    pts.ID IN (SELECT {$wpdb->postmeta}.post_id as post_id 
-                        FROM {$wpdb->postmeta} 
-                        WHERE {$wpdb->postmeta}.meta_key REGEXP '(^itjob_offer_datelimit)$' AND {$wpdb->postmeta}.meta_value >= $date5DaysFormat)";
+                    pts.post_type = 'offers'
+                    AND pts.post_status = 'publish'
+                    AND pts.ID IN (SELECT pm.post_id as post_id 
+                        FROM {$wpdb->postmeta} as pm
+                        WHERE pm.meta_key REGEXP '(^itjob_offer_datelimit)$' AND pm.meta_value BETWEEN '$date5DaysFormat' AND '$todayFormat' )";
         $rows = $wpdb->get_results($sql);
 
         return $rows;

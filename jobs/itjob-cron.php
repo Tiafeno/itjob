@@ -86,6 +86,13 @@ function review_offer_limit ()
     $client_area_link = get_the_permalink(ESPACE_CLIENT_PAGE);
     $year = Date('Y');
     foreach ($results as $result) {
+      $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+
+      $mail->CharSet = 'UTF-8';
+      $mail->isHTML(true);
+      $mail->setFrom("no-reply@itjobmada.com", "ITJob Team");
+      $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
+
       // Envoyer une mail de notification au entreprise
       $Offer = new includes\post\Offers((int)$result->offer_id);
       $msg = "Bonjour, <br/>";
@@ -95,13 +102,12 @@ function review_offer_limit ()
       $msg .= "<p>Pour toute modification rendez-vous dans l’espace client: <a href='{$client_area_link}' target='_blank'>Espace client</a></p>";
       $msg .= "A bientôt. <br/><br/><br/>";
       $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
-      $to = $Offer->getAuthor()->user_email;
-      $subject = "Date limite des annonces ";
-      $headers = [];
-      $headers[] = 'Content-Type: text/html; charset=UTF-8';
-      $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
 
-      wp_mail($to, $subject, $msg, $headers);
+      $mail->addAddress($Offer->getAuthor()->user_email);
+      $mail->Body = $msg;
+      $mail->Subject = "Date limite des annonces";
+      // Envoyer le mail
+      $mail->send();
 
       $offers[] = $Offer;
     }
