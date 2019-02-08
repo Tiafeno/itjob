@@ -79,11 +79,11 @@ function remove_notice_after_5days ()
 
 function review_offer_limit ()
 {
+  global $Engine;
   $cronModel = new cronModel();
   $results = $cronModel->getOffer5DaysLimitDate();
   $offers = [];
   if ($results) {
-    $client_area_link = get_the_permalink(ESPACE_CLIENT_PAGE);
     $year = Date('Y');
     foreach ($results as $result) {
       $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
@@ -95,39 +95,55 @@ function review_offer_limit ()
 
       // Envoyer une mail de notification au entreprise
       $Offer = new includes\post\Offers((int)$result->offer_id);
-      $msg = "Bonjour, <br/>";
-      $msg .= "<p>Nous vous informons que votre annonce « <b>{$Offer->postPromote}</b> » avec la référence « <b>{$Offer->reference}</b> » va bientôt expirer. <br>";
-      $msg .= "Si vous êtes toujours à la recherche du candidat idéal pensez à rallonger votre annonce ou optez pour une annonce à la une.</p>";
-      $msg .= "<br>";
-      $msg .= "<p>Pour toute modification rendez-vous dans l’espace client: <a href='{$client_area_link}' target='_blank'>Espace client</a></p>";
-      $msg .= "A bientôt. <br/><br/><br/>";
-      $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
+      $msg   = '';
+      try {
+        $custom_logo_id = get_theme_mod( 'custom_logo' );
+        $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+        $msg            .= $Engine->render( '@MAIL/review-offer-limit.html', [
+          'offer' => $Offer,
+          'logo'      => $logo[0],
+          'home_url'  => home_url( "/" )
+        ] );
 
-      $mail->addAddress($Offer->getAuthor()->user_email);
-      $mail->Body = $msg;
-      $mail->Subject = "Date limite des annonces";
-      // Envoyer le mail
-      $mail->send();
+        $mail->addAddress($Offer->getAuthor()->user_email);
+        $mail->Body = $msg;
+        $mail->Subject = "Date limite des annonces";
+        // Envoyer le mail
+        $mail->send();
+
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
+        continue;
+      }
 
       $offers[] = $Offer;
     }
 
     // Envoyer un mail au administrateur et modérateur
-    $msg = "Bonjour, <br/>";
-    $msg .= "Voici la liste des annonces qui vont expirer dans les prochains jours:</p>";
-    foreach ($offers as $offer) {
-      $msg .= "<p>* L'offre « <b>{$offer->postPromote}</b> » avec la référence « <b>{$offer->reference}</b> » éxpire {$offer->dateLimitFormat}.</p>";
+    if (!empty($offers)) {
+      try {
+        $msg .= $Engine->render( '@MAIL/admin/review-admin-offer-limit.html', [
+          'offers' => $offers,
+          'dashboard_offer_url' => "https://admin.itjobmada.com/offer-lists",
+          'Year' => Date('Y')
+        ] );
+
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
+        return false;
+      }
+
+      $subject = "Date limite des annonces ";
+      $to = getModerators();
+      $headers = [];
+      $headers[] = 'Content-Type: text/html; charset=UTF-8';
+      $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+
+      wp_mail($to, $subject, $msg, $headers);
     }
-    $msg .= "<br>";
-    $msg .= "<p>Pour toute modification rendez-vous dans l’espace administration: <a href='https://admin.itjobmada.com/offer-lists' target='_blank'>Tableau de board</a></p>";
-    $msg .= "A bientôt. <br/><br/><br/>";
-    $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
-    $subject = "Date limite des annonces ";
-    $to = getModerators();
-    $headers = [];
-    $headers[] = 'Content-Type: text/html; charset=UTF-8';
-    $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
-    wp_mail($to, $subject, $msg, $headers);
+
   }
 }
 
