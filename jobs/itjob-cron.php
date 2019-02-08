@@ -37,7 +37,7 @@ function fix_duplicates_cv_reference ()
     $Increment = get_field('cv_increment', 'option');
     $Increment = (int)$Increment;
     foreach ($rows as $row) {
-      $sql = "SELECT * FROM {$wpdb->posts} WHERE post_title = '{$row->post_title}'";
+      $sql = "SELECT * FROM {$wpdb->posts} pst WHERE pst.post_title = '{$row->post_title}' ORDER BY pst.post_date ASC";
       $posts = $wpdb->get_results($sql);
       foreach ($posts as $key => $post) {
         if ($key === 0) continue;
