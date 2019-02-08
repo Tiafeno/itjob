@@ -49,7 +49,7 @@ class cronModel
       global $wpdb;
         $today = date('Y-m-d H:i:s');
         $todayDatetime = new DateTime($today);
-        $date5Days = new DateTime("$today +6 day");
+        $date5Days = new DateTime("$today +5 day");
         $date5DaysFormat = $date5Days->format('Ymd');
         $todayFormat = $todayDatetime->format('Ymd');
         $sql = "SELECT pts.ID as offer_id FROM $wpdb->posts as pts 

@@ -4,7 +4,7 @@ Theme URI:    http://itjob.com
 Author:       Falicrea Inc.
 Author URI:   https://falicrea.com/
 Description:  Designed and developed by Falicrea 
-Version:      1.0.64.34
+Version:      1.0.64.35
 License:      GNU General Public License v2 or later
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:  itjob
@@ -217,4 +217,15 @@ ul.it-home-menu li.current-menu-item>a {
 
 input.form-control {
   border-color: rgb(10, 10, 10);
+}
+
+.request-formation-title {
+  border-bottom: 2px dotted #34495f;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.request-formation {
+  font-size: 13px !important;
+  cursor: pointer;
 }

@@ -104,7 +104,8 @@ $elementsVC = (object)[
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php',
   'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php',
   'vcAds' => require 'includes/visualcomposer/elements/class-vc-ads.php',
-  'vcFormation' => require 'includes/visualcomposer/elements/class-vc-formation.php'
+  'vcFormation' => require 'includes/visualcomposer/elements/class-vc-formation.php',
+  'vcRequestFormation' => require 'includes/visualcomposer/elements/class-vc-request-formation.php'
 ];
 
 require 'includes/class/class-wp-city.php';

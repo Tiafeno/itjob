@@ -279,7 +279,6 @@ class scInterests
 
     $User = wp_get_current_user();
     if (in_array('company', $User->roles)) {
-      $Company = Company::get_company_by($User->ID);
       $response = [
         'interests' =>  $interests
       ];
