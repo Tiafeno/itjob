@@ -590,7 +590,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   'type'    => 'NUMERIC'
                 ];
 
-                $query->set('orderby', 'title');
+                $query->set('orderby', 'ID');
                 $query->set('order', 'DESC');
               }
 
