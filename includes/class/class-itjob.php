@@ -589,6 +589,9 @@ if ( ! class_exists( 'itJob' ) ) {
                   'compare' => '=',
                   'type'    => 'NUMERIC'
                 ];
+
+                $query->set('orderby', 'title');
+                $query->set('order', 'DESC');
               }
 
               if ( isset( $meta_query ) && ! empty( $meta_query ) ):

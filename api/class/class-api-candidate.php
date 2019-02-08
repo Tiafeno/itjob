@@ -218,16 +218,15 @@ class apiCandidate
         add_filter('posts_where', function ($where) use ($filterDate) {
           global $wpdb;
           $date = explode('x', $filterDate);
-          $date[0] = date('Y-m-d H:i:s', strtotime($date[0]));
-          $date[1] = date('Y-m-d H:i:s', strtotime($date[1] . '+1 day'));
+          $begin = date('Y-m-d H:i:s', strtotime($date[0]));
+          $end = date('Y-m-d H:i:s', strtotime($date[1] . '+1 day'));
           if (!is_admin()) {
-            $where
-              .= " AND {$wpdb->posts}.ID IN (
+            $where .= " AND {$wpdb->posts}.ID IN (
                           SELECT
                             pt.ID
                           FROM {$wpdb->posts} as pt
                           WHERE pt.post_type = 'candidate'
-                            AND pt.post_date BETWEEN CAST('{$date[0]}' AS DATE) AND CAST('{$date[1]}' AS DATE)";
+                            AND pt.post_date BETWEEN CAST('{$begin}' AS DATE) AND CAST('{$end}' AS DATE)";
             $where .= ")"; //  .end AND
 
           }
