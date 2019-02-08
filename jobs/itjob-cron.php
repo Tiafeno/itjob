@@ -200,6 +200,10 @@ add_action('tous_les_15_minutes', function () {
   remove_notice_after_5days();
 });
 
+add_action("woocommerce_tracker_send_event", function () {
+  review_offer_limit();
+});
+
 // Envoyer les CV validés au entreprises
 add_action('end_of_the_day', function () {
   newsletter_daily_company();
