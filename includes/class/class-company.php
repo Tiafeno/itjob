@@ -45,7 +45,7 @@ final class Company implements \iCompany {
     switch ( $handler ):
       case 'user_id':
         $User = get_user_by( 'ID', (int) $value );
-        if ( ! $User->ID ) {
+        if ( ! $User->ID || $User->ID === 0 ) {
           return false;
         }
         $args = [
@@ -99,26 +99,19 @@ final class Company implements \iCompany {
       // FIX: Corriger une erreur sur l'utilisateur si l'admin ajoute une company
       $this->email = get_field( 'itjob_company_email', $this->ID );
       $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
-
-      // FIX: Ajouter ou crée un utilisateur quand un entreprise est publier ou ajouter
       $this->author = Obj\jobServices::getUserData( $user->ID );
-
       // Récuperer la region
       $regions      = wp_get_post_terms( $this->ID, 'region' );
       $this->region = reset( $regions );
-
       // Récuperer le nom et la code postal de la ville
       $country       = wp_get_post_terms( $this->ID, 'city' );
       $this->country = reset( $country );
-
       // Récuperer le secteur d'activité
       $abranch               = wp_get_post_terms( $this->ID, 'branch_activity', [ "fields" => "all" ] );
       $this->branch_activity = is_array($abranch) && !empty($abranch)  ? $abranch[0] : null;
-
       $this->init();
       if ($access) {
         $this->getInterests();
-
       }
     }
   }

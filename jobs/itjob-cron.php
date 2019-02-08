@@ -127,19 +127,6 @@ function review_offer_limit ()
 
 function newsletter_daily_company ()
 {
-
-}
-
-add_action('tous_les_15_minutes', function () {
-  // Mettre a jour la cle du telechargement
-  update_hash_key_field();
-  // Corriger les CV en doublons
-  fix_duplicates_cv_reference();
-  // Effacer les notifications des administrateur vieux de 15 jours
-  remove_notice_after_5days();
-});
-
-add_action('end_of_the_day', function () {
   global $wpdb, $Engine;
   $today = Date("Y-m-d");
   $sql = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = 'candidate' 
@@ -164,7 +151,6 @@ add_action('end_of_the_day', function () {
     $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
     foreach ( $postCompany as $pts ) {
       $company = new \includes\post\Company((int)$pts->ID);
-
       // Envoyer au abonnée au notification seulement
       if (!$company->notification) continue;
       $sender = $company->author->user_email;
@@ -193,6 +179,25 @@ add_action('end_of_the_day', function () {
 
     $mail->send();
   }
+}
+
+function newsletter_daily_candidate() {
+
+}
+
+add_action('tous_les_15_minutes', function () {
+  // Mettre a jour la cle du telechargement
+  update_hash_key_field();
+  // Corriger les CV en doublons
+  fix_duplicates_cv_reference();
+  // Effacer les notifications des administrateur vieux de 15 jours
+  remove_notice_after_5days();
+});
+
+// Envoyer les CV validés au entreprises
+add_action('end_of_the_day', function () {
+  newsletter_daily_company();
+  newsletter_daily_candidate();
 });
 
 
