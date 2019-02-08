@@ -106,7 +106,7 @@ function review_offer_limit ()
 
         $mail->addAddress($Offer->getAuthor()->user_email);
         $mail->Body = $msg;
-        $mail->Subject = "Date limite des annonces";
+        $mail->Subject = "Date limite offre";
         // Envoyer le mail
         $mail->send();
 
@@ -122,7 +122,7 @@ function review_offer_limit ()
     // Envoyer un mail au administrateur et modérateur
     if (!empty($offers)) {
       try {
-        $msg .= $Engine->render( '@MAIL/admin/review-admin-offer-limit.html', [
+        $msg = $Engine->render( '@MAIL/admin/review-admin-offer-limit.html', [
           'offers' => $offers,
           'dashboard_offer_url' => "https://admin.itjobmada.com/offer-lists",
           'Year' => Date('Y')
@@ -134,7 +134,7 @@ function review_offer_limit ()
         return false;
       }
 
-      $subject = "Date limite des annonces ";
+      $subject = "Date limite des offres ";
       $to = getModerators();
       $headers = [];
       $headers[] = 'Content-Type: text/html; charset=UTF-8';
