@@ -84,7 +84,6 @@ function review_offer_limit ()
   $results = $cronModel->getOffer5DaysLimitDate();
   $offers = [];
   if ($results) {
-    $year = Date('Y');
     foreach ($results as $result) {
       $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
 
@@ -111,9 +110,9 @@ function review_offer_limit ()
         // Envoyer le mail
         $mail->send();
 
-      } catch ( \Twig_Error_Loader $e ) {
-      } catch ( \Twig_Error_Runtime $e ) {
-      } catch ( \Twig_Error_Syntax $e ) {
+      } catch ( Twig_Error_Loader $e ) {
+      } catch ( Twig_Error_Runtime $e ) {
+      } catch ( Twig_Error_Syntax $e ) {
         continue;
       }
 
@@ -143,7 +142,6 @@ function review_offer_limit ()
 
       wp_mail($to, $subject, $msg, $headers);
     }
-
   }
 }
 
@@ -188,9 +186,9 @@ function newsletter_daily_company ()
         'logo'      => $logo[0],
         'candidates' => $candidates
       ] );
-    } catch ( \Twig_Error_Loader $e ) {
-    } catch ( \Twig_Error_Runtime $e ) {
-    } catch ( \Twig_Error_Syntax $e ) {
+    } catch ( Twig_Error_Loader $e ) {
+    } catch ( Twig_Error_Runtime $e ) {
+    } catch ( Twig_Error_Syntax $e ) {
       return false;
     }
     $mail->CharSet = 'UTF-8';
