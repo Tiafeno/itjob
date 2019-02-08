@@ -94,7 +94,8 @@ if ( ! class_exists( 'jobServices' ) ) :
         'post_type'      => $class_name,
         'post_status'    => [ 'publish' ],
         'posts_per_page' => $numberposts,
-        'orderby'        => 'DATE'
+        'orderby'        => 'ID',
+        'order'          => 'DESC'
       ];
       if ( ! empty( $meta_query ) ) {
         $this->args['meta_query'][] =  $meta_query;
