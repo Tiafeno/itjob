@@ -644,7 +644,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'exp_branch_activity' => (int)$experience->exp_branch_activity,
           'exp_mission'      => $experience->exp_mission,
           'old_value'        => isset($experience->old_value) ? $experience->old_value : ['exp_dateBegin' => '', 'exp_dateEnd' => '', 'exp_branch_activity' => ''],
-          'validated'        => $experience->validated
+          'validated'        => isset($experience->validated) ? intval($experience->validated) : 0
         ];
       }
       update_field( 'itjob_cv_experiences', $new_experiences, $this->Candidate->getId() );
@@ -678,7 +678,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'training_city'          => $training->training_city,
           'training_country'       => $training->training_country,
           'training_establishment' => $training->training_establishment,
-          'validated'              => $training->validated
+          'validated'              => isset($training->validated) ? intval($training->validated) : 0
         ];
       }
       update_field( 'itjob_cv_trainings', $new_trainings, $this->Candidate->getId() );

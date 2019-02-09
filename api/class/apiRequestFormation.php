@@ -70,10 +70,32 @@ class apiRequestFormation
                 return new WP_REST_Response(['success' => false, 'message' => "Une erreur s'est produite." ]);
               }
               break;
+
+            case 'concerned':
+              $concerned = Model_Request_Formation::get_concerned($request_formation_id);
+              $candidates = [];
+              if (is_array($concerned)) {
+                foreach ($concerned as $user_id) {
+                  $user_id = intval($user_id);
+                  if (0 === $user_id) continue;
+                  $usr = new \WP_User((int) $user_id);
+                  if (in_array('candidate', $usr->roles)) {
+                    $candidates[] = \includes\post\Candidate::get_candidate_by($usr->ID, 'user_id', true);
+                  } else continue;
+                }
+              }
+              return new WP_REST_Response($candidates);
+              break;
+
+            case 'remove':
+              if (!$request_formation_id) return false;
+              $deletion = Model_Request_Formation::remove_request_formation($request_formation_id);
+              return new WP_REST_Response($deletion);
+              break;
           }
         },
         'permission_callback' => function () {
-          return current_user_can('edit_posts');
+          return current_user_can('delete_posts');
         }
       )
     ]);

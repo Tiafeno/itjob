@@ -162,7 +162,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         $scope.addNewExperience = () => {
           $scope.mode = 0;
           $scope.newExperience.position_currently_works = false;
-          $scope.newExperience.validated = false;
+          $scope.newExperience.validated = 0;
           $q.all([$scope.abranchFn()]).then(data => {
             $scope.abranchs = _.clone(data[0]);
             jQuery('#modal-new-experience-overflow').modal('show');
@@ -262,6 +262,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
             exp_mission: model.mission,
             exp_dateBegin: dateBegin,
             exp_dateEnd: dateEnd,
+            validated: model.validated
           });
           deferred.resolve(Experiences);
           return deferred.promise;
@@ -850,6 +851,7 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
               // Nouvelle formation
               moment.locale('fr');
               let TrainingFormat = _.clone($scope.Train);
+              TrainingFormat.validated = 0;
               let dateBegin = TrainingFormat.training_dateBegin;
               let dateEnd = TrainingFormat.training_dateEnd;
               TrainingFormat.training_dateBegin = moment(`${dateBegin.month} ${dateBegin.year}`, 'MMMM YYYY').format('MM/DD/YYYY');

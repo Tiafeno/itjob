@@ -179,4 +179,17 @@ class Model_Request_Formation
     return (object)['results' => $subscriber, 'founds' => $wpdb->get_var($sql_count_formation)];
   }
 
+  public static
+  function remove_request_formation ($request_training_id = 0) {
+    global $wpdb;
+    if (is_numeric($request_training_id) && $request_training_id !== 0) {
+      $table = $wpdb->prefix . self::$table;
+      $sql = "DELETE FROM $table WHERE ID = $request_training_id";
+      $result = $wpdb->query($sql);
+      return $result;
+    } else {
+      return false;
+    }
+  }
+
 }
