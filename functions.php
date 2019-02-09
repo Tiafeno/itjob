@@ -259,12 +259,12 @@ add_action('init', function () {
     return $title;
   }, PHP_INT_MAX);
   
-  do_action('testUnits');
+  //do_action('testUnits');
 
 //  $Model = new includes\model\itModel();
 //  add_action('repair_table', [$Model, 'repair_table'], 10);
 
-
 });
+
 
 

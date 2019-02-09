@@ -94,15 +94,15 @@ function review_offer_limit ()
 
       // Envoyer une mail de notification au entreprise
       $Offer = new includes\post\Offers((int)$result->offer_id);
-      $msg   = '';
+      $msg = '';
       try {
-        $custom_logo_id = get_theme_mod( 'custom_logo' );
-        $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-        $msg            .= $Engine->render( '@MAIL/review-offer-limit.html', [
-          'offer' => $Offer,
-          'logo'      => $logo[0],
-          'home_url'  => home_url( "/" )
-        ] );
+        $custom_logo_id = get_theme_mod('custom_logo');
+        $logo = wp_get_attachment_image_src($custom_logo_id, 'full');
+        $msg .= $Engine->render('@MAIL/review-offer-limit.html', [
+          'offer'    => $Offer,
+          'logo'     => $logo[0],
+          'home_url' => home_url("/")
+        ]);
 
         $mail->addAddress($Offer->getAuthor()->user_email);
         $mail->Body = $msg;
@@ -110,9 +110,9 @@ function review_offer_limit ()
         // Envoyer le mail
         $mail->send();
 
-      } catch ( Twig_Error_Loader $e ) {
-      } catch ( Twig_Error_Runtime $e ) {
-      } catch ( Twig_Error_Syntax $e ) {
+      } catch (Twig_Error_Loader $e) {
+      } catch (Twig_Error_Runtime $e) {
+      } catch (Twig_Error_Syntax $e) {
         continue;
       }
 
@@ -122,15 +122,15 @@ function review_offer_limit ()
     // Envoyer un mail au administrateur et modérateur
     if (!empty($offers)) {
       try {
-        $msg = $Engine->render( '@MAIL/admin/review-admin-offer-limit.html', [
-          'offers' => $offers,
+        $msg = $Engine->render('@MAIL/admin/review-admin-offer-limit.html', [
+          'offers'              => $offers,
           'dashboard_offer_url' => "https://admin.itjobmada.com/offer-lists",
-          'Year' => Date('Y')
-        ] );
+          'Year'                => Date('Y')
+        ]);
 
-      } catch ( \Twig_Error_Loader $e ) {
-      } catch ( \Twig_Error_Runtime $e ) {
-      } catch ( \Twig_Error_Syntax $e ) {
+      } catch (\Twig_Error_Loader $e) {
+      } catch (\Twig_Error_Runtime $e) {
+      } catch (\Twig_Error_Syntax $e) {
         return false;
       }
 
@@ -149,7 +149,8 @@ function newsletter_daily_company ()
 {
   global $wpdb, $Engine;
   $today = Date("Y-m-d");
-  $sql = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = 'candidate' 
+  $sql
+    = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = 'candidate' 
     AND pts.post_status = 'publish'
     AND pts.post_date REGEXP '(^{$today})'
     AND pts.ID IN ( SELECT pm.post_id as ID FROM {$wpdb->postmeta} as pm WHERE pm.meta_key = 'activated' AND  pm.meta_value = 1 )
@@ -160,7 +161,7 @@ function newsletter_daily_company ()
     $posts = &$query;
     $candidates = [];
     foreach ($posts as $post) {
-      $candidates[] = new \includes\post\Candidate( (int) $post->ID, true);
+      $candidates[] = new \includes\post\Candidate((int)$post->ID, true);
     }
 
     $queryCompany = "SELECT * FROM {$wpdb->posts} as pts  WHERE pts.post_type ='company' AND pts.post_status = 'publish'";
@@ -169,26 +170,26 @@ function newsletter_daily_company ()
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     $mail->addAddress('david@itjobmada.com', 'David Andrianaivo');
     $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
-    foreach ( $postCompany as $pts ) {
+    foreach ($postCompany as $pts) {
       $company = new \includes\post\Company((int)$pts->ID);
       // Envoyer au abonnée au notification seulement
       if (!$company->notification) continue;
       $sender = $company->author->user_email;
       $mail->addBCC($sender);
     }
-    $subject   = "Notification des nouveaux candidats - ItJobMada";
-    $content   = '';
+    $subject = "Notification des nouveaux candidats - ItJobMada";
+    $content = '';
     try {
-      $custom_logo_id = get_theme_mod( 'custom_logo' );
-      $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-      $content        .= $Engine->render( '@MAIL/notification-company-new-cv.html', [
-        'Year'      => Date('Y'),
-        'logo'      => $logo[0],
+      $custom_logo_id = get_theme_mod('custom_logo');
+      $logo = wp_get_attachment_image_src($custom_logo_id, 'full');
+      $content .= $Engine->render('@MAIL/notification-company-new-cv.html', [
+        'Year'       => Date('Y'),
+        'logo'       => $logo[0],
         'candidates' => $candidates
-      ] );
-    } catch ( Twig_Error_Loader $e ) {
-    } catch ( Twig_Error_Runtime $e ) {
-    } catch ( Twig_Error_Syntax $e ) {
+      ]);
+    } catch (Twig_Error_Loader $e) {
+    } catch (Twig_Error_Runtime $e) {
+    } catch (Twig_Error_Syntax $e) {
       return false;
     }
     $mail->CharSet = 'UTF-8';
@@ -201,9 +202,78 @@ function newsletter_daily_company ()
   }
 }
 
-function newsletter_daily_candidate() {
+function newsletter_daily_candidate ()
+{
 
 }
+
+function fix_pending_cv ()
+{
+  global $wpdb;
+  $walk_cv = get_option('walk_fix_last_offset', 0);
+  $walk_cv = intval($walk_cv);
+  $number = 20;
+  $sql_count
+    = "SELECT COUNT(*) FROM {$wpdb->posts} as pst
+                WHERE
+                  pst.post_status = 'publish'
+                  AND pst.post_type = 'candidate'
+                  AND pst.ID IN( SELECT pm.post_id as ID FROM {$wpdb->postmeta} as pm WHERE pm.meta_key = 'activated' AND pm.meta_value = 1)
+                  AND pst.ID IN( SELECT pm.post_id as ID FROM {$wpdb->postmeta} as pm WHERE pm.meta_key = 'itjob_cv_hasCV' AND pm.meta_value = 1)";
+
+  $count = $wpdb->get_var($sql_count);
+  if ($count < $walk_cv) return false;
+  $sql
+    = "SELECT pst.ID, pst.post_title FROM {$wpdb->posts} as pst
+            WHERE
+              pst.post_status = 'publish'
+              AND pst.post_type = 'candidate'
+              AND pst.ID IN( SELECT pm.post_id as ID FROM {$wpdb->postmeta} as pm WHERE pm.meta_key = 'activated' AND pm.meta_value = 1)
+              AND pst.ID IN( SELECT pm.post_id as ID FROM {$wpdb->postmeta} as pm WHERE pm.meta_key = 'itjob_cv_hasCV' AND pm.meta_value = 1)
+              LIMIT $walk_cv, $number";
+  $candidates = $wpdb->get_results($sql);
+  foreach ($candidates as $candidate) {
+    $post_id = intval($candidate->ID);
+    $experiences = get_field("itjob_cv_experiences", $post_id);
+    $formations = get_field('itjob_cv_trainings', $post_id);
+    $update_experience = false;
+    $update_formation = false;
+    if (is_array($experiences))
+      foreach ($experiences as $key => $experience) {
+        if (!$experience['validated']) {
+          $experiences[$key]['validated'] = false;
+          $update_experience = true;
+        }
+      }
+    if ($update_experience) {
+      update_field('itjob_cv_experiences', $experiences, $post_id);
+    }
+
+    if (is_array($formations)) {
+      foreach ($formations as $key => $formation) {
+        if (!$formation['validated']) {
+          $formations[$key]['validated'] = false;
+          $update_formation = true;
+        }
+      }
+    }
+    if ($update_formation) {
+      update_field('itjob_cv_trainings', $formations, $post_id);
+    }
+  }
+
+  if (($walk_cv + $number) > $count) {
+    $walk_cv = $walk_cv + ($count - $walk_cv);
+  } else {
+    $walk_cv += $number;
+  }
+  update_option('walk_fix_last_offset', $walk_cv, true);
+}
+
+add_action('action_scheduler_run_queue', function () {
+  fix_pending_cv();
+});
+
 
 add_action('tous_les_15_minutes', function () {
   // Mettre a jour la cle du telechargement
@@ -239,6 +309,7 @@ add_action('tous_les_jours', function () {
   review_offer_limit();
 
 });
+
 
 /**
  * Cette action permet d'envoyer des mails au administrateurs du site tous les jours
