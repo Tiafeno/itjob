@@ -214,7 +214,7 @@ function fix_pending_cv ()
   $walk_cv = intval($walk_cv);
   $number = 20;
   $sql_count
-    = "SELECT COUNT(*) FROM {$wpdb->posts} as pst
+    = "SELECT COUNT(*) as nbr FROM {$wpdb->posts} as pst
                 WHERE
                   pst.post_status = 'publish'
                   AND pst.post_type = 'candidate'
@@ -271,7 +271,7 @@ function fix_pending_cv ()
 }
 
 add_action('action_scheduler_run_queue', function () {
-  fix_pending_cv();
+  // fix_pending_cv();
 });
 
 

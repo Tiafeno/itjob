@@ -103,9 +103,10 @@ add_action('rest_api_init', function () {
 
                      $status = (int)$status;
                      if ($status === 1) {
+                        $post = get_post($candidate_id);
                         $post_date =  $Candidate->date_create;
                         $post_date = date('Y-m-d H:i:s', strtotime($post_date));
-                        wp_update_post(['ID' => $Candidate->getId(), 'post_date' => $post_date, 'post_status' => 'publish'], true);
+                        wp_update_post(['ID' => $Candidate->getId(), 'post_date' => $post_date, 'post_author' => $post->post_author, 'post_status' => 'publish'], true);
                         do_action('confirm_validate_candidate', $Candidate->getId());
                      }
                      update_field('activated', (int)$status, $Candidate->getId());
@@ -267,7 +268,8 @@ add_action('rest_api_init', function () {
                         do_action('confirm_validate_company', $Company->getId());
                      }
                      $post_date =  get_the_date('Y-m-d H:i:s', $Company->getId());
-                     wp_update_post(['ID' => $Company->getId(), 'post_date' => $post_date, 'post_status' => 'publish'], true);
+                     $post = get_post($company_id);
+                     wp_update_post(['ID' => $Company->getId(), 'post_date' => $post_date, 'post_author' => $post->post_author, 'post_status' => 'publish'], true);
                      return new WP_REST_Response(['success' => true, 'msg' => "Entreprise mis à jour avec succès"]);
                      break;
 
@@ -552,7 +554,7 @@ add_action('rest_api_init', function () {
                if ($activated && $currentOffer->post_status !== 'publish')
                   do_action('confirm_validate_offer', $currentOffer->ID);
                $post_date = get_the_date('Y-m-d H:i:s', $offer->ID);
-               $result = wp_update_post(['ID' => $currentOffer->ID, 'post_date' => $post_date, 'post_status' => 'publish'], true);
+               $result = wp_update_post(['ID' => $currentOffer->ID, 'post_date' => $post_date, 'post_author' => $currentOffer->post_author, 'post_status' => 'publish'], true);
             } else {
                update_field('activated', 0, $currentOffer->ID);
                if ($activated === 'pending')
@@ -916,8 +918,8 @@ add_action('rest_api_init', function () {
                   case 'change_status':
                      $status = $_REQUEST['val'];
                      $activated = $status === 'pending' ? 'pending' : intval($status);
-                     $post_status = get_post_status($post_id);
-                     $post_type = get_post_type($post_id);
+                     $post = get_post($post_id);
+                     $post_type = $post->post_type;
                      if (is_numeric($activated)) {
                         update_field('activated', $activated, $post_id);
                         if ($activated) {
@@ -925,7 +927,7 @@ add_action('rest_api_init', function () {
                            do_action($action, $post_id);
                         }
                         $post_date = get_the_date('Y-m-d H:i:s', (int)$post_id);
-                        wp_update_post(['ID' => $post_id, 'post_date' => $post_date, 'post_status' => 'publish'], true);
+                        wp_update_post(['ID' => $post_id, 'post_date' => $post_date, 'post_author' => $post->post_author, 'post_status' => 'publish'], true);
                      } else {
                         update_field('activated', 0, $post_id);
                         wp_update_post(['ID' => $post_id, 'post_status' => 'pending'], true);
