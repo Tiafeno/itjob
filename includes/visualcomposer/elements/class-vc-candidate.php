@@ -146,7 +146,7 @@ if ( ! class_exists( 'vcCandidate' ) ):
       /** @var string $title */
       $args = [
         'title'      => $title,
-        'candidates' => $itJob->services->getRecentlyPost( 'candidate', 4),
+        'candidates' => $itJob->services->getRecentlyPost( 'candidate', 4, [], 'ID', 'DESC'),
         'archive_cv_url' => get_post_type_archive_link('candidate')
       ];
       try {

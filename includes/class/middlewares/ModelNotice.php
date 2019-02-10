@@ -10,12 +10,14 @@ trait ModelNotice {
 
   public function added_notice( $id_user, $Notice ) {
     global $wpdb;
-    if ( is_numeric( $id_user ) && $Notice instanceof \includes\object\Notification ) {
+    if ( is_numeric( $id_user ) && is_object($Notice)) {
       $data   = [
         'id_user' => $id_user,
-        'notice'  => serialize( $Notice )
+        'template' => $Notice->tpl_msg,
+        'guid'    => $Notice->guid,
+        'needle'  => serialize( $Notice->needle )
       ];
-      $format = [ '%d', '%s' ];
+      $format = [ '%d', '%s', '%s', '%s' ];
       $result = $wpdb->insert( $this->noticeTable, $data, $format );
 
       return $result;
@@ -50,15 +52,25 @@ trait ModelNotice {
       $id_user = $User->ID;
     }
     global $wpdb;
-    $sql           = "SELECT * FROM {$this->noticeTable} WHERE id_user = %d ORDER BY date_create DESC LIMIT 15";
+    $sql           = "SELECT * FROM {$this->noticeTable} WHERE id_user = %d ORDER BY date_create DESC LIMIT 25";
     $prepare       = $wpdb->prepare( $sql, $id_user );
     $rows          = $wpdb->get_results( $prepare );
     $Notifications = [];
+    // Récuperer l'objet template de la notification
+    $Template = new \includes\object\NotificationTpl();
     foreach ( $rows as $row ) {
-      $Notice              = unserialize( $row->notice );
+      // Récuper les variables
+      $needle              = unserialize($row->needle);
+
+      $Notice              = new stdClass();
       $Notice->ID          = $row->id_notice;
       $Notice->date_create = $row->date_create;
       $Notice->status      = $row->status;
+      $Notice->guid        = $row->guid;
+
+      $tpl      = $Template->tpls[(int)$row->template];
+      $Notice->title = vsprintf($tpl, $needle);
+
       $Notifications[]     = $Notice;
     }
 

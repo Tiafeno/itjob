@@ -93,13 +93,12 @@ final class Candidate extends UserParticular implements \iCandidate {
     return $this->author;
   }
 
-  public static function get_candidate_by( $value, $handler = 'user_id' ) {
+  public static function get_candidate_by( $value, $handler = 'user_id', $private_access = false ) {
     if ( $handler === 'user_id' ) {
       $usr        = get_user_by( 'id', (int) $value );
       $args       = [
         'post_type'      => 'candidate',
         'post_status'    => [ 'publish', 'pending' ],
-        'posts_per_page' => - 1,
         'meta_key'       => 'itjob_cv_email',
         'meta_value'     => $usr->user_email,
         'meta_compare'   => '='
@@ -110,7 +109,7 @@ final class Candidate extends UserParticular implements \iCandidate {
       }
       $candidate = reset( $candidates );
 
-      return new Candidate( $candidate->ID );
+      return new Candidate( $candidate->ID, boolval($private_access));
     } else {
       return false;
     }
@@ -137,9 +136,7 @@ final class Candidate extends UserParticular implements \iCandidate {
    * Verifier si le CV est publier (valider) ou autres
    */
   public function is_publish() {
-    $post_status = [ 'pending', 'draft', 'private', 'trash' ];
-
-    return ! in_array( $this->postType, $post_status ) ? 1 : 0;
+    return $this->state === 'publish';
   }
 
   public function acfElements() {
@@ -149,12 +146,14 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->activated   = get_field( 'activated', $this->getId() );
     $this->status      = get_field( 'itjob_cv_status', $this->getId() );
     $featured    = get_field( 'itjob_cv_featured', $this->getId());
-    $this->featured = is_null($featured) || empty($featured) ? 0 : ($featured ? 1 : 0);
+    $this->featured = boolval($featured);
+    $this->featuredDateLimit = $this->featured ? get_field('itjob_cv_featured_datelimit', $this->getId()) : null;
     $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [] );
     $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [] );
 
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
-    $this->newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
+    $newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
+    $this->newsletter = boolval($newsletter);
     $this->driveLicences  = get_field( 'itjob_cv_driveLicence', $this->getId() );
 
     return true;
@@ -169,7 +168,10 @@ final class Candidate extends UserParticular implements \iCandidate {
     $notif = get_field( 'itjob_cv_notifFormation', $this->getId() );
     if ( $notif ) {
       if ( $notif['notification'] ) {
-        $this->trainingNotif = (object) [ 'branch_activity' => $notif['branch_activity'] ];
+        $this->trainingNotif = (object) [
+          'notification'    => true,
+          'branch_activity' => $notif['branch_activity'] 
+        ];
       }
     }
   }
@@ -183,6 +185,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     if ( $notif ) {
       if ( $notif['notification'] ) {
         $this->jobNotif = [
+          'notification'    => true,
           'branch_activity' => $notif['branch_activity'],
           'job_sought'      => $notif['job_sought']
         ];
@@ -245,6 +248,12 @@ final class Candidate extends UserParticular implements \iCandidate {
     return $this->__client_premium_access();
   }
 
+  public function __() {
+    $this->getJobNotif();
+    $this->getTrainingNotif();
+    $this->getInformations();
+  }
+
   /**
    * Récuperer les terms
    */
@@ -278,8 +287,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     // Les tags sont ajouter par 'administrateur
     $this->tags = wp_get_post_terms( $this->getId(), 'itjob_tag', [ "fields" => "names" ] );
     // Le secteur d'activite du candidate
-    $this->branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "all" ] );
-    $this->branch_activity = ! is_array( $this->branch_activity ) || ! empty( $this->branch_activity ) ? $this->branch_activity[0] : null;
+    $branch_activity = wp_get_post_terms( $this->getId(), 'branch_activity', [ "fields" => "all" ] );
+    $this->branch_activity = is_array( $branch_activity ) && ! empty( $branch_activity ) ? $branch_activity[0] : null;
   }
 
   /**

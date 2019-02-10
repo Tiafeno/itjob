@@ -1,8 +1,13 @@
 <?php
 global $offers;
 get_header();
-wp_enqueue_style( 'themify-icons' );
-wp_enqueue_style( 'offers' );
+wp_enqueue_style('themify-icons');
+wp_enqueue_style('offers');
+
+ /**
+ * Change the Yoast meta description for Android devices on the front/home page.
+ */
+
 ?>
   <style type="text/css">
     .offer-top {
@@ -34,9 +39,10 @@ wp_enqueue_style( 'offers' );
           <?php do_action('get_notice'); ?>
           <!--          Content here ... -->
           <?php
-          while ( have_posts() ) : the_post();
-            if ( ! $offers instanceof  \includes\post\Offers) exit;
-            ?>
+          while (have_posts()) : the_post();
+          if (!$offers instanceof \includes\post\Offers) exit;
+
+          ?>
             <div class="offer-section">
               <div class="offer-top d-inline-block pb-4">
                 <div class="row">
@@ -47,7 +53,7 @@ wp_enqueue_style( 'offers' );
                   </div>
                 </div>
                 <div class="mt-4">
-                  <div>Offre ajoutéé le : <?= $offers->datePublication ?></div>
+                  <div>Offre ajoutée le : <?= $offers->datePublication ?></div>
                   <div>Réf : <?= $offers->reference ?></div>
                   <div class="uk-text-bold">Date limite de candidature : <?= $offers->dateLimitFormat ?></div>
                 </div>
@@ -60,7 +66,7 @@ wp_enqueue_style( 'offers' );
                   <div class="row mt-4">
                     <div class="col-md-6 pt-4 pr-lg-5">
                       <p class="offer-field-title m-0">Région:</p>
-                      <p class="offer-field-value m-0"><?= isset($offers->region->name) ? $offers->region->name : 'Non definie'?></p>
+                      <p class="offer-field-value m-0"><?= isset($offers->region->name) ? $offers->region->name : 'Non definie' ?></p>
                     </div>
                     <div class="col-md-6 pt-4">
                       <p class="offer-field-title m-0">Type de contrat: </p>
@@ -83,8 +89,8 @@ wp_enqueue_style( 'offers' );
                   </div>
 
                   <?php
-                  if ( ! empty( $offers->otherInformation ) ):
-                    ?>
+                  if (!empty($offers->otherInformation)) :
+                  ?>
                     <div class="mt-4">
                       <p class="offer-field-title m-0">Autres informations: </p>
                       <div class="offer-field-value">
@@ -94,14 +100,6 @@ wp_enqueue_style( 'offers' );
                   <?php
                   endif;
                   ?>
-
-<!--                  <div class="m-5">-->
-<!--                    <p class="uk-text-bold">-->
-<!--                      Merci d'envoyer vos dossiers de candidatures ( CV + LM ) à l'adresse :-->
-<!--                      recrutement@itjobmada.com-->
-<!--                    </p>-->
-<!--                  </div>-->
-
                 </div>
               </div>
 
@@ -114,7 +112,7 @@ wp_enqueue_style( 'offers' );
                     <div>
                       <?= do_action('je_postule'); ?>
                       <div class="float-right ml-3">
-                        <a href="<?= get_post_type_archive_link( 'offers' ) ?>" class="float-right">
+                        <a href="<?= get_post_type_archive_link('offers') ?>" class="float-right">
                           <button class="btn btn-outline-primary btn-fix">
                             <span class="btn-icon"><i class="ti-angle-left"></i>Retour</span>
                           </button>
@@ -133,8 +131,8 @@ wp_enqueue_style( 'offers' );
         <div class="uk-width-1-3@s">
           <!--     Sidebar here ...     -->
           <?php
-          if ( is_active_sidebar( 'single-offer-sidebar' ) ) {
-            dynamic_sidebar( 'single-offer-sidebar' );
+          if (is_active_sidebar('single-offer-sidebar')) {
+            dynamic_sidebar('single-offer-sidebar');
           }
           ?>
         </div>

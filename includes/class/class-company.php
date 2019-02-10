@@ -45,7 +45,7 @@ final class Company implements \iCompany {
     switch ( $handler ):
       case 'user_id':
         $User = get_user_by( 'ID', (int) $value );
-        if ( ! $User->ID ) {
+        if ( ! $User->ID || $User->ID === 0 ) {
           return false;
         }
         $args = [
@@ -99,26 +99,19 @@ final class Company implements \iCompany {
       // FIX: Corriger une erreur sur l'utilisateur si l'admin ajoute une company
       $this->email = get_field( 'itjob_company_email', $this->ID );
       $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
-
-      // FIX: Ajouter ou crée un utilisateur quand un entreprise est publier ou ajouter
       $this->author = Obj\jobServices::getUserData( $user->ID );
-
       // Récuperer la region
       $regions      = wp_get_post_terms( $this->ID, 'region' );
       $this->region = reset( $regions );
-
       // Récuperer le nom et la code postal de la ville
       $country       = wp_get_post_terms( $this->ID, 'city' );
       $this->country = reset( $country );
-
       // Récuperer le secteur d'activité
       $abranch               = wp_get_post_terms( $this->ID, 'branch_activity', [ "fields" => "all" ] );
       $this->branch_activity = is_array($abranch) && !empty($abranch)  ? $abranch[0] : null;
-
       $this->init();
       if ($access) {
         $this->getInterests();
-
       }
     }
   }
@@ -183,11 +176,17 @@ final class Company implements \iCompany {
     $this->address      = get_field( 'itjob_company_address', $this->ID );
     $this->nif          = get_field( 'itjob_company_nif', $this->ID );
     $this->stat         = get_field( 'itjob_company_stat', $this->ID );
-    $this->newsletter   = get_field( 'itjob_company_newsletter', $this->ID );
-    $this->notification = get_field( 'itjob_company_notification', $this->ID );
-    $this->phone        = get_field( 'itjob_company_phone', $this->ID );
-    $this->account      = get_post_meta( $this->ID, 'itjob_meta_account', true );
-    $this->account      = empty( $this->account ) ? 0 : (int)$this->account;
+
+    $newsletter   = get_field( 'itjob_company_newsletter', $this->ID );
+    $this->newsletter = boolval($newsletter);
+
+    $notification = get_field( 'itjob_company_notification', $this->ID );
+    $this->notification = boolval($notification);
+    $phone        = get_field( 'itjob_company_phone', $this->ID );
+    $this->phone  = $phone ? $phone : null;
+
+    $account      = get_post_meta( $this->ID, 'itjob_meta_account', true );
+    $this->account      = empty( $account ) ? 0 : (int)$account;
 
     $cellphones = get_field( 'itjob_company_cellphone', $this->ID );
     $this->cellphones = [];

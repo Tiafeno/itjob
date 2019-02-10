@@ -6,7 +6,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       {
         name: 'company',
         url: '/company',
-        templateUrl: itOptions.partials_url + '/company/company.html',
+        templateUrl: itOptions.partials_url + '/company/company.html?ver=' + itOptions.version,
         resolve: {
           abranchs: function (companyService) {
             return companyService.getBranchActivity();
@@ -29,16 +29,15 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       {
         name: 'company.form',
         url: '/form',
-        templateUrl: itOptions.partials_url + '/company/form.html',
+        templateUrl: itOptions.partials_url + '/company/form.html?ver=' + itOptions.version,
         controller: ['$rootScope', '$scope', 'companyFactory', 'companyService', function ($rootScope, $scope, companyFactory, companyService) {
           $scope.login_url = itOptions.Helper.login;
           $scope.addPhone = function () {
-            $rootScope.company.cellphone.push({id: $rootScope.countPhone, value: ''});
-            $rootScope.countPhone += 1;
+            $rootScope.company.cellphone.push({id: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10), value: ''});
           };
           $scope.removePhone = function (id) {
             $rootScope.company.cellphone = _.filter($rootScope.company.cellphone, function (cellphone) {
-              return cellphone.id != id;
+              return cellphone.id !== id;
             });
           };
           $scope.submitForm = function (isValid) {
@@ -46,7 +45,14 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
             if ($scope.formCompany.$invalid) {
               angular.forEach($scope.formCompany.$error, function (field) {
                 angular.forEach(field, function (errorField) {
-                  errorField.$setTouched();
+                  errorField = (typeof errorField.$setTouched !== 'function') ? errorField.$error.required : errorField;
+                  if (_.isArray(errorField)) {
+                    angular.forEach(errorField, function (error) {
+                      error.$setTouched();
+                    });
+                  } else {
+                    errorField.$setTouched();
+                  }
                 });
               });
               $scope.formCompany.email.$validate();
@@ -57,8 +63,8 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
               .mailCheck($scope.company.email)
               .then(function (status) {
                 $rootScope.$apply(function () {
-                  $scope.formCompany.email.$setValidity('mail', !status);
-                  if (!status) {
+                  $scope.formCompany.email.$setValidity('mail', status);
+                  if (status) {
                     $rootScope.isSubmit = !$rootScope.isSubmit;
                     var companyForm = new FormData();
                     companyForm.append('action', 'ajx_insert_company');
@@ -68,7 +74,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
                     companyForm.append('country', $rootScope.company.country);
                     companyForm.append('address', $rootScope.company.address);
                     companyForm.append('cellphone', JSON.stringify($rootScope.company.cellphone));
-                    companyForm.append('phone', $rootScope.company.phone);
+                    companyForm.append('phone', _.isUndefined($rootScope.company.phone) ? '' : $rootScope.company.phone);
                     companyForm.append('nif', $rootScope.company.nif);
                     companyForm.append('stat', $rootScope.company.stat);
                     companyForm.append('name', $rootScope.company.name);
@@ -107,7 +113,10 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
               let region = parseInt($rootScope.company.region);
               rg = _.findWhere($rootScope.regions, {term_id: region});
               if (rg) {
-                if (city.name.indexOf(rg.name) > -1) {
+                let cityname = city.name.toLowerCase();
+                let regionname = rg.name.toLowerCase();
+                regionname = regionname === "amoron'i mania" ? "mania" : regionname;
+                if (cityname.indexOf(regionname) > -1) {
                   return true;
                 }
               }
@@ -171,6 +180,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
           });
 
           jQuery('[data-toggle="tooltip"]').tooltip();
+          jQuery('#text-loading').hide();
         }]
       }
     ];
@@ -190,15 +200,24 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
           });
       },
       mailCheck: function (email) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
           if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            jQuery('#text-loading').show();
             companyFactory
               .checkLogin(email)
               .then(function (resp) {
-                resolve(resp.data ? true : false);
+                var data = _.clone(resp.data);
+                if (data.success) {
+                  reject(false);
+                  jQuery('#text-loading').hide();
+                } else {
+                  resolve(true);
+                  jQuery('#text-loading').hide();
+                }
               });
           } else {
-            resolve(false);
+            reject(false);
+            jQuery('#text-loading').hide();
           }
         });
       }
@@ -207,7 +226,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
   .factory('companyFactory', ['$http', '$q', function ($http, $q) {
     return {
       checkLogin: function (log) {
-        return $http.get(itOptions.ajax_url + '?action=ajx_user_exist&log=' + log, {cache: true});
+        return $http.get(itOptions.ajax_url + '?action=ajx_user_exist&mail=' + log, {cache: true});
       },
       sendPostForm: function (formData) {
         return $http({
@@ -241,32 +260,34 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       require: 'ngModel',
       scope: true,
       link: function (scope, element, attrs, model) {
-        element.bind('blur', function () {
+        element.bind('keyup', function () {
           companyService
             .mailCheck(element.val())
-            .then(function (status) {
-              scope.$apply(function () {
-                model.$setValidity('mail', !status);
-              });
-            })
+            .then(
+              function (status) {
+                scope.$apply(function () {
+                  model.$setValidity('mail', true);
+                });
+              },
+              function (error) {
+                scope.$apply(function () {
+                  model.$setValidity('mail', false);
+                });
+              }
+            )
         });
+
       }
     }
   }])
   .controller('formController', ['$scope', '$rootScope', 'abranchs', 'regions', 'allCity', function ($scope, $rootScope, abranchs, regions, allCity) {
-    $rootScope.countPhone = 1;
     $rootScope.isSubmit = !1;
     $rootScope.abranchs = _.clone(abranchs);
     $rootScope.regions = _.clone(regions);
     $rootScope.allCity = _.clone(allCity);
     $rootScope.company = {};
     $rootScope.company.greeting = 'mr';
-    $rootScope.company.cellphone = [
-      {
-        id: 0,
-        value: ''
-      }
-    ];
+    $rootScope.company.cellphone = [{id: 0, value: ''}];
 
   }]).run([function () {
     var loadingPath = itOptions.template_url + '/img/loading.gif';

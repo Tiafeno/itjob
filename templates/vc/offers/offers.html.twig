@@ -20,14 +20,13 @@
               </button>
               <ul class="fab-menu">
                 <li>
-                  <a class="btn btn-soc-facebook btn-icon-only btn-circle btn-air" href="javascript:;">
-                    <i class="fa fa-facebook"></i>
-                  </a>
-                </li>
-                <li>
-                  <a class="btn btn-soc-twitter btn-icon-only btn-circle btn-air" href="javascript:;">
-                    <i class="fa fa-twitter"></i>
-                  </a>
+                <span class="fb-share-button btn btn-soc-facebook btn-icon-only btn-circle btn-air" data-href="https://developers.facebook.com/docs/plugins/" 
+                    data-layout="button" data-size="large" data-mobile-iframe="false">
+                    <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{ offer.ID|get_permalink }}&src=sdkpreparse" 
+                    class="fb-xfbml-parse-ignore" uk-icon="icon: facebook">
+                      <i class="fa fa-facebook"></i>
+                    </a>
+                  </span>
                 </li>
               </ul>
             </div>
@@ -48,11 +47,11 @@
                     </tr>
                     <tr>
                       <td>Mission:</td>
-                      <td>{{ offer.mission|striptags('<b>')|raw[:65] }} {% if offer.mission|length > 65 %}...{% endif %}</td>
+                      <td>{{ offer.mission|raw|html_entity_decode|striptags[:100] }} {% if offer.mission|length > 100 %}...{% endif %}</td>
                     </tr>
                     <tr>
                       <td>Profil:</td>
-                      <td>{{ offer.profil|striptags('<b>')|raw[:65] }} {% if offer.profil|length > 65 %}...{% endif %}</td>
+                      <td>{{ offer.profil|raw|html_entity_decode|striptags[:100] }} {% if offer.profil|length > 100 %}...{% endif %}</td>
                     </tr>
                     </tbody>
                   </table>

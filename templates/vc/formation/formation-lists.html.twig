@@ -1,0 +1,68 @@
+<div class="container-list-posts">
+  <h5 class="vc-element-title">{{ title }}</h5>
+  <div class="row mb-5">
+
+    {% if formations is empty %}
+      <div class="col-md-12 mt-4">
+        <b>Nous sommes actuellement en train d’alimenter la plateforme avec de nouvelles fiches.</b><br>
+        En attendant, faites une recherche ou revenez dans quelques temps ;-) Merci de votre compréhension.</p>
+      </div>
+    {% endif %}
+    {% for formation in formations %}
+      <div class="col-md-12">
+        <div class="card ibox mb-4">
+          <div class="card-body">
+            <h4 class="card-title">
+              <a href="{{ formation.ID|get_permalink }}" class="text-black font-bold">{{ formation.title }}</a>
+            </h4>
+            <div class="card-description">
+
+              <div class="row">
+                <div class="col-8 uk-padding-remove-right">
+                  <table class="table">
+                    <tbody>
+                    <tr>
+                      {% if formation.duration is not same as(undefined) %}
+                      <td>Durée:</td>
+                      <td>
+                        {{ formation.duration }}
+                      </td>
+                      {% endif %}
+                      <td class="font-bold pl-4">Region:</td>
+                      <td>
+                          {{ formation.region[0].name }}
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="col-4 uk-flex">
+                  <div class="uk-flex uk-margin-auto-left">
+                    <a href="{{ formation.ID|get_permalink }}" class=" uk-margin-auto-vertical">
+                      <button class="btn btn-warning btn-fix">
+                        <span class="btn-icon">Voir <i class="la la-plus"></i></span>
+                      </button>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="col-md-12">
+      <div class="d-flex align-items-center">
+        <a class="m-auto" href="{{ archive_formation_url }}">
+          <button class="btn btn-sm btn-secondary btn-fix">
+            <span class="btn-icon">Voir toutes les formations <i class="la la-plus"></i></span>
+          </button>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>

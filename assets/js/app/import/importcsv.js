@@ -288,6 +288,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         label: "Utilisateurs - Candidat Information"
       },
       {
+        _id: 15,
+        slug: 'candidate_add_town',
+        label: "Utilisateur - Ajouter les villes pour les candidats"
+      },
+      {
         _id: 10,
         slug: 'user_candidate_status',
         label: "Utilisateurs - Candidat Status (information)"
@@ -306,6 +311,11 @@ angular.module('importCSVModule', ['ngMessages', 'ui.router', 'ngAria', 'ngAnima
         _id: 11,
         slug: 'user_update_publish_date',
         label: "Demandeur emploi - Update date publish"
+      },
+      {
+        _id: 14,
+        slug: 'offer_update_activity_area',
+        label: "Offres - Mettre à jours les secteurs d'activités"
       },
       {
         _id: 13,

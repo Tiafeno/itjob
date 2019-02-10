@@ -5,37 +5,45 @@ use includes\model\itModel;
 use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
+use includes\post\Formation;
 
 if (!defined('ABSPATH')) {
   exit;
 }
 
 // Un nouveau CV portant la référence « ".$cvs->reference." » a été inséré 
-
-
-final class Notification
+final class NotificationTpl
 {
-  public $ID = 0;
-  public $title;
-  public $date_create;
-  public $url;
-
+  public $tpls;
   public function __construct()
   {
+    $this->tpls[1] = "<b>%1\$s</b> viens d'ajouter un CV pour reference <b>%2\$s</b>";
+    $this->tpls[2] = "Inscription d'une nouvelle entreprise - <b>%1\$s</b>";
+    $this->tpls[3] = "Une offre viens d'être ajouter sur le site: <b>%1\$s</b>";
+    $this->tpls[4] = "<b>%1\$s</b> viens de modifier son CV (<b>%2\$s</b>)";
+    $this->tpls[5] = "Votre CV viens d'être validé";
+    $this->tpls[6] = "%1\$s a postulé pour l'offre <b>%2\$s</b>";
+    $this->tpls[7] = "Un candidat viens de postuler sur <b>%1\$s</b>";
+    $this->tpls[8] = "Une entreprise s'interesse à votre CV sur l'offre: <b>%1\$s</b>";
+    $this->tpls[9] = "<b>%1\$s</b> s'interesse à un candidat pour réference <b>%2\$s</b>";
+    $this->tpls[10] = "L'entreprise « %1\$s » à effectuer une demande de compte premium";
+    $this->tpls[11] = "Le CV portant la référence « %1\$s » est maintenant disponible, sur l'offre <b>%2\$s</b>";
+    $this->tpls[12] = "Votre CV a été selectionné sur l'offre « <b>%1\$s</b> »";
+    $this->tpls[13] = "Le CV portant la référence « %1\$s » a été réjeté sur l'offre <b>%2\$s</b>";
+    $this->tpls[14] = "Votre candidature a été rejeté sur l'offre « <b>%1\$s</b> »";
+    $this->tpls[15] = "Votre compte a été validée";
+    $this->tpls[16] = "Votre offre « <b>%1\$s</b> » a bien été validée";
+    $this->tpls[17] = "Votre CV viens d'être selectionné sur l'offre: <b>%1\$s</b>";
+    $this->tpls[18] = "Votre photo n'a pas été validée. Veuillez ajouter une photo professionnelle";
+    $this->tpls[19] = "Un CV pour reference « %1\$s » viens d'ajouter une image de profil";
+    $this->tpls[20] = "Un logiciel vient d'être ajouté « <b>%1\$s</b> » par <b>%2\$s</b>";
+    $this->tpls[21] = "Un métier vient d'être ajouté « <b>%1\$s</b> » par <b>%2\$s</b>";
+    $this->tpls[22] = "Une formation viens d'être ajouter <b>%1\$s</b> portant la reference <b>%2\$s</b>";
   }
-
-  public static function getInstance($id_notice)
-  {
-    $Model = new itModel();
-    return $Model->collect_notice($id_notice);
-  }
-
-
 }
 
 final class NotificationHelper
 {
-  const BO_URL = "";
   public function __construct()
   {
     add_action('init', function () {
@@ -43,36 +51,55 @@ final class NotificationHelper
       add_action('notice-interest', [&$this, 'notice_interest'], 10, 1);
       add_action('notice-publish-cv', [&$this, 'notice_publish_cv'], 10, 1);
       add_action('notice-publish-offer', [&$this, 'notice_publish_offer'], 10, 1);
+      add_action('notice-candidate-selected-cv', [&$this, 'notice_candidate_selected_cv'], 10, 2);
+      add_action('notice-request-featured-image', [&$this, 'notice_request_featured_image'], 10, 1);
+
       add_action('notice-change-request-status', [&$this, 'notice_change_request_status'], 10, 2);
+      add_action('notice-change-company-status', [&$this, 'notice_change_company_status'], 10, 2);
+      add_action('notice-change-offer-status', [&$this, 'notice_change_offer_status'], 10, 2);
+      add_action('request-premium-account', [&$this, 'request_premium_account'], 10, 1);
 
       add_action('notice-admin-create-cv', [&$this, 'notice_admin_create_cv'], 10, 1);
       add_action('notice-admin-new-offer', [&$this, 'notice_admin_new_offer'], 10, 1);
       add_action('notice-admin-update-cv', [&$this, 'notice_admin_update_cv'], 10, 1);
       add_action('notice-admin-new-company', [&$this, 'notice_admin_new_company'], 10, 1);
+      add_action('notice-admin-new-featured-image', [&$this, 'notice_admin_new_featured_image'], 10, 1);
+      add_action('notice-admin-new-formation', [&$this, 'notice_admin_new_formation'], 10, 1);
+
+      // at add_term_submit() in class-vc-register-candidate.php and update_candidate_softwares() in scClient.php
+      add_action('notice-admin-new-software', [&$this, 'notice_admin_new_software'], 10, 2);
+      add_action('notice-admin-new-job_sought', [&$this, 'notice_admin_new_job'], 10, 2);
 
       // On change la status d'une notification
-      if (isset($_GET['ref'])) {
-        $ref = $_GET['ref'];
-        if ($ref === 'notif') {
-          $id_notice = (int)$_GET['notif_id'];
-          if (!$id_notice) return false;
-          $Model = new itModel();
-          $Model->change_notice_status($id_notice);
+      function notification() {
+        if (isset($_GET['ref'])) {
+          $ref = $_GET['ref'];
+          if ($ref === 'notif') {
+            if (!isset($_GET['notif_id'])) return;
+            $id_notice = (int)$_GET['notif_id'];
+            if (!$id_notice) return false;
+            $Model = new itModel();
+            $Model->change_notice_status($id_notice);
+          }
         }
       }
+      
+      notification();
     });
   }
 
   public function notice_admin_create_cv($id_cv) {
     $Model = new itModel();
-    // Company
     $Candidate = new Candidate((int)$id_cv);
-    $Notice = new Notification();
+
     $Author = $Candidate->getAuthor();
     $firstname = $Candidate->getFirstName();
 
-    $Notice->title = "<b>$firstname</b> viens d'ajouter un CV pour reference <b>{$Candidate->title}</b>";
-    $Notice->url = "/candidate/{$id_cv}/edit";
+    $Notice = new \stdClass();
+    $Notice->tpl_msg = 1;
+    $Notice->needle = [$firstname, $Candidate->title];
+    $Notice->guid = "/candidate/{$id_cv}/edit";
+
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
       $Model->added_notice($admin->ID, $Notice);
@@ -81,80 +108,162 @@ final class NotificationHelper
 
   public function notice_admin_new_company($id_company) {
     $Model = new itModel();
-    // Company
-    $Company = new Company((int)$id_cv);
-    $Notice = new Notification();
+    $Company = new Company((int)$id_company);
 
-    $Notice->title = "Inscription d'une nouvelle entreprise - <b>{$Company->title}</b>";
-    $Notice->url = "/company-lists";
+    $Notice = new \stdClass();
+    $Notice->tpl_msg = 2;
+    $Notice->needle = [$Company->title];
+    $Notice->guid = "/company-lists";
+
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
       $Model->added_notice($admin->ID, $Notice);
     }
   }
-  
-  public function notice_admin_new_offer($id_offer) {
+
+  public function notice_admin_new_offer($id_offer)
+  {
     $Model = new itModel();
     $Offer = new Offers((int)$id_offer);
-    $Notice = new Notification();
-    $Notice->title = "Une offre viens d'être ajouter sur le site: <b>{$Offer->title}</b>";
-    $Notice->url = "/offer/{$id_offer}/edit";
+
+    $Notice = new \stdClass();
+    $Notice->tpl_msg = 3;
+    $Notice->needle = [$Offer->title];
+    $Notice->guid = "/offer/{$id_offer}/edit";
+
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
       $Model->added_notice($admin->ID, $Notice);
     }
   }
-  public function notice_admin_update_cv($id_cv) {
+
+  public function notice_admin_update_cv($id_candidate)
+  {
     $Model = new itModel();
     // Company
-    $Candidate = new Candidate((int)$id_cv);
-    $Notice = new Notification();
+    $Candidate = new Candidate((int)$id_candidate);
+
+    $Notice = new \stdClass();
     $Author = $Candidate->getAuthor();
     $firstname = $Candidate->getFirstName();
 
-    $Notice->title = "<b>$firstname</b> viens de modifier son CV (<b>{$Candidate->title}</b>)";
-    $Notice->url = "/candidate/{$id_cv}/edit";
+    $Notice->tpl_msg = 4;
+    $Notice->needle = [$firstname, $Candidate->title];
+    $Notice->guid = "/candidate/{$id_candidate}/edit";
+
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
       $Model->added_notice($admin->ID, $Notice);
     }
   }
 
+  public function notice_admin_new_featured_image($id_candidate) {
+    $Model     = new itModel();
+    $Candidate = new Candidate((int)$id_candidate);
+    $Notice    = new \stdClass();
 
+    $Notice->guid = "/candidate/{$id_candidate}/edit";
+    $Notice->tpl_msg = 19;
+    $Notice->needle = [$Candidate->title];
+
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
+  }
+
+  /**
+   * Quand un candidat viens d'ajouter un logiciel
+   */
+  public function notice_admin_new_software($aTerm, $Candidate) {
+    $Model     = new itModel();
+    $Notice    = new \stdClass();
+    $Term = get_term((int)$aTerm['term_id']);
+    $Notice->guid = "/taxonomy/software";
+    $Notice->tpl_msg = 20;
+    $Notice->needle = [$Term->name, $Candidate->title];
+
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
+  }
+
+  /**
+   * Quand un candidat viens d'ajouter un métier
+   */
+  public function notice_admin_new_job($aTerm, $Candidate) {
+    $Model     = new itModel();
+    $Notice    = new \stdClass();
+    $Term = get_term((int)$aTerm['term_id']);
+    $Notice->guid = "/taxonomy/job_sought";
+    $Notice->tpl_msg = 21;
+    $Notice->needle = [$Term->name, $Candidate->title];
+
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
+  }
+
+  public function notice_admin_new_formation( $id_formation ) {
+    $Model     = new itModel();
+    $Notice    = new \stdClass();
+    $Formation = new Formation( (int) $id_formation );
+    $Notice->guid = "/formation/{$id_formation}/edit";
+    $Notice->tpl_msg = 22;
+    $Notice->needle = [$Formation->title, $Formation->reference];
+
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
+  }
+
+  /**
+   * Quand l'administrateur vient de publier et activer le CV
+   */
   public function notice_publish_cv($id_cv) {
     $id_cv = (int)$id_cv;
     if (!$id_cv) return false;
     $Model = new itModel();
     $Candidate = new Candidate($id_cv);
-    $Notice = new Notification();
-    $Notice->title = "Votre CV viens d'être validé";
-    $Notice->url = $Candidate->candidate_url . '?ref=notif';
+    $Notice = new \stdClass();
+
+    $Notice->tpl_msg = 5;
+    $Notice->needle = [];
+    $Notice->guid = $Candidate->candidate_url . '?ref=notif';
     $Author = $Candidate->getAuthor();
     $Model->added_notice($Author->ID, $Notice);
 
     return true;
   }
-  public function notice_publish_offer($id_offer) {}
 
   public function notice_candidate_postuled($id_cv, $id_offer) {
     $Model = new itModel();
 
     // Company
     $Candidate = new Candidate((int)$id_cv);
-    $Offer = new Offers($id_offer);
+    $Offer = new Offers((int)$id_offer);
 
-    $postCompany = $Offer->getCompany();
-    $Company = new Company($postCompany->ID);
+    if ($Offer->rateplan === 'standard' || $Offer->rateplan === 'premium') {
+      $postCompany = $Offer->getCompany();
+      $Company = new Company($postCompany->ID);
 
-    $companyNotice = new Notification();
-    $companyNotice->title = "$Candidate->title a postulé pour l'offre <b>{$Offer->title}</b>";
-    $companyNotice->url = $Candidate->candidate_url . "?ref=notif";
-    $Model->added_notice($Company->author->ID, $companyNotice);
+      $companyNotice = new \stdClass();
+
+      $companyNotice->tpl_msg = 6;
+      $companyNotice->needle = [$Candidate->title, $Offer->title];
+      $companyNotice->guid = $Candidate->candidate_url . "?ref=notif";
+      $Model->added_notice($Company->author->ID, $companyNotice);
+    }
 
     // To admin
-    $Notice = new Notification(); 
-    $Notice->title = "Un candidat viens de postuler sur <b>{$Offer->title}</b>";
-    $Notice->url = "/offer/{$id_offer}/edit";
+    $Notice = new \stdClass();
+    $Notice->tpl_msg = 7;
+    $Notice->needle = [$Offer->title];
+    $Notice->guid = "/offer/{$id_offer}/edit";
+
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
       $Model->added_notice($admin->ID, $Notice);
@@ -162,31 +271,56 @@ final class NotificationHelper
 
     return true;
   }
+
   public function notice_interest($id_cv_request) {
     if (!is_numeric($id_cv_request)) return false;
     $Interest = itModel::get_request($id_cv_request);
     if (is_null($Interest)) return null;
     $Model = new itModel();
     $Offer = new Offers((int)$Interest->id_offer);
-    $Company = new Company((int)$$Interest->id_company);
+    $Company = new Company((int)$Interest->id_company);
 
     // Candidate
     $Candidate = new Candidate((int)$Interest->id_candidate);
     $Author = $Candidate->getAuthor();
-    $candidateNotice = new Notification();
-    $candidateNotice->title = "Une entreprise s'interesser à votre CV sur l'offre: <b>{$Offer->title}</b>";
-    $candidateNotice->url = $Offer->offer_url . "?ref=notif";
+
+    $candidateNotice = new \stdClass();
+
+    $candidateNotice->tpl_msg = 8;
+    $candidateNotice->needle = [$Offer->title];
+    $candidateNotice->guid = $Offer->offer_url . "?ref=notif";
     $Model->added_notice($Author->ID, $candidateNotice);
 
     // To admin
-    $Notice->title = "<b>$Company->title</b> s'interesse à un candidat pour réference <b>{$Candidate->reference}</b>";
-    $Notice->url = "/offer/{$Interest->id_offer}/edit";
+    $Notice = new \stdClass();
+
+    $Notice->tpl_msg = 9;
+    $Notice->needle = [$Company->title, $Candidate->title];
+    $Notice->guid = "/offer/{$Interest->id_offer}/edit";
+
     $Administrators = $this->get_user_administrator();
     foreach ($Administrators as $admin) {
       $Model->added_notice($admin->ID, $Notice);
     }
 
     return true;
+  }
+
+  // Deprecate: Ne plus mettre les professionels en mode premium
+  public function request_premium_account($Company)
+  { // Company object
+    $Model = new itModel();
+    $Notice = new \stdClass();
+    $id = $Company->getId();
+
+    $Notice->tpl_msg = 10;
+    $Notice->needle = [$Company->title];
+    $Notice->guid = "/company-lists/?s={$Company->title}";
+
+    $Administrators = $this->get_user_administrator();
+    foreach ($Administrators as $admin) {
+      $Model->added_notice($admin->ID, $Notice);
+    }
   }
 
   /**
@@ -208,19 +342,31 @@ final class NotificationHelper
     $Offer = new Offers((int)$Interest->id_offer);
     $Model = new itModel();
 
-    $companyNotice = new Notification();
-    $candidateNotice = new Notification();
-    $companyNotice->url = $Candidate->candidate_url . "?ref=notif";
-    $candidateNotice->url = $Offer->offer_url . "?ref=notif";
+    $companyNotice = new \stdClass();
+    $companyNotice->guid = $Candidate->candidate_url . "?ref=notif";
+
+
+    $candidateNotice = new \stdClass();
+    $candidateNotice->guid = $Offer->offer_url . "?ref=notif";
+
+
     switch ($Interest->status) {
       case 'validated':
-        $companyNotice->title = "Le CV portant la référence « {$Candidate->reference} » est maintenant disponible, sur l'offre <b>{$Offer->title}</b>";
-        $candidateNotice->title = "Votre CV a été selectionné sur l'offre « {$Offer->title} »";
+
+        $companyNotice->tpl_msg = 11;
+        $companyNotice->needle = [$Candidate->reference, $Offer->title];
+
+        $candidateNotice->tpl_msg = 12;
+        $candidateNotice->needle = [$Offer->title];
         break;
+
       case 'reject':
-        $companyNotice->title = "CV portant la référence « {$Candidate->reference} » a été réjeté sur l'offre <b>{$Offer->title}</b>";
+        $companyNotice->tpl_msg = 13;
+        $companyNotice->needle = [$Candidate->reference, $Offer->title];
+
         if ($Interest->type === 'apply') {
-          $candidateNotice->title = "Votre candidature a été rejeté sur l'offre « {$Offer->title} »";
+          $companyNotice->tpl_msg = 14;
+          $companyNotice->needle = [$Offer->title];
         }
         break;
     }
@@ -233,9 +379,75 @@ final class NotificationHelper
     return true;
   }
 
+  public function notice_change_company_status($id_company, $status = null)
+  {
+    if (!is_numeric($id_company) || is_null($status)) return false;
+    $Model = new itModel();
+    $Company = new Company($id_company);
+    $Notice = new \stdClass();
+    $Notice->guid = "?ref=notif";
+    $Notice->tpl_msg = 15;
+    $Notice->needle = [];
+
+    $Model->added_notice($Company->author->ID, $Notice);
+  }
+
+  public function notice_change_offer_status($Offer, $status)
+  {
+    if ($Offer instanceof Offers) {
+      $Model = new itModel();
+      $Notice = new \stdClass();
+      $postCompany = $Offer->getCompany();
+      $Company = new Company($postCompany->ID);
+
+      $Notice->guid = "{$Offer->offer_url}?ref=notif";
+      $Notice->tpl_msg = 16;
+      $Notice->needle = [$Offer->title];
+
+
+      $Model->added_notice($Company->author->ID, $Notice);
+    } else {
+      return false;
+    }
+  }
+
+  public function notice_candidate_selected_cv($id_candidate, $id_offer)
+  {
+    // Candidate
+    $Model = new itModel();
+    $Offer = new Offers((int)$id_offer);
+    $Candidate = new Candidate((int)$id_candidate);
+    $Author = $Candidate->getAuthor();
+    $Notice = new \stdClass();
+    $Notice->guid = $Offer->offer_url . "?ref=notif";
+    $Notice->tpl_msg = 17;
+    $Notice->needle = [$Offer->title];
+
+    $Model->added_notice($Author->ID, $Notice);
+  }
+
+  public function notice_request_featured_image($id_candidate)
+  {
+    // Candidate
+    $Model = new itModel();
+    $Candidate = new Candidate((int)$id_candidate);
+    $Author = $Candidate->getAuthor();
+    $Notice = new \stdClass();
+    $espace_client_url = get_the_permalink( ESPACE_CLIENT_PAGE );
+    $Notice->guid = $espace_client_url. "?ref=notif";
+    $Notice->tpl_msg = 18;
+    $Notice->needle = [];
+
+    $Model->added_notice($Author->ID, $Notice);
+  }
+
   public function get_user_administrator() {
-    $user_query = new \WP_User_Query( array( 'role__in' => ['Administrator', 'Editor']) );
+    $user_query = new \WP_User_Query(array('role__in' => ['Administrator', 'Editor']));
     return $user_query->get_results();
+  }
+
+  public function notice_publish_offer($id_offer)
+  {
   }
 }
 

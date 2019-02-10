@@ -23,13 +23,13 @@ if (!defined('VENDOR_URL')) {
 $theme = wp_get_theme('itjob');
 
 // Utiliser ces variables apres la fonction: the_post()
-$offers = null;
-$company = null;
+$offers    = null;
+$company   = null;
 $candidate = null;
 // Variable pour les alerts
 $it_alerts = [];
 
-require 'includes/itjob-configs.php';
+require 'includes/configs.php';
 require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
 
@@ -43,12 +43,14 @@ require 'includes/class/middlewares/Register.php';
 require 'includes/class/middlewares/ModelInterest.php';
 require 'includes/class/middlewares/ModelNotice.php';
 require 'includes/class/middlewares/ModelCVLists.php';
+require 'includes/class/middlewares/ModelAds.php';
 
 // Model
 require 'includes/class/class-model.php';
+include 'includes/class/model/class-model-request-formation.php';
+include 'includes/class/model/class-model-subscription-formation.php';
 
 // widgets
-require 'includes/class/widgets/widget-publicity.php';
 require 'includes/class/widgets/widget-shortcode.php';
 require 'includes/class/widgets/widget-accordion.php';
 require 'includes/class/widgets/widget-header-search.php';
@@ -63,6 +65,8 @@ foreach ($interfaces as $interface) {
 }
 
 // post type object
+require_once 'includes/class/class-request-formation.php';
+require_once 'includes/class/class-formation.php';
 require_once 'includes/class/class-offers.php';
 require_once 'includes/class/class-particular.php';
 require_once 'includes/class/class-company.php';
@@ -98,7 +102,10 @@ $elementsVC = (object)[
   'vcSlider' => require 'includes/visualcomposer/elements/class-slider.php',
   'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php',
-  'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php'
+  'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php',
+  'vcAds' => require 'includes/visualcomposer/elements/class-vc-ads.php',
+  'vcFormation' => require 'includes/visualcomposer/elements/class-vc-formation.php',
+  'vcRequestFormation' => require 'includes/visualcomposer/elements/class-vc-request-formation.php'
 ];
 
 require 'includes/class/class-wp-city.php';
@@ -125,9 +132,9 @@ try {
 
   /** @var Object $Engine */
   $Engine = new Twig_Environment($loader, array(
-    'debug' => WP_DEBUG,
+    'debug' => false,
     'cache' => TWIG_TEMPLATE_PATH . '/cache',
-    'auto_reload' => WP_DEBUG
+    'auto_reload' => true
   ));
   // Ajouter des filtres
   itjob_filter_engine($Engine);
@@ -214,22 +221,50 @@ add_filter('wp_nav_menu_args', function ($args) {
 
 
 add_action('init', function () {
-  //echo date_i18n( 'F Y', strtotime(strtr('octobre 2018', $month)));
-//  header('Content-Type: text/csv');
-//  header('Content-Disposition: attachment; filename="emploi.csv"');
-//  $args = [
-//    'taxonomy' => 'job_sought',
-//    'hide_empty' =>false
-//  ];
-//  $terms = get_terms($args);
-//  $fp = fopen('php://output', 'wb');
-//  fputs($fp, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
-//  foreach ( $terms as $term ) {
-//    $val = [$term->term_id, $term->name];
-//    fputcsv($fp, $val, ';');
-//  }
-//  fclose($fp);
-//  exit;
+  
+  // Yoast filter
+  add_filter('wpseo_metadesc', function ($description) {
+    global $post;
+    if (is_object($post))
+      switch ($post->post_type) {
+        case 'offers':
+          $mission = get_field( 'itjob_offer_profil', $post->ID );
+          return strip_tags($mission);
+          break;
+        
+        default:
+          # code...
+          break;
+      }
+    return $description;
+  }, PHP_INT_MAX);
+
+  add_filter('wpseo_title', function ($title) {
+    global $post;
+    if (is_object($post) && !is_archive())
+      switch ($post->post_type) {
+        case 'offers':
+          $regions      = wp_get_post_terms( $post->ID, 'region', ["fields" => "all"] );
+          $region = is_array($regions) && !empty($regions) ? $regions[0] : '';
+          $region = $region ? ' à ' . $region->name : '';
+          $branch_activity  = get_field( 'itjob_offer_abranch', $post->ID );
+          $branch_activity = $branch_activity ? ', ' . $branch_activity->name : '';
+          return 'Emploi - ' . $post->post_title . $region . $branch_activity;
+          break;
+        
+        default:
+          # code...
+          break;
+      }
+    return $title;
+  }, PHP_INT_MAX);
+  
+  //do_action('testUnits');
+
+//  $Model = new includes\model\itModel();
+//  add_action('repair_table', [$Model, 'repair_table'], 10);
+
 });
+
 
 

@@ -109,6 +109,8 @@ add_action('i_am_interested_this_candidate', function () {
   wp_enqueue_script('interests', get_template_directory_uri().'/assets/js/app/interests/interests.js', ['angular', 'alertify'], $itJob->version, true);
   wp_localize_script('interests', 'itOptions', [
     'Helper' => [
+      'archived_candidat_url' => get_post_type_archive_link('candidate'),
+      'client_area_url' => get_the_permalink((int)ESPACE_CLIENT_PAGE),
       'ajax_url' => admin_url( 'admin-ajax.php' ),
       'partialsUrl' => get_template_directory_uri() . '/assets/js/app/interests/partials'
     ]

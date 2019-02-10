@@ -81,6 +81,8 @@ trait ModelInterest {
       // Envoyer un mail pour informer la validation de cette offre
       do_action("email_application_validation", $request);
     }
+    // Crée une notification
+    do_action("notice-change-request-status", (int)$id_request, $status);
     return $results;
   }
 
@@ -107,7 +109,12 @@ trait ModelInterest {
     return $rows;
   }
 
-  // Cette fonction permet d'effacer les requetes sur une offre
+  /**
+   * Cette fonction permet d'effacer les requetes sur une offre
+   * 
+   * @param $id_offer - ID du post offer
+   * @return array
+   */
   public function remove_interest( $id_offer ) {
     global $wpdb;
     if (!is_user_logged_in() || !$id_offer) {
@@ -116,6 +123,18 @@ trait ModelInterest {
     $prepare = $wpdb->prepare("DELETE FROM {$this->requestTable} WHERE id_offer = %d", $id_offer);
     $rows = $wpdb->get_results($prepare);
     return $rows;
+  }
+
+  /**
+   * Effacer le piéce joint d'un candidat
+   * 
+   * @param int $id_attachment - ID de l'objet d'attachment
+   * @return $result - false|int
+   */
+  public function remove_attachment( $id_attachment ) {
+    global $wpdb;
+    $result = $wpdb->update($this->requestTable, ['id_attachment' => 0], ['id_attachment' => (int)$id_attachment], ['%d'], ['%d']);
+    return $result;
   }
 
   /**
@@ -230,10 +249,11 @@ trait ModelInterest {
   public static function get_all() {
     global $wpdb;
     $interests = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}cv_request" );
-
+    // TODO: Une erreur peut être provoquer s'il a des milliers de requete dans la base de donnée
     return $interests;
   }
 
+  // Retourne une requete
   public static function get_request($id_request) {
     global $wpdb;
     if (!is_numeric($id_request)) return false;

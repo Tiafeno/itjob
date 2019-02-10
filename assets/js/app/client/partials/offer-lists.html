@@ -1,16 +1,13 @@
 <div id="modal-edit-offer-overflow" uk-modal>
   <div class="uk-modal-dialog">
-
     <button class="uk-modal-close-default" type="button" uk-close></button>
-
     <div class="uk-modal-header">
       <h2 class="uk-modal-title">Modification</h2>
     </div>
-
     <div class="uk-modal-body" uk-overflow-auto>
       <form name="editOfferForm" novalidate>
         <p>
-          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:
+          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants: <br>
           032 45 378 60 - 033 82 591 13 - 034 93 962 18.
         </p>
         <div class="form-group mb-2 row">
@@ -20,20 +17,18 @@
               required>
           </div>
         </div>
-
         <div class="form-group mb-2 row ">
           <div class="col-sm-12">
             <label class="col-form-label ">Date limite de candidature <span style="color: red">*</span></label>
             <div class="form-group">
-              <div class="input-group date">
+              <div class="input-group date" style="border: 5px solid #6dab3c">
                 <span class="input-group-addon bg-white"><i class="fa fa-calendar"></i></span>
-                <input ng-model="offerEditor.dateLimit" autocomplete="off" name="datelimit" class="form-control"
+                <input ng-model="offerEditor.dateLimit" readonly="readonly" autocomplete="off" name="datelimit" class="form-control" style="border: none!important"
                        required>
               </div>
             </div>
           </div>
         </div>
-
         <div class="form-group mb-2 row ">
           <div class="col-sm-12">
             <label class="col-form-label ">Type de contrat <span style="color: red">*</span></label>
@@ -46,7 +41,6 @@
             </div>
           </div>
         </div>
-
         <div class="form-group mb-2 row ">
           <div class="col-sm-12">
             <label class="col-form-label ">Secteur d'activité <span style="color: red">*</span>
@@ -59,7 +53,6 @@
             </div>
           </div>
         </div>
-
         <div class="form-group mb-2 row">
           <div class="col-sm-12">
             <label class=" col-form-label">Salaire net proposé </label>
@@ -67,7 +60,6 @@
               placeholder="Salaire net proposé">
           </div>
         </div>
-
         <div class="form-group mb-2 row ">
           <div class="col-sm-12">
             <label class="col-form-label ">Region <span style="color: red">*</span></label>
@@ -90,42 +82,35 @@
             </div>
           </div>
         </div>
-
         <div class="form-group mt-5">
           <div class="form-label uk-text-bold">Mission</div>
           <div class="mt-2">
             <p ng-bind-html="offerEditor.mission"></p>
           </div>
         </div>
-
         <div class="form-group mt-5">
           <div class="form-label uk-text-bold">Profil recherché </div>
           <div class="mt-2">
             <p ng-bind-html="offerEditor.profil"></p>
           </div>
         </div>
-
         <div class="form-group mt-5" ng-if="offerEditor.otherInformation">
           <div class="form-label uk-text-bold">Autres informations </div>
           <div class="mt-2">
             <p ng-bind-html="offerEditor.otherInformation"></p>
           </div>
         </div>
-
       </form>
-
     </div>
-
     <div class="uk-modal-footer uk-text-right">
+        <button class="btn btn-blue ml-4" ng-click="editOffer(offerEditor.ID, $event)" type="button">Enregistrer</button>
       <button class="btn btn-default uk-modal-close" type="button">Annuler</button>
-      <button class="btn btn-blue ml-4" ng-click="editOffer(offerEditor.ID)" type="button">Enregistrer</button>
     </div>
-
   </div>
 </div>
+
 <!-- Modal View Candidat -->
 <div id="modal-view-candidat" uk-modal>
-
   <div class="uk-modal-dialog uk-modal-body">
     <button class="uk-modal-close uk-float-right" type="button" uk-close></button>
     <div class="">
@@ -156,13 +141,14 @@
                             <a class="" target="_blank" ng-href="[[interest.candidate.candidate_url]]">[[interest.candidate.title]] </a>
                             <span class="badge badge-default ml-2" ng-if="interest.status === 'pending'">En attente de validation</span>
                             <span class="badge badge-success ml-2" ng-if="interest.status === 'validated'">Confirmer</span>
+                            <span class="badge badge-danger ml-2" ng-if="interest.status === 'reject'">Rejeter</span>
                           </div>
                           <small class="text-muted">[[interest.candidate.branch_activity.name]]</small>
                           <div class="mt-2">
                             <span class="badge badge-default" ng-if="interest.type === 'apply'">Postulant</span>
                           </div>
                         </div>
-                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="!interest.inList && interest.status === 'validated'" data-ng-click="addList(interest.candidate.ID, $event)">Ajouter & Voir</button>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="!interest.inList && interest.status === 'validated'" data-ng-click="addList(interest.candidate.ID, $event)">Voir la candidature</button>
                         <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.inList" data-ng-click="viewCandidateInformation(interest.candidate.ID, offerView.ID)">Consulter</button>
                       </div>
                     </li>
@@ -188,8 +174,10 @@
                           </div>
                           <small class="text-muted">[[interest.candidate.branch_activity.name]]</small>
                         </div>
-                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.status !== 'reject'" data-ng-click="addList(interest.candidate.ID, $event)">Sélectionner</button>
-                        <button class="btn btn-sm btn-outline-danger ml-2" ng-if="interest.status !== 'reject'" data-ng-click="rejectCandidate(interest.candidate.ID, $event)">Rejeter le candidat</button>
+                        <a class="btn btn-sm btn-outline-success ml-2" target="_blank" ng-href="[[interest.candidate.candidate_url]]">Voir</a>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.inList" data-ng-click="viewCandidateInformation(interest.candidate.ID, offerView.ID)">Consulter</button>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.status === 'pending'" data-ng-click="addList(interest.candidate.ID, $event)">Sélectionner</button>
+                        <button class="btn btn-sm btn-outline-danger ml-2" ng-if="interest.status === 'pending'" data-ng-click="rejectCandidate(interest.candidate.ID, $event)">Rejeter</button>
                       </div>
                     </li>
                     <li class="media align-items-center" ng-if="collectFilterResults('filter_postuled_candidate').length <= 0">Néant</li>
@@ -201,7 +189,7 @@
                 <div class="ibox-body alert alert-primary">
                   <h5 class="">Découvrez l'offre premium</h5>
                   <p>Pour pouvoir visionner et télécharger plus de CV et de trouver les bons candidats, plus rapidement sans limite</p>
-                  <button  class="btn btn-info uk-modal-close uk-close-large" type="button" >Améliorer mon compte</button>
+                  <button  class="btn btn-info uk-modal-close uk-close-large" data-ng-click="featuredOffer()" type="button" >Améliorer l'offre</button>
                 </div>
               </div>
             </div>
@@ -214,7 +202,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
@@ -232,6 +219,8 @@
       <div class="ibox-body">
         <div class="form-group mb-4">
           <p>
+              En optant pour cette option cela vous permettra d’attirer l’attention des candidats et ainsi d’augmenter le nombre de candidatures reçues.
+              Vous pouvez mettre en avant votre annonce selon une période plus ou moins longue. <br> <br>
             Pour plus d'informations, contactez le service commercial au:<br>
             <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034
               93 962 18</a>.
@@ -293,7 +282,7 @@
           <span style="cursor: pointer" class="p-relative" >
             <span ng-if="offer.candidat_apply.length <= 0">[[ offer.candidat_apply.length ]]</span>
             <span ng-click="viewApply(offer.ID)" ng-if="offer.candidat_apply.length > 0" class="badge-success badge ml-2">
-              Gérer
+              Liste des candidates
             </span>
             <span class="badge badge-pink badge-circle" ng-if="offer.candidat_apply.length > 0" style="position:absolute; right: -13px; top: -13px;">[[ offer.candidat_apply.length ]]</span>
           </span>

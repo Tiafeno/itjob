@@ -22,6 +22,7 @@ class apiCompany
       "paged" => $paged,
     ];
     $meta_query = [];
+    $tax_query = [];
     if (isset($_POST['search']) && !empty($_POST['search']['value'])) {
       $search = stripslashes($_POST['search']['value']);
       $searchs = explode('|', $search);
@@ -51,7 +52,7 @@ class apiCompany
       if ($account === 1 || $account === 0 || $account === 2) {
         $value = $account === 0 ? [1, 2] : $account;
         $compare = $account === 0 ? 'NOT IN' : '=';
-          $account_query = [
+        $account_query = [
           [
             'key' => 'itjob_meta_account',
             'value' => $value,
@@ -67,7 +68,7 @@ class apiCompany
             ]
           ]);
         }
-        $meta_query = $account_query;
+        $meta_query[] = $account_query;
       }
 
       $activityArea = (int)$searchs[1];
@@ -92,11 +93,13 @@ class apiCompany
         $args = array_merge($args, ['date_query' => $date_query]);
       }
     }
-
-    $args = array_merge($args, ['meta_query' => $meta_query]);
+    if (!empty($meta_query))
+      $args = array_merge($args, ['meta_query' => $meta_query]);
+    
+    if (!empty($tax_query))
+      $args = array_merge($args, ['tax_query' => $tax_query]);
     //print_r($args);
     $the_query = new WP_Query($args);
-    $entreprises = [];
     if ($the_query->have_posts()) {
       $entreprises = array_map(function ($entreprise) {
         $objCompany = new \includes\post\Company($entreprise->ID);

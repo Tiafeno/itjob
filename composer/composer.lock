@@ -1,11 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "212a5589c5c03fa66e44a843c0e03851",
-    "content-hash": "2805bf418570cb35c569d620cb032129",
+    "content-hash": "e3bc82da227f8110609c2b39a04e52d2",
     "packages": [
         {
             "name": "adoy/oauth2",
@@ -45,7 +44,7 @@
                 }
             ],
             "description": "Light PHP wrapper for the OAuth 2.0 protocol (based on OAuth 2.0 Authorization Protocol draft-ietf-oauth-v2-15)",
-            "time": "2015-08-03 19:57:06"
+            "time": "2015-08-03T19:57:06+00:00"
         },
         {
             "name": "anahkiasen/underscore-php",
@@ -95,7 +94,7 @@
                 "laravel",
                 "toolkit"
             ],
-            "time": "2015-05-16 19:24:58"
+            "time": "2015-05-16T19:24:58+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -162,7 +161,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2017-07-22 12:18:28"
+            "time": "2017-07-22T12:18:28+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",
@@ -214,7 +213,7 @@
                 "mobile detector",
                 "php mobile detect"
             ],
-            "time": "2018-09-01 15:05:15"
+            "time": "2018-09-01T15:05:15+00:00"
         },
         {
             "name": "patchwork/utf8",
@@ -273,7 +272,73 @@
                 "utf-8",
                 "utf8"
             ],
-            "time": "2016-05-18 13:57:10"
+            "time": "2016-05-18T13:57:10+00:00"
+        },
+        {
+            "name": "phpmailer/phpmailer",
+            "version": "v6.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPMailer/PHPMailer.git",
+                "reference": "0c41a36d4508d470e376498c1c0c527aa36a2d59"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/0c41a36d4508d470e376498c1c0c527aa36a2d59",
+                "reference": "0c41a36d4508d470e376498c1c0c527aa36a2d59",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-filter": "*",
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "doctrine/annotations": "1.2.*",
+                "friendsofphp/php-cs-fixer": "^2.2",
+                "phpdocumentor/phpdocumentor": "2.*",
+                "phpunit/phpunit": "^4.8 || ^5.7",
+                "zendframework/zend-eventmanager": "3.0.*",
+                "zendframework/zend-i18n": "2.7.3",
+                "zendframework/zend-serializer": "2.7.*"
+            },
+            "suggest": {
+                "ext-mbstring": "Needed to send email in multibyte encoding charset",
+                "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
+                "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
+                "psr/log": "For optional PSR-3 debug logging",
+                "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
+                "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPMailer\\PHPMailer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1"
+            ],
+            "authors": [
+                {
+                    "name": "Jim Jagielski",
+                    "email": "jimjag@gmail.com"
+                },
+                {
+                    "name": "Marcus Bointon",
+                    "email": "phpmailer@synchromedia.co.uk"
+                },
+                {
+                    "name": "Andy Prevost",
+                    "email": "codeworxtech@users.sourceforge.net"
+                },
+                {
+                    "name": "Brent R. Matzelle"
+                }
+            ],
+            "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
+            "time": "2019-02-01T15:04:28+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -331,7 +396,7 @@
                 "polyfill",
                 "portable"
             ],
-            "time": "2018-08-06 14:22:27"
+            "time": "2018-08-06T14:22:27+00:00"
         },
         {
             "name": "twig/twig",
@@ -397,7 +462,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-07-13 07:12:17"
+            "time": "2018-07-13T07:12:17+00:00"
         }
     ],
     "packages-dev": [],

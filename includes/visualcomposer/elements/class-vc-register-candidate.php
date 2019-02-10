@@ -108,16 +108,17 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         return do_shortcode( "[vc_register_particular title='Créer votre compte itJob' redir='$redirect']" );
       }
 
+      // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
+      $User = wp_get_current_user();
+      if (!in_array('candidate', $User->roles)) {
+        return $message_access_refused;
+      }
+      
       $hasCV = get_field('itjob_cv_hasCV', $this->Candidate->getId());
       if ($hasCV && $this->Candidate->is_publish()) {
         return $Engine->render( '@VC/candidates/pending-cv.html.twig', [
           'offer_archive' => get_post_type_archive_link('offers')
         ] );
-      }
-
-      // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
-      if ( ! $this->Candidate || ! $this->Candidate->is_candidate() ) {
-        return $message_access_refused;
       }
 
       wp_enqueue_style( 'b-datepicker-3' );
@@ -177,7 +178,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
     public function update_user_cv() {
       global $itHelper;
       
-      if ( $_SERVER['REQUEST_METHOD'] != 'POST' || ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
+      if ( $_SERVER['REQUEST_METHOD'] != 'POST' || ! wp_doing_ajax() || ! is_user_logged_in() ) {
         return false;
       }
 
@@ -229,7 +230,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       ];
 
       foreach ( $form as $key => $value ) :
-        if ( is_null( $value ) ) {
+        if ( is_null( $value ) && $key !== 'softwares' ) {
           \wp_send_json( [
             'success' => false,
             'msg'     => "Le formulaire n'est pas valide. Veillez verifier les champs requis",
@@ -251,7 +252,13 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $ids = $this->add_term_submit( $form->softwares, 'software' );
       wp_set_post_terms( $this->Candidate->getId(), $ids, 'software' );
       // Ajouter les languages
-      $ids = $this->add_term_submit( $form->languages, 'language' );
+      $ids = [];
+      if (is_array($form->languages)) {
+        foreach ($form->languages as $language) {
+          if (!isset($language->term_id)) continue;
+          array_push($ids, $language->term_id);
+        }
+      }
       wp_set_post_terms( $this->Candidate->getId(), $ids, 'language' );
 
       unset( $ids );
@@ -264,7 +271,6 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         'projet'  => json_decode($form->projet)
       ];
       update_field( 'itjob_cv_centerInterest', $centerInterest, $this->Candidate->getId() );
-
       update_field( 'itjob_cv_newsletter', $form->newsletter, $this->Candidate->getId() );
 
       // Update drive licence field
@@ -307,7 +313,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           'training_country'       => $training->country,
           'training_city'          => $training->city,
           'training_diploma'       => $training->diploma,
-          'training_establishment' => $training->establishment
+          'training_establishment' => $training->establishment,
+          'validated'              => 0
         ];
       }
       update_field( 'itjob_cv_trainings', $trainings, $this->Candidate->getId() );
@@ -323,7 +330,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           'exp_company'      => $experience->company,
           'exp_positionHeld' => $experience->positionHeld,
           'exp_branch_activity' => (int)$experience->abranch,
-          'exp_mission'      => $experience->mission
+          'exp_mission'      => $experience->mission,
+          'validated'        => 0
         ];
       }
       update_field( 'itjob_cv_experiences', $experiences, $this->Candidate->getId() );
@@ -333,13 +341,13 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       update_field( 'activated', 0, $this->Candidate->getId() );
       // Ajouter que l'utilisateur ou le candidate possède un CV
       update_field( 'itjob_cv_hasCV', 1, $this->Candidate->getId() );
+      add_post_meta($this->Candidate->getId(), 'date_create', date_i18n('Y-m-d H:i:s'));
       // Envoyer un email de confirmation
       do_action('submit_particular_cv', $this->Candidate->getId());
       do_action('notice-admin-create-cv', $this->Candidate->getId());
 
       // Alerter les entreprises
      // $itHelper->Mailing->alert_for_new_candidate($this->Candidate->getId());
-
       wp_send_json( [ 'success' => true ] );
 
     } // .end update_user_cv
@@ -385,9 +393,12 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
           // Désactiver le term qu'on viens d'ajouter
           if ( ! is_wp_error( $term ) ) {
             update_term_meta( $term['term_id'], 'activated', 0 );
+            if ($taxonomy === 'software' || $taxonomy === "job_sought") {
+              do_action('notice-admin-new-' . $taxonomy, $term, $this->Candidate);
+            }
+
             array_push( $tabContainer, (int) $term['term_id'] );
           }
-          // TODO: Envoyer un mail pour notifier des nouveaux terms
         }
       }
 
@@ -419,6 +430,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       if ( is_wp_error( $attachment_id ) ) {
         // There was an error uploading the image.
+        do_action('notice-admin-new-featured-image', $this->Candidate->getId());
         wp_send_json( [ 'success' => false, 'msg' => $attachment_id->get_error_message() ] );
       } else {
         // The image was uploaded successfully!

@@ -19,12 +19,9 @@ class importUser {
   public function update_user_meta($rows) {
     if ($this->user_id === 0) return false;
     update_user_meta($this->user_id, '__id_user', $rows->id_user);
-    update_user_meta($this->user_id, '__pwd_change', $rows->change_pwd);
     update_user_meta($this->user_id, '__created', $rows->created);
     update_user_meta($this->user_id, '__password', $rows->password);
     update_user_meta($this->user_id, '__last_login', $rows->last_login);
-    update_user_meta($this->user_id, '__description', $rows->description === 'NULL' ? '' : $rows->description);
-    update_user_meta($this->user_id, '__role', $rows->id_role );
     // Ce champ definie si l'utilisateur doit changer son mot de passe
     update_user_meta($this->user_id, '__recovery_password', 1);
 

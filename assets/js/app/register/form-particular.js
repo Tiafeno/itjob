@@ -1,37 +1,41 @@
 angular.module('formParticular', ['ui.router', 'ngMessages'])
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     //$interpolateProvider.startSymbol('[[').endSymbol(']]');
-    var states = [
-      {
-        name: 'form',
-        url: '/form',
-        component: 'formComponent',
-        resolve: {
-          region: function (services) {
-            return services.getRegion();
-          },
-          allCity: function (services) {
-            return services.getCity();
-          }
+    var states = [{
+      name: 'form',
+      url: '/form',
+      component: 'formComponent',
+      resolve: {
+        region: function (services) {
+          return services.getRegion();
+        },
+        allCity: function (services) {
+          return services.getCity();
         }
       }
-    ];
+    }];
     // Loop over the state definitions and register them
     states.forEach(function (state) {
       $stateProvider.state(state);
     });
-    $urlServiceProvider.rules.otherwise({state: 'form'});
+    $urlServiceProvider.rules.otherwise({
+      state: 'form'
+    });
   })
   .service('services', ["$http", function ($http) {
     return {
       getRegion: function () {
-        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=region', {cache: true})
+        return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=region', {
+            cache: true
+          })
           .then(function (resp) {
             return resp.data;
           });
       },
       getCity: function () {
-        return $http.get(itOptions.ajax_url + '?action=get_city', {cache: true})
+        return $http.get(itOptions.ajax_url + '?action=get_city', {
+            cache: true
+          })
           .then(function (resp) {
             return resp.data;
           });
@@ -40,19 +44,28 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         return $http({
           url: itOptions.ajax_url,
           method: "POST",
-          headers: {'Content-Type': undefined},
+          headers: {
+            'Content-Type': undefined
+          },
           data: formData
         });
       },
       mailExists: function (email) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
           if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-            $http.get(itOptions.ajax_url + '?action=ajx_user_exist&log=' + email, {cache: true})
+            $http.get(itOptions.ajax_url + '?action=ajx_user_exist&mail=' + email, {
+                cache: true
+              })
               .then(function (resp) {
-                resolve(resp.data ? true : false);
+                var data = _.clone(resp.data);
+                if (data.success) {
+                  reject(data.data);
+                } else {
+                  resolve(data.data);
+                }
               });
           } else {
-            resolve(false);
+            reject(false);
           }
         });
       }
@@ -66,11 +79,18 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         element.bind('blur', function () {
           services
             .mailExists(element.val())
-            .then(function (status) {
-              scope.$apply(function () {
-                model.$setValidity('mail', !status);
-              });
-            })
+            .then(
+              function (status) {
+                scope.$apply(function () {
+                  model.$setValidity('mail', true);
+                });
+              },
+              function (error) {
+                console.log(error);
+                scope.$apply(function () {
+                  model.$setValidity('mail', false);
+                });
+              })
         });
       }
     }
@@ -96,8 +116,11 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
     $scope.error = false;
   }])
   .component('formComponent', {
-    bindings: {region: '<', allCity: '<'},
-    templateUrl: itOptions.partials_url + '/particular/form.html',
+    bindings: {
+      region: '<',
+      allCity: '<'
+    },
+    templateUrl: itOptions.partials_url + '/particular/form.html?ver=' + itOptions.version,
     controllerAs: 'formulaire',
     controller: function ($scope, services) {
       const self = this;
@@ -106,32 +129,39 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         self.regions = _.clone($scope.formulaire.region);
       };
       $scope.error = false;
+      $scope.buttonDisable = false;
       $scope.uri = {};
       $scope.uri.singin = itOptions.urlHelper.singin;
       $scope.uri.redir = itOptions.urlHelper.redir;
-      $scope.countPhone = 1;
       $scope.particularForm = {};
       $scope.particularForm.greeting = 'mr';
-      $scope.particularForm.cellphone = [
-        {
-          id: 0,
-          value: ''
-        }
-      ];
+      $scope.particularForm.cellphone = [{
+        id: 0,
+        value: ''
+      }];
       $scope.addPhone = function () {
-        $scope.particularForm.cellphone.push({id: $scope.countPhone, value: ''});
-        $scope.countPhone += 1;
+        $scope.particularForm.cellphone.push({
+          id: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10),
+          value: ''
+        });
       };
       $scope.removePhone = function (id) {
         $scope.particularForm.cellphone = _.filter($scope.particularForm.cellphone, function (cellphone) {
-          return cellphone.id != id;
+          return cellphone.id !== id;
         });
       };
       $scope.formSubmit = function (isValid) {
         if ($scope.pcForm.$invalid) {
           angular.forEach($scope.pcForm.$error, function (field) {
             angular.forEach(field, function (errorField) {
-              errorField.$setTouched();
+              errorField = (typeof errorField.$setTouched !== 'function') ? errorField.$error.required : errorField;
+              if (_.isArray(errorField)) {
+                angular.forEach(errorField, function (error) {
+                  error.$setTouched();
+                });
+              } else {
+                errorField.$setTouched();
+              }
             });
           });
           $scope.pcForm.email.$validate();
@@ -139,6 +169,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         }
 
         if (!isValid) return;
+        $scope.buttonDisable = true;
         // Submit form here ...
         var particularData = new FormData();
         particularData.append('action', 'insert_user_particular');
@@ -150,7 +181,8 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
         $scope.error = false;
         services
           .sendPostForm(particularData)
-          .then(function (resp) {
+          .then(
+            function (resp) {
             var status = resp.data;
             var _type = status.success ? 'info' : 'error';
             swal({
@@ -158,17 +190,21 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
               text: status.msg,
               type: _type,
             }, function () {
+              $scope.buttonDisable = false;
               if (status.success) {
                 var redirection = itOptions.urlHelper.redir;
                 window.location.href = _.isNull(redirection) ? itOptions.urlHelper.singin : redirection;
               }
               if (!status.success) $scope.error = true;
             });
+          }, function (error) {
+            $scope.buttonDisable = false;
+            $scope.error = true;
           })
       };
 
       $scope.$watch('particularForm', value => {
-        console.log(value);
+
       }, true);
       //  JQLite
       var jqSelects = jQuery("select.form-control.find");
@@ -191,8 +227,11 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
           var dataContains = data.text.toLowerCase();
           var searchTyping = _.clone(params.term);
           if (!_.isUndefined($scope.particularForm.region) && !_.isEmpty($scope.particularForm.region)) {
-            var region = _.findWhere(self.regions, {term_id: parseInt($scope.particularForm.region)});
+            var region = _.findWhere(self.regions, {
+              term_id: parseInt($scope.particularForm.region)
+            });
             var findRegion = region.name.toLowerCase();
+            findRegion = findRegion === "amoron'i mania" ? 'mania' : findRegion;
             searchTyping += ` ${findRegion} `;
           }
 

@@ -72,6 +72,14 @@ if ( ! class_exists( 'itJob' ) ) {
         }
       } );
 
+      add_action( 'delete_post', function ($post_id) {
+        $pst = get_post( $post_id );
+        if ($pst->post_type === "attachment") {
+          $Model = new itModel();
+          $Model->remove_attachment($pst->ID);
+        }
+      }, 10 );
+
       // Effacer le candidat ou l'entreprise si on supprime l'utilisateur
       add_action( 'delete_user', function ( $user_id ) {
         $user_obj = get_userdata( $user_id );
@@ -115,18 +123,15 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( isset( $_POST['pwd'] ) || ! empty( $_POST['pwd'] ) ) {
           $user       = get_userdata( $user_id );
           $user_roles = $user->roles;
-          if ( in_array( 'company', $user_roles, true ) ||
-               in_array( 'candidate', $user_roles, true ) ) {
+          if ( in_array( 'company', $user_roles ) || in_array( 'candidate', $user_roles) ) {
             $pwd = $_POST['pwd'];
-            if ( isset( $pwd ) ) {
-              $id = wp_update_user( [ 'ID' => $user_id, 'user_pass' => trim( $pwd ) ] );
-              if ( is_wp_error( $id ) ) {
-                return false;
-              } else {
-                // Mot de passe utilisateur à etes modifier avec success
-                do_action( "new_register_user", $user_id );
-                return true;
-              }
+            $id = wp_update_user( [ 'ID' => $user_id, 'user_pass' => trim( $pwd ) ] );
+            if ( is_wp_error( $id ) ) {
+              return false;
+            } else {
+              // Mot de passe utilisateur à etes modifier avec success
+              do_action( "new_register_user", $user_id );
+              return true;
             }
           }
         }
@@ -137,26 +142,80 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'after_switch_theme', function ( $new_theme ) {
         global $wpdb;
         // Cree une table pour les entreprise intereser par des candidats
-        $cv_request = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_request (`id_cv_request` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
-`id_candidate` BIGINT(20) NOT NULL DEFAULT 0, `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , `status` VARCHAR(20) NOT NULL DEFAULT 'pending' , 
-`id_attachment` BIGINT(20) NOT NULL DEFAULT 0,
-                         PRIMARY KEY (`id_cv_request`)) ENGINE = InnoDB;";
+        $cv_request = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_request (
+          `id_cv_request` BIGINT(20) NOT NULL AUTO_INCREMENT , 
+          `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
+          `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
+          `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , 
+          `status` VARCHAR(20) NOT NULL DEFAULT 'pending' , 
+          `id_attachment` BIGINT(20) NOT NULL DEFAULT 0, 
+          `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+          PRIMARY KEY (`id_cv_request`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_request );
 
         // Crée une table pour ajouter les CV dans la liste des entreprise
         // Pour les entreprise de membre standar, la liste se limite à 5 CV
-        $cv_lists = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_lists (`id_lists` BIGINT(20) NOT NULL AUTO_INCREMENT , `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
-                      `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
-                      PRIMARY KEY (`id_lists`)) ENGINE = InnoDB;";
+        $cv_lists = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}cv_lists (
+          `id_lists` BIGINT(20) NOT NULL AUTO_INCREMENT , 
+          `id_company` BIGINT(20) NOT NULL DEFAULT 0, 
+          `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
+          `date_add` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id_lists`)) ENGINE = InnoDB;";
         $wpdb->query( $cv_lists );
 
+        // Cette table contiene les notifications
         $notice = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}notices (
-            `id_notice` bigint(20) PRIMARY KEY AUTO_INCREMENT,
-            `id_user` bigint(20) NOT NULL,
-            `status` boolean DEFAULT false,
-            `notice` longtext NOT NULL COMMENT 'Contient l''object Notification',
-            `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );";
+          `id_notice` bigint(20) PRIMARY KEY AUTO_INCREMENT,
+          `id_user` bigint(20) NOT NULL,
+          `template` TINYINT(1) NOT NULL DEFAULT 0,
+          `status` boolean DEFAULT false,
+          `needle` longtext NOT NULL COMMENT 'Contient les variables dans une array',
+          `guid` varchar(255)	NOT NULL DEFAULT '',
+          `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );";
         $wpdb->query($notice);
+
+        // Cette table contiene les informations sur les publicités
+        $ads = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}ads` (
+          `id_ads` BIGINT(20) NOT NULL AUTO_INCREMENT,
+          `id_attachment` BIGINT(20) NOT NULL,
+          `img_size` VARCHAR(250) NOT NULL DEFAULT 'full',
+          `title` TEXT(255) NOT NULL,
+          `start` DATETIME NOT NULL,
+          `end` DATETIME NOT NULL,
+          `classname` VARCHAR(50) NULL,
+          `id_user` BIGINT(20) UNSIGNED NOT NULL,
+          `position` VARCHAR(45) NULL DEFAULT 0,
+          `paid` TINYINT(1) NOT NULL DEFAULT 0,
+          `bill` VARCHAR(45) NULL COMMENT 'Numéro de facture',
+          `attr` LONGTEXT NULL,
+          `create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id_ads`)) ENGINE = InnoDB;";
+        $wpdb->query($ads);
+
+        // Cette table contiene les demandes de formations effectuer par les candidats et particuliers
+        $request_training = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}request_training` (
+          `ID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+          `user_id` BIGINT(20) UNSIGNED NOT NULL,
+          `formation_id` BIGINT(20) UNSIGNED NULL,
+          `subject` VARCHAR(250) NOT NULL,
+          `topic` VARCHAR(250) NULL,
+          `description` LONGTEXT NOT NULL,
+          `validated` TINYINT(1) NOT NULL DEFAULT 0,
+          `disabled` TINYINT(1) NOT NULL DEFAULT 0,
+          `concerned` LONGTEXT NULL COMMENT 'Contient la liste des candidats dans une array',
+          `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`ID`)) ENGINE = InnoDB;";
+        $wpdb->query($request_training);
+
+        // Cette table contiene les donées pour les candidat qui s'inscrit au formation
+        $registration = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}registration_training` (
+          `ID` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+          `formation_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+          `user_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+          `paid` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0:pending, 1:accepted & 2: refused',
+          `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`ID`)) ENGINE = InnoDB;";
+        $wpdb->query($registration);
       } );
 
       // Add acf google map api
@@ -199,6 +258,74 @@ if ( ! class_exists( 'itJob' ) ) {
             }
 
             switch ( $post_type ) {
+              CASE 'formation':
+                if ( $abranch ) {
+                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
+                  $tax_query[] = [
+                    'taxonomy'         => 'branch_activity',
+                    'field'            => 'term_id',
+                    'terms'            => (int) $abranch,
+                    'include_children' => false
+                  ];
+                }
+
+                if ( ! isset( $meta_query ) ) {
+                  $meta_query = $query->get( 'meta_query' );
+                }
+
+                if ( ! empty( $s ) ) {
+                  // Feature: Recherché aussi dans le profil recherché et mission
+
+                  add_filter('posts_where', function ( $where ) {
+                    global $wpdb;
+                    $s = \Http\Request::getValue('s');
+                    $s = $wpdb->esc_like( $s );
+                    $s = implode('|', explode(' ', $s));
+                    if (!is_admin()) {
+                      $where .= " 
+                      AND {$wpdb->posts}.ID IN (
+                          SELECT {$wpdb->postmeta}.post_id as post_id
+                            FROM {$wpdb->postmeta}
+                            WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+                        ) 
+                      AND ( 
+                        {$wpdb->posts}.post_title REGEXP '({$s}).*$'
+                        OR {$wpdb->posts}.post_content REGEXP '({$s}).*$'
+                        OR {$wpdb->posts}.ID IN (
+                          SELECT {$wpdb->postmeta}.post_id as post_id
+                              FROM {$wpdb->postmeta}
+                              WHERE {$wpdb->postmeta}.meta_key = 'reference' AND {$wpdb->postmeta}.meta_value REGEXP '({$s}).*$'
+                        ))";
+                    }
+
+                    return $where;
+                  });
+                }
+                
+                $meta_query = !is_array($meta_query) ? [] : $meta_query;
+                $meta_query[] = [
+                  [
+                    'key'     => 'activated',
+                    'value'   => 1,
+                    'compare' => '=',
+                  ],
+                ];
+
+                if ( isset( $meta_query ) && ! empty( $meta_query ) ):
+                  $query->set( 'meta_query', $meta_query );
+                  $query->meta_query = new \WP_Meta_Query( $meta_query );
+                endif;
+
+                if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
+                  $query->set( 'tax_query', $tax_query );
+                  $query->tax_query = new \WP_Tax_Query( $tax_query );
+                }
+
+                $query->query['s']      = '';
+                $query->query_vars['s'] = '';
+
+                BREAK;
               // Trouver des offres d'emplois
               CASE 'offers':
 
@@ -321,6 +448,7 @@ if ( ! class_exists( 'itJob' ) ) {
                     global $wpdb;
                     //global $wp_query;
                     $s = isset($_GET['s']) ? $_GET['s'] : '';
+                    $s = $wpdb->esc_like( $s );
                     if (!is_admin()) {
                       $where .= " AND {$wpdb->posts}.ID IN (
                                       SELECT
@@ -339,6 +467,7 @@ if ( ! class_exists( 'itJob' ) ) {
                                           FROM {$wpdb->postmeta}
                                           WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
                                         ))
+                                        
                                         AND (pt.ID IN(
                                           SELECT trs.object_id as post_id
                                           FROM {$wpdb->terms} as terms
@@ -348,11 +477,23 @@ if ( ! class_exists( 'itJob' ) ) {
                                           AND ttx.taxonomy = 'job_sought'
                                           AND terms.name LIKE '%{$s}%'
                                         ))
-                                        OR (pt.ID IN (
-                                          SELECT {$wpdb->postmeta}.post_id
-                                          FROM {$wpdb->postmeta}
-                                          WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                                        ))";
+                                        OR (
+                                            pt.ID IN (
+                                            SELECT {$wpdb->postmeta}.post_id
+                                            FROM {$wpdb->postmeta}
+                                            WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
+                                           ) 
+                                            AND pt.ID IN (
+                                            SELECT {$wpdb->postmeta}.post_id as post_id
+                                            FROM {$wpdb->postmeta}
+                                            WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+                                           )
+                                           AND pt.ID IN (
+                                            SELECT {$wpdb->postmeta}.post_id as post_id
+                                            FROM {$wpdb->postmeta}
+                                            WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+                                          )
+                                        )";
                       /**
                        * Si une taxonomie est definie on effectuer une recherche sur le titre de l'article seulement si on
                        * le trouve pas dans l'emploi (job_sought) et l'ancien empoi rechercher.
@@ -427,9 +568,9 @@ if ( ! class_exists( 'itJob' ) ) {
 
           } // .end if - search conditional
           else {
-            // Filtrer les candidates ou les offers ou les entreprises
+            // Filtrer les candidates ou les offers ou les entreprises et les formations
             // Afficher seulement les candidates ou les offres ou les entreprises activer
-            if ( $post_type === 'candidate' || $post_type === 'offers' || $post_type === 'company' ):
+            if ( $post_type === 'candidate' || $post_type === 'offers' || $post_type === 'company' || $post_type === 'formation' ):
               // Meta query
               if ( ! isset( $meta_query ) ) {
                 $meta_query = $query->get( 'meta_query' );
@@ -448,6 +589,9 @@ if ( ! class_exists( 'itJob' ) ) {
                   'compare' => '=',
                   'type'    => 'NUMERIC'
                 ];
+
+                $query->set('orderby', 'ID');
+                $query->set('order', 'DESC');
               }
 
               if ( isset( $meta_query ) && ! empty( $meta_query ) ):
@@ -465,35 +609,17 @@ if ( ! class_exists( 'itJob' ) ) {
        * Ajouter dans les variables global pour nom post-types le contenue du post
        */
       add_action( 'the_post', function ( $post_object ) {
-        $post_types = [ 'offers', 'company', 'candidate' ];
-        if ( ! in_array( $post_object->post_type, $post_types ) ) {
-          return;
-        }
         switch ( $post_object->post_type ) {
           case 'candidate':
             $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
-            // Afficher les CV pour les comptes entreprise premium
-            $current_user = wp_get_current_user();
-            if ( $current_user->ID !== 0 && ! current_user_can( 'remove_users' ) ) {
-              if ( in_array( 'company', $current_user->roles ) ) {
-                $Company = Post\Company::get_company_by( $current_user->ID );
-                // Si le client en ligne est une entreprise on continue...
-                // On recupere le type du compte
-                $account = get_post_meta( $Company->getId(), 'itjob_meta_account', true );
-                // Si le compte de l'entreprise est premium
-                if ( (int) $account === 1 ) {
-                  $GLOBALS['candidate']->__client_premium_access();
-                }
-              }
-            }
             break;
 
           case 'offers':
             $GLOBALS[ $post_object->post_type ] = new Post\Offers( $post_object->ID );
             break;
 
-          case 'company':
-            $GLOBALS[ $post_object->post_type ] = new Post\Company( $post_object->ID );
+          case 'formation':
+            $GLOBALS[ $post_object->post_type ] = new Post\Formation( $post_object->ID );
             break;
         }
       } );
@@ -508,7 +634,8 @@ if ( ! class_exists( 'itJob' ) ) {
          * si la connexion c'est bien effectué.
          */
         /** @var bool $userRole */
-        $userRole = current_user_can( 'company' ) || current_user_can( 'candidate' );
+        $User = wp_get_current_user();
+        $userRole = in_array( 'company', $User->roles ) || in_array( 'candidate', $User->roles );
         $redirect = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : home_url( '/' );
         if ( is_admin() && ! defined( 'DOING_AJAX' ) && $userRole ) {
           exit( wp_redirect( $redirect, 301 ) );
@@ -552,7 +679,7 @@ if ( ! class_exists( 'itJob' ) ) {
 
         // CV
         register_sidebar( array(
-          'name'          => 'Archive Top (Candidate)',
+          'name'          => 'Archive Content Top (Candidate)',
           'id'            => 'archive-cv-top',
           'description'   => 'Afficher des widgets en haut de la page archive',
           'before_widget' => '<div id="%1$s" class="widget mb-4 %2$s">',
@@ -568,15 +695,22 @@ if ( ! class_exists( 'itJob' ) ) {
         ) );
 
         register_sidebar( array(
-          'name'          => 'Content Top (Candidate)',
+          'name'          => 'Archive Header Top (Candidate)',
           'id'            => 'cv-header',
           'description'   => 'Afficher des widgets en mode header',
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
 
+        register_sidebar( array(
+          'name'          => 'Single Sidebar (Candidate)',
+          'id'            => 'single-cv-sidebar',
+          'description'   => 'Afficher des widgets sur le côté à droite',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
         // Register widget
-        register_widget( 'Widget_Publicity' );
         register_widget( 'Widget_Shortcode' );
         register_widget( 'includes\widgets\Widget_Accordion' );
         register_widget( 'Widget_Header_Search' );
@@ -645,10 +779,10 @@ if ( ! class_exists( 'itJob' ) ) {
         get_template_directory_uri() . '/assets/js/libs/angularjs/bower_components/angular-ui-select2/src/select2.js', ['jquery'], '1.7.2' );
       wp_register_script( 'ngFileUpload', get_template_directory_uri() . '/assets/js/libs/ngfileupload/ng-file-upload.min.js', [], '12.2.13', true );
 
-      wp_register_script( 'angular-froala', VENDOR_URL . '/froala-editor/src/angular-froala.js', [], '2.8.4' );
-      wp_register_script( 'froala', VENDOR_URL . '/froala-editor/js/froala_editor.pkgd.min.js', [ 'angular-froala' ], '2.8.4' );
+      wp_register_script( 'tinymce',  VENDOR_URL . '/tinymce/tinymce.js', null, "4.5.9");
+      wp_register_script( 'angular-ui-tinymce', VENDOR_URL . '/angular-ui-tinymce/dist/tinymce.min.js', null, '4.0.0' );
 
-      // plugins depend
+      // Plugins depend
       wp_register_style( 'font-awesome', VENDOR_URL . '/font-awesome/css/font-awesome.min.css', '', '4.7.0' );
       wp_register_style( 'line-awesome', VENDOR_URL . '/line-awesome/css/line-awesome.min.css', '', '1.1.0' );
       wp_register_style( 'themify-icons', VENDOR_URL . '/themify-icons/css/themify-icons.css', '', '1.1.0' );
@@ -699,12 +833,6 @@ if ( ! class_exists( 'itJob' ) ) {
 
       wp_register_style( 'alertify', VENDOR_URL . '/alertifyjs/dist/css/alertify.css' );
       wp_register_script( 'alertify', VENDOR_URL . '/alertifyjs/dist/js/alertify.js', [], '1.0.11', true );
-
-      wp_register_style( 'froala-editor', VENDOR_URL . '/froala-editor/css/froala_editor.min.css', '', '2.8.4' );
-      wp_register_style( 'froala', VENDOR_URL . '/froala-editor/css/froala_style.min.css', [
-        'froala-editor',
-        'font-awesome'
-      ], '2.8.4' );
 
       // Register components adminca scripts
       wp_register_script( 'popper', VENDOR_URL . '/popper.js/dist/umd/popper.min.js', [], '0.0.0', true );

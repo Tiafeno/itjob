@@ -1,0 +1,49 @@
+{% if formations is not empty %}
+  <div uk-slider="center: false; autoplay: true; autoplay-interval: 5000" class="mt-4">
+    <h5 class="vc-element-title">{{ title }}</h5>
+    <div class="uk-position-relative uk-visible-toggle uk-light mb-4 container-formation">
+      <ul class="uk-slider-items uk-grid">
+        {% for formation in formations %}
+          <li class="uk-width">
+            <div class="card ibox mb-4">
+              <div class="card-body">
+                <h4 class="card-title mb-4">
+                  FORMATION EN <a href="{{ formation.formation_url }}" class="text-upper">{{ formation.title }}</a>
+                </h4>
+                <div class="formation-info mt-2">
+                  <div class="mb-1">
+                        <p class="mb-0 uk-text-bold">Description</p>
+                        <div>
+                            {{ formation.description|raw|html_entity_decode|striptags[:125] }} ...
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-4">
+                    <div class="card-info">
+                        Durée: {{ formation.duration }}
+                    </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div>
+                    Voir la formation
+                  </div>
+                  <div>
+                    <a href="{{ formation.formation_url }}" class="view"><i class="la la-plus-circle"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slider-item="previous"></a>
+      <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slider-item="next"></a>
+
+    </div>
+
+    <ul class="uk-slider-nav uk-dotnav uk-flex-center"></ul>
+  </div>
+{% endif %}

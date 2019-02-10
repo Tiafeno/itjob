@@ -1,36 +1,32 @@
 <form name="formCompany" ng-submit="submitForm(formCompany.$valid)" class="form-horizontal p-5" novalidate>
-
   <div id="modal-media-youtube" class="uk-flex-top" uk-modal>
     <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
       <button class="uk-modal-close-outside" type="button" uk-close></button>
       <iframe src="https://www.youtube-nocookie.com/embed/nu8AL588a1o" width="560" height="315" frameborder="0" uk-video></iframe>
     </div>
   </div>
-
-  <div class="page-heading mb-5">
+  <div class="page-heading mb-4">
     <h4 class="page-title">FORMULAIRE ENTREPRISE</h4>
     <h6>Vous pouvez aussi <a href="#modal-media-youtube" uk-toggle class="text-blue">regarder la vidéo explicative</a>.</h6>
   </div>
-
   <div class="col-md-12 pl-0" ng-show="!_.isNull(itOptions.urlHelper.redir)">
-    <div class="alert alert-warning alert-dismissable fade show has-icon"><i class="la la-warning alert-icon"></i>
-      Veuillez vous connecter en tant qu'entreprise pour déposer un offre. <a ng-href="[[login_url]]" class="uk-text-bold">Se connecter</a>
+    <div class="fade show has-icon">
+      Si vous avez déjà un compte. <a ng-href="[[login_url]]" class="uk-text-bold">Se connecter à un compte existant</a>
     </div>
   </div>
-
+  <hr>
   <div class="ibox-body">
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Nom de l'entreprise <span style="color: red">*</span></label>
+      <label class="col-sm-4 col-form-label">Nom de l'entreprise ou société <span style="color: red">*</span></label>
       <div class="col-sm-6">
-        <input class="form-control" name="title" ng-model="company.title" type="text" autocomplete="off" placeholder="Nom de l'entreprise"
+        <input class="form-control" name="title" ng-model="company.title" type="text" autocomplete="off" placeholder="Nom de l'entreprise ou société"
                required>
         <div ng-messages="formCompany.title.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.title.$invalid && formCompany.title.$touched">
-          <div ng-message="required">Le nom de l'entreprise est obligatoire.</div>
+          <div ng-message="required">Le nom de l'entreprise ou société est obligatoire.</div>
         </div>
       </div>
     </div>
-
     <div class="form-group mb-4 row ">
       <label class="col-sm-4 col-form-label ">Region <span style="color: red">*</span></label>
       <div class="col-sm-6">
@@ -43,7 +39,6 @@
         </div>
       </div>
     </div>
-
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Code postal ou nom d'une ville <span style="color: red">*</span></label>
       <div class="col-md-6 form-group">
@@ -53,7 +48,6 @@
         </select>
       </div>
     </div>
-
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Adresse physique de l'entreprise <span style="color: red">*</span></label>
       <div class="col-sm-6">
@@ -66,7 +60,6 @@
         </div>
       </div>
     </div>
-
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">NIF <span style="color: red">*</span></label>
       <div class="col-sm-6">
@@ -78,7 +71,6 @@
         </div>
       </div>
     </div>
-
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Numero statistique <span style="color: red">*</span></label>
       <div class="col-sm-6">
@@ -91,23 +83,20 @@
         </div>
       </div>
     </div>
-
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Téléphone fixe de l'entreprise <span style="color: red">*</span></label>
+      <label class="col-sm-4 col-form-label">Téléphone fixe de l'entreprise</label>
       <div class="col-sm-6">
         <input class="form-control" name="phone" ng-model="company.phone" ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/" type="text"
-               placeholder="Téléphone fixe de l'entreprise"
-               required>
+               placeholder="Téléphone fixe de l'entreprise">
         <div ng-messages="formCompany.phone.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.phone.$invalid && formCompany.phone.$touched">
-          <div ng-message="required">Ce champ est obligatoire.</div>
           <div ng-message="pattern">Numéro de téléphone invalide</div>
         </div>
       </div>
     </div>
-
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Numéros de téléphone</label>
+      <label class="col-sm-4 col-form-label">Numéros de téléphone <span
+        style="color: red">*</span></label>
       <div class="col-sm-6">
         <div ng-form="phoneForm" ng-repeat="phone in company.cellphone track by phone.id" class="form-group row">
           <div class="col-sm-10 pr-0">
@@ -124,12 +113,11 @@
           </div>
           <div class="col-sm-2">
             <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" tabindex="0"
-                    data-toggle="tooltip" data-placement="left" title="Enlever ce numero"
+                    data-toggle="tooltip" ng-show="!$first" data-placement="left" title="Enlever ce numero"
                     ng-click="removePhone(phone.id)">
               <i class="la la-minus-circle"></i></button>
           </div>
         </div>
-
         <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" data-placement="right"
                 data-toggle="tooltip" title="Ajouter un numero" ng-click="addPhone()"><i
           class="la la-plus-circle"></i></button>
@@ -144,22 +132,17 @@
         </p>
       </div>
     </div>
-
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label"></label>
-
       <div class="col-sm-3 d-flex align-items-center">
         <label class="radio radio-grey radio-primary radio-inline">
           <input type="radio" name="greeting" ng-model="company.greeting" value="mr">
           <span class="input-span"></span>Monsieur</label>
-
         <label class="radio radio-grey radio-primary radio-inline">
           <input type="radio" name="greeting" ng-model="company.greeting" value="mrs">
           <span class="input-span"></span>Madame</label>
       </div>
-
     </div>
-
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Nom du responsable <span style="color: red">*</span></label>
       <div class="col-sm-6">
@@ -171,7 +154,6 @@
         </div>
       </div>
     </div>
-
     <div class="form-group mb-4 row ">
       <label class="col-sm-4 col-form-label ">Secteur d'activité</label>
       <div class="col-sm-6">
@@ -184,9 +166,7 @@
         </div>
       </div>
     </div>
-
   </div>
-
   <div class="ibox-body ibox-footer">
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Email du responsable de l'entreprise<span
@@ -195,34 +175,31 @@
         <input class="form-control" ng-mail="company.email" name="email" ng-model="company.email"
                ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/"
                type="text" placeholder="Ex: exemple@mail.com" required>
+        <div id="text-loading" class="badge badge-warning" style="font-size: 10px; margin-top: 2px">Chargement en cours ...</div>
         <div ng-messages="formCompany.email.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.email.$invalid && formCompany.email.$touched">
           <div ng-message="required">Adresse email est obligatoire.</div>
           <div ng-message="pattern">Veuillez entrer une adresse e-mail valide</div>
-          <div ng-message="mail">L'adresse e-mail existe déja</div>
+          <div ng-message="mail">Adresse email valide refusée ou déjà enregistrée pour un autre compte.</div>
         </div>
       </div>
     </div>
-
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Mot de passe <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="pwd" ng-model="company.pwd" ng-minlength="6" type="password"
-               placeholder="Mot de passe"
+               placeholder="Mot de passe" placeholder="Ex: Papaparse29@"
                ng-pattern="/^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/"
                required>
         <div ng-messages="formCompany.pwd.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.pwd.$invalid && formCompany.pwd.$touched">
           <div ng-message="required">Le mot de passe est obligatoire.</div>
-          <div ng-message="pattern">Votre mot de passe doit au minimum 8 caractères,
-              se composer des chiffres et de lettres et comprendre des majuscules/minuscules et 1 caractère spéciale.</div>
-          <div ng-message="minlength">Votre mot de passe doit avoir: au moins 8 caractères, des majuscules et des
-            minuscules et 1 chiffre.
-          </div>
+          <div ng-message="pattern">Votre mot de passe doit comporter 8 caractères minimum, comprenant des chiffres et des lettres minuscules et 
+            majuscules,ainsi qu'un caractère spécial (-*/@+\_%$=).</div>
+          <div ng-message="minlength">Votre mot de passe doit au minimum 8 caractères</div>
         </div>
       </div>
     </div>
-
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Confirmation mot de passe <span style="color: red">*</span></label>
       <div class="col-sm-6">
@@ -235,9 +212,7 @@
         </div>
       </div>
     </div>
-
   </div>
-
   <div class="ibox-body ibox-footer">
     <div class="form-group mb-4 row ">
       <label class="col-sm-10 col-form-label ">Souhaitez-vous recevoir une notiﬁcation quand
@@ -252,7 +227,6 @@
           <span class="input-span"></span>Non</label>
       </div>
     </div>
-
     <div class="form-group mb-4 row ">
       <label class="col-sm-10 col-form-label ">Est ce que vous voulez recevoir notre newsletter?</label>
       <div class="col-sm-8">
@@ -266,7 +240,6 @@
       </div>
     </div>
   </div>
-
   <div class="ibox-footer row">
     <div class="col-sm-9 d-flex align-items-center">
           <span class="text-muted text-left" style="font-size: 0.8rem">

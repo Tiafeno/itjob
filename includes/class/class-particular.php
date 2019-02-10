@@ -22,13 +22,14 @@ abstract class UserParticular {
   public $greeting;
   public $region;
   public $dateAdd;
+  public $date_create;
 
   /**
    * @return bool
    */
   public function hasCV() {
-    $activated = get_field( 'itjob_cv_hasCV', $this->getId() );
-    return $this->has_cv = (bool) $activated;
+    $hasCV = get_field( 'itjob_cv_hasCV', $this->getId() );
+    return $this->has_cv = (bool) $hasCV;
   }
 
   public function getId() {
@@ -82,7 +83,7 @@ abstract class UserParticular {
     $this->birthdayDate = date( 'd/m/Y', strtotime( $birthdayDate ) );
     $this->greeting     = get_field( 'itjob_cv_greeting', $this->getId() );
     $this->dateAdd      = get_the_date( 'j F, Y', $this->getId() );
-    $this->date_create  = get_the_date('m/d/Y', $this->getId());
+    $this->date_create  = get_the_date('m/d/Y H:i:s', $this->getId());
     // repeater field
     $phones = get_field( 'itjob_cv_phone', $this->getId() );
     if ( $phones && is_array($phones) ) {

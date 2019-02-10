@@ -1,0 +1,90 @@
+<div class="container-formation uk-padding-remove">
+  <h5 class="container-formation-title">{{ title }}</h5>
+  <div class="row mb-5 ml-0 mr-0">
+    {% for formation in formations %}
+      <div class="col-md-3 col-sm-6 row-offer">
+        <div class="card ibox mb-4">
+          <div class="card-body">
+            <h4 class="card-title mb-4">
+              FORMATION EN <a href="{{ formation.formation_url }}" class="text-upper">{{ formation.title }}</a>
+            </h4>
+            <div class="formation-info mt-2">
+              <div class="mb-1">
+                <p class="mb-0 uk-text-bold">Description</p>
+                <div style="min-height: 86px;">
+                  {{ formation.description|raw|html_entity_decode|striptags[:125] }} ...
+                </div>
+              </div>
+            </div>
+            <div class="pt-4">
+              <div class="card-info">
+                Durée: {{ formation.duration }}
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                Voir la formation
+              </div>
+              <div>
+                <a href="{{ formation.formation_url }}" class="view"><i class="la la-plus-circle"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    {% if formations.length < 4 %}
+      <div class="col-md-3 col-sm-6 row-offer">
+        <div class="modal fade modal-featured-formation">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Mettez votre formation à la une</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Veuillez contacter le service commercial aux numéros suivants:<br>
+                032 45 378 60 - 033 82 591 13 - 034 93 962 18.
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card ibox mb-4">
+          <div class="card-body" style="background-color: lightseagreen;">
+            <h4 class="card-title mb-4">
+              <a href="#modal-featured-formation" data-toggle="modal" data-target=".modal-featured-formation">
+                Mettez vos formations ici pour plus de visibilité
+              </a>
+            </h4>
+            <div style="min-height: 86px;">
+              <h4 class="card-title uk-margin-remove">
+                <div class="mb-2 d-flex load-25"></div>
+              </h4>
+              <div class="mb-1 mt-2 d-flex load-100">
+                <a  href="#modal-featured-formation" data-toggle="modal" data-target=".modal-featured-formation"
+                  style="font-size: 90px;margin: auto;">
+                  <i class="fa fa-plus-square" style="opacity: 0.6;"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer" style="background-color: darkcyan; min-height: 47px;">
+            <div class="d-flex align-items-center justify-content-between">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</div>

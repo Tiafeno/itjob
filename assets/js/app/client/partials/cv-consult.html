@@ -21,9 +21,11 @@
 
                 <div class="justify-content-around font-18">
                   <p class="d-inline">
-                    <a class="btn btn-secondary" target="_blank" ng-href="[[ Attachment.guid ]]"><i class="fa fa-download"></i> Télécharger la lettre de motivation</a>
+                    <a class="btn btn-sm btn-secondary" target="_blank" ng-if="Attachment !== null" ng-href="[[ Attachment.guid ]]">
+                      <i class="fa fa-download"></i> Télécharger la lettre de motivation
+                    </a>
                   </p>
-                  <a class="btn btn-outline-success" target="_blank" ng-href="[[ interestLink ]]">Voir le CV</a>
+                  <a class="btn btn-sm btn-outline-success text-uppercase" target="_blank" ng-href="[[ interestLink ]]">Voir le CV / Télécharger</a>
                 </div>
               </div>
             </div>
@@ -38,7 +40,7 @@
           <h5 class="">Découvrez l'offre premium</h5>
           <p>Pour pouvoir visionner et télécharger plus de CV et de trouver les bons candidats, plus rapidement sans
             limite</p>
-          <button class="btn btn-info uk-modal-close uk-close-large" type="button">Améliorer mon compte</button>
+          <button class="btn btn-info uk-modal-close uk-close-large" type="button">Améliorer l'offre</button>
         </div>
       </div>
     </div>

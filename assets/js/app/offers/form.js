@@ -1,13 +1,4 @@
-angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
-  .value('froalaConfig', {
-    toolbarInline: false,
-    quickInsertTags: null,
-    wordAllowedStyleProps: ['text-decoration', 'height', 'padding', 'margin', 'text-align'],
-    wordDeniedAttrs: ['class'],
-    wordPasteModal: false,
-    wordPasteKeepFormatting: true,
-    toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
-  })
+angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'])
   .value('alertifyConfig', {
     notifier: {
       delay: 5,
@@ -17,10 +8,9 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
   })
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
-    const states = [
-      {
+    const states = [{
         name: 'form',
-        templateUrl: itOptions.partials_url + '/form.html',
+        templateUrl: itOptions.partials_url + '/form.html?ver=' + itOptions.version,
         url: '/form',
         resolve: {
           abranchs: ['offerService', function (offerService) {
@@ -43,9 +33,12 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
       {
         name: 'form.subscription',
         url: '/subscription',
-        templateUrl: itOptions.partials_url + '/subscription.html',
+        templateUrl: itOptions.partials_url + '/subscription.html?ver=' + itOptions.version,
         resolve: {
           offer: ['$q', '$rootScope', function ($q, $rootScope) {
+            // for test
+            //return $q.resolve(true);
+
             if (typeof $rootScope.offers === 'undefined' || _.isEmpty($rootScope.offers)) {
               return $q.reject({
                 redirect: 'form.add-offer'
@@ -69,7 +62,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
                 if (data.success) {
                   swal({
                     title: 'Reussi',
-                    text: "Votre offre a été envoyé avec succès",
+                    text: "Votre offre a été enregistré avec succès et en cours de validation. Nous vous enverrons une notification quand elle sera prête. merci",
                     type: "info",
                   }, () => {
                     window.location.href = itOptions.urlHelper.redir;
@@ -80,27 +73,44 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
 
           // Activate Popovers
           jQuery('[data-toggle="popover"]').popover();
-          $scope.$watch('rateplan', value => {
-            console.log(value);
-          });
         }]
       },
       {
         name: 'form.add-offer',
         url: '/add-offer',
-        templateUrl: itOptions.partials_url + '/add-offer.html',
-        controller: ['$rootScope', '$scope', '$state', 'abranchs', 'regions', 'offerService', 'offerFactory',
-          function ($rootScope, $scope, $state, abranchs, regions, offerService, offerFactory) {
+        templateUrl: itOptions.partials_url + '/add-offer.html?ver=' + itOptions.version,
+        controller: ['$rootScope', '$scope', '$state', 'abranchs', 'regions', 'offerFactory',
+          function ($rootScope, $scope, $state, abranchs, regions, offerFactory) {
             this.$onInit = function () {
               $scope.abranchs = _.clone(abranchs);
               $scope.regions = _.clone(regions);
-
+              $scope.tinymceOptions = {
+                language: 'fr_FR',
+                menubar: false,
+                plugins: ['lists', 'paste'],
+                theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
+                paste_auto_cleanup_on_paste : true,
+                paste_remove_styles_if_webkit: true,
+                paste_remove_styles: true,
+                paste_postprocess : function(pl, o) {
+                  // Content DOM node containing the DOM structure of the clipboard
+                  
+                },
+                content_css: [
+                  '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i',
+                  itOptions.template_url + '/assets/vendors/tinymce/css/content.min.css'
+                ],
+                selector: 'textarea',
+                toolbar: 'undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat '
+              };
               $rootScope.searchCityFn = (city) => {
                 if (!_.isUndefined($rootScope.offers.region)) {
                   let region = parseInt($rootScope.offers.region);
-                  rg = _.findWhere($scope.regions, {term_id: region});
+                  rg = _.findWhere($scope.regions, {
+                    term_id: region
+                  });
                   if (rg) {
-                    if (city.name.indexOf(rg.name) > -1) {
+                    if (city.name.toLowerCase().indexOf(rg.name.toLowerCase()) > -1) {
                       return true;
                     }
                   }
@@ -109,7 +119,7 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
               };
 
               /* jQuery element */
-              var jqSelects = jQuery("select.form-control");
+              var jqSelects = jQuery("select.form-control:not(.no-search)");
               jQuery.each(jqSelects, function (index, element) {
                 var selectElement = jQuery(element);
                 var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
@@ -119,6 +129,10 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
                   width: '100%'
                 })
               });
+
+              jQuery("select.form-control.no-search").select2({
+                minimumResultsForSearch: -1
+              })
 
               jQuery(".form-control.country").select2({
                 placeholder: "Tapez le nom d'une ville ou code postal",
@@ -183,17 +197,19 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
               }
               $rootScope.isSubmit = !$rootScope.isSubmit;
               const offerForm = new FormData();
+              let otherInfo = $rootScope.offers.otherinformation;
+              otherInfo = _.isUndefined(otherInfo) ? '' : otherInfo;
               offerForm.append('action', 'ajx_insert_offers');
               offerForm.append('post', $rootScope.offers.postpromote);
               offerForm.append('ctt', $rootScope.offers.contrattype);
-              offerForm.append('salary_proposed', typeof $rootScope.offers.proposedsallary === 'undefined' ? 0 : $rootScope.offers.proposedsallary);
+              offerForm.append('salary_proposed', _.isUndefined($rootScope.offers.proposedsallary) ? 0 : $rootScope.offers.proposedsallary);
               offerForm.append('region', parseInt($rootScope.offers.region));
               offerForm.append('country', parseInt($rootScope.offers.country));
               offerForm.append('ba', parseInt($rootScope.offers.branch_activity));
               offerForm.append('datelimit', $rootScope.offers.datelimit);
               offerForm.append('mission', $rootScope.offers.mission);
               offerForm.append('profil', $rootScope.offers.profil);
-              offerForm.append('other', $rootScope.offers.otherinformation);
+              offerForm.append('other', otherInfo);
 
               offerFactory
                 .sendPostForm(offerForm)
@@ -273,11 +289,6 @@ angular.module('addOfferApp', ['ui.router', 'froala', 'ngMessages', 'ngAria'])
       $rootScope.allCity = _.clone(allCity);
       $rootScope.isSubmit = false;
       $rootScope.offers = {};
-
-      $rootScope.$watch('offers', function (value) {
-        // Watch variable here...
-      });
-
     }
   ])
   .run(['$state', 'alertifyConfig', function ($state, alertifyConfig) {

@@ -47,10 +47,11 @@
       <div class="modal-body">
         <ul class="timeline scroller">
           <li class="timeline-item">
-            <span class="timeline-point"></span>
-            <a href="#ajouter_un_cv" id="added_cv" class="flexbox timeline-link">Crée votre CV pour être visible par
-              les
-              recruteurs et Postuler aux offres</a>
+            <span class="ti-arrow-circle-up timeline-icon"></span>
+            Créer votre CV pour postuler aux offres et être visible par les recruteurs
+            <small class="float-right text-muted ml-2 nowrap"><a id="added_cv" href="#added_cv" class="btn btn-sm btn-success">Ajouter
+                un CV</a></small>
+            </a>
           </li>
         </ul>
       </div>
@@ -80,7 +81,8 @@
             <div pre-upload class="p-relative">
               <div class="p-absolute" style="width: 125px; bottom: -62px;">
                 <div class="uk-text-bold d-flex">Photo
-                  <span data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" data-content="Sur la photo votre visage doit être net, humaine et naturelle donc <b>une photo professionnelle</b>">
+                  <span data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" data-content="Sur la photo votre visage doit être nette, humaine et naturelle pas 
+                    de selfie ou d’effet et décorations   donc une photo professionnelle">
                     <i class="fa fa-question-circle ml-1" style="font-size: 18px;cursor: pointer"></i>
                   </span>
                 </div>
@@ -253,7 +255,8 @@
     <div class="card text-center centered mb-4" style="max-width:320px;">
       <div class="ibox-body alert alert-info alert-dismissable fade show">
         <!--<button class="close" data-dismiss="alert" aria-label="Close"></button>-->
-        <h4>Bonjour [[Greet]] <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname ]]</b></h4>
+        <h4>Bonjour [[Greet]] <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname
+            ]]</b></h4>
         <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
       </div>
       <div class="card-body">
@@ -274,39 +277,36 @@
             <h2 class="text-pink m-0">
               [[ Candidate.postuled ? Candidate.postuled.length : 0 ]]
             </h2>
-            <div class="text-muted text-uppercase">Candidatures envoyés</div>
+            <div class="text-muted text-uppercase">Candidatures envoyées</div>
           </div>
         </div>
         <div class="d-block justify-content-around align-items-center">
           <notifications></notifications>
-          <a class="btn btn-secondary mt-2" ng-href="[[Helper.archive_offer_link]]" target="_blank">
-            <span class="btn-icon"><i class="fa fa-link"></i> Les offres d'emplois</span>
-          </a>
         </div>
       </div>
     </div>
   </div>
   <div class="col-lg-8">
     <div class="mt-4">
-      <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
+      <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3" role="tablist" style="display: flex">
         <li class="nav-item">
-          <a class="nav-link active" data-target="#profil" data-toggle="tab">
+          <a class="nav-link active" data-target="#profil" aria-controls="profil" data-toggle="tab" role="tab">
             Profil
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-target="#cv" data-toggle="tab">
+          <a class="nav-link" data-target="#cv" aria-controls="cv" data-toggle="tab" role="tab">
             Mon CV
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-target="#candidacy" data-toggle="tab">
+          <a class="nav-link" data-target="#candidacy"  aria-controls="candidacy" data-toggle="tab" role="tab">
             Candidature(s)
           </a>
         </li>
       </ul>
       <div class="tab-content">
-        <div class="tab-pane fade active show" id="profil">
+        <div class="tab-pane fade active show" role="tabpanel" aria-labelledby="profil-tab" id="profil">
           <div class="page-content">
             <div class="ibox-body">
               <div class="row">
@@ -318,6 +318,14 @@
                   <change-password></change-password>
                 </div>
                 <div class="col-sm-6">
+                  <div class="content">
+                    <div class="ibox-body pb-0">
+                      <a class="btn btn-warning mt-2" ng-href="[[Helper.archive_offer_link]]" target="_blank">
+                        <span class="btn-icon"><i class="fa fa-link"></i> Voir les offres d'emplois</span>
+                      </a>
+                    </div>
+                  </div>
+
                   <!-- Alerts directive -->
                   <alerts on-save="onSaveAlert()" alerts="alerts" message="Je souhaite être informé quand une publication comportent les mots suivants:"
                     alert-loading="alertLoading">
@@ -327,7 +335,7 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane fade" id="cv">
+        <div class="tab-pane fade" role="tabpanel" aria-labelledby="cv-tab" id="cv" aria-expanded="false">
           <div class="page-content">
             <div class="ibox-body">
               <div class="row">
@@ -339,8 +347,10 @@
                         #[[Candidate.reference]]
                       </a>
                     </h2>
-                    <span class="badge badge-pill ng-binding badge-pink" ng-if="Candidate.state === 'pending'">En
-                      attente de validation</span>
+                    <span class="badge badge-pink" ng-if="Candidate.state === 'pending'">En attente de validation</span>
+                    <span class="badge badge-blue" ng-if="Candidate.state === 'publish' && Candidate._activated === true">En
+                      ligne</span>
+                    <span class="badge badge-danger" ng-if="Candidate.state === 'publish' && Candidate._activated !== true">Désactiver</span>
                     <div class="mb-4"></div>
                     <!-- Emploi rechercher -->
                     <job-search jobs="Candidate.jobSought"></job-search>
@@ -398,13 +408,15 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane fade" id="candidacy">
+        <div class="tab-pane fade" role="tabpanel" aria-labelledby="candidacy-tab" id="candidacy" aria-expanded="false">
           <div class="page-content">
             <div class="ibox-body">
+                <h3 class="font-bold mb-3">CANDIDATURES</h3>
               <candidacy></candidacy>
             </div>
           </div>
         </div>
+        
       </div>
     </div>
   </div>

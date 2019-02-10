@@ -2,7 +2,7 @@
   <div class="flexbox">
     <div class="input-group-icon input-group-icon-left mr-3">
       <span class="input-icon input-icon-right font-16"><i class="ti-search"></i></span>
-      <input class="form-control form-control-solid" id="key-search" type="text" placeholder="Rechercher ...">
+      <input class="form-control form-control-solid" id="key-search" type="text" placeholder="Rechercher des candidatures">
     </div>
   </div>
 </div>
@@ -11,34 +11,33 @@
   <table class="table table-bordered table-hover" id="candidacy-table">
 
     <thead class="thead-default thead-lg">
-    <tr>
-      <th>ID</th>
-      <th>Status</th>
-      <th>Poste à promouvoir</th>
-      <th>Contrat</th>
-      <th>Secteur d'activité</th>
-      <th>Réference</th>
-    </tr>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Poste à promouvoir</th>
+        <th>Contrat</th>
+        <th>Secteur d'activité</th>
+        <th>Réference</th>
+      </tr>
     </thead>
 
     <tbody>
-    <tr ng-repeat="candidature in Candidatures">
-      <td>[[candidature.offer.ID]]</td>
-      <td>
-        <span class="badge badge-pill"
-              ng-class="{
+      <tr ng-repeat="candidature in Candidatures">
+        <td>[[candidature.offer.ID]]</td>
+        <td>
+          <span class="badge badge-pill" ng-class="{
               'badge-blue' : candidature.status == 'validated',
               'badge-danger' : candidature.status == 'reject',
               'badge-default': candidature.status == 'pending'}">
-          [[ candidature.status | FormatStatus]]
-        </span>
-      </td>
-      <td><a href="[[candidature.offer.post_url]]" target="_blank" title="[[candidature.offer.postPromote]]">[[
-        candidature.offer.postPromote ]]</a></td>
-      <td>[[ candidature.offer.contractType[ 'label' ] ]]</td>
-      <td>[[ candidature.offer.branch_activity.name ]]</td>
-      <td><span class="badge badge-info badge-pill">[[ candidature.offer.reference ]]</span></td>
-    </tr>
+            [[ candidature.status | FormatStatus]]
+          </span>
+        </td>
+        <td><a href="[[candidature.offer.post_url]]" target="_blank" title="[[candidature.offer.postPromote]]">[[
+            candidature.offer.postPromote ]]</a></td>
+        <td>[[ candidature.offer.contractType[ 'label' ] ]]</td>
+        <td>[[ candidature.offer.branch_activity.name ]]</td>
+        <td><span class="badge badge-info badge-pill">[[ candidature.offer.reference ]]</span></td>
+      </tr>
     </tbody>
 
   </table>

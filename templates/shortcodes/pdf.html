@@ -1,0 +1,344 @@
+<script type="">
+  function genPDF() {
+      var container = document.querySelector("#body");
+      jQuery('#loading').show();
+      html2canvas(container, {scale: 2, allowTaint : true}).then(canvas => {
+        var img = canvas.toDataURL("image/png");
+        
+        var imgWidth = 630; 
+        var pageHeight = 600;  
+        var imgHeight = canvas.height * imgWidth / canvas.width; //canvas.height * imgWidth / canvas.width;
+        //console.log(canvas.height, canvas.width);
+        var heightLeft = imgHeight;
+        var doc = new jsPDF('p', 'px', 'a4');
+        var position = 2;
+
+        doc.addImage(img, 'PNG', 0, position, imgWidth, imgHeight);
+        doc.setDrawColor(255,255,255);
+        doc.setFillColor(255,255,255);
+        doc.rect(0, 612, imgWidth, 19, 'FD');
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          doc.addPage();
+          doc.addImage(img, 'PNG', 0, position, imgWidth, imgHeight);
+          doc.setDrawColor(255,255,255);
+          doc.setFillColor(255,255,255);
+          doc.rect(0, 0, imgWidth, 10, 'FD');
+          doc.rect(0, 612, imgWidth, 19, 'FD');
+          heightLeft -= pageHeight;
+        }
+        jQuery('#loading').hide();
+        doc.save('itjobmada-cv.pdf');
+      });
+    }
+  </script>
+<div class="flexbox px-4 py-3 mt-4 bg-primary-50">
+   <div class="flexbox-b">
+      <div id="inbox-actions">
+         <button class="btn btn-sm btn-primary btn-fix ml-2"  onclick="genPDF()">
+            <span class="btn-icon"><i class="la la-download"></i>Télécharger en PDF</span>
+         </button>
+      </div>
+   </div>
+   <div class="input-group-icon input-group-icon-left">
+      <button class="btn btn-sm btn-transparent btn-info btn-icon-only btn-circle disabled" data-action="reply" data-toggle="tooltip" data-original-title="Reply">
+         <i class="la la-reply"></i>
+      </button>
+   </div>
+</div>
+<div id="loading" class="alert alert-primary" style="display: none"><strong>Chargement en cours ...</strong></div>
+<div class="body" id="body">
+  <style type="text/css">
+    #body {
+      font-size: 12px;
+      line-height: 15px;
+      width: 1120px;
+      min-width: 1120px;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      margin-top: 24px;
+      margin-bottom: 24px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 18px;
+      text-align: left;
+      font-weight: 400;
+      word-break: normal;
+      word-wrap: break-word;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .left {
+      background-color: #0068A5;
+    }
+
+    .box table td {
+      padding: 5px;
+      vertical-align: top;
+    }
+
+    .box {
+      padding: 0px;
+      border: 1px solid #eee;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+      color: #555;
+      display: block;
+    }
+
+    .bg-blue {
+      background-color: #0068A5;
+      width: 200px;
+      min-width: 200px;
+      padding-bottom: 15px;
+    }
+
+    h5,
+    h6,
+    h4,
+    h3,
+    h2,
+    h1 {
+      margin-bottom: 5px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    h5.title-left {
+      font-weight: 700;
+      font-size: 18px;
+      color: white;
+      margin-top: 20px;
+    }
+
+    .pages {
+      display: block;
+      margin: 0;
+      clear: both;
+      width: 798px;
+      min-width: 798px;
+    }
+
+    .text-content {
+      margin-left: 0;
+      margin-right: 0;
+      margin-top: 15px;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .post-held {
+      font-size: 15px;
+      padding-top: 5px;
+      padding-bottom: 2px;
+    }
+
+    .experience-title {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .candidate-name {
+      font-weight: 700;
+    }
+  </style>
+  <div class="pages box">
+    <table border="0" width="100%">
+      <tbody>
+        <tr>
+          <td class="bg-blue" align="left" style="background-color: #0068A5;">
+            <div style="padding-left: 10px; margin-top: 10px; width: 100%; min-height: 740px; position: relative">
+              {% if candidate.privateInformations.avatar is not empty %}
+                <div>
+                  <img  align="left" border="0" src="{{ candidate.privateInformations.avatar[0] | base64_image }}" alt="Image" title="Image" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block !important;border: 0;height: auto;float: none;max-width: 133.5px" width="133.5">
+                </div>
+              {% endif %}
+              <div>
+                <h5 class="title-left">CONTACT</h5>
+                <div style="font-size:12px;color:#FFFFFF;text-align:left;">
+                  {% for phone in candidate.privateInformations.cellphone %}
+                  <p>{{phone}}</p>
+                  {% endfor %}
+                  <p style="margin-top:5px">{{
+                    candidate.privateInformations.author.data.user_email }}</p>
+                </div>
+              </div>
+              {% if candidate.softwares is not empty and candidate.softwares is not null %}
+              <div>
+                <h5 class="title-left">LOGICIELS MAITRISES</h5>
+                <div style="font-size:12px;line-height:14px;color:#FFFFFF;text-align:left;">
+                  {% for software in candidate.softwares %}
+                  <p>{{ software.name }}</p>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+
+              <div>
+                <h5 class="title-left">LANGUES</h5>
+                <div style="font-size:12px;color:#FFFFFF;text-align:left;">
+                  {% for language in candidate.languages %}
+                  <p>{{ language.name }}</p>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div style="position: absolute; bottom:0px; left: 25px;">
+                <div>
+                  <p style="display: block; font-size: 12px; color: white; text-align:center;  padding-bottom: 15px">
+                        <img align="center" border="0" src="{{ logo | base64_image }}" alt="Image" title="Image" 
+                        style="margin:auto;display: block !important; padding-bottom: 5px" width="86">
+                    www.itjobmada.com
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </td>
+
+          <td align="left">
+            {% set pI = candidate.privateInformations %}
+            <div style="padding-left: 10px; padding-right: 10px; padding-top: 15px">
+              <div style="padding-bottom: 15px; ">
+                <h2 class="candidate-name">{{ pI.firstname }} {{ pI.lastname }}</h2>
+                <p>Reférence: {{ candidate.reference }}</p>
+                <p>
+                  {{ candidate.jobSought | explode_terms }}
+                </p>
+                <p style="margin-top: 5px"><b>Date de naissance</b>:
+                  {% if candidate.privateInformations.birthday_date is not empty %}
+                    {{ candidate.privateInformations.birthday_date }}
+                  {% else %}
+                    Non renseigner
+                  {% endif %}
+                </p>
+                <p style="margin-top: 5px"><b>Sexe</b>:
+                  {% if candidate.greeting.value is defined %}
+                    {% if candidate.greeting.value == 'mr' %} Homme {% else %} Femme {% endif %}
+                  {% else %}
+                    Non renseigner
+                  {% endif %}
+                </p>
+                <p style="margin-top: 5px"><b>Adresse</b>: 
+                  {% set address = candidate.privateInformations.address %}
+                  {% if address is not empty %}
+                      {{ address.address }} <br>
+                      {% if address.country is not empty %}
+                          {{ address.country.name }} <br>
+                      {% endif %}
+                      {% if address.region is not empty %}
+                          {{ address.region.name }}
+                      {% endif %}
+                  {% else %}
+                      Non renseigner
+                  {% endif %} 
+                </p>
+              </div>
+              <hr>
+              <div>
+                <h2 style="color: #969696; text-transform: uppercase; font-weight: 700">Expériences</h2>
+                <div>
+                  {% for experience in candidate.experiences %}
+                  <div class="experience">
+                    <div style="color:#555555; padding-right: 10px; padding-left: 10px; padding-top: 15px; padding-bottom: 15px;">
+                      <div style="color:#555555;text-align:left;">
+                        <h6 style="margin: 0;" class="experience-title">{{ experience.exp_company }}</h6>
+                        <p style="margin: 0" class="post-held">
+                          {{ experience.exp_positionHeld }}
+                        </p>
+
+                        <p style="margin: 0;font-size: 14px">
+                          <span style="font-size: 13px;">
+                            {% if experience.exp_dateBegin is empty or experience.exp_dateBegin is null %}
+                              {{experience.old_value.exp_dateBegin}} - {% if experience.old_value.exp_dateEnd is empty or experience.old_value.exp_dateEnd is null %}
+                                  Present
+                                {% else %} 
+                                  {{experience.old_value.exp_dateEnd}} 
+                                {% endif %}
+
+                            {% else %}
+                              {{experience.exp_dateBegin | datei18n}} - {% if experience.exp_dateEnd is empty or experience.exp_dateEnd is null %} 
+                                  Present
+                                {% else %}
+                                  {{experience.exp_dateEnd | datei18n}} 
+                                {% endif %}
+                            {% endif %}
+                          </span>
+                        </p>
+                        <p style="margin: 0;font-size: 14px;">
+                          <span style="color: rgb(153, 153, 153);">
+                              {{ experience.exp_country }}
+                          </span>
+                        </p>
+                        <p class="text-content">
+                            {{ experience.exp_mission|raw }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+
+                </div>
+              </div>
+              <hr>
+              <div>
+                <h2 style="color: #969696; text-transform: uppercase; font-weight: 700">Formation</h2>
+                <div>
+                  {% for train in candidate.trainings %}
+                  <div class="formation">
+                    <div style="color:#555555; padding-right: 10px; padding-left: 10px; padding-top: 15px; padding-bottom: 15px;">
+                      <div style="color:#555555;text-align:left;">
+                        <h6 style="margin: 0; line-height: 19px" class="formation-title">
+                          <span style="font-weight: 700">{{ train.training_establishment }}</span>
+                          <span> à {{ train.training_city }}, {{ train.training_country }}</span>
+                        </h6>
+                        <p style="margin: 0" class="post-held">
+                            {{ train.training_diploma }}
+                        </p>
+
+                        <p style="margin: 0;font-size: 14px">
+                          <span style="font-size: 13px;">
+                              {{ train.training_dateBegin | datei18n }} - {{ train.training_dateEnd | datei18n }}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <hr>
+              <div>
+                <h2 style="color: #969696; text-transform: uppercase; font-weight: 700">Permis</h2>
+                <div>
+                  <div class="experience">
+                    <div style="color:#555555; padding-right: 10px; padding-left: 10px; padding-top: 15px; padding-bottom: 15px;">
+                      <div style="color:#555555;text-align:left;">
+                        <h6 style="margin: 0; line-height: 19px" class="experience-title">
+                          {% if candidate.driveLicences is not empty %}
+                            {% for driveLicence in candidate.driveLicences %}
+                                {% if not loop.first %} - {% endif %}
+                                {{ driveLicence['label'] }}
+                            {% endfor %}
+                          {% else %}
+                            Aucun
+                          {% endif %}
+                        </h6>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

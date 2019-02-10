@@ -1,9 +1,8 @@
 <?php
 get_header();
-global $posts, $wp_query;
-$s              = $_GET['s'];
-$search_results = $posts;
-$search_count   = $wp_query->found_posts;
+global $wp_query;
+$s = $_GET['s'];
+$search_count = $wp_query->found_posts;
 ?>
   <div class="uk-section uk-section-transparent">
     <div class="uk-container ">
@@ -12,8 +11,8 @@ $search_count   = $wp_query->found_posts;
           <div class="container-list-posts">
             <div>
               <?php
-              $post_type = Http\Request::getValue( 'post_type' );
-              echo do_shortcode( "[vc_itjob_search type='$post_type' bg_image='']" );
+              $post_type = Http\Request::getValue('post_type');
+              echo do_shortcode("[vc_itjob_search type='$post_type' bg_image='']");
               ?>
             </div>
             <div class="mb-4">
@@ -25,8 +24,8 @@ $search_count   = $wp_query->found_posts;
 
             <div class="row mb-5">
               <?php
-              while ( have_posts() ) : the_post();
-                get_template_part( 'partials/content', get_post_type() );
+              while (have_posts()) : the_post();
+                get_template_part('partials/content', get_post_type());
               endwhile;
 
               itjob_pagination();
@@ -35,6 +34,7 @@ $search_count   = $wp_query->found_posts;
           </div>
         </div>
         <div class="col-md-4">
+              <!-- TODO: Publicité pour offre et CV -->
         </div>
       </div>
     </div>

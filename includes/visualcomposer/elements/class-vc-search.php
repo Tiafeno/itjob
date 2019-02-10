@@ -11,6 +11,7 @@ if ( ! class_exists( 'vcSearch' ) ):
         global $itJob;
         //wp_enqueue_script('multi-select', get_template_directory_uri() . "/assets/vendors/multiselect/js/jquery.multi-select.js", ['jquery'], $itJob->version);
         wp_enqueue_script( 'select-2', VENDOR_URL . "/select2/dist/js/select2.full.min.js", [ 'jquery' ], $itJob->version );
+        wp_enqueue_script( 'select-2-it8n-fr', VENDOR_URL . "/select2/dist/js/i18n/fr.js", [ 'select-2' ], $itJob->version );
       } );
     }
 
@@ -33,13 +34,13 @@ if ( ! class_exists( 'vcSearch' ) ):
             array(
               'type'        => 'dropdown',
               'class'       => 'vc-ij-type',
-              'heading'     => '',
+              'heading'     => 'Recherche pour:',
               'param_name'  => 'type',
               'value'       => [
                 'Par default' => 'default',
-                'Entreprise'  => 'company',
                 'Offres'      => 'offers',
-                'CV'          => 'candidate'
+                'CV'          => 'candidate',
+                'Formations'  => 'formation'
               ],
               'std'         => 'default',
               'description' => "Modifier le mode d'affichage",
@@ -100,14 +101,22 @@ if ( ! class_exists( 'vcSearch' ) ):
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
+
           $software = get_terms( 'software', [
             'hide_empty' => false,
             'fields'     => 'all'
           ] );
+
           $sub_data = [
             'languages' => $langage,
             'softwares' => $software
           ];
+
+          $add_cv_link = get_the_permalink( REGISTER_CANDIDATE_PAGE_ID );
+          $add_offer_link = get_the_permalink( ADD_OFFER_PAGE );
+          
+          $data['add_cv_link'] = $add_cv_link;
+          $data['add_offer_link'] = $add_offer_link;
 
           $data = array_merge( $data, $sub_data );
 
@@ -227,6 +236,31 @@ if ( ! class_exists( 'vcSearch' ) ):
         ] );
 
         return $Engine->render( '@VC/search/search-cv.html.twig', $data );
+      } catch ( Twig_Error_Loader $e ) {
+      } catch ( Twig_Error_Runtime $e ) {
+      } catch ( Twig_Error_Syntax $e ) {
+        echo $e->getRawMessage();
+      }
+    }
+
+    private function vc_search_formation_tpls( $args ) {
+      global $Engine;
+      try {
+        global $posts;
+        wp_enqueue_script( 'jquery-validate' );
+        wp_enqueue_script( 'sweetalert' );
+        wp_enqueue_style( 'sweetalert' );
+        wp_enqueue_script( 'tinymce', "https://cloud.tinymce.com/stable/tinymce.min.js", [], null, true );
+        
+        $search_query = Http\Request::getValue( 's' );
+        $publish_formation_link = get_the_permalink( ADD_FORMATION_PAGE );
+        $args = array_merge( $args, [
+          's'              => $search_query,
+          'publish_formation_link' => $publish_formation_link,
+          'admin_ajax'      => admin_url('admin-ajax.php')
+        ] );
+
+        return $Engine->render( '@VC/search/search-formation.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {
       } catch ( Twig_Error_Syntax $e ) {

@@ -2,20 +2,32 @@
 
 namespace includes\model;
 
+if (!defined('ABSPATH')) {
+  exit;
+}
+
 final class itModel {
   use \ModelInterest {
     \ModelInterest::__construct as private __interestConstruct;
   }
+
   use \ModelCVLists {
     \ModelCVLists::__construct as private __listConstruct;
   }
+
   use \ModelNotice {
     \ModelNotice::__construct as private __noticeConstruct;
   }
+
+  use \ModelAds {
+    \ModelAds::__construct as private __adsConstruct;
+  }
+
   public function __construct() {
     $this->__listConstruct();
     $this->__interestConstruct();
     $this->__noticeConstruct();
+    $this->__adsConstruct();
   }
 
   public function get_candidate_id_by_email( $email ) {
@@ -30,6 +42,16 @@ final class itModel {
     $prepare = $this->getPrepareSql('company','itjob_company_email', $email );
     $id    = $wpdb->get_var( $prepare );
     return $id;
+  }
+
+  public function repair_table() {
+    global $wpdb;
+    $prepare = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}cv_request WHERE type = %s AND status = %s", 'apply', 'validated' );
+    $rows    = $wpdb->get_results( $prepare );
+
+    foreach ($rows as $row) {
+      $this->add_list((int)$row->id_candidate, (int)$row->id_company);
+    }
   }
 
   private function getPrepareSql($post_type, $meta_key, $meta_value) {

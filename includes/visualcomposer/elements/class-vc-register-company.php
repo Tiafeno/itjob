@@ -64,7 +64,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       // Verifier si l'utilisateur existe déja; Si oui, retourner la valeur
       // (WP_User|false) WP_User object on success, false on failure.
       $userExist = get_user_by( 'email', $userEmail );
-      if ( $userExist ) {
+      if ( $userExist || !is_email($userEmail) ) {
         return $value;
       }
       $args    = [
@@ -121,18 +121,22 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
      */
     public function ajx_user_exist() {
       if ( ! \wp_doing_ajax() ) {
-        return;
+        return false;
       }
       if ( is_user_logged_in() ) {
-        return;
+        return false;
       }
-      $log = Http\Request::getValue( 'log', false );
-      if ( filter_var( $log, FILTER_VALIDATE_EMAIL ) ) {
-        $usr = get_user_by( 'email', $log );
+      $email = Http\Request::getValue( 'mail', false );
+      if ( filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+        if ( ! is_email( $email )) wp_send_json_error( "L'adresse email est incorrect ou refuser" );
+
+        $usr = get_user_by( 'email', $email );
+        if ($usr)
+         wp_send_json_success( "L'utilisateur existe déja");
+        wp_send_json_error( "L'utilisateur n'existe pas" );
       } else {
-        $usr = get_user_by( 'login', $log );
+        wp_send_json_error("L'adresse email n'est pas valide");
       }
-      wp_send_json( $usr );
     }
 
     public function ajx_get_branch_activity() {
@@ -207,7 +211,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       }
 
       $userEmail = Http\Request::getValue( 'email', false );
-      if ( ! $userEmail ) wp_send_json_error("Veillez remplir le formulaire correctement");
+      if ( ! $userEmail || !is_email( $userEmail ) ) wp_send_json_error("Veillez remplir le formulaire correctement");
       $userExist = get_user_by( 'email', $userEmail );
       if ( $userExist ) {
         wp_send_json_error( 'L\'adresse e-mail ou l\'utilisateur existe déja');
@@ -278,6 +282,9 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       update_field( 'itjob_company_email', $form->email, $post_id );
       update_field( 'itjob_company_phone', $form->phone, $post_id );
 
+      // En attente de la validation de l'administrateur
+      update_field( 'activated', 0, $post_id );
+
       // save repeater field
       $value  = [];
       $phones = json_decode( $form->cellphone );
@@ -317,7 +324,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       // load script & style
       wp_enqueue_style( 'sweetalert' );
       wp_enqueue_style( 'input-form', get_template_directory_uri() . '/assets/css/inputForm.css' );
-      wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js',
+      wp_enqueue_script( 'form-company', get_template_directory_uri() . '/assets/js/app/register/form-company.js?ver='.$itJob->version,
         [
           'angular',
           'angular-ui-route',
@@ -336,6 +343,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),
+        'version' => $itJob->version,
         'Helper'    => [
           'redir' => $redirection,
           'login' => home_url('/connexion/company') . $redirection_query

@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('WPBakeryShortCode')) {
   new \WP_Error('WPBakery', 'WPBakery plugins missing!');
 }
+
 use Http;
 use includes\model\itModel;
 use includes\object\jobServices;
@@ -21,8 +22,8 @@ if (!class_exists('jePostule')) :
   public function __construct()
   {
     add_action('init', [&$this, 'jepostule_mapping'], 10, 0);
-    add_shortcode('vc_jepostule', [&$this, 'jepostule_html']);
     add_action('je_postule', [&$this, 'je_postule_Fn']);
+    add_shortcode('vc_jepostule', [&$this, 'jepostule_html']);
 
     /**
      * Envoyer une candidature
@@ -141,19 +142,17 @@ if (!class_exists('jePostule')) :
     $current_uri = $_SERVER['REQUEST_URI'];
     if (!is_user_logged_in()) {
         // Le client est non connecter
-      do_action('add_notice', '<i class="la la-warning alert-icon"></i> Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi', 'warning');
-
-      return do_shortcode("[itjob_login role='candidate' redir='{$current_uri}']");
+      do_action('add_notice', '<i class="la la-warning alert-icon"></i> Pour pouvoir postuler à cette offre, vous devez vous connecter ou créer un compte', 'info');
+      return do_shortcode("[itjob_login role='candidate' redir='{$current_uri}' internal_redir='true']");
     } else {
         // Le client est connecter
       $User = wp_get_current_user();
-      $Candidate = Candidate::get_candidate_by($User->ID);
-      if (!$Candidate || !$Candidate->is_candidate()) {
+      if (!in_array('candidate', $User->roles)) {
         return $message_access_refused;
       }
+      $Candidate = Candidate::get_candidate_by($User->ID);
       if (!$Candidate->hasCV()) {
-        do_action('add_notice', "Vous devez crée un CV avant de postuler", "warning");
-
+        do_action('add_notice', "Vous devez créer un CV avant de postuler", "warning");
         return do_shortcode("[vc_register_candidate redir='{$current_uri}']");
       }
 

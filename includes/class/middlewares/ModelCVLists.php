@@ -1,8 +1,14 @@
 <?php
-trait ModelCVLists {
+
+if (!defined('ABSPATH')) {
+  exit;
+}
+trait ModelCVLists
+{
   private $listTable;
 
-  public function __construct() {
+  public function __construct()
+  {
     global $wpdb;
     $this->listTable = $wpdb->prefix . 'cv_lists';
   }
@@ -15,26 +21,27 @@ trait ModelCVLists {
    *
    * @return bool
    */
-  public function check_list_limit( $company_id = null ) {
+  public function check_list_limit($company_id = null)
+  {
     global $wpdb;
-    if ( is_null( $company_id ) || empty( $company_id ) ) {
-      if ( ! is_user_logged_in() ) {
+    if (is_null($company_id) || empty($company_id)) {
+      if (!is_user_logged_in()) {
         return false;
       }
       $User = wp_get_current_user();
-      if ( ! in_array( 'company', $User->roles ) ) {
+      if (!in_array('company', $User->roles)) {
         return false;
       }
-      $Company = \includes\post\Company::get_company_by( $User->ID );
+      $Company = \includes\post\Company::get_company_by($User->ID);
     } else {
-      $Company = new \includes\post\Company( (int) $company_id );
+      $Company = new \includes\post\Company((int)$company_id);
     }
     // Ici on verifie seulement les entrer mais si le status est actif ou le contraire
-    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $this->listTable WHERE id_company = %d", $Company->getId() );
-    $rows    = $wpdb->get_var( $prepare );
+    $prepare = $wpdb->prepare("SELECT COUNT(*) FROM $this->listTable WHERE id_company = %d", $Company->getId());
+    $rows = $wpdb->get_var($prepare);
 
     // Verifier pour les même CV sur des differents offre
-    return $rows <= 5 ? false : ( $Company->isPremium() ? false : true );
+    return $rows <= 5 ? false : true;
   }
 
   /**
@@ -43,18 +50,19 @@ trait ModelCVLists {
    *
    * @return array|bool|null|object
    */
-  public function get_lists($company_id = null) {
+  public function get_lists($company_id = null)
+  {
     global $wpdb;
-    if ( ! is_user_logged_in() ) {
+    if (!is_user_logged_in()) {
       return false;
     }
 
     if (empty($company_id) || is_null($company_id)) {
       $User = wp_get_current_user();
-      if ( ! in_array( 'company', $User->roles ) ) {
+      if (!in_array('company', $User->roles)) {
         return false;
       }
-      $Company = \includes\post\Company::get_company_by( $User->ID );
+      $Company = \includes\post\Company::get_company_by($User->ID);
     } else {
       $Company = new \includes\post\Company($company_id);
     }
@@ -64,16 +72,17 @@ trait ModelCVLists {
 
   }
 
-  public function list_exist($id_company, $id_candidat) {
+  public function list_exist($id_company, $id_candidat)
+  {
     global $wpdb;
-    if ( ! is_user_logged_in() ) {
+    if (!is_user_logged_in()) {
       return false;
     }
-    if ( !is_numeric($id_company) && ! is_numeric($id_candidat) ) {
+    if (!is_numeric($id_company) && !is_numeric($id_candidat)) {
       return null;
     }
-    $prepare = $wpdb->prepare( "SELECT COUNT(*) FROM $this->listTable WHERE id_candidate = %d AND id_company = %d", (int) $id_candidat, (int) $id_company );
-    $rows    = $wpdb->get_var( $prepare );
+    $prepare = $wpdb->prepare("SELECT COUNT(*) FROM $this->listTable WHERE id_candidate = %d AND id_company = %d", (int)$id_candidat, (int)$id_company);
+    $rows = $wpdb->get_var($prepare);
 
     return $rows;
   }
@@ -85,14 +94,15 @@ trait ModelCVLists {
    *
    * @return bool|false|int|null
    */
-  public function add_list($id_candidat, $id_company = null) {
+  public function add_list($id_candidat, $id_company = null)
+  {
     global $wpdb;
     $Company = null;
-    if (!isset($id_candidat) || empty($id_candidat) ||
-        is_null($id_candidat) || !is_user_logged_in()) return false;
+    if (!is_numeric($id_candidat) || !is_user_logged_in()) return false;
     if (is_null($id_company) || empty($id_company)) {
       $User = wp_get_current_user();
-      if (in_array('company', $User->roles)) {
+      $userData = get_userdata($User->ID);
+      if (in_array('company', $userData->roles)) {
         $Company = \includes\post\Company::get_company_by($User->ID);
       } else return false;
     } else {
@@ -101,8 +111,8 @@ trait ModelCVLists {
 
     if ($this->list_exist($Company->getId(), $id_candidat)) return true;
 
-    $data   = [ 'id_candidate' => $id_candidat, 'id_company' => $Company->getId() ];
-    $format = [ '%d', '%d' ];
+    $data = ['id_candidate' => $id_candidat, 'id_company' => $Company->getId()];
+    $format = ['%d', '%d'];
     $result = $wpdb->insert($this->listTable, $data, $format);
     return $result;
   }

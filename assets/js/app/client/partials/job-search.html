@@ -1,7 +1,7 @@
 <div class="form-group mb-5" id="jobsought">
-  <h6 class="font-bold">Emploi recherché ou vœux <span style="color: red">*</span></h6>
+  <h6 class="font-bold">Emploi recherché ou métier <span style="color: red">*</span></h6>
   <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-  <tags-input ng-model="jobs" max-lenght="2" add-on-paste="true" paste-split-pattern="[,;|]"
+  <tags-input ng-model="jobs" max-lenght="2" add-on-paste="true" paste-split-pattern="[,;|/\:.*_•]"
               max-tags="2" display-property="name" placeholder="Emploi recherché"
               on-tag-adding="onAddingTag($tag)"
               on-invalid-tag="onTagInvalid($tag)"
@@ -22,7 +22,7 @@
     <button class="btn btn-success" ng-click="onSave()" ng-disabled="!isValidTag || jobLoading">Enregistrer</button>
   </div>
   <p class="mention-text col-md-10 mt-3 pl-0">
-    Ajouter un vœux s'il ne ﬁgure pas dans la liste et valider par <span class="badge-default badge">ENTRER</span> ou le virgule “,”
+    Ajouter un métier s'il ne ﬁgure pas dans la liste et valider par <span class="badge-default badge">ENTRER</span> ou le virgule “,”
     et <b>éviter les fautes d'orthographe. Vous avez droit à seulement deux (2) voeux</b>
   </p>
 </div>

@@ -19,9 +19,7 @@ trait Register {
       'edit_users'        => true,
 
       'manage_options' => false,
-
       'remove_users' => false,
-
       'delete_others_pages'    => true,
       'delete_posts'           => false,
       'delete_pages'           => false,
@@ -86,6 +84,32 @@ trait Register {
   }
 
   protected function registerPostTypes() {
+    register_post_type( 'formation', [
+      'label'           => "Les formations",
+      'labels'          => [
+        'name'               => "Les formations",
+        'singular_name'      => "Formation",
+        'add_new'            => 'Ajouter',
+        'add_new_item'       => "Ajouter une nouvelle formation",
+        'edit_item'          => 'Modifier',
+        'view_item'          => 'Voir',
+        'search_items'       => "Trouver des formations",
+        'all_items'          => "Tous les formations",
+        'not_found'          => "Aucune formation trouver",
+        'not_found_in_trash' => "Aucune formation dans la corbeille"
+      ],
+      'public'          => true,
+      'hierarchical'    => false,
+      'menu_position'   => null,
+      'show_ui'         => true,
+      'has_archive'     => true,
+      'rewrite'         => [ 'slug' => 'formation' ],
+      'capability_type' => 'post',
+      'menu_icon'       => 'dashicons-media-interactive',
+      'supports'        => [ 'title', 'content', 'excerpt', 'thumbnail', 'custom-fields' ],
+      'show_in_rest'    => true
+    ] );
+
     register_post_type( 'offers', [
       'label'           => "Les offres",
       'labels'          => [
@@ -168,7 +192,7 @@ trait Register {
   protected function registerTaxonomy() {
 
     // Now register the taxonomy (Secteur d'activité)
-    register_taxonomy( 'branch_activity', [ 'company', 'candidate' ], [
+    register_taxonomy( 'branch_activity', [ 'company', 'candidate', 'formation' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Secteur d\'activité',
@@ -237,7 +261,7 @@ trait Register {
     ] );
 
     // Now register the taxonomy (Région)
-    register_taxonomy( 'region', [ 'offers', 'candidate', 'company' ], [
+    register_taxonomy( 'region', [ 'offers', 'candidate', 'company', 'formation' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Région',

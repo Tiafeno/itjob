@@ -1,5 +1,6 @@
 /composer/vendor
 /templates/cache
 .idea
-
+composer.json
+composer.lock
 *.js.map

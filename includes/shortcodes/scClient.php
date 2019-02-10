@@ -8,6 +8,7 @@ use includes\object\jobServices;
 use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
+use includes\post\Formation;
 
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
@@ -56,9 +57,10 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_send_request_premium_plan', [ &$this, 'send_request_premium_plan' ] );
         add_action( 'wp_ajax_get_history_cv_view', [ &$this, 'get_history_cv_view' ] );
         add_action( 'wp_ajax_get_company_lists', [ &$this, 'get_company_lists' ] );
-        add_action( 'wp_ajax_add_cv_list', [ &$this, 'add_cv_list' ] );
+        add_action( 'wp_ajax_add_cv_list', [ &$this, 'add_cv_list' ] ); // Ajouter un candidat dans la liste de l'entreprise
         add_action( 'wp_ajax_get_candidat_interest_lists', [ &$this, 'get_candidat_interest_lists' ] );
         add_action( 'wp_ajax_collect_favorite_candidates', [ &$this, 'collect_favorite_candidates' ] );
+        add_action( 'wp_ajax_collect_formations', [ &$this, 'collect_formations' ] );
         add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
         add_action( 'wp_ajax_get_candidacy', [ &$this, 'get_candidacy' ] );
         add_action( 'wp_ajax_collect_current_user_notices', [ &$this, 'collect_current_user_notices' ] );
@@ -88,16 +90,16 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_enqueue_style( 'b-datepicker-3' );
       wp_enqueue_style( 'sweetalert' );
       wp_enqueue_style( 'ng-tags-bootstrap' );
-      wp_enqueue_style( 'froala' );
       wp_enqueue_style( 'alertify' );
-      wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
       // scripts
       wp_enqueue_script( 'sweetalert' );
       wp_enqueue_script( 'moment-locales' );
       wp_enqueue_script( 'jquery-validate' );
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
       wp_register_script( 'espace-client', get_template_directory_uri() . '/assets/js/app/client/clients.js', [
+        'tinymce',
         'angular',
+        'angular-ui-tinymce',
         'angular-ui-select2',
         'angular-aria',
         'angular-messages',
@@ -109,7 +111,7 @@ if ( ! class_exists( 'scClient' ) ) :
         'ng-tags',
         'b-datepicker',
         'fr-datepicker',
-        'froala'
+        
       ], $itJob->version, true );
 
       $client       = get_userdata( $this->User->ID );
@@ -175,10 +177,9 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( is_null( $post_id ) ) {
         wp_send_json( false );
       }
-      $form = [
+      $form = (object)[
         // FEATURED: Modifier le titre de l'offre et son champ ACF
         'post'             => Http\Request::getValue( 'postPromote' ),
-        'datelimit'        => Http\Request::getValue( 'dateLimit' ),
         'contrattype'      => Http\Request::getValue( 'contractType' ),
         'profil'           => Http\Request::getValue( 'profil' ),
         'mission'          => Http\Request::getValue( 'mission' ),
@@ -186,13 +187,20 @@ if ( ! class_exists( 'scClient' ) ) :
         'otherinformation' => Http\Request::getValue( 'otherInformation' ),
         'abranch'          => Http\Request::getValue( 'branch_activity' ),
       ];
+      $offer = get_post($post_id);
       wp_update_post( [
         'ID'         => $post_id,
-        'post_title' => $form->post
+        'post_title' => $form->post,
+        'post_date'  => $offer->post_date
       ] );
       foreach ( $form as $key => $value ) {
         update_field( "itjob_offer_{$key}", $value, $post_id );
       }
+      // Mettre à jour la date limite
+      $datelimit =  Http\Request::getValue( 'dateLimit');
+      $dt = date('Ymd', strtotime($datelimit));
+      update_field('itjob_offer_datelimit', $dt, $post_id);
+
       wp_send_json( [ 'success' => true, 'offers' => $this->__get_company_offers() ] );
     }
 
@@ -331,8 +339,7 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     // Mettre à jour la secteur d'activité pour les offres d'une entreprise definie
-    private function add_offers_branch_activity($company_id, $term)
-    {
+    private function add_offers_branch_activity($company_id, $term) {
       $args = [
         'post_type' => 'offers',
         'post_status' => ['publish', 'pending'],
@@ -347,7 +354,7 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
-     * Function ajax
+     * Function ajax.
      * Mettre à jour les informations de base (candidate) avant de continuer dans le site
      */
     public function update_candidate_information() {
@@ -378,6 +385,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
+    /**
+     * Mettre à jour la liste des logiciels
+     */
     public function update_candidate_softwares() {
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         wp_send_json( false );
@@ -401,6 +411,7 @@ if ( ! class_exists( 'scClient' ) ) :
             // Désactiver le term qu'on viens d'ajouter
             if ( ! is_wp_error( $term ) ) {
               update_term_meta( $term['term_id'], 'activated', 0 );
+              do_action('notice-admin-new-software', $term, $this->Candidate);
               $notValidTerms[] = $term;
               array_push( $softContainer, (int) $term['term_id'] );
             } else {
@@ -420,25 +431,25 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
-     * Fonction ajax - nopriv only
+     * Fonction ajax - nopriv only.
      * Envoie un email pour recuperer le mot de passe
      *
      */
     public function forgot_password() {
       if ( is_user_logged_in() ) {
-        wp_send_json_error( "Vous ne pouvez pas effectuer cette action" );
+        wp_send_json_error( ["msg" => "Vous ne pouvez pas effectuer cette action"] );
       }
       $email = Http\Request::getValue( 'email' );
       if ( ! $email || ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-        wp_send_json_error( "Paramétre non valide" );
+        wp_send_json_error( ["msg" => "Paramétre non valide"] );
       }
       $user = get_user_by( 'email', $email );
       if ( ! $user ) {
-        wp_send_json_error( "Votre recherche ne donne aucun résultat. Veuillez réessayer avec d’autres adresse email." );
+        wp_send_json_error( ['msg' => "Votre recherche ne donne aucun résultat. Veuillez réessayer avec d’autres adresse email."] );
       }
       $reset_key = get_password_reset_key( $user );
       if ( is_wp_error( $reset_key ) ) {
-        wp_send_json_error( $reset_key->get_error_message() );
+        wp_send_json_error( ['msg' => $reset_key->get_error_message() ]);
       }
       // Envoyer un email à l'utilisateur
       do_action( 'forgot_my_password', $email, $reset_key );
@@ -561,6 +572,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
+    /**
+     * Mettre à jours la liste des emplois recherché
+     */
     public function update_job_search() {
       global $itJob;
       if ( ! is_user_logged_in() || ! wp_doing_ajax() ) {
@@ -627,15 +641,17 @@ if ( ! class_exists( 'scClient' ) ) :
           'exp_city'         => $experience->exp_city,
           'exp_company'      => $experience->exp_company,
           'exp_positionHeld' => $experience->exp_positionHeld,
-          'exp_branch_activity' => (int)$experience->abranch,
+          'exp_branch_activity' => (int)$experience->exp_branch_activity,
           'exp_mission'      => $experience->exp_mission,
-          'validated'        => $experience->validated
+          'old_value'        => isset($experience->old_value) ? $experience->old_value : ['exp_dateBegin' => '', 'exp_dateEnd' => '', 'exp_branch_activity' => ''],
+          'validated'        => isset($experience->validated) ? intval($experience->validated) : 0
         ];
       }
       update_field( 'itjob_cv_experiences', $new_experiences, $this->Candidate->getId() );
       $experiences = get_field( 'itjob_cv_experiences', $this->Candidate->getId() );
 
       do_action('notice-admin-update-cv', $this->Candidate->getId());
+      do_action('update_cv',  $this->Candidate->getId());
       
       wp_send_json( [ 'success' => true, 'experiences' => $experiences ] );
     }
@@ -662,13 +678,14 @@ if ( ! class_exists( 'scClient' ) ) :
           'training_city'          => $training->training_city,
           'training_country'       => $training->training_country,
           'training_establishment' => $training->training_establishment,
-          'validated' => $training->validated
+          'validated'              => isset($training->validated) ? intval($training->validated) : 0
         ];
       }
       update_field( 'itjob_cv_trainings', $new_trainings, $this->Candidate->getId() );
       $trainings = get_field( 'itjob_cv_trainings', $this->Candidate->getId() );
 
-      do_action('notice_admin_update_cv', $this->Candidate->getId());
+      do_action('notice-admin-update-cv', $this->Candidate->getId());
+      do_action('update_cv',  $this->Candidate->getId());
 
       wp_send_json( [ 'success' => true, 'trainings' => $trainings ] );
     }
@@ -724,6 +741,7 @@ if ( ! class_exists( 'scClient' ) ) :
 
     /**
      * Function ajax
+     * Récuperer les candidatures d'un candidat
      */
     public function get_candidacy() {
       if ( ! is_user_logged_in() ) {
@@ -745,6 +763,35 @@ if ( ! class_exists( 'scClient' ) ) :
       } else {
         wp_send_json_error("Vous n'étes pas un candidat");
       }
+    }
+
+    /**
+     * Function ajax
+     * Récupérer les formations d'un utilisateur
+     */
+    public function collect_formations() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+      $User = wp_get_current_user(  );
+      $email = $User->user_email;
+      $args = [
+        'post_type' => 'formation',
+        'post_status' => 'any',
+        'meta_query' => [
+          [
+            'key' => 'email',
+            'value' => $email
+          ]
+        ]
+      ];
+      $formations = get_posts( $args );
+      $results = [];
+      foreach ($formations as $formation) {
+        $results[] = new Formation( $formation->ID );
+      }
+      
+      wp_send_json_success( $results );
     }
 
     /**
@@ -795,6 +842,7 @@ if ( ! class_exists( 'scClient' ) ) :
     /**
      * Function ajax
      * Ajouter un CV dans la liste de l'entreprise
+     * Si l'offre est une entreprise premium ont ajoute le CV même s'il atteint le nombre limit ede CV
      */
     public function add_cv_list() {
       if ( ! is_user_logged_in() ) {
@@ -802,19 +850,30 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $id_candidate = (int) Http\Request::getValue( 'id_candidate' );
       $id_request   = (int) Http\Request::getValue( 'id_request' );
-
+     
       // FEATURED: Verifier si l'entreprise n'a pas atteint le nombre limite de CV
-      $itModel = new itModel();
-      if ( $itModel->check_list_limit() ) {
+      if ($id_request === 0) wp_send_json_error('Aucune requete ne correspont à votre demande');
+      $Model = new itModel();
+      $request = $Model->get_request($id_request);
+      $Candidate = new Candidate($id_candidate);
+      $Offer = new Offers((int) $request->id_offer);
+      
+      // TODO: Filtrer si l'offre est premium
+      if ( $Model->check_list_limit() && $Offer->rateplan === 'standard') { // Compte standard
         // Nombre limite atteinte
-        wp_send_json_error( "Vous avez atteint le nombre de limite de CV dans votre liste" );
+        wp_send_json_error( "Vous venez de sélectionner 5 candidats et vous vous apprêter à en sélectionner un sixième savez 
+        vous qu’à partir de là les CV sont payants au prix de 25.000 HT / CV " );
       }
-      if ( $id_candidate ) {
-        $id_candidate  = (int) $id_candidate;
-        $response      = $itModel->add_list( $id_candidate );
+      if ( $Candidate->getId() !== 0 ) {
+        $response      = $Model->add_list( $Candidate->getId() );
         if ( $response ) {
-          $itModel->update_interest_status( $id_request, 'validated' );
-          wp_send_json_success( "Le candidat a bien étés valider avec succès." );
+          $Model->update_interest_status( $id_request, 'validated' );
+          if ($request->type === 'apply') {
+            do_action('notice-candidate-selected-cv', $Candidate->getId(), $request->id_offer);
+          }
+          wp_send_json_success( "Le candidat a bien étés sélectionner avec succès." );
+        } else {
+          wp_send_json_error( "Une erreur s'est produite" );
         }
       } else {
         wp_send_json_error( "Paramètre invalide" );
@@ -832,9 +891,9 @@ if ( ! class_exists( 'scClient' ) ) :
       }
       $id_candidate = (int) Http\Request::getValue( 'id_candidate' );
       $id_request   = (int) Http\Request::getValue( 'id_request' );
-      $itModel      = new itModel();
+      $Model      = new itModel();
       if ( $id_candidate ) {
-        $change_status = $itModel->update_interest_status( $id_request, 'reject' );
+        $change_status = $Model->update_interest_status( $id_request, 'reject' );
         if ( $change_status ) {
           wp_send_json_success( "Status mise à jour avec succès." );
         }
@@ -847,6 +906,8 @@ if ( ! class_exists( 'scClient' ) ) :
      * Envoyer un mail à l'administrateur pour une demande de compte premium
      * La valeur du post meta 'itjob_meta_account' de l'entreprise sera 2 si la demande à bien étés envoyer
      * NB: 0: Standart, 1: Premium et 2: En attente
+     * 
+     * DEPRECATE:  Ne plus mettre les professionels en mode premium
      */
     public function send_request_premium_plan() {
       global $Engine;
@@ -882,6 +943,7 @@ if ( ! class_exists( 'scClient' ) ) :
         if ( $sender ) {
           // Changer la valeur du post meta pour '2' qui signifie rester en attente de validation
           update_post_meta( $this->Company->getId(), 'itjob_meta_account', 2 );
+          do_action('request-premium-account', $this->Company);
           wp_send_json_success( "Votre demande à bien été envoyer." );
         } else {
           wp_send_json_error( $information_message );
@@ -966,6 +1028,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'ListsCandidate' => $listsCandidate,
           'post_type'      => 'company',
           'Helper'         => [
+            'add_formation_url' => get_the_permalink(ADD_FORMATION_PAGE),
             'interest_page_uri' => get_the_permalink( $interest_page_id ),
             'archive_candidate_link' => get_post_type_archive_link('candidate')
           ]
@@ -974,6 +1037,7 @@ if ( ! class_exists( 'scClient' ) ) :
         // candidate
         $notification = get_field( 'itjob_cv_notifEmploi', $this->Candidate->getId() );
         $Candidate    = Candidate::get_candidate_by( $User->ID );
+        $Candidate->_activated = $Candidate->is_activated();
         $Candidate->isMyCV();
         $alerts = explode( ',', $notification['job_sought'] );
         wp_send_json( [
@@ -987,10 +1051,17 @@ if ( ! class_exists( 'scClient' ) ) :
       }
     }
 
-    private function __get_company_offers() {
+    public function __get_company_offers($Company = null) {
       $resolve      = [];
-      $User         = wp_get_current_user();
-      $user_company = Company::get_company_by( $User->ID );
+      if ($Company === null) {
+        $User         = wp_get_current_user();
+        $Company = Company::get_company_by( $User->ID );
+      } else {
+        if (!$Company instanceof Company) {
+          return false;
+        }
+      }
+      
       $offers       = get_posts( [
         'posts_per_page' => - 1,
         'post_type'      => 'offers',
@@ -998,13 +1069,19 @@ if ( ! class_exists( 'scClient' ) ) :
         'order'          => 'ASC',
         'post_status'    => [ 'publish', 'pending' ],
         'meta_key'       => 'itjob_offer_company',
-        'meta_value'     => $user_company->ID,
+        'meta_value'     => $Company->getId(),
         'meta_compare'   => '='
       ] );
       foreach ( $offers as $offer ) {
-        $_offer = new Offers( $offer->ID );
-        $_offer->__get_access();
-        array_push( $resolve, $_offer );
+        $objOffer = new Offers( $offer->ID );
+        $objOffer->__get_access();
+
+        $rspCompany = new \stdClass();
+        $rspCompany->name = $Company->title;
+        $rspCompany->ID = $Company->getId();
+        $objOffer->_company = $rspCompany;
+
+        array_push( $resolve, $objOffer );
       }
 
       return $resolve;

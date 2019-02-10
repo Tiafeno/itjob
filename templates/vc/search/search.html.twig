@@ -68,7 +68,6 @@
                     <option value="{{ abranch.term_id }}">{{ abranch.name }}</option>
                   {% endfor %}
 
-                  </optgroup>
                 </select>
               </div>
             </div>
@@ -96,7 +95,7 @@
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
-                <select class="form-control" name="ab" title="Secteur d'activité">
+                <select class="form-control" name="ab" title="Les métiers">
                   <option></option>
                   {% for abranch in abranchs %}
                     <option value="{{ abranch.term_id }}">{{ abranch.name }}</option>
@@ -150,6 +149,14 @@
           </div>
         </form>
       </div>
+    </div>
+
+  </div>
+
+  <div class="ibox-footer row">
+    <div class="col-sm-10 mr-sm-auto mt-3">
+      <a class="btn btn-rounded btn-success mr-2" href="{{add_cv_link}}">Déposer mon CV</a>
+      <a class="btn btn-rounded btn-blue" href="{{add_offer_link}}">Déposer une offre</a>
     </div>
   </div>
 </div>

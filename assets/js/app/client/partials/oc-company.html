@@ -1,6 +1,6 @@
 
 <div class="preloader-backdrop" ng-if="preloader">
-  <div class="page-preloader">Chargement</div>
+  <div class="page-preloader"></div>
 </div>
 <!-- Modal contact -->
 <div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1"
@@ -16,6 +16,8 @@
 
       <div class="ibox-body">
         <p>
+            En optant pour cette option cela vous permettra d’attirer l’attention des candidats et ainsi d’augmenter le nombre de candidatures reçues.
+            Vous pouvez mettre en avant votre annonce selon une période plus ou moins longue. 
           Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:<br>
           <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a
           href="tel:+261349396218">034
@@ -126,6 +128,34 @@
 </div>
 <!-- .end modal -->
 
+<!-- Modal featured formation dialog -->
+<div class="modal fade" id="formation-featured-dialog" aria-labelledby="featured-formation-dialog" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="ibox text-left modal-content">
+      <div class="ibox-head">
+        <div class="ibox-title">Mettre en avant votre formation</div>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+
+      <div class="ibox-body">
+        <div class="form-group mb-4">
+          <p>
+              En optant pour cette option cela vous permettra d’attirer l’attention des candidats et ainsi d’augmenter le nombre d'inscription reçues.<br>
+              Vous pouvez mettre en avant votre formation selon une période plus ou moins longue. <br> <br>
+            Pour plus d'informations, contactez le service commercial au:<br>
+            <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034
+              93 962 18</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- .end modal -->
+
 <div class="">
   <div class="flexbox">
     <div class="flexbox-b">
@@ -143,7 +173,7 @@
             <history-cv></history-cv>
 
             <a ng-href="[[Helper.archive_candidate_link]]" target="_blank" class="ml-2" >
-              <button class="btn btn-secondary">
+              <button class="btn btn-warning">
                 <span class="btn-icon"><i class="fa fa-link"></i> Trouver des candidats </span>
               </button>
             </a>
@@ -166,6 +196,11 @@
       <li class="nav-item">
         <a class="nav-link active" data-target="#profil" data-toggle="tab">
           Profil
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-target="#formation" aria-controls="formation" data-toggle="tab" role="tab">
+          Mes formations
         </a>
       </li>
       <li class="nav-item">
@@ -199,9 +234,17 @@
                                              init="Initialize()"
                                              company="Company">
                 </general-information-company>
-                <plan-premium></plan-premium>
+                <plan-premium ng-if="false"></plan-premium>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="formation">
+        <div class="page-content">
+          <div class="ibox-body">
+            <h4 class="mb-3">MES FORMATIONS</h4>
+            <app-formation></app-formation>
           </div>
         </div>
       </div>

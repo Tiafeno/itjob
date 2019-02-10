@@ -1,9 +1,4 @@
-const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute', 'froala', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
-  .value('froalaConfig', {
-    toolbarInline: false,
-    quickInsertTags: null,
-    toolbarButtons: ['bold', 'strikeThrough', 'subscript', 'superscript', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', 'undo', 'redo'],
-  })
+const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinymce', 'ngRoute', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
   .factory('clientFactory', ['$http', function ($http) {
     return {
       getCity: function () {
@@ -36,7 +31,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
     ];
   }])
   .filter('Greet', [function () {
-    const Greeting = [{
+    const Greeting = [
+      {
         greeting: 'mrs',
         label: 'Madame'
       },
@@ -53,7 +49,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
     }
   }])
   .filter('Status', [function () {
-    const postStatus = [{
+    const postStatus = [
+      {
         slug: 'publish',
         label: 'Vérifier'
       },
@@ -105,8 +102,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
               },
               pwd: {
                 required: "Ce champ est obligatoire",
-                pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, " +
-                  "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
+                pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, comprenant des chiffres et des lettres minuscules et"+
+                " majuscules, ainsi 1 caractère spécial (-*/@+\_%$=).",
               },
               confpwd: {
                 required: "Ce champ est obligatoire",
@@ -170,299 +167,6 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
       }
     };
   }])
-  .directive('experiences', ['clientService', function (clientService) {
-    return {
-      restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html?ver=' + itOptions.version,
-      scope: {
-        Candidate: "=candidate",
-        abranchFn: '&abranchFn' // Function pass
-      },
-      controller: ['$scope', '$http', '$q', function ($scope, $http, $q) {
-        const self = this;
-        /**
-         * 0: Nouvelle experience
-         * 1: Modifier l'experience
-         * 2: Supprimer l'experience
-         */
-        $scope.mode = null;
-        $scope.Exp = {};
-        $scope.abranchs = [];
-        $scope.newExperience = {};
-        $scope.months = clientService.months;
-        $scope.years = _.range(1959, new Date().getFullYear() + 1);
-        $scope.dateEndRange = [];
-
-        $scope.loadExperiences = false;
-        $scope.loadTrainings = false;
-
-        this.$onInit = () => {
-          moment.locale('fr');
-          let experiences = _.clone($scope.Candidate.experiences);
-          $scope.Candidate.experiences = _.map(experiences, (experience) => {
-            if (!_.isUndefined(experience.old_value)) {
-              let oldValue = experience.old_value;
-              if (!_.isEmpty(oldValue.exp_dateBegin) && !_.isEmpty(oldValue.exp_branch_activity)) {
-                experience.exp_dateBegin = moment(oldValue.exp_dateBegin).format('MM/DD/YYYY');
-                experience.exp_dateEnd = moment(oldValue.exp_dateEnd).format('MM/DD/YYYY');
-              }
-            }
-            
-            return experience;
-          });
-          $scope.loadExperiences = true;
-
-          $scope.Candidate.trainings = _.map($scope.Candidate.trainings, (training) => {
-            let dateBegin = training.training_dateBegin;
-            if (moment(dateBegin, "MM/DD/YYYY", "fr").format() === 'Invalid date') {
-              let dateEnd = training.training_dateEnd;
-              training.training_dateBegin = moment(dateBegin).format('MM/DD/YYYY');
-              training.training_dateEnd = moment(dateEnd).format('MM/DD/YYYY');
-            }
-
-            return training;
-          });
-          $scope.loadTrainings = true;
-        };
-
-        /**
-         * Ajouter une nouvelle expérience
-         */
-        $scope.addNewExperience = () => {
-          console.info("Model new experience init");
-          $scope.mode = 0;
-          $scope.newExperience.position_currently_works = true;
-          $scope.newExperience.validated = false;
-          $q.all([$scope.abranchFn()]).then(data => {
-            $scope.abranchs = _.clone(data[0]);
-            UIkit.modal('#modal-new-experience-overflow').show();
-          });
-
-        };
-
-        /**
-         * Supprimer une experience dans la base de donnée
-         * @param {int} experienceId
-         */
-        $scope.onDeleteExperience = (experienceId) => {
-          $scope.mode = 2;
-          UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-              labels: {
-                ok: 'Supprimer',
-                cancel: 'Annuler'
-              }
-            })
-            .then(function () {
-              let Experiences = _.reject($scope.Candidate.experiences, (experience) => experience.id === parseInt(experienceId));
-              self.updateExperience(Experiences)
-                .then(response => {
-                  if (response.success) {
-                    alertify.success("Expérience supprimer avec succès");
-                    $scope.mode = null;
-                  }
-                });
-            }, () => {
-              alertify.error("Une erreur s'est produite pendant la suppression.");
-              $scope.mode = null;
-            });
-        };
-
-
-        /**
-         * Envoyer le fomulaire d'ajout pour une nouvelle experience
-         * @param isValid
-         */
-        $scope.submitNewExperienceForm = (isValid) => {
-          if (!isValid || !$scope.newExperienceForm.$dirty) return;
-          self.formatFormEntry($scope.newExperience)
-            .then(Experience => {
-              // Mettre à jour l'expérience
-              self.updateExperience(Experience)
-                .then(response => {
-                  if (response.success) {
-                    $scope.status = "Expérience ajouter avec succès";
-                    window.setTimeout(() => {
-                      UIkit.modal('#modal-new-experience-overflow').hide();
-                      $scope.newExperience = {};
-                    }, 1200);
-                  } else {
-                    $scope.status = response.msg;
-                  }
-                });
-            });
-        };
-
-        /**
-         * Cette fonction permet de formater les entrés dans le formulaire
-         *
-         * @param {object} model
-         * @returns {*|Array}
-         */
-        self.formatFormEntry = (model) => {
-          let deferred = $q.defer();
-          let beginFormat = model.dateBegin.month + ", " + model.dateBegin.year;
-          let dateBegin = moment(beginFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
-          let dateEnd = '';
-          let Experiences = [];
-          if (!model.position_currently_works) {
-            let endFormat = model.dateEnd.month + ", " + model.dateEnd.year;
-            dateEnd = moment(endFormat, 'MMMM, YYYY', 'fr').format("MM/DD/Y");
-          }
-          if ($scope.mode === 1) {
-            // Récuperer les experiences sauf celui qu'on est entrain de modifier
-            Experiences = _.reject($scope.Candidate.experiences, exp => {
-              return exp.id === modelid;
-            });
-          }
-          let listOfExperiences = ($scope.mode === 0) ? _.clone($scope.Candidate.experiences) : Experiences;
-          Experiences = _.map(listOfExperiences, exp => {
-            if (_.isEmpty(exp.exp_dateEnd)) {
-              exp.position_currently_works = true;
-            }
-            return exp;
-          });
-          Experiences.push({
-            exp_positionHeld: model.position,
-            exp_company: model.company,
-            exp_country: model.country,
-            exp_city: model.city,
-            exp_mission: model.mission,
-            exp_dateBegin: dateBegin,
-            exp_dateEnd: dateEnd,
-          });
-          deferred.resolve(Experiences);
-          return deferred.promise;
-        };
-
-        /**
-         * Cette fonction permet d'envoyer une requete pour mettre à jours les expériences
-         * @param {object} Experiences
-         * @return
-         */
-        self.updateExperience = (Experiences) => {
-          let deferred = $q.defer();
-          const subForm = new FormData();
-          subForm.append('action', 'update_experiences');
-          subForm.append('experiences', JSON.stringify(Experiences));
-          $scope.status = "Enregistrement en cours...";
-          $http({
-              url: itOptions.Helper.ajax_url,
-              method: "POST",
-              headers: {
-                'Content-Type': undefined
-              },
-              data: subForm
-            })
-            .then(resp => {
-              let data = resp.data;
-              if (data.success) {
-                $scope.Candidate.experiences = _.map(data.experiences, (exp, index) => {
-                  exp.id = index;
-                  return exp;
-                });
-                $scope.mode = null;
-                deferred.resolve({
-                  success: true
-                });
-              } else {
-                deferred.reject({
-                  success: false,
-                  msg: "Une erreur s'est produite."
-                })
-              }
-            });
-          return deferred.promise;
-        };
-
-        /**
-         * Envoyer le formulaire d'ajout pour la modification
-         * @param {bool} isValid
-         */
-        $scope.submitForm = (isValid) => {
-          if (!isValid || !$scope.eform.$dirty) return;
-          self.formatFormEntry($scope.Exp)
-            .then(Experience => {
-              self.updateExperience(Experience)
-                .then(response => {
-                  if (response.success) {
-                    $scope.status = "Enregistrer avec succès";
-                    window.setTimeout(() => {
-                      UIkit.modal('#modal-edit-experience-overflow').hide();
-                    }, 1200);
-                  } else {
-                    $scope.status = response.msg;
-                  }
-                });
-            });
-          // Mettre à jour l'expérience
-
-        };
-
-        /**
-         * Modifier une expérience
-         * @param {string} positionHeld
-         */
-        $scope.editExperience = (experienceId) => {
-          $scope.mode = 1;
-          let experience = _.find($scope.Candidate.experiences, experience => experience.id == parseInt(experienceId));
-          let momentDateBegin = moment(experience.exp_dateBegin, 'MM/DD/YYYY', 'fr');
-          let dateEndObj = {};
-          if (!_.isEmpty(experience.exp_dateEnd)) {
-            let momentDateEnd = moment(experience.exp_dateEnd, 'MM/DD/YYYY', 'fr');
-            dateEndObj = {
-              month: momentDateEnd.format('MMMM'),
-              year: parseInt(momentDateEnd.format('YYYY'))
-            };
-          }
-          $scope.Exp = {
-            id: experience.id,
-            validated: experience.validated,
-            position: experience.exp_positionHeld,
-            company: experience.exp_company,
-            city: experience.exp_city,
-            country: experience.exp_country,
-            mission: experience.exp_mission,
-            position_currently_works: _.isEmpty(experience.exp_dateEnd) ? true : false,
-            dateBegin: {
-              month: momentDateBegin.format('MMMM'),
-              year: parseInt(momentDateBegin.format('YYYY'))
-            },
-            dateEnd: dateEndObj
-          };
-          UIkit.modal('#modal-edit-experience-overflow').show();
-        };
-
-        /**
-         * Récuperer une date de fin
-         * @param beginYears
-         * @returns {*}
-         */
-        $scope.dateEndRange = (beginYears) => {
-          if (beginYears) {
-            let yBegin = parseInt(beginYears);
-            return _.range(yBegin, new Date().getFullYear() + 1)
-          } else {
-            return $scope.years;
-          }
-        };
-
-        // Event on modal dialog close or hide
-        UIkit.util.on('#modal-edit-experience-overflow', 'hide', e => {
-          e.preventDefault();
-          $scope.Exp = {};
-          $scope.eform.$setPristine();
-          $scope.eform.$setUntouched();
-          $scope.status = '';
-        });
-
-        UIkit.util.on('#modal-new-experience-overflow', 'hide', e => {
-          e.preventDefault();
-          $scope.newExperience = {};
-        });
-
-      }]
-    }
-  }])
   .directive('notifications', [function () {
     return {
       restrict: 'E',
@@ -482,13 +186,65 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
               $scope.Notices = _.map(query.data, (data) => {
                 data.status = parseInt(data.status);
                 data.ID = parseInt(data.ID);
-                data.url = `${data.url}&notif_id=${data.ID}`;
+                data.url = `${data.guid}&notif_id=${data.ID}`;
                 return data;
               });
               $scope.Loading = false;
             }, (error) => {});
         });
 
+      }]
+    }
+  }])
+  .directive('appFormation', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/formation.html?ver=' + itOptions.version,
+      scope: true,
+      controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
+        $scope.Formations = [];
+        $scope.Loading = false;
+        self.Initialize = () => {
+          $scope.Loading = true;
+          $http.get(`${itOptions.Helper.ajax_url}?action=collect_formations`, {
+              cache: false
+            })
+            .then(resp => {
+              const query = resp.data;
+              if (query.success) {
+                moment.locale('fr');
+                const table = jQuery('#formation-table').DataTable({
+                  pageLength: 10,
+                  fixedHeader: false,
+                  responsive: false,
+                  dom: '<"top"i><"info"r>t<"bottom"flp><"clear">',
+                  data: query.data,
+                  columns: [
+                    {data: 'reference'},
+                    {data: 'status', render: (data, type, row, meta) => {
+                      var text =  data === 'pending' ? 'En attente' : 'Publier';
+                      return `<span class="badge badge-pill badge-default"> ${text} </span>`;
+                    }},
+                    {data: 'title'},
+                    {data: 'date_limit', render: (data) => { return moment(data).format('LL'); }},
+                    {data: 'establish_name'},
+                    {data: null, render: () => {
+                      return '<i class="fa fa-pencil"></i>';
+                    }}
+                  ],
+                  "sDom": 'rtip',
+                  language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+                  }
+                });
+
+                $scope.Loading = false;
+              } else {
+                $scope.loading = false;
+              }
+            });
+        };
+        self.Initialize();
       }]
     }
   }])
@@ -603,7 +359,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
               }, 1200);
 
             }
-          }, (error) => {});
+          }, (error) => {
+            $scope.profilEditor.loading = false;
+          });
       };
 
       $scope.onSubmitCandidateInformation = (isValid) => {
@@ -628,7 +386,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
               }, 1200);
 
             }
-          }, (error) => {});
+          }, (error) => {
+            $scope.profilEditor.loading = false;
+          });
       };
 
       self.send
@@ -638,6 +398,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
        */
       $scope.Initialize = () => {
         console.info('Client init...');
+        $scope.preloaderToogle();
         if (Client.post_type === 'company') {
           $scope.Company = _.clone(Client.iClient);
           $scope.Helper = _.clone(Client.Helper);
@@ -671,7 +432,16 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
                   $scope.profilEditor.form.region = $scope.Company.region.term_id;
                 }
                 UIkit.modal('#modal-information-editor').show();
-              })
+                $scope.preloaderToogle();
+              }, error => {
+                $scope.preloaderToogle();
+                swal('Information', "Erreur de chargement de la page. Récupération de la page en cours...", 'info');
+                setTimeout(() => {
+                  location.reload();
+                }, 2000);
+              });
+          } else {
+            $scope.preloaderToogle();
           }
 
         } else {
@@ -748,10 +518,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
                 $scope.profilEditor.form.email = $scope.Candidate.privateInformations.author.data.user_email;
                 // Récuperer l'adresse
                 $scope.profilEditor.form.address = _.isEmpty(address) || _.isNull(address) ? '' : address;
-
+                $scope.preloaderToogle()
                 UIkit.modal('#modal-information-editor').show();
               })
           } else {
+            $scope.preloaderToogle()
             if (!$scope.cv.hasCV) {
               jQuery('#modal-info-editor').modal('show');
             }
@@ -851,6 +622,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
             } else {
               alertify.success('Enregistrer avec succès')
             }
+          }, error => {
+            alertify.error("Une erreur s'est produite,  veuillez réessayer ultérieurement.");
+            $scope.alertLoading = false;
           });
       };
 
@@ -1006,13 +780,17 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ngRoute'
             },
             data: formData
           })
-          .then(resp => {
-            let data = resp.data;
-            if (!data.success) return;
-            UIkit.modal('#modal-candidate-profil-editor').hide();
-            $scope.profilEditor.loading = false;
-            location.reload();
-          })
+          .then(
+            resp => {
+              let data = resp.data;
+              if (!data.success) return;
+              UIkit.modal('#modal-candidate-profil-editor').hide();
+              $scope.profilEditor.loading = false;
+              location.reload();
+            }, error => {
+              swall("Erreur", "Une erreur s'est produite, veuillez réessayer ultérieurement.", "error");
+              $scope.profilEditor.loading = false;
+            })
       };
 
       UIkit.util.on('#modal-candidate-profil-editor', 'show', function (e) {

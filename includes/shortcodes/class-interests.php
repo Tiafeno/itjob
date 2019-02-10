@@ -27,94 +27,64 @@ class scInterests
 
     // ajax
     add_action('wp_ajax_get_ask_cv', [&$this, 'get_ask_cv']);
+    add_action('wp_ajax_inspect_cv', [&$this, 'inspect_cv']);
     add_action('wp_ajax_nopriv_get_ask_cv', [&$this, 'get_ask_cv']);
 
     add_action('wp_ajax_get_current_user_offers', [&$this, 'get_current_user_offers']);
     add_action('wp_ajax_nopriv_get_current_user_offers', [&$this, 'get_current_user_offers']);
-    add_action('wp_ajax_download_pdf', [&$this, 'download_pdf']);
   }
 
-  public function download_pdf()
-  {
+
+  public static function get_cv_html($Candidate) {
     global $Engine;
-
-    // create new PDF document
-    require get_template_directory() . '/libs/tcpdf/vendor/autoload.php';
-    $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-    $pdf->SetCreator(PDF_CREATOR);
-
-
-    $ErrorMessage = "Une erreur s'est produite";
-    $User = wp_get_current_user();
-    if ($User->ID === 0 || !in_array('company', $User->roles)) return $ErrorMessage;
-    $Entreprise = Company::get_company_by($User->ID);
-    $candidate_id = Http\Request::getValue('id');
-    if (!$candidate_id) {
-      wp_send_json_error($ErrorMessage);
-    }
-    $Candidate = new Candidate($candidate_id);
-
-    // Une systéme pour limiter la visualisation des CV
-    // Verifier si le compte de l'entreprise est sereine ou standart
-    if (!$Candidate->is_candidate() || !$Entreprise->is_company()) {
-      wp_send_json_error($ErrorMessage);
-    }
-
-    // Verifier si l'entreprise a l'access au informations du candidat
-    // FEATURED: Verifier si le CV est dans la liste de l'entreprise
-    $itModel = new itModel();
-    if (!$itModel->interest_access($Candidate->getId(), $Entreprise->getId()) ||
-      !$itModel->list_exist($Entreprise->getId(), $Candidate->getId())) {
-      wp_send_json_error("Accès non autoriser");
-    }
-
-    $Candidate->__client_premium_access();
-    $name = $Candidate->privateInformations->firstname . " " . $Candidate->privateInformations->lastname;
-    $pdf->SetAuthor($name);
-    $pdf->SetTitle($Candidate->reference);
-    $pdf->SetSubject($Candidate->reference);
-
-// set default header data
-    $logo = get_template_directory() . '/img/logo.png';
-    $site = get_site_url();
-    $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . $Candidate->reference, "ItJobMada - {$site}");
-    // set header and footer fonts
-    $pdf->setHeaderFont(array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-    $pdf->setFooterFont(array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-    // set auto page breaks
-    $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
-
-// set image scale factor
-    $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-    // set font
-    $pdf->SetFont('DejaVuSerifCondensed', '', 10);
-
-// add a page
-    $pdf->AddPage();
-
     $html = '';
     try {
-      $html .= $Engine->render('@SC/cv-candidate.html.twig', [
+      $custom_logo_id = get_theme_mod( 'custom_logo' );
+      $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
+      $html .= $Engine->render('@SC/pdf.html', [
+        'logo' => $logo[0],
         'candidate' => $Candidate,
       ]);
     } catch (Twig_Error_Loader $e) {
     } catch (Twig_Error_Runtime $e) {
     } catch (Twig_Error_Syntax $e) {
       echo $e->getRawMessage();
-      exit;
+      return false;
     }
-    // output the HTML content
-    $pdf->writeHTML($html, true, false, true, false, '');
-    // reset pointer to the last page
-    $pdf->lastPage();
 
-//Close and output PDF document
-    $pdf->Output(get_template_directory() . "/contents/pdf/itjobmada_{$Candidate->reference}.pdf", 'FI');
+    return $html;
   }
 
   /**
-   * Cette function affiche le CV d'un candidate, c'est aussi un shortcode
+   * Télécharger le CV par le bais d'une classe object
+   */
+  public static function get_cv_proformat($Candidate = null) {
+    // create new PDF document
+    require get_template_directory() . '/libs/pdfcrowd/pdfcrowd.php';
+    $client = new \Pdfcrowd\HtmlToPdfClient("ddpixel", "d6f0bc2d93bd50ca240406e51e3a8279");
+
+    //$mpdf = new \Mpdf\Mpdf();
+    $html = self::get_cv_html($Candidate);
+   
+    // run the conversion and write the result to a file
+    $pathFile = "/contents/pdf/itjobmada_{$Candidate->reference}.pdf";
+    $absFile = get_template_directory() . $pathFile;
+    if (file_exists($absFile)){
+      chmod($absFile, 0777);
+      @unlink($absFile);
+    }
+    // $mpdf->WriteHTML($html);
+    // $mpdf->Output();
+    $client->setPageMargins('5mm', '0mm', '0mm', '0mm');
+    $client->setPageSize('A4');
+    $client->setOrientation('portrait');
+    $client->convertStringToFile($html, $absFile);
+
+    return get_template_directory_uri(  ) . $pathFile;
+  }
+
+  /**
+   * Cette function affiche le CV d'un candidate au complete, c'est aussi un shortcode
    *
    * @param $attrs
    *
@@ -132,37 +102,62 @@ class scInterests
         $attrs
       )
     );
-    $ErrorMessage = "<p class='text-center mt-4'>Un erreur s'est produite</p>";
-    $User = wp_get_current_user();
-    if ($User->ID === 0 || !in_array('company', $User->roles)) return $ErrorMessage;
-    $Entreprise = Company::get_company_by($User->ID);
+
     $candidate_id = (int)Http\Request::getValue('cvId');
-    if (!$candidate_id) {
-      return $ErrorMessage;
+    $key = Http\Request::getValue('key', null);
+    $hasKey = false;
+    $ErrorMessage = "<p class='text-center mt-4'>Une erreur s'est produite</p>";
+
+    $User = wp_get_current_user();
+    if ($User->ID === 0 && !is_null($key)) {
+      /**
+       * Il es plus sécurisé de mettre à jours la clé tous les jours avec le tache "cron" de wordpress
+       * Crée une tache pour mettre à jour cette clé
+       * TODO: //
+       */
+      $backOfficeKey = get_field('bo_key', 'option');
+      if ($backOfficeKey !== $key) return "<p class='text-center mt-4 badge badge-pink'>Votre clé a expiré ou vous n'avez pas l'accès a cette page veuillez réessayer</p>";
+      $hasKey = true;
     }
+    if ( ! $candidate_id) return $ErrorMessage;
+
     $Candidate = new Candidate($candidate_id);
-    // Une systéme pour limiter la visualisation des CV
-    // Verifier si le compte de l'entreprise est sereine ou standart
-    if (!$Candidate->is_candidate() || !$Entreprise->is_company()) {
-      return $ErrorMessage;
+    if ( is_user_logged_in() && !$hasKey ) {
+      // Autoriser l'administratuer et les commercials
+      if ( in_array('administrator', $User->roles) || in_array('editor', $User->roles) )
+      {
+        // Autoriser l'administratuer et les commercials
+      } else {
+        $Entreprise = Company::get_company_by($User->ID);
+        if ( ! in_array('company', $User->roles) || ! $Candidate->is_candidate() || ! $Entreprise->is_company()) {
+          return "<p class='text-center mt-4 badge badge-pink'>Vous n'avez pas l'autorisation nécessaire pour voir le contenue de cette page</p>";
+        }
+    
+        // Verifier si l'entreprise a l'access au informations du candidat
+        // FEATURED: Verifier si le CV est dans la liste de l'entreprise
+        $Model = new itModel();
+        if ( ! $Model->interest_access($Candidate->getId(), $Entreprise->getId()) &&
+          ! $Model->list_exist($Entreprise->getId(), $Candidate->getId())) {
+          do_action('add_notice', "<p class='text-center font-14 badge badge-warning'>Vous n'avez pas l'autorisation nécessaire pour voir le contenue de cette page</p>", 'default', false);
+          do_action('get_notice');
+          return;
+        }
+      }
     }
+    
+    wp_enqueue_style( 'poppins', "https://fonts.googleapis.com/css?family=Poppins:300,400,700,800" );
+    wp_enqueue_script( 'jspdf', get_template_directory_uri() . '/assets/js/jspdf.debug.js', ["jquery"], "1.5.3" );
+    wp_enqueue_script( 'html2canvas', get_template_directory_uri() . '/assets/js/html2canvas/html2canvas.min.js', null, "1.5.3" );
+    wp_enqueue_script( 'convertor', get_template_directory_uri() . '/assets/js/convertor.js', null, "0.0.1" );
 
-    // Verifier si l'entreprise a l'access au informations du candidat
-    // FEATURED: Verifier si le CV est dans la liste de l'entreprise
-    $itModel = new itModel();
-    if (!$itModel->interest_access($Candidate->getId(), $Entreprise->getId()) ||
-      !$itModel->list_exist($Entreprise->getId(), $Candidate->getId())) {
-      do_action('add_notice', "<p class='text-center font-15 text-warning'>Accès non autoriser.</p>", 'default', false);
-      do_action('get_notice');
-      return;
-    }
-
-    $Candidate->__client_premium_access();
+    $Candidate->__();
+    $custom_logo_id = get_theme_mod( 'custom_logo' );
+    $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
     try {
       do_action('get_notice');
-      return $Engine->render('@SC/cv-candidate.html.twig', [
-        'candidate' => $Candidate,
-        'download_link' => admin_url("admin-ajax.php?action=download_pdf&id={$Candidate->getId()}")
+      return $Engine->render('@SC/pdf.html', [
+        'logo' => $logo[0],
+        'candidate' => $Candidate
       ]);
     } catch (Twig_Error_Loader $e) {
     } catch (Twig_Error_Runtime $e) {
@@ -186,9 +181,69 @@ class scInterests
     if (!$offer_id) {
       wp_send_json_error('Une erreur s\'est produite');
     }
+
+    $Model = new itModel();
+
+    $User = wp_get_current_user();
+    if (in_array('company', $User->roles)) {
+      $Company = Company::get_company_by($User->ID);
+      if (!$Model->exist_interest($cv_id, $offer_id)) {
+        $Model->added_interest($cv_id, $offer_id);
+        $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
+        do_action('notice-interest', (int)$Interest->id_cv_request);
+        // Envoyer un mail a l'administrateur
+        do_action('alert_when_company_interest', $cv_id, $offer_id);
+
+        wp_send_json_success(true);
+      } else {
+        // Si le candidat a déja étes valider sur une autre offre de même entreprise
+        // On ajoute et on active automatiquement l'affichage du CV
+        if ($Model->interest_access($cv_id, $Company->getId())) {
+          // Ajouter une requete qu est déja valider
+          $Model->added_interest($cv_id, $offer_id, $Company->getId(), 'validated');
+          // Récuperer la requete
+          $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
+          // Crée une notification
+          do_action('notice-interest', (int)$Interest->id_cv_request);
+          // Envoyer un mail a l'administrateur
+          do_action('alert_when_company_interest', $cv_id, $offer_id);
+
+          wp_send_json_success(true);
+        }
+
+        wp_send_json_error([
+          'msg' => "Vous avez déjà sélectionner ce candidat pour cette offre",
+          'status' => 'exist'
+        ]);
+      }
+
+    } else {
+      $redir = get_the_permalink($cv_id);
+      $singup_page_url = get_the_permalink((int)REGISTER_COMPANY_PAGE_ID);
+      wp_send_json_error([
+        'msg' => 'Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi',
+        'status' => 'access',
+        'data' => [
+          'login' => home_url("/connexion/company?redir={$redir}"),
+          'singup' => $singup_page_url
+        ]
+      ]);
+    }
+  }
+
+  public function inspect_cv()
+  {
+    if (!wp_doing_ajax()) {
+      wp_send_json_error("Une erreur s'est produite");
+    }
+    $cv_id = (int)Http\Request::getValue('cv_id');
+    $offer_id = (int)Http\Request::getValue('offer_id', 0);
+    if (!$offer_id) {
+      wp_send_json_error('Une erreur s\'est produite');
+    }
     $redir = get_the_permalink($cv_id);
     $singup_page_url = get_the_permalink((int)REGISTER_COMPANY_PAGE_ID);
-    if (!\is_user_logged_in()) {
+    if (!is_user_logged_in()) {
       wp_send_json_error(
         [
           'msg' => 'Mme/Mr pour pouvoir sélectionner ce candidat vous devez vous inscrire, cela est gratuit, ' .
@@ -202,14 +257,15 @@ class scInterests
         ]
       );
     }
-    $itModel = new itModel();
+    $Model = new itModel();
 
     // FEATURED: Vérifier si le candidat a déja postuler pour cette offre
-    $interests = $itModel->get_offer_interests($offer_id);
+    $interests = $Model->get_offer_interests($offer_id);
     // Content array of user id
     $apply = array_map(function ($interest) {
       return (int)$interest->id_candidate;
     }, $interests);
+
     if (is_array($apply) && !empty($apply)) {
       $Candidate = new Candidate($cv_id);
       $author = $Candidate->getAuthor();
@@ -223,37 +279,10 @@ class scInterests
 
     $User = wp_get_current_user();
     if (in_array('company', $User->roles)) {
-      $Company = Company::get_company_by($User->ID);
-      $Model = new itModel();
-
-      if (!$itModel->exist_interest($cv_id, $offer_id)) {
-        $response = $itModel->added_interest($cv_id, $offer_id);
-        
-        $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
-        do_action('notice-interest', $Interest->id_cv_request);
-        // Envoyer un mail a l'administrateur
-        do_action('alert_when_company_interest', $cv_id, $offer_id);
-        wp_send_json_success($response);
-      } else {
-
-        // Si le candidat a déja étes valider sur une autre offre de même entreprise
-        // On ajoute et on active automatiquement l'affichage du CV
-        if ($itModel->interest_access($cv_id, $Company->getId())) {
-          $results = $itModel->added_interest($cv_id, $offer_id, $Company->getId(), 'validated');
-          
-          $Interest = $Model->collect_interest_candidate($cv_id, $offer_id);
-          do_action('notice-interest', $Interest->id_cv_request);
-          // Envoyer un mail a l'administrateur
-          do_action('alert_when_company_interest', $cv_id, $offer_id);
-          wp_send_json_success($results);
-        }
-
-        wp_send_json_error([
-          'msg' => "Vous avez déjà sélectionner ce candidat pour cette offre",
-          'status' => 'exist'
-        ]);
-      }
-
+      $response = [
+        'interests' =>  $interests
+      ];
+      wp_send_json_success($response);
     } else {
       wp_send_json_error([
         'msg' => 'Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi',

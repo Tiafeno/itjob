@@ -79,15 +79,17 @@ if ( ! class_exists( 'scLogin' ) ) :
         shortcode_atts(
           array(
             'role'  => '',
-            'redir' => home_url( '/' )
+            'redir' => home_url( '/' ),
+            'internal_redir' => false
           ),
           $attrs
         )
       );
 
-      /** @var STRING $redir */
+      /** @var string $redir */
       $redirection = Http\Request::getValue( 'redir' );
-      $redirection = $redirection ? $redirection : $redir;
+      /** @var boolean $internal_redir */
+      $redirection = $internal_redir ? $redir : ( $redirection ? $redirection : $redir);
 
       $query_type = ! in_array( 'ptype', array_keys( $wp_query->query_vars ) ) ? null : $wp_query->query_vars['ptype'];
       /** @var string $role - Post type slug */
@@ -135,7 +137,7 @@ if ( ! class_exists( 'scLogin' ) ) :
       try {
         // Get pos type object
         $post_type_object = get_post_type_object( $ptype );
-        $title            = $post_type_object->name === 'company' ? strtolower( $post_type_object->labels->singular_name ) : '';
+        $title            = $post_type_object->name === 'company' ? "professionel" : '';
 
         do_action('get_notice');
 

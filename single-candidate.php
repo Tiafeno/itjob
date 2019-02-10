@@ -63,7 +63,7 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
       <div uk-grid>
-        <div class="uk-width-3-4@s bg-transparent">
+        <div class="uk-width-2-3@s bg-transparent">
           <!--          Content here ... -->
           <?php
           while ( have_posts() ) : the_post();
@@ -178,6 +178,7 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                         continue;
                       }
                       $trBegin = $training->training_dateBegin;
+                      $trEnd = $training->training_dateEnd;
                       ?>
                       <div class="cd-timeline-block">
                         <div class="cd-timeline-icon bg-success text-white"><i class="fa fa-graduation-cap"></i></div>
@@ -185,8 +186,10 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                           <h5><?= $training->training_diploma ?></h5>
                           <h6 class="text-muted"><?= $training->training_establishment ?></h6>
                           <p><?= $training->training_city . ', ' . $training->training_country ?></p>
-                          <span class="cd-date badge badge-success"><?= ucfirst( $training->training_dateBegin ) ?>
-                            <?= ucfirst( $training->training_dateEnd !== $trBegin ? ' <b>-</b> ' . $training->training_dateEnd : '' ) ?></span>
+                          <span class="cd-date badge badge-success">
+                            <?= strpos($trBegin, '/') ? date_i18n("M Y", strtotime($trBegin)) : ucfirst($trBegin) ?>
+                            <?php $endFormat = strpos($trEnd, '/') ? date_i18n('M Y', strtotime($trEnd)): ucfirst($trEnd); ?>
+                            <?= ucfirst( $trEnd !== $trBegin ? ' <b>-</b> ' . $endFormat : '' ) ?></span>
                         </div>
                       </div>
                     <?php
@@ -357,8 +360,15 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
           endwhile;
           ?>
         </div>
-        <div class="uk-width-1-4@s">
+        <div class="uk-width-1-3@s">
           <!--     Sidebar here ...     -->
+          <div class="widget-top">
+            <?php
+            if ( is_active_sidebar( 'single-cv-sidebar' ) ) {
+              dynamic_sidebar( 'single-cv-sidebar' );
+            }
+            ?>
+          </div>
         </div>
 
       </div>

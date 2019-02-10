@@ -4,7 +4,7 @@ Theme URI:    http://itjob.com
 Author:       Falicrea Inc.
 Author URI:   https://falicrea.com/
 Description:  Designed and developed by Falicrea 
-Version:      1.0.45
+Version:      1.0.64.36
 License:      GNU General Public License v2 or later
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:  itjob
@@ -15,7 +15,7 @@ body {
 }
 
 .main-section {
-  min-height: 400px;
+  min-height: 60vh;
 }
 
 .uk-container {
@@ -38,7 +38,7 @@ ul.it-home-menu li {
   margin-right: 1.2rem;
 }
 
-ul.it-home-menu li>a {
+ul.it-home-menu li > a {
   background-color: #76cb3b;
   color: aliceblue;
   padding: 14px;
@@ -55,6 +55,21 @@ ul.it-home-menu li>a {
 ul.it-home-menu li>a:hover,
 ul.it-home-menu li.current-menu-item>a {
   background-color: #E5B62B;
+}
+
+/* Rendre compatible mobile le menu sur la page d'accueil */
+@media screen and (max-width: 767px) {
+  ul.it-home-menu {
+    width: 100%;
+  }
+
+  ul.it-home-menu li {
+    display: block;
+  }
+
+  ul.it-home-menu li > a {
+    width: 100%;
+  }
 }
 
 /** Offers **/
@@ -192,4 +207,25 @@ ul.it-home-menu li.current-menu-item>a {
 .accordion-blue .uk-accordion-title:focus,
 .accordion-blue .uk-accordion-title:hover {
   color: #ffffff;
+}
+
+.select2-container--default .select2-selection--multiple, 
+.search-element-default input,
+.select2-container--default .select2-selection--single {
+  border: 1px solid rgb(0, 0, 0) !important;
+}
+
+input.form-control {
+  border-color: rgb(10, 10, 10);
+}
+
+.request-formation-title {
+  border-bottom: 2px dotted #34495f;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.request-formation {
+  font-size: 13px !important;
+  cursor: pointer;
 }

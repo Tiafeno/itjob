@@ -12,7 +12,7 @@ wp_enqueue_style( 'offers' );
         ?>
       </div>
       <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-8">
           <div class="container-list-posts">
             <h5 class="vc-element-title">LES OFFRES D’EMPLOI</h5>
             <div class="row mb-5">
@@ -37,7 +37,7 @@ wp_enqueue_style( 'offers' );
             </div>
           </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <?php
           if ( is_active_sidebar( 'archive-offer-sidebar' ) ) {
             dynamic_sidebar( 'archive-offer-sidebar' );

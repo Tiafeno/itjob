@@ -38,6 +38,7 @@ if (!class_exists('vcRegisterParticular')) :
     if (!defined('WPB_VC_VERSION')) {
       return;
     }
+    
     \vc_map(
       array(
         'name' => 'Particular Form (SingUp)',
@@ -88,7 +89,7 @@ if (!class_exists('vcRegisterParticular')) :
     }
     wp_enqueue_style('b-datepicker-3');
     wp_enqueue_style('sweetalert');
-    wp_enqueue_script('form-particular', get_template_directory_uri() . '/assets/js/app/register/form-particular.js', [
+    wp_enqueue_script('form-particular', get_template_directory_uri() . '/assets/js/app/register/form-particular.js?ver='.$itJob->version, [
       'angular',
       'angular-ui-route',
       'angular-sanitize',
@@ -106,6 +107,7 @@ if (!class_exists('vcRegisterParticular')) :
       'ajax_url' => admin_url('admin-ajax.php'),
       'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
       'template_url' => get_template_directory_uri(),
+      'version' => $itJob->version,
       'urlHelper' => [
         'singin' => home_url('/connexion/candidate'),
         'redir' => is_null($redirection) ? null : $redirection
@@ -131,15 +133,15 @@ if (!class_exists('vcRegisterParticular')) :
      * @func wp_doing_ajax
      * (bool) True if it's a WordPress Ajax request, false otherwise.
      */
-    if (!\wp_doing_ajax()) {
+    if (!wp_doing_ajax()) {
       return;
     }
 
     $userEmail = Http\Request::getValue('email', false);
     if (!$userEmail) return false;
     $userExist = get_user_by('email', $userEmail);
-    if ($userExist) {
-      wp_send_json(['success' => false, 'msg' => 'L\'adresse e-mail ou l\'utilisateur existe déja']);
+    if ($userExist || !is_email( $userEmail )) {
+      wp_send_json(['success' => false, 'msg' => 'L\'adresse e-mail valide refusé ou existe déja pour un autre compte']);
     }
 
     $form = (object)[
@@ -154,21 +156,27 @@ if (!class_exists('vcRegisterParticular')) :
       'email' => $userEmail
     ];
 
-      // Press CTRL + Q, for documentation
+    // Récupérer l'incrementation des CV
+    $Increment = get_field('cv_increment', 'option');
+    $Increment = (int) $Increment;
+
+    // Press CTRL + Q, for documentation
     $result = wp_insert_post([
+      'post_title' => 'CV' . $Increment,
       'post_content' => '',
       'post_status' => 'pending',
       'post_author' => 1,
       'post_type' => 'candidate'
-    ]);
+    ], true);
     if (is_wp_error($result)) {
       wp_send_json(['success' => false, 'msg' => $result->get_error_message()]);
     }
-      // Ajouter un titre au CV
-    $post_id = (int)$result;
-    wp_update_post(['ID' => $post_id, 'post_title' => 'CV' . $post_id]);
 
-      // save repeater field
+    $post_id = (int)$result;
+    $Increment = $Increment + 1;
+    update_field('cv_increment', $Increment, 'option');
+
+    // save repeater field
     $value = [];
     $phones = json_decode($form->cellphone);
     foreach ($phones as $row => $phone) {
@@ -182,9 +190,11 @@ if (!class_exists('vcRegisterParticular')) :
 
       // featured: Envoie une email de confirmation pour le changement de mot de passe
     $user = get_user_by('email', trim($form->email));
+
+    // Envoyer une email pour une nouvelle utilisateur
     do_action('register_user_particular', $user->ID);
 
-      // Ne pas activer le CV de l'utilisateur
+    // Ne pas activer le CV de l'utilisateur
     update_field('activated', 0, $post_id);
 
     wp_send_json(['success' => true, 'msg' => 'Vous avez réussi votre inscription']);
@@ -212,7 +222,6 @@ if (!class_exists('vcRegisterParticular')) :
    */
   public function create_particular_user($value, $post_id)
   {
-
     $post_type = get_post_type($post_id);
     if ($post_type != 'candidate') {
       return $value;
@@ -221,20 +230,20 @@ if (!class_exists('vcRegisterParticular')) :
     $post = get_post($post_id);
       // (WP_User|false) WP_User object on success, false on failure.
     $isUser = get_user_by('email', $email);
-    if ($isUser) {
+    if ($isUser || !is_email($email)) {
       return $value;
     }
 
     $userFirstName = get_field('itjob_cv_firstname', $post_id);
-    $userLastName = get_field('itjob_cv_lastname', $post_id);
+    $userLastName  = get_field('itjob_cv_lastname', $post_id);
     $args = [
-      "user_pass" => substr(str_shuffle($this->chars), 0, 8),
+      "user_pass"  => substr(str_shuffle($this->chars), 0, 8),
       "user_login" => 'user-' . $post_id,
       "user_email" => $email,
       "display_name" => $post->post_title,
-      "first_name" => $userFirstName,
-      "last_name" => $userLastName,
-      "role" => $post_type
+      "first_name"   => $userFirstName,
+      "last_name"  => $userLastName,
+      "role"       => $post_type
     ];
       // Hook user_register fire ...
     $user_id = wp_insert_user($args);

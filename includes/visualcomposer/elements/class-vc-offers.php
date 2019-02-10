@@ -153,10 +153,6 @@ if ( ! class_exists( 'vcOffers' ) ):
      * La premiere (1) étape du formulaire d'ajout
      */
     public function ajx_insert_offers() {
-      /**
-       * @func wp_doing_ajax
-       * (bool) True if it's a WordPress Ajax request, false otherwise.
-       */
       if ( ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
         return;
       }
@@ -174,7 +170,7 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       $form = (object) [
         'post'            => Http\Request::getValue( 'post' ),
-//        'reference'       => Http\Request::getValue( 'reference' ),
+        // reference'       => Http\Request::getValue( 'reference' ),
         'ctt'             => Http\Request::getValue( 'ctt' ),
         'salary_proposed' => Http\Request::getValue( 'salary_proposed', 0 ),
         'region'          => Http\Request::getValue( 'region' ),
@@ -189,22 +185,25 @@ if ( ! class_exists( 'vcOffers' ) ):
       // Ajouter l'offre dans la base de donnée
       $result = wp_insert_post( [
         'post_title'   => $form->post,
-        'post_content' => '',
+        'post_content' => $form->profil,
         'post_status'  => 'pending',
         'post_author'  => $User->ID,
         'post_type'    => 'offers'
-      ] );
+      ], true );
       if ( is_wp_error( $result ) ) {
         wp_send_json( [ 'success' => false, 'msg' => $result->get_error_message() ] );
       }
 
-      // update acf field
       $post_id = &$result;
+      add_post_meta($post_id, 'date_create', date_i18n('Y-m-d H:i:s'));
       $this->update_acf_field( $post_id, $form );
+      // Ajouter 'standard' comme plan tarifaire de l'offre
+      update_field( 'itjob_offer_rateplan', 'standard', $post_id );
       wp_set_post_terms( $post_id, [ (int) $form->region ], 'region' );
       wp_set_post_terms( $post_id, [ (int) $form->country ], 'city' );
 
       do_action('notice-admin-new-offer', $post_id);
+      do_action('create_pending_offer_mail', $post_id);
       
       wp_send_json( [ 'success' => true, 'offer' => new Offers( $post_id ) ] );
     }
@@ -220,9 +219,12 @@ if ( ! class_exists( 'vcOffers' ) ):
       if ( $offer_id && $rateplan ) {
         $Offer = new Offers( (int) $offer_id );
         update_field( 'itjob_offer_rateplan', $rateplan, $Offer->ID );
+        if ($rateplan !== 'standard') {
+          // TODO: Ajouter une notification à l'administrateur pour une plan tarifaire non standard
+        }
         wp_send_json( [ 'success' => true ] );
       }
-      wp_send_json( [ 'success' => false, 'msg' => "Il est possible que cette erreur es dû à l’ID de l'offre" ] );
+      wp_send_json( [ 'success' => false, 'msg' => "Une erreur s'est produite. Impossible de trouver l'offre" ] );
     }
 
     /**
@@ -314,17 +316,19 @@ if ( ! class_exists( 'vcOffers' ) ):
         /** @var STRING $title - Titre de l'element VC */
         /** @var STRING $orderby */
         /** @var STRING $order */
+        $offers = $itJob->services->getRecentlyPost( 'offers', 4, [
+          // Afficher seulement les offres activé
+          [
+            'key'     => 'activated',
+            'compare' => '=',
+            'value'   => 1,
+            'type'    => 'NUMERIC'
+          ]
+        ] );
+
         return $Engine->render( '@VC/offers/offers.html.twig', [
           'title'             => $title,
-          'offers'            => $itJob->services->getRecentlyPost( 'offers', 4, [
-            // Afficher seulement les offres activé
-            [
-              'key'     => 'activated',
-              'compare' => '=',
-              'value'   => 1,
-              'type'    => 'NUMERIC'
-            ]
-          ] ),
+          'offers'            => $offers,
           'archive_offer_url' => get_post_type_archive_link( 'offers' )
         ] );
       } catch ( \Twig_Error_Loader $e ) {
@@ -394,12 +398,23 @@ if ( ! class_exists( 'vcOffers' ) ):
         ] );*/
       }
 
+      $user = wp_get_current_user(  );
+      $Company = Company::get_company_by($user->ID);
+
       // featured: Verifier si l'utilicateur est une entreprise
       // Réfuser l'access s'il n'est pas une entreprise
       if ( ! itjob_current_user_is_company() ) {
-        return false;
+        return '<div class="alert alert-danger"><strong>Validation</strong>
+        <br>Vous ne pouvez pas ajouté une offre pour le moment car votre compte est en cours de validation. <br>Veuillez reessayer plus tard. Merci </div>';
       }
 
+      // Vérifier que l'entreprise à des informations valide
+      if (empty($Company->region) || empty($Company->country) || empty($Company->address)) {
+        $espace_client_url  = get_the_permalink( (int)ESPACE_CLIENT_PAGE );
+        return '<div class="alert alert-success font-13"><strong class="font-18">Informations incomplétes</strong>
+        <br>Vous ne pouvez pas ajouter une offre tant que votre information n’est pas à jours. <br>
+        Veuillez-vous rendre à votre <a class="font-16 badge badge-pink" style="color: white" href="'.$espace_client_url.'"> Espace client </a> <br>Merci </div>';
+      }
 
       // Params extraction
       extract(
@@ -420,11 +435,11 @@ if ( ! class_exists( 'vcOffers' ) ):
         wp_enqueue_style( 'alertify' );
         wp_enqueue_style( 'b-datepicker-3' );
         wp_enqueue_style( 'themify-icons' );
-        wp_enqueue_style( 'froala' );
-        wp_enqueue_style( 'froala-gray', VENDOR_URL . '/froala-editor/css/themes/gray.min.css', '', '2.8.4' );
         wp_enqueue_script( 'offers', get_template_directory_uri() . '/assets/js/app/offers/form.js',
           [
+            'tinymce',
             'angular',
+            'angular-ui-tinymce',
             'angular-ui-route',
             'angular-messages',
             'angular-aria',
@@ -432,7 +447,6 @@ if ( ! class_exists( 'vcOffers' ) ):
             'fr-datepicker',
             'sweetalert',
             'alertify',
-            'froala',
           ], $itJob->version, true );
 
         $redirection = Http\Request::getValue( 'redir' );
@@ -440,6 +454,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         $redir = $redirection ? $redirection : ( is_null( $redir ) ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : $redir );
         wp_localize_script( 'offers', 'itOptions', [
           'ajax_url'     => admin_url( 'admin-ajax.php' ),
+          'version'      => $itJob->version,
           'partials_url' => get_template_directory_uri() . '/assets/js/app/offers/partials',
           'template_url' => get_template_directory_uri(),
           'urlHelper'    => [
@@ -473,9 +488,9 @@ if ( ! class_exists( 'vcOffers' ) ):
       global $Engine;
       try {
         return $Engine->render( '@VC/offers/sidebar.html.twig', $args );
-      } catch ( Twig_Error_Loader $e ) {
-      } catch ( Twig_Error_Runtime $e ) {
-      } catch ( Twig_Error_Syntax $e ) {
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
         return $e->getRawMessage();
       }
 
@@ -492,9 +507,9 @@ if ( ! class_exists( 'vcOffers' ) ):
       global $Engine;
       try {
         return $Engine->render( '@VC/offers/content.html.twig', $args );
-      } catch ( Twig_Error_Loader $e ) {
-      } catch ( Twig_Error_Runtime $e ) {
-      } catch ( Twig_Error_Syntax $e ) {
+      } catch ( \Twig_Error_Loader $e ) {
+      } catch ( \Twig_Error_Runtime $e ) {
+      } catch ( \Twig_Error_Syntax $e ) {
         return $e->getRawMessage();
       }
     }

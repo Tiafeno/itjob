@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use includes\object as Obj;
+use includes\model\itModel;
 
 final class Offers implements \iOffer {
   // Added Trait Class
@@ -58,7 +59,7 @@ final class Offers implements \iOffer {
   /** @var array $contractType -  Type de contrat */
   public $contractType;
 
-  /** @var string $rateplan - Mode de diffusion (sereine ou standard) */
+  /** @var string $rateplan - Mode de diffusion (sereine, standard et premium) */
   public $rateplan;
 
   /** @var string $profil - Type de profil réchercher pour l'offre */
@@ -72,6 +73,7 @@ final class Offers implements \iOffer {
 
   /** @var bool $featured - L'offre est à la une ou pas */
   private $featured;
+  public $featuredDateLimit = null;
 
 
   public function __construct( $postId = null, $private_access = false ) {
@@ -91,6 +93,7 @@ final class Offers implements \iOffer {
     $this->offer_url    = get_the_permalink( $output->ID );
     $this->offer_status = $output->post_status;
     $this->datePublication = get_the_date( 'j F, Y', $output );
+    $this->date_create  = $output->post_date;
     if ( $this->is_offer() ) {
       $this->id_offer = &$this->ID;
       $this->post_url = get_the_permalink( $this->ID );
@@ -161,16 +164,23 @@ final class Offers implements \iOffer {
     $this->company = get_field( 'itjob_offer_company', $this->ID ); // Object article
 
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
-    $this->dateLimitFormat  = date_i18n( 'F j, Y', strtotime($this->dateLimit)); // \DateTime::createFromFormat( 'm/d/Y', $this->dateLimit )->format( 'F j, Y' );
+    $this->dateLimitFormat  = date_i18n( 'j F Y', strtotime($this->dateLimit)); // \DateTime::createFromFormat( 'm/d/Y', $this->dateLimit )->format( 'F j, Y' );
     $this->activated        = get_field( 'activated', $this->ID ); // Bool
     $this->postPromote      = get_field( 'itjob_offer_post', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
     $this->proposedSalary   = get_field( 'itjob_offer_proposedsallary', $this->ID );
     $this->contractType     = get_field( 'itjob_offer_contrattype', $this->ID );
-    $this->profil           = get_field( 'itjob_offer_profil', $this->ID ); // WYSIWYG
-    $this->mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
+    $profil           = get_field( 'itjob_offer_profil', $this->ID ); // WYSIWYG
+    $this->profil     = apply_filters( 'the_content', $profil );
+    $mission          = get_field( 'itjob_offer_mission', $this->ID ); // WYSIWYG
+    $this->mission    = apply_filters( 'the_content', $mission );
     $this->otherInformation = get_field( 'itjob_offer_otherinformation', $this->ID ); // WYSIWYG
-    $this->featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
+    $featured         = get_field( 'itjob_offer_featured', $this->ID ); // Bool
+    $this->featured = boolval($featured);
+    if (boolval($this->featured)){
+      $featuredDateLimit = get_field('itjob_offer_featured_datelimit', $this->ID);
+      $this->featuredDateLimit = strtotime($featuredDateLimit);
+    }
     $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID ); // Objet Term
     $this->rateplan         = get_field( 'itjob_offer_rateplan', $this->ID ); // String
 
@@ -211,6 +221,10 @@ final class Offers implements \iOffer {
     delete_field( 'itjob_offer_mission', $this->ID );
     delete_field( 'itjob_offer_otherinformation', $this->ID );
     delete_field( 'itjob_offer_featured', $this->ID );
+
+    $Model = new itModel();
+    $Model->remove_interest($this->ID);
+
   }
 
   public function isFeatured() {

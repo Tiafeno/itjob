@@ -50,7 +50,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
           }],
           driveLicences: ['$q', function ($q) {
             // Permis de conduire (Schema)
-            const licences = [{
+            const licences = [
+              {
                 _id: 0,
                 label: "A`",
                 slug: "a_"
@@ -374,6 +375,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
           forceParse: false,
           autoclose: true
         });
+
+        jQuery('[data-toggle="popover"]').popover();
       }
     }
   })
@@ -515,14 +518,17 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
           }
         }
       };
+
       $rootScope.onAddingLangTag = ($tag) => {
         return $rootScope.onAddingTag($tag);
       };
+
       $rootScope.onAddingJobTag = ($tag) => {
         if (_.isArray($rootScope.formData.jobSougths) && $rootScope.formData.jobSougths.length >= 2)
           return false;
         return $rootScope.onAddingTag($tag);
       };
+
       // Call before added tag
       $rootScope.onAddingTag = ($tag) => {
         let isValid = true;
@@ -574,7 +580,6 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
         if (!_.isUndefined(status) && !_.isNull(status) && !_.isEmpty(status)) {
           $rootScope.formData.status = parseInt($rootScope.Candidate.status.value);
         }
-
       };
 
       $rootScope.formData.trainings = [{

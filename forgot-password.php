@@ -4,7 +4,8 @@
  * Template Name: Forgot Password
  */
 
-if ( isset($_GET['action']) || !empty($_GET['action']) ) {
+$action = "";
+if ( isset($_GET['action']) && !empty($_GET['action']) ) {
   $action = $_GET['action'];
   // Initialisation de la variable erreur
   $errors = new WP_Error();
@@ -158,8 +159,8 @@ get_header();
             messages: {
               pwd: {
                 required: "Ce champ est obligatoire",
-                pwdpattern: "Votre mot de passe doit comporter un minimum de 8 caractères, " +
-                "se composer des chiffres et de lettres et comprendre des majuscules/minuscules et un caractère spéciale.",
+                pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, comprenant des chiffres et des lettres minuscules et"+
+                " majuscules, ainsi 1 caractère spécial (-*/@+\_%$=).",
               },
               cpwd: {
                 required: "Ce champ est obligatoire",
@@ -201,15 +202,13 @@ get_header();
                   data: {email: forgotEmail, action: "forgot_password"}
                 })
                   .done(function (resp) {
-                    var element = resp.success ? successMessage : errorMessage;
-                    element.html(resp.data).show();
                     submitButton.text('Envoyer');
+                    var element = resp.success ? successMessage : errorMessage;
+                    element.html(resp.data.msg).show();
                   });
-
               }
             });
         }
-
       })
     })(jQuery);
   </script>
@@ -225,7 +224,7 @@ $forgot_password = Http\Request::getValue( 'forgot_password', 0 );
             <span class="auth-head-icon"><i class="la la-key"></i></span>
           </div>
           <form class="ibox-body pt-0" id="forgot-form" action="" method="POST">
-            <h4 class="font-strong text-center mb-4">Identifiant et/ou mot de passe oublié(s)</h4>
+            <h4 class="font-strong text-center mb-4">Mot de passe oublié</h4>
             <p class="mb-4">
               Veuillez saisir votre adresse de messagerie.
               Un lien permettant de créer un nouveau mot de passe vous sera envoyé par e-mail.
@@ -259,6 +258,7 @@ $forgot_password = Http\Request::getValue( 'forgot_password', 0 );
           </div>
           <form class="ibox-body pt-0" id="change-password-form" action="" method="POST">
             <h4 class="font-strong text-center mb-4">Modifier mon mot de passe</h4>
+            
             <?php if ($errors->get_error_code()) : ?>
               <div class="alert alert-pink alert-dismissable fade show alert-outline has-icon"><i class="la la-info-circle alert-icon"></i>
                 <div class="d-flex align-items-center justify-content-between">
