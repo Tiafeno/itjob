@@ -52,8 +52,8 @@
           input = $i[0]; // Getting the element from jQuery
         if ( input.files && input.files[0] ) {
           file = input.files[0]; // The file
-          //$( '#file-content' ).append( $( '<div/>' ).html( fr.result ) );
-          console.log(file);
+          $( '#file-content' ).html( file.name );
+          $('#postuleForm').valid();
         } else {
           // Handle errors here
           alert( "File not selected or browser incompatible." )
@@ -75,7 +75,7 @@
       <div class="card-body">
         <h4 class="card-title mb-1">{{ offer.title }}</h4>
         <div class="text-pink"><i class="ti-clip mr-2"></i> {{ offer.reference }}</div>
-        <p class="mt-4 mb-4">{{ offer.profil|striptags('<b>')|raw[:100] }} {% if offer.profil|length > 100 %}...{% endif %}</p>
+        <p class="mt-4 mb-4">{{ offer.profil|raw|html_entity_decode|striptags[:100] }} {% if offer.profil|length > 100 %}...{% endif %}</p>
       </div>
     </div>
 
@@ -92,7 +92,7 @@
 
           <div class="row">
             <div class="col-sm-12">
-              <div id="file-content"></div>
+              <div>Fichier: <span id="file-content" class="font-bold" style="word-break: break-all;">Séléctionner un fichier</span></div>
             </div>
           </div>
         </div>
