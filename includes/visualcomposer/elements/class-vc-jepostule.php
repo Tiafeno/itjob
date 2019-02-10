@@ -143,7 +143,7 @@ if (!class_exists('jePostule')) :
     if (!is_user_logged_in()) {
         // Le client est non connecter
       do_action('add_notice', '<i class="la la-warning alert-icon"></i> Pour pouvoir postuler à cette offre, vous devez vous connecter ou créer un compte', 'info');
-      return do_shortcode("[itjob_login role='candidate' redir='{$current_uri}']");
+      return do_shortcode("[itjob_login role='candidate' redir='{$current_uri}' internal_redir='true']");
     } else {
         // Le client est connecter
       $User = wp_get_current_user();
