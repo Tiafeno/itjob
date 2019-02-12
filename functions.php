@@ -71,6 +71,7 @@ require_once 'includes/class/class-offers.php';
 require_once 'includes/class/class-particular.php';
 require_once 'includes/class/class-company.php';
 require_once 'includes/class/class-candidate.php';
+require_once 'includes/class/class-annonce.php';
 
 $itJob = (object)[
   'version' => $theme->get('Version'),
@@ -105,7 +106,8 @@ $elementsVC = (object)[
   'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php',
   'vcAds' => require 'includes/visualcomposer/elements/class-vc-ads.php',
   'vcFormation' => require 'includes/visualcomposer/elements/class-vc-formation.php',
-  'vcRequestFormation' => require 'includes/visualcomposer/elements/class-vc-request-formation.php'
+  'vcRequestFormation' => require 'includes/visualcomposer/elements/class-vc-request-formation.php',
+  'vcAnnonce' => require 'includes/visualcomposer/elements/class-vc-annonce.php'
 ];
 
 require 'includes/class/class-wp-city.php';
@@ -264,6 +266,19 @@ add_action('init', function () {
 //  $Model = new includes\model\itModel();
 //  add_action('repair_table', [$Model, 'repair_table'], 10);
 
+  function add_sticky_column($columns) {
+    return array_merge($columns,
+      array('activated' => __('Activation')));
+  }
+  add_filter('manage_formation_posts_columns' , 'add_sticky_column');
+
+  function display_posts_stickiness( $column, $post_id ) {
+    $activate = get_field('activated', $post_id);
+    if ($column == 'activated'){
+      echo '<input type="checkbox" disabled', $activate ? ' checked' : '', '/>';
+    }
+  }
+  add_action( 'manage_posts_custom_column' , 'display_posts_stickiness', 10, 2 );
 });
 
 

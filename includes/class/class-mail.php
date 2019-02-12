@@ -1161,7 +1161,7 @@ class Mailing {
       $forgot_password_page_id = jobServices::page_exists( 'Forgot password' );
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
-      $content                 .= $Engine->render( '@MAIL/forgot-password.html.twig', [
+      $content        .= $Engine->render( '@MAIL/forgot-password.html.twig', [
         'forgot_link' => get_the_permalink( $forgot_password_page_id ) . "?key={$key}&account={$User->user_login}&action=resetpass",
         'home_url'    => home_url( "/" ),
         'logo'     => $logo[0]

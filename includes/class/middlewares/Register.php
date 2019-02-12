@@ -7,7 +7,7 @@
  */
 
 trait Register {
-  private function createCompanyRole() {
+  private function create_company_user_role() {
     $capabilities = array(
       'read'         => true,  // true allows this capability
       'upload_files' => true,
@@ -46,7 +46,7 @@ trait Register {
     );
   }
 
-  private function createCandidateRole() {
+  private function create_candidate_user_role() {
     $capabilities = array(
       'read'                   => true,  // true allows this capability
       'upload_files'           => true,
@@ -79,11 +79,12 @@ trait Register {
   }
 
   public function createRoles() {
-    $this->createCandidateRole();
-    $this->createCompanyRole();
+    $this->create_candidate_user_role();
+    $this->create_company_user_role();
   }
 
   protected function registerPostTypes() {
+
     register_post_type( 'formation', [
       'label'           => "Les formations",
       'labels'          => [
@@ -106,6 +107,58 @@ trait Register {
       'rewrite'         => [ 'slug' => 'formation' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-media-interactive',
+      'supports'        => [ 'title', 'content', 'excerpt', 'thumbnail', 'custom-fields' ],
+      'show_in_rest'    => true
+    ] );
+
+    register_post_type( 'annonce', [
+      'label'           => "Les annonces",
+      'labels'          => [
+        'name'               => "Les annonces",
+        'singular_name'      => "Annonce",
+        'add_new'            => 'Ajouter',
+        'add_new_item'       => "Ajouter une nouvelle annonce",
+        'edit_item'          => 'Modifier',
+        'view_item'          => 'Voir',
+        'search_items'       => "Trouver des annonces",
+        'all_items'          => "Tous les annonces",
+        'not_found'          => "Aucune annonce trouver",
+        'not_found_in_trash' => "Aucune annonce dans la corbeille"
+      ],
+      'public'          => true,
+      'hierarchical'    => false,
+      'menu_position'   => null,
+      'show_ui'         => true,
+      'has_archive'     => true,
+      'rewrite'         => [ 'slug' => 'annonce' ],
+      'capability_type' => 'post',
+      'menu_icon'       => 'dashicons-megaphone',
+      'supports'        => [ 'title', 'content', 'excerpt', 'thumbnail', 'custom-fields' ],
+      'show_in_rest'    => true
+    ] );
+
+    register_post_type( 'work-temporary', [
+      'label'           => "Les travails temporaires",
+      'labels'          => [
+        'name'               => "Les travails",
+        'singular_name'      => "Le travail temporaire",
+        'add_new'            => 'Ajouter',
+        'add_new_item'       => "Ajouter une nouvelle",
+        'edit_item'          => 'Modifier',
+        'view_item'          => 'Voir',
+        'search_items'       => "Trouver",
+        'all_items'          => "Tous les travails",
+        'not_found'          => "Aucune",
+        'not_found_in_trash' => "Aucune dans la corbeille"
+      ],
+      'public'          => true,
+      'hierarchical'    => false,
+      'menu_position'   => null,
+      'show_ui'         => true,
+      'has_archive'     => true,
+      'rewrite'         => [ 'slug' => 'travail-temporaire' ],
+      'capability_type' => 'post',
+      'menu_icon'       => 'dashicons-location',
       'supports'        => [ 'title', 'content', 'excerpt', 'thumbnail', 'custom-fields' ],
       'show_in_rest'    => true
     ] );
@@ -183,16 +236,39 @@ trait Register {
       'has_archive'     => true,
       'rewrite'         => [ 'slug' => 'candidate' ],
       'capability_type' => 'post',
-      'menu_icon'       => 'dashicons-welcome-widgets-menus',
+      'menu_icon'       => 'dashicons-nametag',
       'supports'        => [ 'title', 'excerpt', 'thumbnail', 'custom-fields' ],
       'show_in_rest'    => true
     ] );
 
   }
+
   protected function registerTaxonomy() {
 
-    // Now register the taxonomy (Secteur d'activité)
-    register_taxonomy( 'branch_activity', [ 'company', 'candidate', 'formation' ], [
+    register_taxonomy('categorie', ['annonce'], [
+      'hierarchical'      => true,
+      'labels'            => array(
+        'name'              => 'Catégories',
+        'singular_name'     => 'Catégorie',
+        'search_items'      => 'Trouver une catégorie',
+        'all_items'         => 'Trouver des catégories',
+        'parent_item'       => 'Activité parent',
+        'parent_item_colon' => 'Activité parent:',
+        'edit_item'         => 'Modifier',
+        'update_item'       => 'Mettre à jour ',
+        'add_new_item'      => 'Ajouter une nouvelle',
+        'menu_name'         => 'Catégories',
+      ),
+      'show_ui'           => true,
+      'show_admin_column' => false,
+      'query_var'         => true,
+      'public'            => true,
+      'show_in_rest'      => true,
+      'rewrite'           => array( 'slug' => 'categorie' ),
+    ]);
+
+    // Secteur d'activité
+    register_taxonomy( 'branch_activity', [ 'company', 'candidate', 'formation', 'work-temporary' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Secteur d\'activité',
@@ -214,7 +290,7 @@ trait Register {
       'rewrite'           => array( 'slug' => 'branch_activity' ),
     ] );
 
-    // Now register the taxonomy (Emploi)
+    // Emploi
     register_taxonomy( 'job_sought', [ 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
@@ -237,7 +313,7 @@ trait Register {
       'rewrite'           => array( 'slug' => 'emploi' ),
     ] );
 
-    // Now register the taxonomy (Logiciel maitrisés)
+    // Logiciel maitrisés
     register_taxonomy( 'software', [ 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
@@ -260,8 +336,8 @@ trait Register {
       'rewrite'           => array( 'slug' => 'software' ),
     ] );
 
-    // Now register the taxonomy (Région)
-    register_taxonomy( 'region', [ 'offers', 'candidate', 'company', 'formation' ], [
+    // Région
+    register_taxonomy( 'region', [ 'offers', 'candidate', 'company', 'formation', 'annonce', 'work-temporary' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Région',
@@ -283,7 +359,7 @@ trait Register {
       'rewrite'           => array( 'slug' => 'region' ),
     ] );
 
-    // Now register the taxonomy (Langage)
+    // Langage
     register_taxonomy( 'language', [ 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
@@ -306,7 +382,7 @@ trait Register {
       'rewrite'           => array( 'slug' => 'langage' ),
     ] );
 
-    // Now register the taxonomy (Tag)
+    // Tag
     register_taxonomy( 'itjob_tag', [ 'offers', 'candidate' ], [
       'hierarchical'      => true,
       'labels'            => array(
@@ -329,8 +405,8 @@ trait Register {
       'rewrite'           => array( 'slug' => 'tag' ),
     ] );
 
-    // Now register the taxonomy (City)
-    register_taxonomy( 'city', [ 'offers', 'candidate', 'company' ], [
+    // Ville
+    register_taxonomy( 'city', [ 'offers', 'candidate', 'company', 'annonce', 'work-temporary' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Code postal & Ville',

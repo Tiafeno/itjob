@@ -282,10 +282,6 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
   .controller('formController', ["$state", "$scope", "$rootScope", "allCity",
     function ($state, $scope, $rootScope, allCity) {
       // Code controller here...
-      $scope.froalaOptions = {
-        theme: 'gray',
-        placeholderText: 'Ajouter une description',
-      };
       $rootScope.allCity = _.clone(allCity);
       $rootScope.isSubmit = false;
       $rootScope.offers = {};

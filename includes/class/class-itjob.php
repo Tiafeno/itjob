@@ -523,7 +523,6 @@ if ( ! class_exists( 'itJob' ) ) {
                                       )";
                       endif;
                     }
-
                     return $where;
                   });
 
@@ -570,7 +569,8 @@ if ( ! class_exists( 'itJob' ) ) {
           else {
             // Filtrer les candidates ou les offers ou les entreprises et les formations
             // Afficher seulement les candidates ou les offres ou les entreprises activer
-            if ( $post_type === 'candidate' || $post_type === 'offers' || $post_type === 'company' || $post_type === 'formation' ):
+            $types = ['candidate', 'offers', 'company', 'formation', 'annonce'];
+            if ( in_array($post_type, $types) ):
               // Meta query
               if ( ! isset( $meta_query ) ) {
                 $meta_query = $query->get( 'meta_query' );
@@ -582,6 +582,8 @@ if ( ! class_exists( 'itJob' ) ) {
                 'compare' => '=',
                 'type'    => 'NUMERIC'
               ];
+
+              // Condition spécifique pour le post type candidate
               if ( $post_type === 'candidate' ) {
                 $meta_query[] = [
                   'key'     => 'itjob_cv_hasCV',
@@ -620,6 +622,11 @@ if ( ! class_exists( 'itJob' ) ) {
 
           case 'formation':
             $GLOBALS[ $post_object->post_type ] = new Post\Formation( $post_object->ID );
+            break;
+
+          case 'annonce':
+            $annonce = new Post\Annonce( $post_object->ID );
+            $GLOBALS[ $post_object->post_type ] = $annonce;
             break;
         }
       } );
@@ -771,8 +778,8 @@ if ( ! class_exists( 'itJob' ) ) {
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular-messages' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular-animate',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular-animate' . $suffix . '.js', [], '1.7.2' );
-      wp_register_script( 'angular-aria',
-        get_template_directory_uri() . '/assets/js/libs/angularjs/angular-aria' . $suffix . '.js', [], '1.7.2' );
+      wp_register_script( 'angular-aria',get_template_directory_uri() . '/assets/js/libs/angularjs/angular-aria' . $suffix . '.js', [], '1.7.2' );
+      wp_register_script( 'angular-cookies',get_template_directory_uri() . '/assets/js/libs/angularjs/angular-cookies' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular',
         get_template_directory_uri() . '/assets/js/libs/angularjs/angular' . $suffix . '.js', [], '1.7.2' );
       wp_register_script( 'angular-ui-select2',

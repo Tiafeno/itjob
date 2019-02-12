@@ -141,7 +141,7 @@ if (!class_exists('jePostule')) :
 
     $current_uri = $_SERVER['REQUEST_URI'];
     if (!is_user_logged_in()) {
-        // Le client est non connecter
+      // Le client est non connecter
       do_action('add_notice', '<i class="la la-warning alert-icon"></i> Pour pouvoir postuler à cette offre, vous devez vous connecter ou créer un compte', 'info');
       return do_shortcode("[itjob_login role='candidate' redir='{$current_uri}' internal_redir='true']");
     } else {
@@ -156,14 +156,14 @@ if (!class_exists('jePostule')) :
       }
       $Offer = new Offers((int)$offerId);
 
+      // Vérifier si l'offre est périmé
       $today = strtotime("today");
       $limited = strtotime($Offer->dateLimit) < $today;
-
       if ($limited) {
         $archive_offer_url = get_post_type_archive_link('offers');
-        return '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right "><p class="font-15">
-Cette offre a expiré depuis <b>'.$Offer->dateLimitFormat.'</b>, veuillez faire une autre recherche</p>
-<a href="'.$archive_offer_url.'" class="btn btn-success btn-sm">Voir les offres</a></div>';
+        return '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right "><p class="font-15">Cette offre a expiré depuis 
+<b>'.$Offer->dateLimitFormat.'</b>, veuillez faire une autre recherche</p><a href="'.$archive_offer_url.'" 
+class="btn btn-success btn-sm">Voir les offres</a></div>';
       }
 
       // Le client est connecter

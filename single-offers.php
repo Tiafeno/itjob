@@ -46,7 +46,6 @@ wp_enqueue_style('offers');
           $today = strtotime("today");
           $limited = strtotime($offers->dateLimit) < $today;
 
-
           ?>
             <div class="offer-section">
               <div class="offer-top d-inline-block pb-4">
