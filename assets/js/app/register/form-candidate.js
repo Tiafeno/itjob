@@ -38,10 +38,12 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
                 redirect: 'form.informations'
               });
             }
-            if (typeof $rootScope.formData.status === 'undefined' ||
-              typeof $rootScope.formData.jobSougths === 'undefined' ||
-              _.isEmpty($rootScope.formData.jobSougths) ||
-              typeof $rootScope.formData.abranch === 'undefined') {
+            let status = $rootScope.formData.status;
+            let job = $rootScope.formData.jobSougths;
+            let area = $rootScope.formData.abranch;
+            let validateJob = _.isUndefined(job) || _.isEmpty(job);
+            validateJob = validateJob || job.length > 2;
+            if (_.isUndefined(status) || validateJob || _.isUndefined(area)) {
               // Refuser l'accès si les champs ou les variables si-dessus ne sont pas valide
               return $q.reject({
                 redirect: 'form.informations'
