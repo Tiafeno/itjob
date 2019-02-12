@@ -99,8 +99,8 @@
   <div class="mt-5 form-group" id="software">
     <label class="font-normal">Logiciel</label>
     <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-    <tags-input ng-model="formData.softwares" paste-split-pattern="[,;|/\:.*_•]" display-property="name" max-lenght="10" max-tags="10" placeholder="Logiciel"
-      replace-spaces-with-dashes="false">
+    <tags-input ng-model="formData.softwares" add-on-paste="true" paste-split-pattern="[,;|/\:.*_•]" display-property="name"
+                max-lenght="10" max-tags="10" placeholder="Logiciel" replace-spaces-with-dashes="false">
       <auto-complete source="queryItems($query, 'software')" min-length="0" load-on-focus="false" load-on-empty="false"
         max-results-to-show="5" template="auto-complete-template">
       </auto-complete>
