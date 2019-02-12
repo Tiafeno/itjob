@@ -84,7 +84,7 @@ class vcRequestFormation
    * Cette fonction permet de s'inscrire sur une demande de formation
    */
   public function request_formation_concerned() {
-    if (!is_user_logged_in()) wp_send_json_error("Vous n'etes pas connecter");
+    if (!is_user_logged_in()) wp_send_json_error("Veuillez vous connecter pour continuer");
     $User = wp_get_current_user();
     $request_training_id = (int)\Http\Request::getValue('request_formation_id', 0);
     if (is_numeric($request_training_id) && 0 !== $request_training_id) {
@@ -97,6 +97,7 @@ class vcRequestFormation
       wp_send_json_error("Erreur de parametre (request_formation_id)");
     }
   }
+
 }
 
 return new vcRequestFormation();

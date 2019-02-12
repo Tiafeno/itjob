@@ -51,8 +51,6 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               paste_remove_styles_if_webkit: true,
               paste_remove_styles: true,
               paste_postprocess : function(pl, o) {
-                // Content DOM node containing the DOM structure of the clipboard
-
               },
               content_css: [
                 '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i',
@@ -211,7 +209,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
         },
         controller: ['$rootScope', 'annonce', function($rootScope, annonce) {
           this.$onInit = () => {
-            console.log(annonce);
+
           }
         }]
       }

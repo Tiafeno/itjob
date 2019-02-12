@@ -292,13 +292,12 @@ EOF;
   function new_request_formation ()
   {
     if (!wp_doing_ajax() || !is_user_logged_in()) {
-      wp_send_json_error("Veuillez vous connecter ou inscrire en tant que particulier avant d'envoyer une demande");
+      wp_send_json_error(["msg" => "Veuillez vous connecter pour continuer", "code" => "account"]);
     }
     $subject = Http\Request::getValue('subject', false);
     $topic = Http\Request::getValue('topic', false);
     $description = Http\Request::getValue('description');
-    $diploma = Http\Request::getValue('diploma');
-    if (!$subject || !$topic || !$description) wp_send_json_error("Formulaire non valide");
+    if (!$subject || !$topic || !$description) wp_send_json_error(["msg" => "Formulaire non valide", "code" => "broken"]);
     $User = wp_get_current_user();
     if (in_array('candidate', $User->roles)) {
       $args = [
@@ -315,9 +314,9 @@ EOF;
 
         wp_send_json_success("Votre demande a bien été soumise");
       } else {
-        wp_send_json_error("Une erreur s'est produite. Veuillez réessayer ultérieurement");
+        wp_send_json_error(["msg" => "Une erreur s'est produite. Veuillez réessayer ultérieurement", "code" => "broken"]);
       }
-    } else wp_send_json_error("Votre compte ne vous permet pas d'envoyer une demande de formation");
+    } else wp_send_json_error(["msg" => "Votre compte ne vous permet pas d'envoyer une demande de formation", "code" => "broken"]);
   }
 
   public
