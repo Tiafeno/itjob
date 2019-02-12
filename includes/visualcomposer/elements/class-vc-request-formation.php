@@ -56,6 +56,7 @@ class vcRequestFormation
         ),
         $attrs
       ), EXTR_OVERWRITE );
+
     wp_localize_script('itjob', 'itOptions', [
       'ajax' => admin_url("admin-ajax.php")
     ]);
@@ -97,7 +98,6 @@ class vcRequestFormation
       wp_send_json_error("Erreur de parametre (request_formation_id)");
     }
   }
-
 }
 
 return new vcRequestFormation();

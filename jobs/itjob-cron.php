@@ -284,14 +284,20 @@ add_action('tous_les_15_minutes', function () {
   remove_notice_after_5days();
 });
 
-add_action("woocommerce_tracker_send_event", function () {
+add_action("woocommerce_tracker_send_event", function () { // at 14h41 (Une fois par jour)
   review_offer_limit();
+  send_pending_cv();
+});
+
+add_action('jp_purge_transients_cron', function () { // at 10h 24 (Une fois par jour)
+  send_pending_cv();
 });
 
 // Envoyer les CV validés au entreprises
-add_action('end_of_the_day', function () {
+add_action('end_of_the_day', function () { // at 16h38 (Une fois par jour)
   newsletter_daily_company();
   newsletter_daily_candidate();
+  send_pending_cv();
 });
 
 
@@ -400,7 +406,19 @@ add_action('tous_les_jours', function () {
   /**
    * Envoyer les CV en attente de validation
    */
+  send_pending_cv();
+});
+
+function send_pending_cv() {
+  $cronModel = new cronModel();
+  $year = Date('Y');
+  $admin_emails = getModerators();
+  $admin_emails = empty($admin_emails) ? false : $admin_emails;
+  if (!$admin_emails) {
+    return false;
+  }
   $candidats = $cronModel->getPendingCV();
+  if (empty($candidats)) return false;
   $msg = "Bonjour, <br/>";
   $msg .= "<p>Voici la liste des candidats en attente de validation :</p> ";
   foreach ($candidats as $candidate) {
@@ -418,4 +436,4 @@ add_action('tous_les_jours', function () {
   $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
 
   wp_mail($to, $subject, $msg, $headers);
-});
+}
