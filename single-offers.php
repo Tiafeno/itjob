@@ -42,6 +42,11 @@ wp_enqueue_style('offers');
           while (have_posts()) : the_post();
           if (!$offers instanceof \includes\post\Offers) exit;
 
+          // Vérifier la date limite de l'offre
+          $today = strtotime("today");
+          $limited = strtotime($offers->dateLimit) < $today;
+
+
           ?>
             <div class="offer-section">
               <div class="offer-top d-inline-block pb-4">
@@ -49,6 +54,11 @@ wp_enqueue_style('offers');
                   <div class="col-md-5 d-flex">
                     <h5 class="text-uppercase uk-margin-auto-vertical">
                       Détail de l'offre
+                      <div>
+                        <?php if ($limited) : ?>
+                          <span class="badge badge-danger">Date limite atteinte</span>
+                        <?php endif; ?>
+                      </div>
                     </h5>
                   </div>
                 </div>
