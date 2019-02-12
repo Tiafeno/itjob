@@ -145,11 +145,33 @@ if (!class_exists('jePostule')) :
       do_action('add_notice', '<i class="la la-warning alert-icon"></i> Pour pouvoir postuler à cette offre, vous devez vous connecter ou créer un compte', 'info');
       return do_shortcode("[itjob_login role='candidate' redir='{$current_uri}' internal_redir='true']");
     } else {
-        // Le client est connecter
+
+      $offerId = $wp_query->query_vars['oId'];
+      $redirection = Http\Request::getValue('redir');
+      if (!(int)$offerId) {
+        do_action('add_notice', 'Une erreur s\'est produite.', 'warning');
+        itjob_get_notice();
+
+        return;
+      }
+      $Offer = new Offers((int)$offerId);
+
+      $today = strtotime("today");
+      $limited = strtotime($Offer->dateLimit) < $today;
+
+      if ($limited) {
+        $archive_offer_url = get_post_type_archive_link('offers');
+        return '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right "><p class="font-15">
+Cette offre a expiré depuis <b>'.$Offer->dateLimitFormat.'</b>, veuillez faire une autre recherche</p>
+<a href="'.$archive_offer_url.'" class="btn btn-success btn-sm">Voir les offres</a></div>';
+      }
+
+      // Le client est connecter
       $User = wp_get_current_user();
       if (!in_array('candidate', $User->roles)) {
         return $message_access_refused;
       }
+
       $Candidate = Candidate::get_candidate_by($User->ID);
       if (!$Candidate->hasCV()) {
         do_action('add_notice', "Vous devez créer un CV avant de postuler", "warning");
@@ -162,16 +184,6 @@ if (!class_exists('jePostule')) :
         return;
       }
     }
-
-    $offerId = $wp_query->query_vars['oId'];
-    $redirection = Http\Request::getValue('redir');
-    if (!(int)$offerId) {
-      do_action('add_notice', 'Une erreur s\'est produite.', 'warning');
-      itjob_get_notice();
-
-      return;
-    }
-    $Offer = new Offers((int)$offerId);
 
     wp_enqueue_script('jquery-validate');
     wp_enqueue_script('jquery-additional-methods');
