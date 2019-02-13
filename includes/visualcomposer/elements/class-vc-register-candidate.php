@@ -439,7 +439,6 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         wp_send_json( [ 'attachment_id' => $attachment_id, 'success' => true ] );
       }
     }
-
   }
 endif;
 

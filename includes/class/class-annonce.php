@@ -19,9 +19,10 @@ class Annonce
 {
   private static $error = false;
   private        $email = null;
+  private        $WP_User = 0;
   public $ID                 = 0;
   public $status             = '';
-  public $post_type          = ['annonce', 'work-temporary'];
+  public static $post_types   = ['annonce', 'work-temporary'];
   public $activated          = false;
   public $author             = null;
   public $title              = null;
@@ -60,7 +61,7 @@ class Annonce
       return false;
     }
 
-    if (!$this->is_annonce()) {
+    if (!self::is_annonce($annonce_id)) {
       self::$error = new \WP_Error('broken', "Le post n'est pas une annonce");
       return false;
     }
@@ -73,26 +74,25 @@ class Annonce
     $this->date_publication = $output->post_date;
     $this->date_publication_format = get_the_date('j F, Y', $output);
     $this->url = get_the_permalink($output->ID);
-
     $this->email = get_field('email', $this->ID);
-    $user = get_user_by('email', trim($this->email));
-    if (!$user) {
+    $this->WP_User = get_field('annonce_author', $this->ID);
+    if (!$this->WP_User) {
       self::$error = new \WP_Error('broken', "L'utilisateur est introuvable");
       return false;
     }
     if ($private_access)
-      $this->author = jobServices::getUserData($user->ID);
+      $this->author = jobServices::getUserData($this->WP_User->data);
 
     $this->get_tax_field();
     $this->get_acf_field();
 
   }
 
-  public
-  function is_annonce ()
+  public static
+  function is_annonce ($annonce_id)
   {
-    $post_type = get_post_type($this->ID);
-    return in_array($post_type, $this->post_type);
+    $post_type = get_post_type($annonce_id);
+    return in_array($post_type, self::$post_types);
   }
 
   private

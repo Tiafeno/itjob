@@ -131,6 +131,7 @@ trait Register {
       'show_ui'         => true,
       'has_archive'     => true,
       'rewrite'         => [ 'slug' => 'annonce' ],
+      'rest_base'       => 'annonce',
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-megaphone',
       'supports'        => [ 'title', 'content', 'excerpt', 'thumbnail', 'custom-fields' ],

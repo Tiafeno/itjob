@@ -9,6 +9,7 @@
 namespace includes\vc;
 
 use Http;
+use includes\post\Annonce;
 
 class vcAnnonce
 {
@@ -24,6 +25,10 @@ class vcAnnonce
     add_action('wp_ajax_add_annonce', [&$this, 'add_annonce']);
     add_action('wp_ajax_nopriv_add_annonce', [&$this, 'add_annonce']);
 
+
+    add_action('wp_ajax_upload_annonce_img', [&$this, 'upload_annonce_img']);
+    add_action('wp_ajax_nopriv_upload_annonce_img', [&$this, 'upload_annonce_img']);
+
     add_filter('manage_annonce_posts_columns', function ($columns) {
       return array_merge($columns,
         array('categorie' => __('Categorie')));
@@ -36,6 +41,24 @@ class vcAnnonce
         echo "<span>{$name}</span>";
       }
     }, 10, 2);
+
+    add_action('rest_api_init', function () {
+      $post_type = ['annonce', 'work-temporary'];
+      $formation_meta = ["gallery"];
+      foreach ($post_type as $type):
+        foreach ($formation_meta as $meta):
+          register_rest_field($type, $meta, array(
+            'update_callback' => function ($value, $object, $field_name) {
+              return update_post_meta((int)$object->ID, $field_name, $value);
+            },
+            'get_callback'    => function ($object, $field_name) {
+              $post_id = $object['id'];
+              return get_post_meta($post_id, $field_name, true);
+            },
+          ));
+        endforeach;
+      endforeach;
+    });
   }
 
   public
@@ -69,12 +92,12 @@ class vcAnnonce
   function add_annonce ()
   {
     if ($_SERVER['REQUEST_METHOD'] != 'POST' || !wp_doing_ajax() || !is_user_logged_in()) {
-      return false;
+      wp_send_json_error("Votre session a expirer");
     }
     // 1: Service ou travail temporaire, 2: Autres annonce
     $service_or_annonce = (int)Http\Request::getValue('annonce', false);
     // Type d'annonce: 1 & 2
-    $type = (int)Http\Request::getValue('type', 0);
+    $type = (int)Http\Request::getValue('annonce', 0);
 
     $title = Http\Request::getValue('title', ' ');
     $description = Http\Request::getValue('description', null);
@@ -83,7 +106,7 @@ class vcAnnonce
     $town = Http\Request::getValue('town', 0);
     $address = Http\Request::getValue('address', null);
     $cellphone = Http\Request::getValue('cellphone', null);
-    $price = Http\Request::getValue('price', 0);
+    $price = (int)Http\Request::getValue('price', 0);
     $email = Http\Request::getValue('email', null);
     $activity_area = Http\Request::getValue('activity_area', 0);
     $categorie = Http\Request::getValue('categorie', 0);
@@ -93,25 +116,26 @@ class vcAnnonce
     $User = wp_get_current_user();
 
     $post_type = $service_or_annonce === 1 ? "work-temporary" : "annonce";
-    $result = wp_insert_post( [
+    $result = wp_insert_post([
       'post_title'   => $title,
       'post_content' => $description,
+      'post_excerpt' => $description,
       'post_status'  => 'pending',
       'post_author'  => $User->ID,
       'post_type'    => $post_type
-    ], true );
-    if ( is_wp_error( $result ) ) {
+    ], true);
+    if (is_wp_error($result)) {
       wp_send_json_error($result->get_error_message());
       return false;
     }
     $post_id = (int)$result;
-    wp_set_post_terms( $post_id, [ (int) $region ], 'region' );
-    wp_set_post_terms( $post_id, [ (int) $town ], 'city' );
-    wp_set_post_terms( $post_id, [ (int) $activity_area ], 'branch_activity' );
+    wp_set_post_terms($post_id, [(int)$region], 'region');
+    wp_set_post_terms($post_id, [(int)$town], 'city');
+    wp_set_post_terms($post_id, [(int)$activity_area], 'branch_activity');
 
     if ($service_or_annonce === 2) {
-      wp_set_post_terms( $post_id, [ (int) $categorie ], 'categorie' );
-      update_field('type', (int) $type, $post_id);
+      wp_set_post_terms($post_id, [(int)$categorie], 'categorie');
+      update_field('type', (int)$type, $post_id);
     }
 
     // Add acf field
@@ -128,7 +152,8 @@ class vcAnnonce
     $slug = $service_or_annonce === 2 ? 'ANN' : 'SRC';
     update_field('reference', $slug . $post_id, $post_id);
 
-    wp_send_json_success("Annonce ajouter avec succès");
+    $annonce = new Annonce($post_id);
+    wp_send_json_success($annonce);
   }
 
   public
@@ -146,20 +171,19 @@ class vcAnnonce
 
     wp_enqueue_style('sweetalert');
     wp_enqueue_style('alertify');
+    wp_enqueue_script('wp-api');
     wp_enqueue_script('form-annonce', get_template_directory_uri() . '/assets/js/app/register/form-annonce.js', [
       'tinymce',
       'angular',
       'angular-ui-select2',
       'angular-ui-tinymce',
       'angular-ui-route',
-      'angular-sanitize',
       'angular-messages',
-      'angular-animate',
       'angular-cookies',
-      'ngFileUpload',
       'moment-locales',
       'typeahead',
       'alertify',
+      'ngFileUpload',
       'sweetalert'
     ], $itJob->version, true);
 
@@ -186,6 +210,65 @@ class vcAnnonce
 EOF;
 
     return $content;
+
+  }
+
+  public
+  function upload_annonce_img ()
+  {
+    if ($_SERVER['REQUEST_METHOD'] != 'POST' || !wp_doing_ajax()) {
+      return false;
+    }
+
+    $post_id = (int)Http\Request::getValue('post_id');
+
+    require_once(ABSPATH . 'wp-admin/includes/image.php');
+    require_once(ABSPATH . 'wp-admin/includes/file.php');
+    require_once(ABSPATH . 'wp-admin/includes/media.php');
+    if (empty($_FILES)) {
+      return false;
+    }
+
+    $featured = $_FILES["featured"];
+    $gallery = $_FILES["gallery"];
+
+    if (!empty($featured)):
+      $attachment_id = media_handle_upload('featured', $post_id);
+      if (is_wp_error($attachment_id)) {
+        wp_send_json_error($attachment_id->get_error_message());
+      } else {
+        update_post_meta($post_id, '_thumbnail_id', $attachment_id);
+      }
+    endif;
+
+    if (!empty($gallery)):
+      foreach ($gallery['name'] as $key => $value) {
+        if ($gallery['name'][$key]) {
+          $file = array(
+            'name'     => $gallery['name'][$key],
+            'type'     => $gallery['type'][$key],
+            'tmp_name' => $gallery['tmp_name'][$key],
+            'error'    => $gallery['error'][$key],
+            'size'     => $gallery['size'][$key]
+          );
+          $_FILES = array("upload_file" => $file);
+          $attach_id = media_handle_upload('upload_file', $post_id);
+          if (is_wp_error($attach_id)) {
+            wp_send_json_error($attach_id->get_error_message());
+          } else {
+            $gallerys = get_field('gallery', $post_id);
+            $gls = [];
+            foreach ($gallerys as $gl) {
+              $gls[] = $gl['ID'];
+            }
+            $gls[] = $attach_id;
+            update_field('gallery', $gls, $post_id);
+          }
+        }
+      }
+    endif;
+
+    wp_send_json_success("Media uploader avec succès");
 
   }
 
