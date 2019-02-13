@@ -1007,6 +1007,7 @@ add_action('rest_api_init', function () {
          [
             'methods' => WP_REST_Server::CREATABLE,
             'callback' => function () {
+               $error = false;
                $no_reply = "no-reply@itjobmada.com";
                $subject = \Http\Request::getValue('subject');
                $content = \Http\Request::getValue('content');
@@ -1018,47 +1019,33 @@ add_action('rest_api_init', function () {
                   $to = &$role__in;
                }
 
-               $args = [
-                  'role' => $to,
-                  'fields' => 'all'
-               ];
-               $user_query = new \WP_User_Query( $args );
-               $total = $user_query->total_users;
-               $return = [];
+               $user_total = 0;
+               $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+                $argUsers = [ 'role' => $to, 'fields' => 'all', 'number' => -1];
+                $Users = new \WP_User_Query($argUsers);
+                if (!empty($Users->get_results())) {
+                   foreach ($Users->get_results() as $user) {
+                      if (empty($user->user_email)) continue;
+                      $mail->addBCC($user->user_email);
+                      $user_total += 1;
+                   }
+                }
 
-               for ($inc = 1; $inc < $total; $inc += 25) {
-                  $argUsers = [ 'role' => $to, 'fields' => 'all', 'number' => 25, 'offset' => $inc];
-                  $Users = new \WP_User_Query($argUsers);
-                  if (!empty($Users->get_results())) {
-                     foreach ($Users->get_results() as $user) {
-                        if (empty($user->user_email)) continue;
-                        // Vérifier si l'utilisateur est abonnée au newsletter
-                        if ($to === "candidate") {
-                           $Candidate = Candidate::get_candidate_by($user->ID);
-                           if (!$Candidate->newsletter) continue;
-                        }
-                        if ($to === "company") {
-                           $Company = Company::get_company_by($user->ID);
-                           if (!$Company->newsletter) continue;
-                        }
-                        $return[]       = $user->user_email;
-                        $to             = $user->user_email;
-                        $headers        = [];
-                        $headers[]      = 'Content-Type: text/html; charset=UTF-8';
-                        $headers[]      = "From: ItJobMada <{$no_reply}>";
-                        $subject        = $subject;
-                        $sender = wp_mail( $to, $subject, $content, $headers );
-                        if ( $sender ) {
-                           continue;
-                        } else {
-                           break;
-                        }
-                     }
-                  }
-
+               $mail->addAddress('david@itjobmada.com', 'David Andrianaivo');
+               $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
+               $mail->CharSet = 'UTF-8';
+               $mail->isHTML(true);
+               $mail->setFrom($no_reply, "Equipe ITJob");
+               $mail->Body = $content;
+               $mail->Subject = $subject;
+               try {
+                 // Envoyer le mail
+                 $mail->send();
+               } catch (\PHPMailer\PHPMailer\Exception $e) {
+                 $error = $e->getMessage();
                }
 
-               return new WP_REST_Response(['success' => true, 'users' => $return]);
+               return new WP_REST_Response(['success' => true, 'total' => $user_total, 'error' => $error]);
             },
             'permission_callback' => function ($data) {
                return current_user_can('edit_posts');
