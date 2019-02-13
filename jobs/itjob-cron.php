@@ -422,7 +422,7 @@ function send_pending_cv() {
   $msg = "Bonjour, <br/>";
   $msg .= "<p>Voici la liste des candidats en attente de validation :</p> ";
   foreach ($candidats as $candidate) {
-    $msg .= "<p> * <strong>{$candidate['name']}</strong> portant la reférence « <strong>{$candidate['reference']}</strong> ». </p>";
+    $msg .= "<p> * <a href='https://admin.itjobmada.com/candidate/{$candidate['ID']}/edit' target='_blank' title='{$candidate['name']}'><strong>{$candidate['name']}</strong></a> portant la reférence « <strong>{$candidate['reference']}</strong> ». </p>";
   }
   if (empty($candidats))
     $msg .= "<b>Aucun</b>";

@@ -173,7 +173,7 @@ class cronModel
             // Vérifier si l'utilisateur est un candidat
             $Candidate = new includes\post\Candidate((int) $candidate->ID);
             $name = $Candidate->getFirstName() . ' ' . $Candidate->getLastName();
-            $return[] = ['reference' => $Candidate->reference, 'name' => $name];
+            $return[] = ['reference' => $Candidate->reference, 'name' => $name, 'ID' => $Candidate->getId()];
         }
 
         return $return;
