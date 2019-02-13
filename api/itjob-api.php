@@ -98,18 +98,22 @@ add_action('rest_api_init', function () {
                   case 'activated':
                      $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
                      if (is_null($status)) new WP_REST_Response('Parametre manquant');
-                     // Seul l'adminstrateur peuvent modifier cette option
+                     // Seul les comptes adminstrateur peuvent modifier cette option
                      if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
-
+                     $post = get_post($candidate_id);
+                     $post_date =  $Candidate->date_create;
+                     $post_date = date('Y-m-d H:i:s', strtotime($post_date));
                      $status = (int)$status;
                      if ($status === 1) {
-                        $post = get_post($candidate_id);
-                        $post_date =  $Candidate->date_create;
-                        $post_date = date('Y-m-d H:i:s', strtotime($post_date));
-                        wp_update_post(['ID' => $Candidate->getId(), 'post_date' => $post_date, 'post_author' => $post->post_author, 'post_status' => 'publish'], true);
                         do_action('confirm_validate_candidate', $Candidate->getId());
                      }
                      update_field('activated', (int)$status, $Candidate->getId());
+                     wp_update_post([
+                       'ID' => $Candidate->getId(),
+                       'post_date' => $post_date,
+                       'post_author' => $post->post_author,
+                       'post_status' => 'publish'
+                     ], true);
 
                      return new WP_REST_Response("Candidate mis à jour avec succès");
                      break;
