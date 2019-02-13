@@ -194,11 +194,16 @@ function newsletter_daily_company ()
     }
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
-    $mail->setFrom("no-reply@itjobmada.com", "ITJob Team");
+    $mail->setFrom("no-reply@itjobmada.com", "Équipe ITJob");
     $mail->Body = $content;
     $mail->Subject = $subject;
 
-    $mail->send();
+    try {
+      // Envoyer le mail
+      $mail->send();
+    } catch (\PHPMailer\PHPMailer\Exception $e) {
+      return false;
+    }
   }
 }
 
