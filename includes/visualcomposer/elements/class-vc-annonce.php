@@ -97,7 +97,7 @@ class vcAnnonce
     // 1: Service ou travail temporaire, 2: Autres annonce
     $service_or_annonce = (int)Http\Request::getValue('annonce', false);
     // Type d'annonce: 1 & 2
-    $type = (int)Http\Request::getValue('annonce', 0);
+    $type = (int)Http\Request::getValue('type', 0);
 
     $title = Http\Request::getValue('title', ' ');
     $description = Http\Request::getValue('description', null);

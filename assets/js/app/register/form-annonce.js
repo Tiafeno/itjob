@@ -123,10 +123,10 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                 Fm.append('price', _.isUndefined(price) ? 0 : parseInt(price));
                 Fm.append('email', Form.email.$modelValue);
                 Fm.append('activity_area', parseInt(Form.activity_area.$modelValue));
+                Fm.append('type', Form.type.$modelValue);
 
                 if (annonce === 2) { // Autres type d'annonce
                   Fm.append('categorie', parseInt(Form.categorie.$modelValue));
-                  Fm.append('type', Form.type.$modelValue);
                 }
                 Factory
                   .$send(Fm)
