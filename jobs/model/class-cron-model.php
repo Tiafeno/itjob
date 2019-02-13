@@ -189,7 +189,7 @@ class cronModel
       foreach ($offers as $offer) {
         // Vérifier si l'utilisateur est un candidat
         $Offer = new includes\post\Offers((int) $offer->ID);
-        $return[] = ['reference' => $Offer->reference, 'title' => $offer->postPromote, 'ID' => $offer->ID];
+        $return[] = ['reference' => $Offer->reference, 'title' => $Offer->postPromote, 'ID' => $Offer->ID];
       }
 
       return $return;
