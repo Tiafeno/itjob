@@ -228,7 +228,7 @@ function alert_daily_company()
     $posts = &$query;
     foreach ($posts as $post) {
       // Envoyer une alert au entreprise
-      $itHelper->alert_for_new_candidate( $post->ID );
+      $itHelper->Mailing->alert_for_new_candidate( $post->ID );
     }
   }
 }
