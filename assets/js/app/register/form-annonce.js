@@ -34,13 +34,15 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               });
           }]
         },
-        controller: ['$rootScope', '$scope', '$cookies', '$state', 'Factory', 'regions', 'abranchs', 'allCity', 'categories', 'Upload',
-          function ($rootScope, $scope, $cookies, $state, Factory, regions, abranchs, allCity, categories, Upload) {
+        controller: ['$rootScope', '$scope', '$cookies', '$state', 'Factory', 'Services', 'regions', 'abranchs', 'allCity', 'categories', 'Upload',
+          function ($rootScope, $scope, $cookies, $state, Factory, Services, regions, abranchs, allCity, categories, Upload) {
             this.$onInit = () => {
               $scope.regions = _.clone(regions);
               $scope.abranchs = _.clone(abranchs);
               $scope.allCity = _.clone(allCity);
               $scope.categories = _.clone(categories);
+
+              Services.setLoading(false);
             };
             $rootScope.featuredImage = null;
             $rootScope.gallery = [];
@@ -83,8 +85,10 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
 
               if (!Form.$valid) return;
 
+              Services.setLoading(true, "Enregistrement en cours");
               $scope.sendSubmitForm(Form).then(resp => {
                 if ( ! _.isNull($rootScope.annonce.featuredImg)) {
+                  Services.setLoading(true, "Upload de fichiers en cours");
                   $rootScope.upload = Upload.upload({
                     url: itOptions.ajax_url,
                     data: {
@@ -96,9 +100,11 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                   }).success(function (resp) {
                     $rootScope.isSubmit = !1;
                     $state.go('annonce.success');
+                    Services.setLoading(false);
                   });
                 } else {
                   $state.go('annonce.success');
+                  Services.setLoading(false);
                 }
               });
 
@@ -225,16 +231,24 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               });
             };
 
-            $rootScope.uploadFile = function (file, errFiles) {
+            /**
+             * Charger l'image en avant de l'annonce
+             * @param file
+             * @param errFiles
+             */
+            $rootScope.uploadFile = (file, errFiles) => {
               if (_.isNull(file)) return;
               $rootScope.annonce.featuredImg = file;
+              Services.setLoading(true, "Chargement d'image en cours");
               $rootScope.PromiseImg(file)
                 .then(result => {
                   $rootScope.$apply(() => {
                     $rootScope.featuredImage = angular.copy(result);
                   });
+                  Services.setLoading(false);
                 }, error => {
                   swal('Désolé', error, 'error');
+                  Services.setLoading(false);
                 })
                 .catch(e => {
                   swal({
@@ -242,10 +256,17 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                     text: e,
                     type: 'error',
                   });
+                  Services.setLoading(false);
                 });
             };
 
-            $rootScope.uploadFiles = function (files, errFiles) {
+            /**
+             * Charger les photos en galerie
+             * @param files
+             * @param errFiles
+             * @returns {boolean}
+             */
+            $rootScope.uploadFiles = (files, errFiles) => {
               if (files && files.length) {
                 if ($rootScope.annonce.gallery.length > 7 || files.length > 7) {
                   swal({
@@ -273,9 +294,15 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                       });
                     });
                 }
-
               }
+            };
 
+            /**
+             * Effacer la galerie
+             */
+            $rootScope.cleanGallery = () => {
+              $rootScope.annonce.gallery = [];
+              $rootScope.gallery = [];
             };
 
             var $ = jQuery.noConflict();
@@ -355,9 +382,9 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               $q.reject(redir);
           }]
         },
-        controller: ['$rootScope', 'annonce', function($rootScope, annonce) {
+        controller: ['$rootScope', '$cookies', 'annonce', function($rootScope, $cookies, annonce) {
           this.$onInit = () => {
-
+            $cookies.remove('annonce');
           }
         }]
       }
@@ -376,6 +403,15 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
           .then(function (resp) {
             return resp.data;
           });
+      },
+      setLoading: function (load = false, message = "Chargement") {
+        var $ = jQuery.noConflict();
+        var preloader = $('.preloader-backdrop');
+        var preloadMessage = $('.page-preloader');
+        var display = load ? 'block' : 'none';
+        preloader.css('display', display);
+        console.log(display);
+        preloadMessage.text(message);
       }
     }
   }])
@@ -396,6 +432,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
     $rootScope.annonce = {};
     $rootScope.annonce.gallery = [];
     $rootScope.annonce.featuredImg = null;
+
 
   }]).run(['$state', function ($state) {
     var loadingPath = itOptions.template + '/img/loading.gif';

@@ -132,10 +132,9 @@ class vcAnnonce
     wp_set_post_terms($post_id, [(int)$region], 'region');
     wp_set_post_terms($post_id, [(int)$town], 'city');
     wp_set_post_terms($post_id, [(int)$activity_area], 'branch_activity');
-
+    update_field('type', (int)$type, $post_id);
     if ($service_or_annonce === 2) {
       wp_set_post_terms($post_id, [(int)$categorie], 'categorie');
-      update_field('type', (int)$type, $post_id);
     }
 
     // Add acf field
