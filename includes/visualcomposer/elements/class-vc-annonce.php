@@ -197,8 +197,7 @@ class vcAnnonce
       ]
     ]);
 
-    $content
-      = <<<EOF
+    $content = <<<EOF
 <div class="ibox candidate-content uk-margin-large-top" ng-app="AnnonceApp">
   <ui-view>
     <div class="mt-4 pt-4 ">
@@ -221,6 +220,7 @@ EOF;
     }
 
     $post_id = (int)Http\Request::getValue('post_id');
+    if ($post_id === 0) wp_send_json_error( "Le post n'est pas definie dans la requete (post_id)", Requests_Exception_HTTP_405 );
 
     require_once(ABSPATH . 'wp-admin/includes/image.php');
     require_once(ABSPATH . 'wp-admin/includes/file.php');
@@ -242,6 +242,7 @@ EOF;
     endif;
 
     if (!empty($gallery)):
+      $gls = []; // Cette variable permet de stocker les ids de la gallerie
       foreach ($gallery['name'] as $key => $value) {
         if ($gallery['name'][$key]) {
           $file = array(
@@ -256,16 +257,11 @@ EOF;
           if (is_wp_error($attach_id)) {
             wp_send_json_error($attach_id->get_error_message());
           } else {
-            $gallerys = get_field('gallery', $post_id);
-            $gls = [];
-            foreach ($gallerys as $gl) {
-              $gls[] = $gl['ID'];
-            }
             $gls[] = $attach_id;
-            update_field('gallery', $gls, $post_id);
           }
         }
       }
+      update_field('gallery', $gls, $post_id);
     endif;
 
     wp_send_json_success("Media uploader avec succès");

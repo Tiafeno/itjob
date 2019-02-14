@@ -304,7 +304,8 @@ EOF;
         'user_id'     => $User->ID,
         'subject'     => $subject,
         'topic'       => $topic,
-        'description' => $description
+        'description' => $description,
+        'date_create' => date_i18n( 'Y-m-d H:i:s' )
       ];
       $result = Model_Request_Formation::add_resources($args);
       if ($result) {

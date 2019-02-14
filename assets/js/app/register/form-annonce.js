@@ -84,7 +84,6 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               if (!Form.$valid) return;
 
               $scope.sendSubmitForm(Form).then(resp => {
-                console.log($rootScope.annonce);
                 if ( ! _.isNull($rootScope.annonce.featuredImg)) {
                   $rootScope.upload = Upload.upload({
                     url: itOptions.ajax_url,
@@ -239,7 +238,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                 })
                 .catch(e => {
                   swal({
-                    title: 'Erreur',
+                    title: 'Désolé',
                     text: e,
                     type: 'error',
                   });
@@ -251,7 +250,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                 if ($rootScope.annonce.gallery.length > 7 || files.length > 7) {
                   swal({
                     title: 'Désolé',
-                    text: "Les nombres de photos dans la gallerie est de 7",
+                    text: "Les nombres maximun de photo dans la gallerie est de 7",
                     type: 'warning',
                   });
                   return false;
