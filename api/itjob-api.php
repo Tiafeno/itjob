@@ -920,18 +920,16 @@ add_action('rest_api_init', function () {
         if ($action) {
           switch ($action) {
             case 'change_status':
-              $status = $_REQUEST['val'];
+              $status    = $_REQUEST['val'];
               $activated = $status === 'pending' ? 'pending' : intval($status);
-              $post = get_post($post_id);
+              $post      = get_post($post_id);
               $post_type = $post->post_type;
-              if (is_numeric($activated)) {
+              if (is_numeric( $activated )) {
                 update_field('activated', $activated, $post_id);
                 if ($activated) {
-                  $action = "confirm_validate_{$post_type}";
-                  do_action($action, $post_id);
+                  do_action("confirm_validate_{$post_type}", $post_id);
                 }
-                $post_date = get_the_date('Y-m-d H:i:s', (int)$post_id);
-                wp_update_post(['ID' => $post_id, 'post_date' => $post_date, 'post_author' => $post->post_author, 'post_status' => 'publish'], true);
+                wp_update_post(['ID' => $post_id, 'post_author' => $post->post_author, 'post_status' => 'publish'], true);
               } else {
                 update_field('activated', 0, $post_id);
                 wp_update_post(['ID' => $post_id, 'post_status' => 'pending'], true);

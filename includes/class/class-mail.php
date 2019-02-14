@@ -742,7 +742,7 @@ class Mailing {
       /**
        * Envoyer une alert au professionnel abonnée
        */
-      $this->alert_for_new_candidate( (int)$candidat_id );
+      // $this->alert_for_new_candidate( (int)$candidat_id );
       return true;
     } else {
       // Erreur d'envoie

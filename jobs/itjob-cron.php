@@ -213,6 +213,26 @@ function newsletter_daily_candidate ()
 
 }
 
+
+function alert_daily_company()
+{
+  global $wpdb, $itHelper;
+  $today = Date("Y-m-d");
+  $sql = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = 'candidate' 
+    AND pts.post_status = 'publish'
+    AND pts.post_date REGEXP '(^{$today})'
+    AND pts.ID IN ( SELECT pm.post_id as ID FROM {$wpdb->postmeta} as pm WHERE pm.meta_key = 'activated' AND  pm.meta_value = 1 )
+    AND pts.ID IN ( SELECT pm2.post_id as ID FROM {$wpdb->postmeta} as pm2 WHERE pm2.meta_key = 'itjob_cv_hasCV' AND pm2.meta_value = 1 )";
+  $query = $wpdb->get_results($sql);
+  if (is_array($query) && !empty($query)) {
+    $posts = &$query;
+    foreach ($posts as $post) {
+      // Envoyer une alert au entreprise
+      $itHelper->alert_for_new_candidate( $post->ID );
+    }
+  }
+}
+
 function fix_pending_cv ()
 {
   global $wpdb;
@@ -306,6 +326,9 @@ add_action('end_of_the_day', function () { // at 16h38 (Une fois par jour)
   newsletter_daily_candidate();
   send_pending_cv();
   send_pending_offer();
+
+  // Envoyer les alerts au entreprise
+  alert_daily_company();
 });
 
 
