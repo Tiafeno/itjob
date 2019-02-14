@@ -22,7 +22,7 @@ class Annonce
   private        $WP_User = 0;
   public $ID                 = 0;
   public $status             = '';
-  public static $post_types   = ['annonce', 'work-temporary'];
+  public static $post_types   = ['annonce', 'works'];
   public $activated          = false;
   public $author             = null;
   public $title              = null;
@@ -69,6 +69,7 @@ class Annonce
     $this->ID = $output->ID;
     $this->post_type   = $output->post_type;
     $this->description = apply_filters('the_content', $output->post_content);
+    $this->excerpt = $output->post_excerpt;
     $this->title  = $output->post_title;
     $this->status = $output->post_status;
     $this->date_publication = $output->post_date;

@@ -32,7 +32,9 @@ class vcFormation
 
     add_action('acf/save_post', function ($post_id) {
       // Mettre à jour automatiquement la référence
-      update_field('reference', strtoupper("FOM{$post_id}"), $post_id);
+      $post_type = get_post_type($post_id);
+      if ($post_type === 'formation')
+        update_field('reference', strtoupper("FOM{$post_id}"), $post_id);
     }, 10, 1);
   }
 

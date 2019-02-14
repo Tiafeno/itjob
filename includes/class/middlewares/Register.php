@@ -134,11 +134,11 @@ trait Register {
       'rest_base'       => 'annonce',
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-megaphone',
-      'supports'        => [ 'title', 'content', 'excerpt', 'thumbnail', 'custom-fields' ],
+      'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ],
       'show_in_rest'    => true
     ] );
 
-    register_post_type( 'work-temporary', [
+    register_post_type( 'works', [
       'label'           => "Les travails temporaires",
       'labels'          => [
         'name'               => "Les travails",
@@ -160,7 +160,7 @@ trait Register {
       'rewrite'         => [ 'slug' => 'travail-temporaire' ],
       'capability_type' => 'post',
       'menu_icon'       => 'dashicons-location',
-      'supports'        => [ 'title', 'content', 'excerpt', 'thumbnail', 'custom-fields' ],
+      'supports'        => [ 'title', 'editor', 'excerpt', 'thumbnail', 'custom-fields' ],
       'show_in_rest'    => true
     ] );
 
@@ -269,7 +269,7 @@ trait Register {
     ]);
 
     // Secteur d'activité
-    register_taxonomy( 'branch_activity', [ 'company', 'candidate', 'formation', 'work-temporary' ], [
+    register_taxonomy( 'branch_activity', [ 'company', 'candidate', 'formation', 'works' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Secteur d\'activité',
@@ -338,7 +338,7 @@ trait Register {
     ] );
 
     // Région
-    register_taxonomy( 'region', [ 'offers', 'candidate', 'company', 'formation', 'annonce', 'work-temporary' ], [
+    register_taxonomy( 'region', [ 'offers', 'candidate', 'company', 'formation', 'annonce', 'works' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Région',
@@ -407,7 +407,7 @@ trait Register {
     ] );
 
     // Ville
-    register_taxonomy( 'city', [ 'offers', 'candidate', 'company', 'annonce', 'work-temporary' ], [
+    register_taxonomy( 'city', [ 'offers', 'candidate', 'company', 'annonce', 'works' ], [
       'hierarchical'      => true,
       'labels'            => array(
         'name'              => 'Code postal & Ville',

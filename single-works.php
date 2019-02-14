@@ -1,5 +1,5 @@
 <?php
-global $work;
+global $works;
 get_header();
 wp_enqueue_style('themify-icons');
 wp_enqueue_style('offers');
@@ -39,10 +39,10 @@ wp_enqueue_style('offers');
           <!--          Content here ... -->
           <?php
           while (have_posts()) : the_post();
-            if ($work::is_wp_error()) {
-              echo $work::is_wp_error();
+            if ($works::is_wp_error()) {
+              echo $works::is_wp_error();
             }
-            if (!$work instanceof \includes\post\Annonce) continue;
+            if (!$works instanceof \includes\post\Works) continue;
 
           endwhile;
           ?>
@@ -50,8 +50,8 @@ wp_enqueue_style('offers');
         <div class="uk-width-1-3@s">
           <!--     Sidebar here ...     -->
           <?php
-          if (is_active_sidebar('single-annonce-sidebar')) {
-            dynamic_sidebar('single-annonce-sidebar');
+          if (is_active_sidebar('single-work-sidebar')) {
+            dynamic_sidebar('single-work-sidebar');
           }
           ?>
         </div>

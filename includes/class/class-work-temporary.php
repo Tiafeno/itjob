@@ -14,13 +14,13 @@ if (!defined('ABSPATH')) {
   exit;
 }
 
-class WorkTemporary
+class Works
 {
   private static $error = false;
   private        $email = null;
   public $ID                 = 0;
   public $status             = '';
-  public $post_type          = 'work-temporary';
+  public $post_type          = 'works';
   public $activated          = false;
   public $author             = null;
   public $title              = null;
@@ -53,6 +53,8 @@ class WorkTemporary
      * When $output is OBJECT, a WP_Post instance is returned.
      */
     $output = get_post((int)$work_id);
+    $this->ID = $output->ID;
+
     if (is_null($output)) {
       self::$error = new \WP_Error('broken', "Travail introuvable dans le systeme");
       return false;
@@ -63,13 +65,13 @@ class WorkTemporary
       return false;
     }
 
-    $this->ID = $output->ID;
-    $this->post_type   = $output->post_type;
+    $this->title   = $output->post_type;
     $this->description = apply_filters('the_content', $output->post_content);
+    $this->excerpt = $output->post_excerpt;
     $this->title  = $output->post_title;
     $this->status = $output->post_status;
     $this->date_publication = $output->post_date;
-    $this->date_publication_format = get_the_date('j F, Y', $output);
+    $this->date_publication_format = get_the_date('j F Y', $output);
     $this->url = get_the_permalink($output->ID);
 
     $this->email = get_field('email', $this->ID);
@@ -113,7 +115,6 @@ class WorkTemporary
     $this->price              = get_field('price', $this->ID);
     $this->reference          = get_field('reference', $this->ID);
     $this->address            = get_field('address', $this->ID);
-    $this->featured_image     = wp_get_attachment_thumb_url(get_post_thumbnail_id($this->ID));
   }
 
   public static

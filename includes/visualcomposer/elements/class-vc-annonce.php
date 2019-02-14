@@ -22,6 +22,11 @@ class vcAnnonce
       add_shortcode('vc_annonce', [$this, 'form_annonce_render']);
     }
 
+    if (!shortcode_exists('vc_annonce_list')) {
+      // Affiche la liste des travail temporaire
+      add_shortcode('vc_annonce_list', [$this, 'annonce_list_render']);
+    }
+
     add_action('wp_ajax_add_annonce', [&$this, 'add_annonce']);
     add_action('wp_ajax_nopriv_add_annonce', [&$this, 'add_annonce']);
 
@@ -43,7 +48,7 @@ class vcAnnonce
     }, 10, 2);
 
     add_action('rest_api_init', function () {
-      $post_type = ['annonce', 'work-temporary'];
+      $post_type = ['annonce', 'works'];
       $formation_meta = ["gallery"];
       foreach ($post_type as $type):
         foreach ($formation_meta as $meta):
@@ -82,6 +87,41 @@ class vcAnnonce
         ),
       ]
     ]);
+
+    vc_map(
+      [
+        'name'        => 'Les annonces',
+        'base'        => 'vc_annonce_list',
+        'description' => 'Afficher les 4 premiers annonce',
+        'category'    => 'itJob',
+        'params'      => [
+          [
+            'type'        => 'textfield',
+            'holder'      => 'h3',
+            'class'       => 'vc-ij-title',
+            'heading'     => 'Ajouter un titre',
+            'param_name'  => 'title',
+            'value'       => '',
+            'admin_label' => false,
+            'weight'      => 0
+          ],
+          [
+            'type'        => 'dropdown',
+            'class'       => 'vc-ij-type',
+            'heading'     => 'Afficher',
+            'param_name'  => 'post_type',
+            'value'       => [
+              '-Selectionnez-' => '',
+              'Travail Temporaire'  => 'works',
+              'Annonce' => 'annonce'
+            ],
+            'std'         => '',
+            'admin_label' => true,
+            'weight'      => 0
+          ]
+        ]
+      ]
+    );
   }
 
   /**
@@ -115,7 +155,7 @@ class vcAnnonce
 
     $User = wp_get_current_user();
 
-    $post_type = $service_or_annonce === 1 ? "work-temporary" : "annonce";
+    $post_type = $service_or_annonce === 1 ? "works" : "annonce";
     $result = wp_insert_post([
       'post_title'   => $title,
       'post_content' => $description,
@@ -150,9 +190,35 @@ class vcAnnonce
     // Reference
     $slug = $service_or_annonce === 2 ? 'ANN' : 'SRC';
     update_field('reference', $slug . $post_id, $post_id);
+    update_post_meta($post_id, 'date_create', date_i18n('Y-m-d H:i:s'));
 
     $annonce = new Annonce($post_id);
     wp_send_json_success($annonce);
+  }
+
+  public
+  function annonce_list_render ($attrs) {
+    global $Engine, $itJob;
+    extract(shortcode_atts(
+      array(
+        'title' => '',
+        'post_type' => ''
+      ),
+      $attrs
+    ), EXTR_OVERWRITE);
+
+    /** @var string $post_type */
+    $works = $itJob->services->getRecentlyPost($post_type, 4);
+    try {
+      return $Engine->render('@VC/annonce/work-list.html', [
+        'works' => $works
+      ]);
+    } catch (\Twig_Error_Loader $e) {
+    } catch (\Twig_Error_Runtime $e) {
+    } catch (\Twig_Error_Syntax $e) {
+      return $e->getRawMessage();
+    }
+
   }
 
   public

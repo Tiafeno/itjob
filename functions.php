@@ -72,6 +72,7 @@ require_once 'includes/class/class-particular.php';
 require_once 'includes/class/class-company.php';
 require_once 'includes/class/class-candidate.php';
 require_once 'includes/class/class-annonce.php';
+require_once 'includes/class/class-work-temporary.php';
 
 $itJob = (object)[
   'version' => $theme->get('Version'),

@@ -569,7 +569,7 @@ if ( ! class_exists( 'itJob' ) ) {
           else {
             // Filtrer les candidates ou les offers ou les entreprises et les formations
             // Afficher seulement les candidates ou les offres ou les entreprises activer
-            $types = ['candidate', 'offers', 'company', 'formation', 'annonce', 'work-temporary'];
+            $types = ['candidate', 'offers', 'company', 'formation', 'annonce', 'works'];
             if ( in_array($post_type, $types) ):
               // Meta query
               if ( ! isset( $meta_query ) ) {
@@ -629,9 +629,9 @@ if ( ! class_exists( 'itJob' ) ) {
             $GLOBALS[ $post_object->post_type ] = $annonce;
             break;
             
-          case 'work-temporary':
-            $work = new Post\Annonce( $post_object->ID );
-            $GLOBALS[ 'work' ] = $work;
+          case 'works':
+            $work = new Post\Works( $post_object->ID );
+            $GLOBALS[ 'works' ] = $work;
             break;
         }
       } );
