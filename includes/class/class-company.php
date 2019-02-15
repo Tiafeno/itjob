@@ -35,6 +35,7 @@ final class Company implements \iCompany {
   public $notification = false;
   // Cette variable contient l'information sur le type du compte
   public $account = 0; // 0: Standart, 1: Premium
+  public $sector = 0; // 1: Recruteur, 2: Formateur (user post meta)
   // Contient les identifiants des candidats ou utilisateur wordpress (User id)
   private $interests = [];
 
@@ -96,6 +97,7 @@ final class Company implements \iCompany {
       self::$error = new \WP_Error('broken', "Compte professionnel inrouvable");
       return false;
     }
+
     $this->ID      = $output->ID;
     $this->title   = $output->post_title;
     $this->post_status = $output->post_status;
@@ -103,16 +105,17 @@ final class Company implements \iCompany {
     $this->add_create = $output->post_date;
 
     if ( $this->is_company() ) {
-      // FIX: Corriger une erreur sur l'utilisateur si l'admin ajoute une company
       $this->email = get_field( 'itjob_company_email', $this->ID );
       $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
       $this->author = Obj\jobServices::getUserData( $user->ID );
+      $sector = get_user_meta($user->ID, 'sector', true);
+      $this->priority = $sector ? (int)$sector : 1;
       // Récuperer la region
       $regions      = wp_get_post_terms( $this->ID, 'region' );
-      $this->region = reset( $regions );
+      $this->region = is_array($regions) && !empty($regions)  ? $regions[0] : null;
       // Récuperer le nom et la code postal de la ville
       $country       = wp_get_post_terms( $this->ID, 'city' );
-      $this->country = reset( $country );
+      $this->country = is_array($country) && !empty($country)  ? $country[0] : null;
       // Récuperer le secteur d'activité
       $abranch               = wp_get_post_terms( $this->ID, 'branch_activity', [ "fields" => "all" ] );
       $this->branch_activity = is_array($abranch) && !empty($abranch)  ? $abranch[0] : null;

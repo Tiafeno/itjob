@@ -70,6 +70,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
                     companyForm.append('action', 'ajx_insert_company');
                     companyForm.append('greeting', $rootScope.company.greeting);
                     companyForm.append('title', $rootScope.company.title);
+                    companyForm.append('sector', $rootScope.company.sector);
                     companyForm.append('region', $rootScope.company.region);
                     companyForm.append('country', $rootScope.company.country);
                     companyForm.append('address', $rootScope.company.address);
@@ -286,7 +287,7 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
     $rootScope.regions = _.clone(regions);
     $rootScope.allCity = _.clone(allCity);
     $rootScope.company = {};
-    $rootScope.company.greeting = 'mr';
+    $rootScope.company.greeting = '';
     $rootScope.company.cellphone = [{id: 0, value: ''}];
 
   }]).run([function () {

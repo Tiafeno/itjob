@@ -216,10 +216,12 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       if ( $userExist ) {
         wp_send_json_error( 'L\'adresse e-mail ou l\'utilisateur existe déja');
       }
+      $user = &$userExist;
 
       $form = (object) [
         'greeting'           => Http\Request::getValue( 'greeting' ),
         'title'              => Http\Request::getValue( 'title' ),
+        'sector'             => Http\Request::getValue( 'sector' ),
         'address'            => Http\Request::getValue( 'address' ),
         'country'            => Http\Request::getValue( 'country' ),
         'region'             => Http\Request::getValue( 'region' ),
@@ -248,6 +250,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       // update acf field
       $post_id = &$result;
       $this->update_acf_field( $post_id, $form );
+      update_user_meta($user->ID, 'sector', $form->sector);
 
       // Ajouter les terms dans le post
       wp_set_post_terms( $post_id, [ (int) $form->branch_activity_id ], 'branch_activity' );

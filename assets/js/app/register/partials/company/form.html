@@ -27,6 +27,21 @@
         </div>
       </div>
     </div>
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label">Vous êtes <span style="color: red">*</span></label>
+      <div class="col-sm-6">
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="sector" ng-model="company.sector" value="1" required="required">
+          <span class="input-span"></span>Recruteur</label>
+
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="sector" ng-model="company.sector" value="2">
+          <span class="input-span"></span>Formateur</label>
+        <div class="input-message-animation" ng-if="formCompany.sector.$touched && formCompany.sector.$invalid">
+          Ce champ est obligatoire.
+        </div>
+      </div>
+    </div>
     <div class="form-group mb-4 row ">
       <label class="col-sm-4 col-form-label ">Region <span style="color: red">*</span></label>
       <div class="col-sm-6">
@@ -36,13 +51,16 @@
             <option></option>
             <option ng-repeat="region in regions" value="[[region.term_id]]">[[region.name]]</option>
           </select>
+          <div class="input-message-animation" ng-if="formCompany.region.$touched && formCompany.region.$error.required">
+            Ce champ est obligatoire.
+          </div>
         </div>
       </div>
     </div>
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Code postal ou nom d'une ville <span style="color: red">*</span></label>
       <div class="col-md-6 form-group">
-        <select class="form-control input-mode country" name="country" ng-model="company.country" required>
+        <select class="form-control input-mode country" ng-disabled="!company.region" name="country" ng-model="company.country" required>
           <option></option>
           <option value="[[city.term_id]]" ng-repeat="city in allCity|filter:searchCityFn">([[city.postal_code]]) [[city.name]]</option>
         </select>
@@ -53,22 +71,23 @@
       <div class="col-sm-6">
         <input class="form-control" name="address" ng-model="company.address" type="text" placeholder="Adresse"
                required>
-        <p class="mention-text mt-1">Cette donnée n’est jamais partagée et utilisée uniquement pour la gestion de votre compte</p>
         <div ng-messages="formCompany.address.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.address.$invalid && formCompany.address.$touched">
           <div ng-message="required">Le champ adresse est obligatoire.</div>
         </div>
+        <p class="mention-text mt-1">Cette donnée n’est jamais partagée et utilisée uniquement pour la gestion de votre compte</p>
       </div>
     </div>
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">NIF <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="nif" ng-model="company.nif" type="text" placeholder="NIF" required>
-        <p class="mention-text mt-1">Cette donnée n’est jamais partagée et utilisée uniquement à des fins d’analyse.</p>
+
         <div ng-messages="formCompany.nif.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.nif.$invalid && formCompany.nif.$touched">
           <div ng-message="required">Ce champ est obligatoire.</div>
         </div>
+        <p class="mention-text mt-1">Cette donnée n’est jamais partagée et utilisée uniquement à des fins d’analyse.</p>
       </div>
     </div>
     <div class="form-group mb-4 row">
@@ -76,11 +95,11 @@
       <div class="col-sm-6">
         <input class="form-control" name="stat" ng-model="company.stat" type="text" placeholder="Numero statistique"
                required>
-        <p class="mention-text mt-1">Cette donnée n’est jamais partagée et utilisée uniquement à des fins d’analyse.</p>
         <div ng-messages="formCompany.stat.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.stat.$invalid && formCompany.stat.$touched">
           <div ng-message="required">Ce champ est obligatoire.</div>
         </div>
+        <p class="mention-text mt-1">Cette donnée n’est jamais partagée et utilisée uniquement à des fins d’analyse.</p>
       </div>
     </div>
     <div class="form-group mb-4 row">
@@ -132,17 +151,7 @@
         </p>
       </div>
     </div>
-    <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label"></label>
-      <div class="col-sm-3 d-flex align-items-center">
-        <label class="radio radio-grey radio-primary radio-inline">
-          <input type="radio" name="greeting" ng-model="company.greeting" value="mr">
-          <span class="input-span"></span>Monsieur</label>
-        <label class="radio radio-grey radio-primary radio-inline">
-          <input type="radio" name="greeting" ng-model="company.greeting" value="mrs">
-          <span class="input-span"></span>Madame</label>
-      </div>
-    </div>
+
     <div class="form-group mb-4 row">
       <label class="col-sm-4 col-form-label">Nom du responsable <span style="color: red">*</span></label>
       <div class="col-sm-6">
@@ -152,6 +161,17 @@
              ng-show="formCompany.responsible.$invalid && formCompany.responsible.$touched">
           <div ng-message="required">Le nom du résponsable est obligatoire.</div>
         </div>
+      </div>
+    </div>
+    <div class="form-group mb-4 row">
+      <label class="col-sm-4 col-form-label"></label>
+      <div class="col-sm-3 d-flex align-items-center">
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="greeting" ng-model="company.greeting" value="mr" required="required">
+          <span class="input-span"></span>Monsieur</label>
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="greeting" ng-model="company.greeting" value="mrs">
+          <span class="input-span"></span>Madame</label>
       </div>
     </div>
     <div class="form-group mb-4 row ">
