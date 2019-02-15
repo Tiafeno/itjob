@@ -13,6 +13,7 @@ if (!class_exists('WPBakeryShortCode')) {
 use Http;
 use includes\model\Model_Request_Formation;
 use includes\post\Candidate;
+use includes\post\Company;
 
 class vcFormation
 {
@@ -177,9 +178,14 @@ class vcFormation
       return do_shortcode('[itjob_login role="company" redir="' . $redirection . '"]', true);
     }
 
-    $User = wp_get_current_user();
+    $User = $itJob->services->getUser();
     if (in_array('company', $User->roles)) {
       // Autoriser à ajouter une formation
+      // Vérifier si le secteur de l'entreprise est un formateur
+      $Company = Company::get_company_by($User->ID);
+      if ($Company->sector !== 2 ) {
+        return $refused_access_msg;
+      }
     } else {
       return $refused_access_msg;
     }

@@ -398,7 +398,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         ] );*/
       }
 
-      $user = wp_get_current_user(  );
+      $user = $itJob->services->getUser(  );
       $Company = Company::get_company_by($user->ID);
 
       // featured: Verifier si l'utilicateur est une entreprise
@@ -414,6 +414,10 @@ if ( ! class_exists( 'vcOffers' ) ):
         return '<div class="alert alert-success font-13"><strong class="font-18">Informations incomplétes</strong>
         <br>Vous ne pouvez pas ajouter une offre tant que votre information n’est pas à jours. <br>
         Veuillez-vous rendre à votre <a class="font-16 badge badge-pink" style="color: white" href="'.$espace_client_url.'"> Espace client </a> <br>Merci </div>';
+      }
+
+      if ($Company->sector !== 1 ) {
+        return '<div class="alert alert-warning font-13">Vous ne pouvez pas ajouter une offre avec votre compte</div>';
       }
 
       // Params extraction
