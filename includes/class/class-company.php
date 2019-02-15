@@ -109,7 +109,7 @@ final class Company implements \iCompany {
       $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
       $this->author = Obj\jobServices::getUserData( $user->ID );
       $sector = get_user_meta($user->ID, 'sector', true);
-      $this->priority = $sector ? (int)$sector : 1;
+      $this->sector = $sector ? (int)$sector : 1;
       // Récuperer la region
       $regions      = wp_get_post_terms( $this->ID, 'region' );
       $this->region = is_array($regions) && !empty($regions)  ? $regions[0] : null;

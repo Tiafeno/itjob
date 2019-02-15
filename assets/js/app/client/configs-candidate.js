@@ -1,83 +1,494 @@
-APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolateProvider, $routeProvider) {
-    $interpolateProvider.startSymbol('[[').endSymbol(']]');
-    $routeProvider
-      .when('/oc-candidate', {
-        templateUrl: itOptions.Helper.tpls_partials + '/oc-candidate.html?ver=' + itOptions.version,
-        controller: 'clientCtrl',
-        controllerAs: 'vm',
-        resolve: {
-          Client: ['$http', '$q', function ($http, $q) {
-            let access = $q.defer();
-            $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
+APPOC
+  .config(['$interpolateProvider', '$stateProvider', '$urlServiceProvider',
+    function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
+      $interpolateProvider.startSymbol('[[').endSymbol(']]');
+      const states = [
+        {
+          name: 'manager',
+          url: '/manager',
+          resolve: {
+            Client: ['$http', '$q', function ($http, $q) {
+              let access = $q.defer();
+              $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
                 cache: false
               })
-              .then(resp => {
-                let data = resp.data;
-                access.resolve(data);
+                .then(resp => {
+                  let data = resp.data;
+                  access.resolve(data);
+                });
+              return access.promise;
+            }],
+            Regions: ['$http', function ($http) {
+              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=region', {cache: true})
+                .then(function (resp) {
+                  return resp.data;
+                });
+            }],
+            Towns: ['$http', function ($http) {
+              return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {cache: true})
+                .then(function (resp) {
+                  return resp.data;
+                });
+            }],
+            Areas: ['$http', function ($http) {
+              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=branch_activity', {cache: true})
+                .then(function (resp) {
+                  return resp.data;
+                });
+            }]
+          },
+          templateUrl: `${itOptions.Helper.tpls_partials}/oc-candidate.html?ver=${itOptions.version}`,
+          controller: 'candidateController',
+        },
+        {
+          name: 'manager.profil',
+          url: '/profil',
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/profil.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", function ($rootScope) {
+
+          }]
+        },
+        {
+          name: 'manager.profil.index',
+          url: '/index',
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/index.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", function ($rootScope) {
+            UIkit.util.on('#modal-candidate-profil-editor', 'show', function (e) {
+              e.preventDefault();
+              $rootScope.$apply(() => {
+                $rootScope.onViewModalCandidateProfil();
+              })
+            });
+
+            UIkit.util.on('#modal-candidate-profil-editor', 'hide', function (e) {
+              e.preventDefault();
+              $rootScope.avatarFile = false;
+              $rootScope.profilEditor = {};
+            });
+
+            UIkit.util.on('#modal-information-editor', 'show', function (e) {
+              e.preventDefault();
+              jQuery("select.input-select2").select2({
+                placeholder: "Selectionner une ville",
+                allowClear: true,
+                width: '100%',
+                matcher: function (params, data) {
+                  var inTerm = [];
+
+                  // If there are no search terms, return all of the data
+                  if (jQuery.trim(params.term) === '') {
+                    return data;
+                  }
+
+                  // Do not display the item if there is no 'text' property
+                  if (typeof data.text === 'undefined') {
+                    return null;
+                  }
+
+                  // `params.term` should be the term that is used for searching
+                  // `data.text` is the text that is displayed for the data object
+                  var dataContains = data.text.toLowerCase();
+                  var paramTerms = jQuery.trim(params.term).split(' ');
+                  $.each(paramTerms, (index, value) => {
+                    if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
+                      inTerm.push(true);
+                    } else {
+                      inTerm.push(false);
+                    }
+                  });
+                  var isEveryTrue = _.every(inTerm, (boolean) => {
+                    return boolean === true;
+                  });
+                  if (isEveryTrue) {
+                    var modifiedData = jQuery.extend({}, data, true);
+                    //modifiedData.text += ' (Trouver)';
+                    return modifiedData;
+                  } else {
+                    // Return `null` if the term should not be displayed
+                    return null;
+                  }
+                }
               });
-            return access.promise;
+            });
+
+            jQuery('[data-toggle="popover"]').popover();
+          }]
+        },
+        {
+          name: 'manager.profil.cv',
+          url: '/cv',
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/cv.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", function ($rootScope) {
+
+          }]
+        },
+        {
+          name: 'manager.profil.candidacy',
+          url: '/candidacy',
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/view-candidacy.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", function ($rootScope) {
+
           }]
         }
-      })
-      .otherwise({
-        redirectTo: '/oc-candidate'
+      ];
+      // Loop over the state definitions and register them
+      states.forEach(function (state) {
+        $stateProvider.state(state);
       });
-  }])
-  .filter('FormatStatus', [function () {
-    let status = [{
-        slug: 'pending',
-        label: 'En attente'
+      $urlServiceProvider.rules.otherwise({state: 'manager.profil.index'});
+
+    }])
+  .directive('generalInformationCandidate', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: `${itOptions.Helper.tpls_partials}/general-information-candidate.html?ver=${itOptions.version}`,
+      scope: {
+        Candidate: '=candidate',
+        regions: '&',
+        allCity: '&',
+        abranchs: '&',
+        init: '&init'
       },
-      {
-        slug: 'validated',
-        label: 'Confirmer'
-      },
-      {
-        slug: 'reject',
-        label: 'Rejeter'
-      },
-    ];
-    return (entryValue) => {
-      if (typeof entryValue === 'undefined') return entryValue;
-      return _.findWhere(status, {
-        slug: jQuery.trim(entryValue)
-      }).label;
+      controller: ['$scope', '$q', 'clientFactory', function ($scope, $q, clientFactory) {
+        $scope.candidateEditor = {};
+        $scope.loadingEditor = false;
+        $scope.status = false;
+
+        $scope.openEditor = () => {
+          $scope.loadingEditor = true;
+          $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
+            $scope.loadingEditor = false;
+            $scope.Regions = _.clone(data[0]);
+            $scope.branchActivity = _.clone(data[1]);
+            $scope.Citys = _.clone(data[2]);
+            const incInput = ['address', 'birthdayDate'];
+            incInput.forEach((InputValue) => {
+              if ($scope.Candidate.hasOwnProperty(InputValue)) {
+                $scope.candidateEditor[InputValue] = _.clone($scope.Candidate[InputValue]);
+              }
+            });
+            $scope.candidateEditor.greeting = $scope.Candidate.greeting.value;
+            $scope.candidateEditor.branch_activity = $scope.Candidate.branch_activity.term_id;
+            $scope.candidateEditor.region = $scope.Candidate.region.term_id;
+            $scope.candidateEditor.country = $scope.Candidate.privateInformations.address.country.term_id;
+            UIkit.modal('#modal-edit-candidate-overflow').show();
+          });
+        };
+
+        $scope.updateCandidateInformation = () => {
+          $scope.status = "Enregistrement en cours ...";
+          let candidatForm = new FormData();
+          let formObject = Object.keys($scope.candidateEditor);
+          candidatForm.append('action', 'update_profil');
+          candidatForm.append('candidate_id', parseInt($scope.Candidate.ID));
+          formObject.forEach(function (property) {
+            let propertyValue = Reflect.get($scope.candidateEditor, property);
+            candidatForm.set(property, propertyValue);
+          });
+          clientFactory
+            .sendPostForm(candidatForm)
+            .then(resp => {
+              let dat = resp.data;
+              if (dat.success) {
+                $scope.status = 'Votre information a bien été enregistrer avec succès';
+                UIkit.modal('#modal-edit-candidate-overflow').hide();
+                $route.reload();
+              } else {
+                $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
+              }
+            });
+        };
+
+        UIkit.util.on('#modal-edit-candidate-overflow', 'hide', function (e) {
+          e.preventDefault();
+          e.target.blur();
+          $scope.status = false;
+        });
+      }]
     }
   }])
-  .filter('moment', [function () {
-    moment.locale('fr');
-    return (entry) => {
-      if (_.isEmpty(entry)) return entry;
-      return moment(entry, "MM/DD/YYYY", true).format("MMMM YYYY");
+  .directive('jobSearch', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: `${itOptions.Helper.tpls_partials}/job-search.html?ver=${itOptions.version}`,
+      scope: {
+        inJobs: "=jobs"
+      },
+      controller: ['$scope', '$http', function ($scope, $http) {
+        $scope.isValidTag = true;
+        $scope.jobs = [];
+        $scope.jobLoading = false;
+        this.$onInit = () => {
+          $scope.jobs = _.isArray($scope.inJobs) ? _.clone($scope.inJobs) : [];
+        };
+        // Call before added tag
+        $scope.onAddingTag = ($tag) => {
+          if (_.isArray($scope.jobs) && $scope.jobs.length >= 2) return false;
+          let isValid = true;
+          let splitTag = '|;_\/*';
+          for (let i in splitTag) {
+            let str = splitTag.charAt(i);
+            if ($tag.name.indexOf(str) > -1) {
+              isValid = false;
+              break;
+            }
+          }
+          if (isValid) $scope.isValidTag = true;
+          return isValid;
+        };
+
+        // Call if tag in invalid
+        $scope.onTagInvalid = ($tag) => {
+          $scope.isValidTag = false;
+        };
+
+        $scope.onSave = () => {
+          if (!$scope.isValidTag) return false;
+          $scope.jobLoading = true;
+          var form = new FormData();
+          form.append('action', 'update_job_search');
+          form.append('jobs', JSON.stringify($scope.jobs));
+          $http({
+            method: 'POST',
+            url: itOptions.Helper.ajax_url,
+            headers: {
+              'Content-Type': undefined
+            },
+            data: form
+          })
+            .then(response => {
+              // Handle success
+              let data = response.data;
+              $scope.jobLoading = false;
+              if (!data.success) {
+                alertify.error("Une erreur inconue s'est produit")
+              } else {
+                alertify.success('Enregistrer avec succès')
+              }
+            });
+        };
+
+        /**
+         * Recuperer les emplois et les filtres
+         * @param {string} $query
+         * @param {string} taxonomy
+         */
+        $scope.queryJobs = function ($query, taxonomy) {
+          return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
+            cache: true
+          })
+            .then(function (response) {
+              const jobs = response.data;
+              return jobs.filter(function (job) {
+                return job.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+              });
+            });
+        };
+
+      }]
     }
   }])
-  .filter('experience_date', [function () {
-    moment.locale('fr');
-    return (experience, handler) => {
-      if (!_.isObject(experience)) return experience;
-      let date;
-      if (handler === 'begin') {
-        let dateBegin = experience.exp_dateBegin;
-        date = _.isNull(dateBegin) || _.isEmpty(dateBegin) || dateBegin === 'Invalid date' ? experience.old_value.exp_dateBegin : experience.exp_dateBegin;
-      } else {
-        let dateEnd = experience.exp_dateEnd;
-        date = _.isNull(dateEnd) || _.isEmpty(dateEnd) || dateEnd === 'Invalid date' ? experience.old_value.exp_dateEnd : experience.exp_dateEnd;
-      }
-      date = _.isNull(date) ? '' : date;
-      date = date.indexOf('/') > -1 ? moment(date) : moment(date, 'MMMM YYYY', true);
-      return date.isValid() ? date.format('MMMM YYYY') : 'n/a';
+  .directive('addSoftwares', [function () {
+    return {
+      restrict: "E",
+      templateUrl: `${itOptions.Helper.tpls_partials}/add-softwares.html?ver=${itOptions.version}`,
+      scope: {
+        softwares: "=",
+        softwareTerms: "&softwareTerms"
+      },
+      controller: ["$scope", "$q", "$http", function ($scope, $q, $http) {
+        $scope.softwareLists = [];
+        $scope.status = '';
+        $scope.form = {};
+        $scope.form.softwares = [];
+        $scope.loading = false;
+
+        this.$onInit = () => {
+          $scope.form.softwares = _.clone($scope.softwares);
+          $scope.softwareLists = _.clone($scope.softwares);
+          console.info('Init collect softwares');
+        };
+
+        $scope.submitForm = (isValid) => {
+          if (!isValid) return;
+          $scope.loading = true;
+          const Form = new FormData();
+          Form.append('action', "update_candidate_softwares");
+          Form.append('softwares', JSON.stringify($scope.form.softwares));
+          $http({
+            method: 'POST',
+            url: itOptions.Helper.ajax_url,
+            headers: {
+              'Content-Type': undefined
+            },
+            data: Form
+          })
+            .then(response => {
+              let data = response.data;
+              $scope.loading = false;
+              if (!data.success) {
+                $scope.status = data.data;
+              } else {
+                $scope.softwareLists = _.clone($scope.form.softwares);
+                UIkit.modal('#modal-software-editor-overflow').hide();
+                alertify.success(data.data);
+              }
+            });
+        };
+
+        // @event Se déclanche quand un tag est ajouter dans l'input
+        $scope.onAddingTag = ($tag) => {
+          $scope.status = null;
+          let isValid = true;
+          let splitTag = ',;|/\:.*_•';
+          for (let i in splitTag) {
+            let str = splitTag.charAt(i);
+            if ($tag.name.indexOf(str) > -1) {
+              isValid = false;
+              break;
+            }
+          }
+          if (isValid) {
+            let inSoftware = _.find($scope.form.softwares, (software) => {
+              return software.name.toLowerCase() === $tag.name.toLowerCase()
+            });
+            if (inSoftware) {
+              // Le logiciel existe déja dans la liste
+              $scope.status = "Logiciel déja présent dans votre liste";
+              return false;
+            }
+            // Limiter le nombre des logiciels pour 10
+            if ($scope.form.softwares.length < 10) {
+              $scope.form.softwares.push($tag);
+              setTimeout(() => {
+                $scope.$apply(() => {
+                  $scope.tags = null;
+                });
+              }, 200);
+            } else {
+              $scope.status = "Vous avez atteint la limite maximum. <b>Vous avez droit à seulement dix (10) logiciels</b>";
+              return false;
+            }
+          }
+          return isValid;
+        };
+
+        $scope.removeInList = (software) => {
+          $scope.form.softwares = _.reject($scope.form.softwares, {
+            name: software.name
+          });
+        };
+
+        // Annuler le formulaire d'ajout et de modification
+        $scope.abordModification = () => {
+          //this.$onInit();
+        };
+
+        $scope.querySoftware = function ($query) {
+          return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=software', {
+            cache: true
+          })
+            .then(function (response) {
+              const softwares = response.data;
+              return softwares.filter(function (software) {
+                return software.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
+              });
+            });
+        };
+
+        $scope.openEditor = () => {
+          $scope.loading = true;
+          UIkit.modal('#modal-software-editor-overflow').show();
+          $q.all([$scope.softwareTerms()]).then(data => {
+            $scope.Terms = _.map(data[0], resp => {
+              return {
+                id: resp.term_id,
+                name: resp.name
+              };
+            });
+
+            $scope.loading = false;
+          })
+        };
+
+        $scope.$watch('form', (form) => {
+        }, true);
+
+        UIkit.util.on('#modal-software-editor-overflow', 'show', function (e) {
+          e.preventDefault();
+          jQuery(".select2_demo_1").select2({
+            placeholder: 'Compétence (ex: Analyses de données)'
+          });
+        });
+
+        UIkit.util.on('#modal-software-editor-overflow', 'hide', (e) => {
+          e.preventDefault();
+        });
+
+      }]
     }
   }])
-  .filter('moment_birthday', [function () {
-    return (entry) => {
-      if (_.isEmpty(entry)) return entry;
-      return moment(entry, 'DD/MM/YYYY', 'fr').format('dddd DD MMMM YYYY');
+  .directive('candidacy', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: `${itOptions.Helper.tpls_partials}/candidacy.html?ver=${itOptions.version}`,
+      scope: {},
+      link: function (scope, element, attr) {
+        scope.fireData = false;
+        scope.collectDatatable = () => {
+          if (scope.fireData) return;
+          const table = jQuery('#candidacy-table').DataTable({
+            pageLength: 10,
+            fixedHeader: false,
+            responsive: false,
+            "sDom": 'rtip',
+            language: {
+              url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+            }
+          });
+          jQuery('#key-search').on('keyup', (event) => {
+            let value = event.currentTarget.value;
+            table.search(value).draw();
+          });
+          scope.fireData = true;
+        };
+        angular.element(document).ready(function () {
+          // Load datatable on focus search input
+          jQuery('#key-search').focus(function () {
+            scope.collectDatatable();
+          });
+          window.setTimeout(() => {
+            scope.collectDatatable();
+          }, 1200);
+        });
+      },
+      controller: ['$scope', '$http', function ($scope, $http) {
+        const self = this;
+        $scope.Candidatures = [];
+        $scope.relaunchCandidature = (id_offer, $event) => {
+          // envoyer une notification à l'entreprise pour vérifier la candidature
+        };
+        self.Initialize = () => {
+          $http.get(`${itOptions.Helper.ajax_url}?action=get_candidacy`, {
+            cache: false
+          })
+            .then(resp => {
+              const query = resp.data;
+              if (query.success) {
+                $scope.Candidatures = _.clone(query.data);
+              } else {
+                $scope.error = query.data;
+              }
+            });
+        };
+        self.Initialize();
+      }]
     }
   }])
   .directive('experiences', ['clientService', function (clientService) {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/experiences.html?ver=' + itOptions.version,
+      templateUrl: `${itOptions.Helper.tpls_partials}/experiences.html?ver=${itOptions.version}`,
       scope: {
         Candidate: "=candidate",
         abranchFn: '&abranchFn' // Function pass
@@ -177,11 +588,11 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         $scope.onDeleteExperience = (experienceId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-              labels: {
-                ok: 'Supprimer',
-                cancel: 'Annuler'
-              }
-            })
+            labels: {
+              ok: 'Supprimer',
+              cancel: 'Annuler'
+            }
+          })
             .then(function () {
               let Experiences = _.reject($scope.Candidate.experiences, (experience) => experience.id === parseInt(experienceId));
               self.updateExperience(Experiences)
@@ -280,13 +691,13 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
           subForm.append('experiences', JSON.stringify(Experiences));
           $scope.status = "Enregistrement en cours...";
           $http({
-              url: itOptions.Helper.ajax_url,
-              method: "POST",
-              headers: {
-                'Content-Type': undefined
-              },
-              data: subForm
-            })
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: subForm
+          })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -398,352 +809,6 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       }]
     }
   }])
-  .directive('generalInformationCandidate', [function () {
-    return {
-      restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/general-information-candidate.html?version=' + itOptions.version,
-      scope: {
-        Candidate: '=candidate',
-        regions: '&',
-        allCity: '&',
-        abranchs: '&',
-        init: '&init'
-      },
-      controller: ['$scope', '$q', '$route', 'clientFactory', function ($scope, $q, $route, clientFactory) {
-        $scope.candidateEditor = {};
-        $scope.loadingEditor = false;
-        $scope.status = false;
-
-        $scope.openEditor = () => {
-          $scope.loadingEditor = true;
-          $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
-            $scope.loadingEditor = false;
-            $scope.Regions = _.clone(data[0]);
-            $scope.branchActivity = _.clone(data[1]);
-            $scope.Citys = _.clone(data[2]);
-            const incInput = ['address', 'birthdayDate'];
-            incInput.forEach((InputValue) => {
-              if ($scope.Candidate.hasOwnProperty(InputValue)) {
-                $scope.candidateEditor[InputValue] = _.clone($scope.Candidate[InputValue]);
-              }
-            });
-            $scope.candidateEditor.greeting = $scope.Candidate.greeting.value;
-            $scope.candidateEditor.branch_activity = $scope.Candidate.branch_activity.term_id;
-            $scope.candidateEditor.region = $scope.Candidate.region.term_id;
-            $scope.candidateEditor.country = $scope.Candidate.privateInformations.address.country.term_id;
-            UIkit.modal('#modal-edit-candidate-overflow').show();
-          });
-        };
-
-        $scope.updateCandidateInformation = () => {
-          $scope.status = "Enregistrement en cours ...";
-          let candidatForm = new FormData();
-          let formObject = Object.keys($scope.candidateEditor);
-          candidatForm.append('action', 'update_profil');
-          candidatForm.append('candidate_id', parseInt($scope.Candidate.ID));
-          formObject.forEach(function (property) {
-            let propertyValue = Reflect.get($scope.candidateEditor, property);
-            candidatForm.set(property, propertyValue);
-          });
-          clientFactory
-            .sendPostForm(candidatForm)
-            .then(resp => {
-              let dat = resp.data;
-              if (dat.success) {
-                $scope.status = 'Votre information a bien été enregistrer avec succès';
-                UIkit.modal('#modal-edit-candidate-overflow').hide();
-                $route.reload();
-              } else {
-                $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
-              }
-            });
-        };
-
-        UIkit.util.on('#modal-edit-candidate-overflow', 'hide', function (e) {
-          e.preventDefault();
-          e.target.blur();
-          $scope.status = false;
-        });
-      }]
-    }
-  }])
-  .directive('jobSearch', [function () {
-    return {
-      restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/job-search.html?version=' + itOptions.version,
-      scope: {
-        inJobs: "=jobs"
-      },
-      controller: ['$scope', '$http', function ($scope, $http) {
-        $scope.isValidTag = true;
-        $scope.jobs = [];
-        $scope.jobLoading = false;
-        this.$onInit = () => {
-          $scope.jobs = _.isArray($scope.inJobs) ? _.clone($scope.inJobs) : [];
-        };
-        // Call before added tag
-        $scope.onAddingTag = ($tag) => {
-          if (_.isArray($scope.jobs) && $scope.jobs.length >= 2) return false;
-          let isValid = true;
-          let splitTag = '|;_\/*';
-          for (let i in splitTag) {
-            let str = splitTag.charAt(i);
-            if ($tag.name.indexOf(str) > -1) {
-              isValid = false;
-              break;
-            }
-          }
-          if (isValid) $scope.isValidTag = true;
-          return isValid;
-        };
-
-        // Call if tag in invalid
-        $scope.onTagInvalid = ($tag) => {
-          $scope.isValidTag = false;
-        };
-
-        $scope.onSave = () => {
-          if (!$scope.isValidTag) return false;
-          $scope.jobLoading = true;
-          var form = new FormData();
-          form.append('action', 'update_job_search');
-          form.append('jobs', JSON.stringify($scope.jobs));
-          $http({
-              method: 'POST',
-              url: itOptions.Helper.ajax_url,
-              headers: {
-                'Content-Type': undefined
-              },
-              data: form
-            })
-            .then(response => {
-              // Handle success
-              let data = response.data;
-              $scope.jobLoading = false;
-              if (!data.success) {
-                alertify.error("Une erreur inconue s'est produit")
-              } else {
-                alertify.success('Enregistrer avec succès')
-              }
-            });
-        };
-
-        /**
-         * Recuperer les emplois et les filtres
-         * @param {string} $query
-         * @param {string} taxonomy
-         */
-        $scope.queryJobs = function ($query, taxonomy) {
-          return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
-              cache: true
-            })
-            .then(function (response) {
-              const jobs = response.data;
-              return jobs.filter(function (job) {
-                return job.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
-              });
-            });
-        };
-
-      }]
-    }
-  }])
-  .directive('addSoftwares', [function () {
-    return {
-      restrict: "E",
-      templateUrl: itOptions.Helper.tpls_partials + '/add-softwares.html?version=' + itOptions.version,
-      scope: {
-        softwares: "=",
-        softwareTerms: "&softwareTerms"
-      },
-      controller: ["$scope", "$q", "$http", function ($scope, $q, $http) {
-        $scope.softwareLists = [];
-        $scope.status = '';
-        $scope.form = {};
-        $scope.form.softwares = [];
-        $scope.loading = false;
-
-        this.$onInit = () => {
-          $scope.form.softwares = _.clone($scope.softwares);
-          $scope.softwareLists = _.clone($scope.softwares);
-          console.info('Init collect softwares');
-        };
-
-        $scope.submitForm = (isValid) => {
-          if (!isValid) return;
-          $scope.loading = true;
-          const Form = new FormData();
-          Form.append('action', "update_candidate_softwares");
-          Form.append('softwares', JSON.stringify($scope.form.softwares));
-          $http({
-              method: 'POST',
-              url: itOptions.Helper.ajax_url,
-              headers: {
-                'Content-Type': undefined
-              },
-              data: Form
-            })
-            .then(response => {
-              let data = response.data;
-              $scope.loading = false;
-              if (!data.success) {
-                $scope.status = data.data;
-              } else {
-                $scope.softwareLists = _.clone($scope.form.softwares);
-                UIkit.modal('#modal-software-editor-overflow').hide();
-                alertify.success(data.data);
-              }
-            });
-        };
-
-        // @event Se déclanche quand un tag est ajouter dans l'input
-        $scope.onAddingTag = ($tag) => {
-          $scope.status = null;
-          let isValid = true;
-          let splitTag = ',;|/\:.*_•';
-          for (let i in splitTag) {
-            let str = splitTag.charAt(i);
-            if ($tag.name.indexOf(str) > -1) {
-              isValid = false;
-              break;
-            }
-          }
-          if (isValid) {
-            let inSoftware = _.find($scope.form.softwares, (software) => {
-              return software.name.toLowerCase() === $tag.name.toLowerCase()
-            });
-            if (inSoftware) {
-              // Le logiciel existe déja dans la liste
-              $scope.status = "Logiciel déja présent dans votre liste";
-              return false;
-            }
-            // Limiter le nombre des logiciels pour 10
-            if ($scope.form.softwares.length < 10) {
-              $scope.form.softwares.push($tag);
-              setTimeout(() => {
-                $scope.$apply(() => {
-                  $scope.tags = null;
-                });
-              }, 200);
-            } else {
-              $scope.status = "Vous avez atteint la limite maximum. <b>Vous avez droit à seulement dix (10) logiciels</b>";
-              return false;
-            }
-          }
-          return isValid;
-        };
-
-        $scope.removeInList = (software) => {
-          $scope.form.softwares = _.reject($scope.form.softwares, {
-            name: software.name
-          });
-        };
-
-        // Annuler le formulaire d'ajout et de modification
-        $scope.abordModification = () => {
-          //this.$onInit();
-        };
-
-        $scope.querySoftware = function ($query) {
-          return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=software', {
-              cache: true
-            })
-            .then(function (response) {
-              const softwares = response.data;
-              return softwares.filter(function (software) {
-                return software.name.toLowerCase().indexOf($query.toLowerCase()) != -1;
-              });
-            });
-        };
-
-        $scope.openEditor = () => {
-          $scope.loading = true;
-          UIkit.modal('#modal-software-editor-overflow').show();
-          $q.all([$scope.softwareTerms()]).then(data => {
-            $scope.Terms = _.map(data[0], resp => {
-              return {
-                id: resp.term_id,
-                name: resp.name
-              };
-            });
-
-            $scope.loading = false;
-          })
-        };
-
-        $scope.$watch('form', (form) => {}, true);
-
-        UIkit.util.on('#modal-software-editor-overflow', 'show', function (e) {
-          e.preventDefault();
-          jQuery(".select2_demo_1").select2({
-            placeholder: 'Compétence (ex: Analyses de données)'
-          });
-        });
-
-        UIkit.util.on('#modal-software-editor-overflow', 'hide', (e) => {
-          e.preventDefault();
-        });
-
-      }]
-    }
-  }])
-  .directive('candidacy', [function () {
-    return {
-      restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/candidacy.html?version=' + itOptions.version,
-      scope: {},
-      link: function (scope, element, attr) {
-        scope.fireData = false;
-        scope.collectDatatable = () => {
-          if (scope.fireData) return;
-          const table = jQuery('#candidacy-table').DataTable({
-            pageLength: 10,
-            fixedHeader: false,
-            responsive: false,
-            "sDom": 'rtip',
-            language: {
-              url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
-            }
-          });
-          jQuery('#key-search').on('keyup', (event) => {
-            let value = event.currentTarget.value;
-            table.search(value).draw();
-          });
-          scope.fireData = true;
-        };
-        angular.element(document).ready(function () {
-          // Load datatable on focus search input
-          jQuery('#key-search').focus(function () {
-            scope.collectDatatable();
-          });
-          window.setTimeout(() => {
-            scope.collectDatatable();
-          }, 1200);
-        });
-      },
-      controller: ['$scope', '$http', function ($scope, $http) {
-        const self = this;
-        $scope.Candidatures = [];
-        $scope.relaunchCandidature = (id_offer, $event) => {
-          // envoyer une notification à l'entreprise pour vérifier la candidature
-        };
-        self.Initialize = () => {
-          $http.get(`${itOptions.Helper.ajax_url}?action=get_candidacy`, {
-              cache: false
-            })
-            .then(resp => {
-              const query = resp.data;
-              if (query.success) {
-                $scope.Candidatures = _.clone(query.data);
-              } else {
-                $scope.error = query.data;
-              }
-            });
-        };
-        self.Initialize();
-      }]
-    }
-  }])
   .directive('trainings', [function () {
     return {
       restrict: 'E',
@@ -763,7 +828,8 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         $scope.Train = {};
         $scope.months = clientService.months;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
-        this.$onInit = () => {};
+        this.$onInit = () => {
+        };
 
         // Ajouter une nouvelle formation
         $scope.newTraining = () => {
@@ -824,11 +890,11 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
         $scope.onDeleteTraining = (trainingId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-              labels: {
-                ok: 'Supprimer',
-                cancel: 'Annuler'
-              }
-            })
+            labels: {
+              ok: 'Supprimer',
+              cancel: 'Annuler'
+            }
+          })
             .then(function () {
               let Trainings = _.reject($scope.Candidate.trainings, (training) => training.id === parseInt(trainingId));
               self.updateTraining(Trainings);
@@ -885,13 +951,13 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
           subForm.append('action', 'update_trainings');
           subForm.append('trainings', JSON.stringify(trainings));
           $http({
-              url: itOptions.Helper.ajax_url,
-              method: "POST",
-              headers: {
-                'Content-Type': undefined
-              },
-              data: subForm
-            })
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: subForm
+          })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -930,3 +996,296 @@ APPOC.config(['$interpolateProvider', '$routeProvider', function ($interpolatePr
       }]
     }
   }])
+  .controller('candidateController', ['$rootScope', '$scope', '$http', '$filter', 'Client', 'Regions', 'Towns', 'Areas',
+    function ($rootScope, $scope, $http, $filter, Client, Regions, Towns, Areas) {
+      const self = this;
+
+      $rootScope.alertLoading = false; // Directive alert
+      $rootScope.alerts = [];
+      $rootScope.jobSearchs = [];
+      $rootScope.Greet = '';
+      $rootScope.preloader = false;
+      $rootScope.select2Options = {
+        allowClear: true,
+        placeholder: "Selectionner",
+        width: 'resolve',
+        matcher: function (params, data) {
+          var inTerm = [];
+
+          // If there are no search terms, return all of the data
+          if (jQuery.trim(params.term) === '') {
+            return data;
+          }
+
+          // Do not display the item if there is no 'text' property
+          if (typeof data.text === 'undefined') {
+            return null;
+          }
+
+          // `params.term` should be the term that is used for searching
+          // `data.text` is the text that is displayed for the data object
+          var dataContains = data.text.toLowerCase();
+          var paramTerms = jQuery.trim(params.term).split(' ');
+          jQuery.each(paramTerms, (index, value) => {
+            if (dataContains.indexOf(jQuery.trim(value).toLowerCase()) > -1) {
+              inTerm.push(true);
+            } else {
+              inTerm.push(false);
+            }
+          });
+          var isEveryTrue = _.every(inTerm, (boolean) => {
+            return boolean === true;
+          });
+          if (isEveryTrue) {
+            var modifiedData = jQuery.extend({}, data, true);
+            //modifiedData.text += ' (Trouver)';
+            return modifiedData;
+          } else {
+            // Return `null` if the term should not be displayed
+            return null;
+          }
+        }
+      };
+
+      // Contient les valeurs d'introduction
+      $rootScope.profilEditor = {};
+      $rootScope.profilEditor.loading = false;
+      $rootScope.profilEditor.form = {};
+      $rootScope.Helper = {};
+      // Contient l'image par default de l'OC
+      $rootScope.featuredImage = '';
+      // La valeur reste `false` si la photo de profil n'est pas toucher
+      $rootScope.avatarFile = false;
+      $rootScope.cv = {};
+      $rootScope.cv.hasCV = false;
+      $rootScope.cv.addCVUrl = itOptions.Helper.add_cv;
+      $rootScope.Candidate = {};
+
+
+      $rootScope.preloaderToogle = () => {
+        $rootScope.preloader = !$rootScope.preloader;
+      };
+
+      $rootScope.searchCityFn = (city) => {
+        if (!_.isUndefined($rootScope.profilEditor.form.region)) {
+          let region = parseInt($rootScope.profilEditor.form.region);
+          rg = _.findWhere(Regions, {
+            term_id: region
+          });
+          if (rg) {
+            if (city.name.indexOf(rg.name) > -1) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+
+      this.$onInit = () => {
+        var $ = jQuery.noConflict();
+        let sexe = Client.iClient.greeting === null || _.isEmpty(Client.iClient.greeting) ? '' :
+          (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';
+        $rootScope.featuredImage = itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
+        const Candidate = _.clone(Client.iClient);
+        $rootScope.Helper = _.clone(Client.Helper);
+        $rootScope.Candidate = _.mapObject(Candidate, (value, key) => {
+          switch (key) {
+            case 'experiences':
+            case 'trainings':
+              return _.map(value, (element, index) => {
+                element.id = index;
+                return element;
+              });
+              break;
+            case 'privateInformations':
+              // avatar
+              let privateInformations = _.clone(value);
+              privateInformations = _.mapObject(privateInformations, (infoValue, infoKey) => {
+                if (infoKey === 'avatar') {
+                  return !infoValue ? $rootScope.featuredImage : infoValue[0];
+                }
+                return infoValue
+              });
+              return privateInformations;
+              break;
+            default:
+              return value;
+              break;
+          }
+        }); // .mapObject
+        let greeting = $rootScope.Candidate.greeting;
+        $rootScope.Greet = _.isObject(greeting) ? $filter('Greet')($rootScope.Candidate.greeting.value).toLowerCase() : '';
+        $rootScope.cv.hasCV = $rootScope.Candidate.has_cv;
+        let private = $rootScope.Candidate.privateInformations;
+        const region = private.address.region;
+        const country = private.address.country;
+        const address = private.address.address;
+        const abranch = $rootScope.Candidate.branch_activity;
+        let updateActivity = $rootScope.Candidate.has_cv ? (!!(_.isNull(abranch) || !abranch)) : false;
+
+        if (!country || !region || _.isEmpty($rootScope.Candidate.greeting) || !address || updateActivity) {
+          $rootScope.profilEditor.abranchs = _.clone(Areas);
+          $rootScope.profilEditor.regions = _.clone(Regions);
+          $rootScope.profilEditor.city = [];
+          $rootScope.profilEditor.city = _.map(Towns, (term) => {
+            term.name = `(${term.postal_code}) ${term.name}`;
+            return term;
+          });
+
+          if (!_.isEmpty($rootScope.Candidate.greeting)) {
+            $rootScope.profilEditor.form.greeting = $rootScope.Candidate.greeting.value;
+          }
+          if (!_.isNull($rootScope.Candidate.branch_activity) || $rootScope.Candidate.branch_activity) {
+            $rootScope.profilEditor.form.abranch = $rootScope.Candidate.branch_activity.term_id;
+          }
+          $rootScope.profilEditor.form.country = _.isEmpty(country) || _.isNull(country) ? '' : country.term_id;
+          if (!_.isNull(region) || region) {
+            $rootScope.profilEditor.form.region = region.term_id;
+          } else {
+            // Effacer la valeur d'une ville si la region n'est pas definie
+            $rootScope.profilEditor.form.country = '';
+          }
+          $rootScope.profilEditor.form.name = `${private.firstname} ${private.lastname}`;
+          $rootScope.profilEditor.form.email = $rootScope.Candidate.privateInformations.author.data.user_email;
+          // Récuperer l'adresse
+          $rootScope.profilEditor.form.address = _.isEmpty(address) || _.isNull(address) ? '' : address;
+          $rootScope.preloaderToogle();
+          UIkit.modal('#modal-information-editor').show();
+        }
+
+        $rootScope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
+
+      };
+
+      /**
+       * Afficher la boite de dialogue pour modifier un candidate
+       */
+      $rootScope.onViewModalCandidateProfil = () => {
+        console.log('init');
+        $rootScope.profilEditor.featuredImage = $rootScope.Candidate.privateInformations.avatar;
+        let hasStatus = !_.isNull($rootScope.Candidate.status) && !_.isEmpty($rootScope.Candidate.status) && !_.isUndefined($rootScope.Candidate.status);
+        $rootScope.profilEditor.status = hasStatus ? $rootScope.Candidate.status.value : '';
+        $rootScope.profilEditor.newsletter = $rootScope.Candidate.newsletter;
+        if (jQuery().validate) {
+          jQuery("#editProfilForm").validate({
+            rules: {
+              status: {
+                required: true,
+              }
+            },
+            messages: {
+              status: {
+                required: "Ce champ est obligatoire"
+              }
+            },
+            submitHandler: function (form) {
+              //if (!$scope.editProfilForm.$dirty) return;
+              $rootScope.profilEditor.loading = true;
+              const Fm = new FormData();
+              Fm.append('action', 'update-candidate-profil');
+              Fm.append('status', $rootScope.profilEditor.status);
+              Fm.append('newsletter', $rootScope.profilEditor.newsletter ? 1 : 0);
+              if ($rootScope.avatarFile) {
+                $rootScope.avatarFile.upload = Upload.upload({
+                  url: itOptions.Helper.ajax_url,
+                  data: {
+                    file: $rootScope.avatarFile,
+                    action: 'ajx_upload_media'
+                  }
+                });
+                $rootScope.avatarFile.upload
+                  .then(function (response) { // Success
+                    $rootScope.avatarFile.result = response.data;
+                    $rootScope.onSaveCandidateProfil(Fm);
+                  }, response => { // Error
+                    if (response.status > 0) {
+                      alertify.error(response.status + ': ' + response.data);
+                      $rootScope.profilEditor.loading = false;
+                    }
+                  }, evt => { // Progress
+                    $rootScope.avatarFile.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                  });
+              } else {
+                $rootScope.onSaveCandidateProfil(Fm);
+              }
+            }
+          });
+        }
+      };
+
+
+      /**
+       * Enregistrer les introduction de l'utilisateur
+       * @param {FormData} formData
+       */
+      $rootScope.onSaveCandidateProfil = (formData) => {
+        $http({
+          url: itOptions.Helper.ajax_url,
+          method: "POST",
+          headers: {
+            'Content-Type': undefined
+          },
+          data: formData
+        })
+          .then(
+            resp => {
+              let data = resp.data;
+              if (!data.success) return;
+              UIkit.modal('#modal-candidate-profil-editor').hide();
+              $rootScope.profilEditor.loading = false;
+              location.reload();
+            }, error => {
+              swall("Erreur", "Une erreur s'est produite, veuillez réessayer ultérieurement.", "error");
+              $rootScope.profilEditor.loading = false;
+            })
+      };
+
+
+      /**
+       * Récuperer les terms d'une taxonomie
+       * @param {string} Taxonomy
+       */
+      $rootScope.asyncTerms = (Taxonomy) => {
+        if (Taxonomy !== 'city') {
+          return $http.get(`${itOptions.Helper.ajax_url}?action=ajx_get_taxonomy&tax=${Taxonomy}`, {
+            cache: true
+          }).then(resp => resp.data);
+        } else {
+          return clientFactory.getCity();
+        }
+      };
+
+      $rootScope.getOptions = () => {
+        return {
+          Helper: $scope.Helper
+        };
+      };
+
+      $rootScope.onSubmitCandidateInformation = (isValid) => {
+        if (!isValid) return false;
+        $rootScope.profilEditor.loading = true;
+        const Form = new FormData();
+        Form.append('action', 'update_candidate_information');
+        Form.append('abranch', $rootScope.profilEditor.form.abranch);
+        Form.append('region', $rootScope.profilEditor.form.region);
+        Form.append('country', $rootScope.profilEditor.form.country);
+        Form.append('address', $rootScope.profilEditor.form.address);
+        Form.append('greet', $rootScope.profilEditor.form.greeting);
+        clientFactory
+          .sendPostForm(Form)
+          .then(resp => {
+            let response = resp.data;
+            if (response.success) {
+              $rootScope.profilEditor.loading = false;
+              setTimeout(() => {
+                location.reload(true);
+              }, 1200);
+
+            }
+          }, (error) => {
+            $rootScope.profilEditor.loading = false;
+          });
+      };
+
+
+    }])

@@ -81,6 +81,10 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         // Ajouter une clé d'activation pour rejeter le mot de passe
         get_password_reset_key( $user );
 
+        // Ajouter le secteur de l'entreprise
+        $sector = Http\Request::getValue( 'sector', 1 ); // Recruteur par default (1)
+        update_user_meta($user->ID, 'sector', $sector);
+
         return $value;
       } else {
         return $value;
@@ -221,7 +225,6 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       $form = (object) [
         'greeting'           => Http\Request::getValue( 'greeting' ),
         'title'              => Http\Request::getValue( 'title' ),
-        'sector'             => Http\Request::getValue( 'sector' ),
         'address'            => Http\Request::getValue( 'address' ),
         'country'            => Http\Request::getValue( 'country' ),
         'region'             => Http\Request::getValue( 'region' ),
@@ -250,7 +253,6 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       // update acf field
       $post_id = &$result;
       $this->update_acf_field( $post_id, $form );
-      update_user_meta($user->ID, 'sector', $form->sector);
 
       // Ajouter les terms dans le post
       wp_set_post_terms( $post_id, [ (int) $form->branch_activity_id ], 'branch_activity' );

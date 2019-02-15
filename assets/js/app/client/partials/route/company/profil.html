@@ -1,0 +1,192 @@
+<!-- Modal contact -->
+<div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1"
+     role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="ibox text-left modal-content">
+      <div class="ibox-head">
+        <div class="ibox-title">Modifier mes informations</div>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="ibox-body">
+        <p>
+          En optant pour cette option cela vous permettra d’attirer l’attention des candidats et ainsi d’augmenter
+          le nombre de candidatures reçues.<br><br>
+          Vous pouvez mettre en avant votre annonce selon une période plus ou moins longue.
+          Pour toutes modifications veuillez contacter le service commercial aux numéros suivants:<br>
+          <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a
+          href="tel:+261349396218">034
+          93 962 18</a>.
+        </p>
+      </div>
+      <div class="ibox-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-outline-secondary btn-fix btn-thick btn-air" data-dismiss="modal" type="button">Ok
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- .end modal -->
+
+<!-- Modal information editor -->
+<div id="modal-information-editor" uk-modal="esc-close: false; bg-close: false">
+  <div class="uk-modal-dialog">
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Verification des informations</h2>
+    </div>
+    <form name="editInformationProfilForm" id="editInformationProfilForm" ng-submit="onSubmitCompanyInformation(editInformationProfilForm.$valid)">
+      <div class="uk-modal-body" uk-overflow-auto>
+        <div class="row">
+          <div class="col-md-12 col-sm-12">
+
+            <div class="form-group mb-2 row ">
+              <div  class="col-sm-4">
+                <label class="col-form-label ">Salutation <span style="color: red">*</span></label>
+                <div class="form-group">
+                  <select class="form-control" name="greet" ng-model="profilEditor.form.greeting"
+                          title="Salutation" required>
+                    <option value="mr">Monsieur</option>
+                    <option value="mrs">Madame</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-8">
+                <label class="col-form-label">Nom du responsable <span style="color: red">*</span></label>
+                <input class="form-control" ng-disabled="true" name="name" ng-model="Company.name" type="text"
+                       placeholder="Nom du responsable"
+                       required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Votre secteur d'activité <span style="color: red">*</span></label>
+              <select class="form-control" name="branch_activity" id="branch_activity" ng-model="profilEditor.form.abranch"
+                      ng-value=""
+                      title="Status" required>
+                <option value=""></option>
+                <option value="[[abranch.term_id]]" ng-value="abranch.term_id" ng-repeat="abranch in profilEditor.abranchs">
+                  [[abranch.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Adresse <span style="color: red">*</span></label>
+              <input class="form-control" ng-disabled="false" name="address" ng-model="profilEditor.form.address" type="text"
+                     placeholder="Votre adress"
+                     required>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Region <span style="color: red">*</span></label>
+              <select class="form-control" name="region" id="region" ng-model="profilEditor.form.region"
+                      ng-value=""
+                      title="Status" required>
+                <option value=""></option>
+                <option value="[[region.term_id]]" ng-value="region.term_id" ng-repeat="region in profilEditor.regions">
+                  [[region.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-control-label ">Code postal ou Ville <span style="color: red">*</span></label>
+              <select class="form-control input-select2" name="country" id="country" ng-model="profilEditor.form.country"
+                      title="Selectionner une ville" required>
+                <option value=""></option>
+                <option value="[[city.term_id]]" ng-value="city.term_id" ng-repeat="city in profilEditor.city|filter:searchCityFn">[[city.name]]</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Adresse e-mail</label>
+              <input class="form-control" name="email" id="email" ng-model="Company.email" disabled/>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="uk-modal-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-blue ml-4" ng-disabled="profilEditor.loading" type="submit">Mettre à jour</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- .end modal -->
+
+<div class="">
+  <div class="flexbox">
+    <div class="flexbox-b">
+      <div class="card text-center centered mb-4">
+        <div class="card-body">
+          <h4 class="card-title text-left " style="font-size: 41px; font-weight: bold">
+            [[ Company.title ]]
+          </h4>
+          <span class="mb-3 text-left d-table badge badge-blue" ng-if="Company.account === 0">Compte standart</span>
+          <span class="mb-3 text-left d-table badge badge-info" ng-if="Company.account === 2">En attente de validation</span>
+          <span class="mb-3 text-left d-table badge badge-pink" ng-if="Company.account === 1">Compte premium</span>
+          <!--<div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Company.address ]]</div>-->
+          <div class="d-flex justify-content-around align-items-center">
+            <notifications></notifications>
+            <history-cv></history-cv>
+
+            <a ng-href="[[Helper.archive_candidate_link]]" target="_blank" class="ml-2" >
+              <button class="btn btn-warning">
+                <span class="btn-icon"><i class="fa fa-link"></i> Trouver des candidats </span>
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-inline-flex">
+      <div class="px-4 text-center" ng-if="sector === 1">
+        <div class="text-muted font-13">OFFRE(S)</div>
+        <div class="h2 mt-2">[[ offerLists.length ]]</div>
+      </div>
+      <div class="px-4 text-center" ng-if="sector === 2">
+        <div class="text-muted font-13">FORMATION(S)</div>
+        <div class="h2 mt-2">[[ formationCount ]]</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-lg-12">
+    <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3">
+      <li class="nav-item">
+        <a class="nav-link" ui-sref-active="active" ui-sref="manager.profil.index" data-toggle="tab">
+          Profil
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" ui-sref-active="active" ui-sref="manager.profil.settings" data-toggle="tab">
+          Informations générales
+        </a>
+      </li>
+      <li class="nav-item" ng-if="sector === 1">
+        <a class="nav-link" ui-sref-active="active" ui-sref="manager.profil.offers" data-toggle="tab">
+          Mes offres
+        </a>
+      </li>
+      <li class="nav-item" ng-if="sector === 2">
+        <a class="nav-link" ui-sref-active="active" ui-sref="manager.profil.formations" data-toggle="tab">
+          Mes formations
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div id="form-views" ui-view></div>

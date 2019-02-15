@@ -1,0 +1,310 @@
+<style type="text/css">
+  .add-new-picture {
+    width: 95px;
+    border: 4px solid rgb(221, 221, 221);
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    height: 95px;
+    position: relative;
+    margin-left: 20px;
+    display: inline-table;
+  }
+
+  .add-new-picture img {
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    margin: auto;
+    display: block;
+    height: inherit;
+    width: inherit;
+  }
+
+  li.timeline-item a:hover {
+    font-weight: bold;
+  }
+</style>
+
+<!-- Modal information -->
+<script type="text/javascript">
+  (function ($) {
+    var addedCvElement = $('#modal-info-editor').find('#added_cv');
+    addedCvElement.attr('href', itOptions.Helper.add_cv);
+  })(jQuery)
+</script>
+
+<div class="preloader-backdrop" ng-if="preloader">
+  <div class="page-preloader">Chargement ...</div>
+</div>
+
+<div id="modal-info-editor" class="modal fade" aria-labelledby="modal-info-editor" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="ibox modal-content">
+      <div class="ibox-head">
+        <div class="ibox-title">Qu'est-ce que vous voulez faire?</div>
+      </div>
+      <div class="modal-body">
+        <ul class="timeline scroller">
+          <li class="timeline-item">
+            <span class="ti-arrow-circle-up timeline-icon"></span>
+            Créer votre CV pour postuler aux offres et être visible par les recruteurs
+            <small class="float-right text-muted ml-2 nowrap"><a id="added_cv" href="#added_cv" class="btn btn-sm btn-success">Ajouter un CV</a></small>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary btn-fix btn-thick" data-dismiss="modal" type="button">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- .end information -->
+
+<!-- Modal profil editor -->
+<div id="modal-candidate-profil-editor" uk-modal>
+  <div class="uk-modal-dialog">
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Modifier l’introduction</h2>
+    </div>
+    <form name="editProfilForm" id="editProfilForm">
+      <div class="uk-modal-body" uk-overflow-auto>
+        <div class="row">
+          <div class="col-md-4 col-sm-4" style="margin-bottom: 80px">
+            <div class="add-new-picture">
+              <img ng-src="[[profilEditor.featuredImage]]">
+            </div>
+            <div pre-upload class="p-relative">
+              <div class="p-absolute" style="width: 125px; bottom: -62px;">
+                <div class="uk-text-bold d-flex">Photo
+                  <span data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" data-content="Sur la photo votre visage doit être nette, humaine et naturelle pas
+                    de selfie ou d’effet et décorations   donc une photo professionnelle">
+                    <i class="fa fa-question-circle ml-1" style="font-size: 18px;cursor: pointer"></i>
+                  </span>
+                </div>
+                <button type="file" ngf-select="uploadImage($file, $invalidFiles)" accept="image/*" class="btn"
+                        ngf-max-size="2MB">Choisir une image
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-8 col-sm-8">
+
+            <div class="form-group" ng-if="Candidate.has_cv">
+              <label class="col-form-label ">Mon status <span style="color: red">*</span></label>
+              <select class="form-control" name="status" id="status" ng-model="profilEditor.status" ng-value="profilEditor.status"
+                      title="Status" required>
+                <option value="1">Je cherche un emploi</option>
+                <option value="2">Je souhaite entretenir mon réseau</option>
+                <option value="3">Je cherche un stage</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Adresse e-mail</label>
+              <input class="form-control" name="email" id="email" ng-model="Candidate.privateInformations.author.data.user_email"
+                     disabled />
+            </div>
+            <div class="form-group mt-4">
+              <label class="checkbox">
+                <input type="checkbox" name="newsletter" id="newsletter" ng-model="profilEditor.newsletter">
+                <span class="input-span"></span>Est ce que vous voulez recevoir notre newsletter?
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="uk-modal-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-blue ml-4" ng-disabled="profilEditor.loading" type="submit">Enregistrer</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- .end modal -->
+
+<!-- Modal contact -->
+<div id="modal-contact-overflow" class="modal fade" aria-labelledby="modal-contact-overflow" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="ibox text-left modal-content">
+      <div class="ibox-head">
+        <div class="ibox-title">Modifier mes informations</div>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="ibox-body">
+        <p>
+          Pour toutes modifications; Veuillez contacter le service commercial aux numéros suivants:<br>
+          <a href="tel:+261324537860">032 45 378 60</a> - <a href="tel:+261338259113">033 82 591 13</a> - <a href="tel:+261349396218">034
+          93 962 18</a>.
+        </p>
+      </div>
+      <div class="ibox-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-outline-secondary btn-fix btn-thick btn-air" data-dismiss="modal" type="button">Ok
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- .end modal -->
+
+<!-- Modal information editor -->
+<div id="modal-information-editor" uk-modal="esc-close: false; bg-close: false">
+  <div class="uk-modal-dialog">
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">Verification des informations</h2>
+    </div>
+    <form name="editInformationProfilForm" id="editInformationProfilForm" ng-submit="onSubmitCandidateInformation(editInformationProfilForm.$valid)">
+      <div class="uk-modal-body" uk-overflow-auto>
+        <div class="row">
+          <div class="col-md-12 col-sm-12">
+
+            <div class="form-group">
+              <div class="row">
+                <div class="col-sm-8">
+                  <label class="col-form-label ">Salutation <span style="color: red">*</span></label>
+                  <div class="form-group">
+                    <select class="form-control" name="greet" ng-model="profilEditor.form.greeting" title="Salutation"
+                            required>
+                      <option value="mr">Monsieur</option>
+                      <option value="mrs">Madame</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-sm-12">
+                  <label class="col-form-label">Nom du responsable <span style="color: red">*</span></label>
+                  <input class="form-control" ng-disabled="true" name="name" ng-model="profilEditor.form.name" type="text"
+                         placeholder="Nom du responsable" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" ng-if="Candidate.has_cv">
+              <label class="col-form-label ">Votre secteur d'activité <span style="color: red">*</span></label>
+              <select class="form-control" name="branch_activity" ng-model="profilEditor.form.abranch" ng-value=""
+                      title="Status" required>
+                <option value=""></option>
+                <option value="[[abranch.term_id]]" ng-value="abranch.term_id" ng-repeat="abranch in profilEditor.abranchs track by abranch.name">
+                  [[abranch.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Adresse <span style="color: red">*</span></label>
+              <input class="form-control" ng-disabled="false" name="address" ng-model="profilEditor.form.address" type="text"
+                     placeholder="Votre adress" required>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Region <span style="color: red">*</span></label>
+              <select class="form-control" name="region" ng-model="profilEditor.form.region" ng-value="" title="Status"
+                      required>
+                <option value=""></option>
+                <option value="[[region.term_id]]" ng-value="region.term_id" ng-repeat="region in profilEditor.regions track by region.name">
+                  [[region.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-control-label ">Code postal ou Ville <span style="color: red">*</span></label>
+              <select class="form-control input-select2" name="country" ng-model="profilEditor.form.country" title="Selectionner une ville"
+                      required>
+                <option value="">-- Choissir une ville ---</option>
+                <option value="[[city.term_id]]" ng-value="city.term_id" ng-repeat="city in profilEditor.city|filter:searchCityFn">[[city.name]]
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="col-form-label ">Adresse e-mail</label>
+              <input class="form-control" name="email" ng-model="profilEditor.form.email" disabled />
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="uk-modal-footer">
+        <div class="row">
+          <div class="col-sm-12 uk-text-right">
+            <button class="btn btn-blue ml-4" ng-disabled="profilEditor.loading" type="submit">Mettre à jour</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- .end modal -->
+
+
+<div class="row">
+  <div class="col-lg-4">
+    <div class="card text-center centered mb-4" style="max-width:320px;">
+      <div class="ibox-body alert alert-info alert-dismissable fade show">
+        <!--<button class="close" data-dismiss="alert" aria-label="Close"></button>-->
+        <h4>Bonjour [[Greet]] <b>[[Candidate.privateInformations.firstname]] [[ Candidate.privateInformations.lastname
+          ]]</b></h4>
+        <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
+      </div>
+      <div class="card-body">
+        <span class="badge badge-blue badge-circle float-right" uk-toggle="target: #modal-candidate-profil-editor"
+              style="cursor: pointer">
+          <i class="ti-pencil"></i>
+        </span>
+        <div class="card-avatar mt-3 mb-4" style="display: inline-table;">
+          <img class="img-circle" ng-src="[[ Candidate.privateInformations.avatar ]]" alt="image">
+        </div>
+        <h4 class="card-title mb-1">[[Candidate.privateInformations.firstname]] [[
+          Candidate.privateInformations.lastname ]]</h4>
+        <div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Candidate.privateInformations.address.address ]]
+        </div>
+        <p class="mt-4 mb-4"> [[biography]] </p>
+        <div class="d-flex align-items-center  mb-5">
+          <div class="text-center m-auto">
+            <h2 class="text-pink m-0">
+              [[ Candidate.postuled ? Candidate.postuled.length : 0 ]]
+            </h2>
+            <div class="text-muted text-uppercase">Candidatures envoyées</div>
+          </div>
+        </div>
+        <div class="d-block justify-content-around align-items-center">
+          <notifications></notifications>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="mt-4">
+      <ul class="nav nav-tabs tabs-line m-0 pl-3 pr-3" role="tablist" style="display: flex">
+        <li class="nav-item">
+          <a class="nav-link active" ui-sref-active="active" ui-sref="manager.profil.index"  data-toggle="tab" role="tab">
+            Profil
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" ui-sref-active="active" ui-sref="manager.profil.cv"  data-toggle="tab" role="tab">
+            Mon CV
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" ui-sref-active="active" ui-sref="manager.profil.candidacy"  data-toggle="tab" role="tab">
+            Candidature(s)
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div id="form-views" ui-view></div>
+  </div>
+</div>

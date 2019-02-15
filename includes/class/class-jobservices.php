@@ -11,7 +11,9 @@ if ( ! class_exists( 'jobServices' ) ) :
     private $User = null;
     private $Client = false;
     public function __construct() {
-
+      if (is_user_logged_in()) {
+        $this->User = wp_get_current_user();
+      }
     }
 
     public function isClient() {
@@ -23,6 +25,10 @@ if ( ! class_exists( 'jobServices' ) ) :
       return $this->Client;
     }
 
+    public function getUser() {
+      if (is_null($this->User)) return new \WP_Error('broken', "Votre session a expirer");
+      return $this->User;
+    }
 
     /**
      * Récuperer les informations nécessaire d'un utilisateur
