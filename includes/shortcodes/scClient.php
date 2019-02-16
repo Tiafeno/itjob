@@ -741,6 +741,7 @@ if ( ! class_exists( 'scClient' ) ) :
       if ( $interests ) {
         foreach ( $interests as $interest ) {
           $Candidate = new Candidate( (int) $interest->id_candidate );
+          if (is_wp_error($Candidate->error)) continue;
           array_push( $postuledCandidates,
             [
               'status'     => $interest->status,
