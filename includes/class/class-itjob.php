@@ -722,6 +722,22 @@ if ( ! class_exists( 'itJob' ) ) {
           'after_widget'  => '</div>'
         ) );
 
+        register_sidebar( array(
+          'name'          => 'Archive Sidebar (Travail Temporaire)',
+          'id'            => 'archive-works-sidebar',
+          'description'   => 'Afficher des widgets sur le côté à droite',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        register_sidebar( array(
+          'name'          => 'Archive Header Top (Travail Temporaire)',
+          'id'            => 'archive-works-top',
+          'description'   => 'Afficher des widgets en haut de la liste des travails',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
         // Register widget
         register_widget( 'Widget_Shortcode' );
         register_widget( 'includes\widgets\Widget_Accordion' );

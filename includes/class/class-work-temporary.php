@@ -14,35 +14,34 @@ if (!defined('ABSPATH')) {
   exit;
 }
 
-class Works
-{
+class Works {
   private static $error = false;
-  private        $email = null;
-  public $ID                 = 0;
-  public $status             = '';
-  public $post_type          = 'works';
-  public $activated          = false;
-  public $author             = null;
-  public $title              = null;
-  public $price              = 0;
-  public $reference          = null;
-  public $featured           = 0;
+  public $ID = 0;
+  public $status = '';
+  public $post_type = 'works';
+  public $activated = false;
+  public $author = null;
+  public $title = null;
+  public $price = 0;
+  public $reference = null;
+  public $featured = 0;
   public $featured_datelimit = null;
-  public $description        = null;
-  public $type               = null;
-  public $region             = null;
-  public $town               = null;
-  public $activity_area      = null;
-  public $address            = null;
-  public $cellphone          = null;
-  public $gallery            = [];
-  public $url                = '';
-  public $date_create      = '';
+  public $description = null;
+  public $type = null;
+  public $region = null;
+  public $town = null;
+  public $activity_area = null;
+  public $address = null;
+  public $cellphone = null;
+  public $gallery = [];
+  public $url = '';
+  public $date_create = '';
   public $date_publication = '';
+  public $count_view = 0;
+  private $email = null;
 
   public
-  function __construct ($work_id = null, $private_access = false)
-  {
+  function __construct($work_id = null, $private_access = false) {
     if (is_null($work_id)) {
       self::$error = new \WP_Error("broken", "L'identification du travail est introuvable");
       return false;
@@ -52,7 +51,7 @@ class Works
      * (WP_Post|array|null) Type corresponding to $output on success or null on failure.
      * When $output is OBJECT, a WP_Post instance is returned.
      */
-    $output = get_post((int)$work_id);
+    $output = get_post((int) $work_id);
     $this->ID = $output->ID;
 
     if (is_null($output)) {
@@ -65,10 +64,10 @@ class Works
       return false;
     }
 
-    $this->title   = $output->post_type;
+    $this->title = $output->post_type;
     $this->description = apply_filters('the_content', $output->post_content);
     $this->excerpt = $output->post_excerpt;
-    $this->title  = $output->post_title;
+    $this->title = $output->post_title;
     $this->status = $output->post_status;
     $this->date_publication = $output->post_date;
     $this->date_publication_format = get_the_date('j F Y', $output);
@@ -85,41 +84,52 @@ class Works
 
     $this->get_tax_field();
     $this->get_acf_field();
+
+    $view = get_post_meta($this->ID, 'count_view', true);
+    $this->count_view = $view ? (int)$view : 0;
   }
 
   public
-  function is_work ()
-  {
+  function is_work() {
     return get_post_type($this->ID) === $this->post_type;
   }
 
-  private
-  function get_tax_field ()
-  {
-    $regions   = wp_get_post_terms($this->ID, 'region', ["fields" => "all"]);
-    $towns     = wp_get_post_terms($this->ID, 'city', ["fields" => "all"]);
-    $activity_area     = wp_get_post_terms($this->ID, 'branch_activity', ["fields" => "all"]);
-    $this->region = is_array($regions) && !empty($regions) ? $regions[0] : null;
-    $this->town   = is_array($towns) && !empty($towns) ? $towns[0] : null;
-    $this->activity_area   = is_array($activity_area) && !empty($activity_area) ? $activity_area[0] : null;
+  public
+  function get_mail() {
+    return $this->email;
+  }
+
+  public
+  function get_user() {
+    $user = get_user_by('email', trim($this->email));
+    return $this->author = jobServices::getUserData($user->ID);
   }
 
   private
-  function get_acf_field ()
-  {
-    $this->featured           = get_field('featured', $this->ID); // false|true
+  function get_tax_field() {
+    $regions = wp_get_post_terms($this->ID, 'region', ["fields" => "all"]);
+    $towns   = wp_get_post_terms($this->ID, 'city', ["fields" => "all"]);
+    $activity_area = wp_get_post_terms($this->ID, 'branch_activity', ["fields" => "all"]);
+    $this->region = is_array($regions) && !empty($regions) ? $regions[0] : null;
+    $this->town   = is_array($towns) && !empty($towns) ? $towns[0] : null;
+    $this->activity_area = is_array($activity_area) && !empty($activity_area) ? $activity_area[0] : null;
+
+  }
+
+  private
+  function get_acf_field() {
+    $this->featured = get_field('featured', $this->ID); // false|true
     $this->featured_datelimit = get_field('featured_datelimit', $this->ID); // Y-m-d H:i:s
-    $this->cellphone          = get_field('cellphone', $this->ID); // number
-    $this->gallery            = get_field('gallery', $this->ID);
-    $this->activated          = get_field('activated', $this->ID);
-    $this->price              = get_field('price', $this->ID);
-    $this->reference          = get_field('reference', $this->ID);
-    $this->address            = get_field('address', $this->ID);
+    $this->cellphone = get_field('cellphone', $this->ID); // number
+    $this->gallery = get_field('gallery', $this->ID);
+    $this->activated = get_field('activated', $this->ID);
+    $this->price = get_field('price', $this->ID);
+    $this->reference = get_field('reference', $this->ID);
+    $this->address = get_field('address', $this->ID);
   }
 
   public static
-  function is_wp_error ()
-  {
+  function is_wp_error() {
     if (is_wp_error(self::$error)) {
       return self::$error->get_error_message();
     } else {
@@ -128,9 +138,13 @@ class Works
   }
 
   public
-  function is_activated ()
-  {
+  function is_activated() {
     return $this->activated ? 1 : 0;
+  }
+
+  public function increment_view() {
+    $this->count_view += 1;
+    update_post_meta($this->ID, 'count_view', $this->count_view);
   }
 
 }

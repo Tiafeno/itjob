@@ -208,10 +208,15 @@ class vcAnnonce
     ), EXTR_OVERWRITE);
 
     /** @var string $post_type */
+    /** @var string $title - Shortcode variable attribute */
     $works = $itJob->services->getRecentlyPost($post_type, 4);
+    $title = $title ? $title : "Les travails temporaire ajouter récements";
     try {
+
       return $Engine->render('@VC/annonce/work-list.html', [
-        'works' => $works
+        'works' => $works,
+        'title' => $title,
+        'archive_work_url' => get_post_type_archive_link('works')
       ]);
     } catch (\Twig_Error_Loader $e) {
     } catch (\Twig_Error_Runtime $e) {

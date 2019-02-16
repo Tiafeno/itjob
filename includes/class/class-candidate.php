@@ -149,7 +149,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [] );
 
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
-    $newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
+    $newsletter       = get_field( 'itjob_cv_newsletter', $this->getId() );
     $this->newsletter = boolval($newsletter);
     $this->driveLicences  = get_field( 'itjob_cv_driveLicence', $this->getId() );
 

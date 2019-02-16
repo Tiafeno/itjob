@@ -1,6 +1,9 @@
 <div class="row">
   <div class="col-lg-12">
     <div class="ibox">
+      <div class="ibox-head">
+        <h5 class="ibox-title uppercase">{{ title }}</h5>
+      </div>
       <div class="ibox-body">
         <ul class="media-list media-list-divider">
           {% for work in works %}
@@ -10,16 +13,17 @@
                 <h5 class="media-heading">
                   <a href="{{ work.ID | get_permalink}}">{{ work.title }}</a>
                 </h5>
-                <p class="font-13 text-light">{{ work.excerpt|striptags|raw }}</p>
+                <p class="font-13 text-light">{{ work.description|striptags|raw[:150] }} [...]</p>
                 <div class="font-13">
                   <span class="mr-4">Déposé le <span>{{ work.date_publication_format }}</span>
                   </span>
-                  <span class="text-muted"><i class="fa fa-umbrella mr-2"></i>{{ work.reference }}</span>
+                  <span class=" mr-4"><i class="fa fa-database mr-2"></i>{{ work.reference }}</span>
+                  <span class=""><i class="fa fa-map-marker mr-2"></i>{{ work.region.name }}</span>
                 </div>
               </div>
               <div class="text-right" style="width:100px;">
-                <h3 class="mb-1 font-strong text-primary">5800</h3>
-                <div class="text-muted">vues</div>
+                <h3 class="mb-1 font-strong text-primary">{{ work.count_view }}</h3>
+                <div class="text-muted">vue(s)</div>
               </div>
             </div>
           </li>
@@ -38,4 +42,15 @@
       </div>
     </div>
   </div>
+
+  <div class="col-md-12">
+    <div class="d-flex align-items-center">
+      <a class="m-auto" href="{{ archive_work_url }}">
+        <button class="btn btn-sm btn-secondary btn-fix">
+          <span class="btn-icon">Voir toutes les travails temporaire <i class="la la-plus"></i></span>
+        </button>
+      </a>
+    </div>
+  </div>
+
 </div>
