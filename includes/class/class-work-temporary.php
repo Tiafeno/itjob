@@ -74,19 +74,21 @@ class Works {
     $this->url = get_the_permalink($output->ID);
 
     $this->email = get_field('email', $this->ID);
-    $user = get_user_by('email', trim($this->email));
-    if (!$user) {
+    $User = get_field('annonce_author',$this->ID);
+    if (!$User) {
       self::$error = new \WP_Error('broken', "L'utilisateur est introuvable");
       return false;
     }
     if ($private_access)
-      $this->author = jobServices::getUserData($user->ID);
+      $this->author = $User;
 
     $this->get_tax_field();
     $this->get_acf_field();
 
     $view = get_post_meta($this->ID, 'count_view', true);
+    $contact_sender = get_post_meta($this->ID, 'sender_contact', true);
     $this->count_view = $view ? (int)$view : 0;
+    $this->contact_sender = empty($contact_sender) ? [] : $contact_sender;
   }
 
   public
@@ -101,8 +103,8 @@ class Works {
 
   public
   function get_user() {
-    $user = get_user_by('email', trim($this->email));
-    return $this->author = jobServices::getUserData($user->ID);
+    $User = get_field('annonce_author', $this->ID);
+    return $this->author = $User;
   }
 
   private
@@ -110,22 +112,22 @@ class Works {
     $regions = wp_get_post_terms($this->ID, 'region', ["fields" => "all"]);
     $towns   = wp_get_post_terms($this->ID, 'city', ["fields" => "all"]);
     $activity_area = wp_get_post_terms($this->ID, 'branch_activity', ["fields" => "all"]);
-    $this->region = is_array($regions) && !empty($regions) ? $regions[0] : null;
-    $this->town   = is_array($towns) && !empty($towns) ? $towns[0] : null;
+    $this->region  = is_array($regions) && !empty($regions) ? $regions[0] : null;
+    $this->town    = is_array($towns) && !empty($towns) ? $towns[0] : null;
     $this->activity_area = is_array($activity_area) && !empty($activity_area) ? $activity_area[0] : null;
 
   }
 
   private
   function get_acf_field() {
-    $this->featured = get_field('featured', $this->ID); // false|true
+    $this->featured  = get_field('featured', $this->ID); // false|true
     $this->featured_datelimit = get_field('featured_datelimit', $this->ID); // Y-m-d H:i:s
     $this->cellphone = get_field('cellphone', $this->ID); // number
-    $this->gallery = get_field('gallery', $this->ID);
+    $this->gallery   = get_field('gallery', $this->ID);
     $this->activated = get_field('activated', $this->ID);
-    $this->price = get_field('price', $this->ID);
+    $this->price     = get_field('price', $this->ID);
     $this->reference = get_field('reference', $this->ID);
-    $this->address = get_field('address', $this->ID);
+    $this->address   = get_field('address', $this->ID);
   }
 
   public static
@@ -145,6 +147,16 @@ class Works {
   public function increment_view() {
     $this->count_view += 1;
     update_post_meta($this->ID, 'count_view', $this->count_view);
+  }
+
+  public function add_contact_sender( $user_id ) {
+    $senders = get_post_meta($this->ID, 'sender_contact', true);
+    $senders = is_array($senders) ? $senders : [];
+    if (intval($user_id) === 0) return false;
+    $senders[] = intval($user_id);
+
+    update_post_meta($this->ID, 'sender_contact', $senders);
+    return true;
   }
 
 }

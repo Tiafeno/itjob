@@ -17,14 +17,13 @@ if (!defined('ABSPATH')) {
 final
 class Annonce
 {
-  private static $error = false;
-  private        $email = null;
-  private        $WP_User = 0;
+  private static    $error   = false;
+  private           $email   = null;
+  private $author            = null;
   public $ID                 = 0;
   public $status             = '';
-  public static $post_types   = ['annonce', 'works'];
+  public static $post_type   = 'annonce';
   public $activated          = false;
-  public $author             = null;
   public $title              = null;
   public $price              = 0;
   public $reference          = null;
@@ -82,7 +81,7 @@ class Annonce
       return false;
     }
     if ($private_access)
-      $this->author = jobServices::getUserData($this->WP_User->data);
+      $this->author = $this->WP_User;
 
     $this->get_tax_field();
     $this->get_acf_field();
@@ -93,7 +92,7 @@ class Annonce
   function is_annonce ($annonce_id)
   {
     $post_type = get_post_type($annonce_id);
-    return in_array($post_type, self::$post_types);
+    return $post_type === self::post_type;
   }
 
   private

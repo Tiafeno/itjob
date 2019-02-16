@@ -5,15 +5,8 @@
 </div>
 <!-- END PAGA BACKDROPS-->
 <form name="form" ng-submit="submitForm(form)" class="form-horizontal p-5" novalidate>
-  <div id="modal-media-youtube" class="uk-flex-top" uk-modal>
-    <div class="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
-      <button class="uk-modal-close-outside" type="button" uk-close></button>
-      <iframe src="https://www.youtube-nocookie.com/embed/nu8AL588a1o" width="560" height="315" frameborder="0" uk-video></iframe>
-    </div>
-  </div>
   <div class="page-heading mb-4">
     <h4 class="page-title">PUBLIER UNE ANNONCE</h4>
-    <h6>Vous pouvez aussi <a href="#modal-media-youtube" uk-toggle class="text-blue">regarder la vidéo explicative</a>.</h6>
   </div>
   <hr>
   <div class="ibox-body">
@@ -189,6 +182,9 @@
             <button type="file" ngf-select="uploadFiles($files, $invalidFiles)"  ngf-multiple="true" accept="image/*"
                     class="btn" ngf-max-size="2MB">Choisir des fichiers</button>
             <button ng-if="gallery.length > 0" ng-click="cleanGallery()" type="button" class="btn btn-danger">Effacer</button>
+          </div>
+          <div>
+            <p class="text-muted">Ajouter des galeries photos pour votre annonce</p>
           </div>
           <div>
             <div class="add-new-picture gallery" ng-repeat="img in gallery">

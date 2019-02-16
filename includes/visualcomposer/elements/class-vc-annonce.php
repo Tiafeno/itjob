@@ -279,7 +279,6 @@ class vcAnnonce
 EOF;
 
     return $content;
-
   }
 
   public

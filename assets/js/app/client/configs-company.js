@@ -9,9 +9,7 @@ APPOC
           resolve: {
             Client: ['$http', '$q', function ($http, $q) {
               let access = $q.defer();
-              $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
-                cache: false
-              })
+              $http.get(itOptions.Helper.ajax_url + '?action=client_area', {cache: false})
                 .then(resp => {
                   let data = resp.data;
                   access.resolve(data);
@@ -90,6 +88,22 @@ APPOC
             }]
           },
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/formation.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", function ($rootScope) {
+
+          }]
+        },
+        {
+          name: 'manager.profil.works',
+          url: '/works',
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/works.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", function ($rootScope) {
+
+          }]
+        },
+        {
+          name: 'manager.profil.annonces',
+          url: '/annonces',
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/annonces.html?ver=${itOptions.version}`,
           controller: ["$rootScope", function ($rootScope) {
 
           }]
@@ -303,7 +317,7 @@ APPOC
           });
           window.setTimeout(() => {
             scope.collectDatatable();
-          }, 1200);
+          }, 200);
           jQuery('.input-group.date').datepicker({
             format: "dd/mm/yyyy",
             language: "fr",
@@ -639,8 +653,138 @@ APPOC
         }]
     }
   }])
-  .directive('little')
-  .controller('companyController', ['$rootScope', '$http', '$q', '$filter', 'clientFactory', 'clientService', 'Client', 'Regions', 'Towns', 'Areas',
+  .directive('smallAd', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: `${itOptions.Helper.tpls_partials}/small-ad.html?ver=${itOptions.version}`,
+      scope: true,
+      controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
+        $scope.Works = [];
+        $scope.Loading = false;
+        this.$onInit = () => {
+          $scope.Loading = true;
+          $http.get(`${itOptions.Helper.ajax_url}?action=collect_works`, {
+            cache: false
+          })
+            .then(resp => {
+              const query = resp.data;
+              if (query.success) {
+                moment.locale('fr');
+                const table = jQuery('#small-ad-table')
+                  .DataTable({
+                    pageLength: 10,
+                    fixedHeader: false,
+                    responsive: false,
+                    dom: '<"top"i><"info"r>t<"bottom"flp><"clear">',
+                    data: query.data,
+                    columns: [
+                      {
+                        data: 'title', render: (data, type, row) => {
+                          return `<a href="${row.url}" target="_blank">${data}</a>`
+                        }
+                      },
+                      {data: 'reference', render: (data) => `<span class="badge badge-info">${data}</span>`},
+                      {
+                        data: 'status', render: (data, type, row, meta) => {
+                          var activated = row.activated;
+                          var text = data === 'pending' && !activated ? 'En attente' : (data === 'publish' && activated ? 'Publier' : 'Désactiver');
+                          return `<span class="badge badge-pill badge-default"> ${text} </span>`;
+                        }
+                      },
+                      {data: 'region', render: (data) => data.name},
+                      {
+                        data: 'featured',
+                        render: (data) => data ? `<span class="badge badge-blue uppercase">à la une</span>`:
+                          `<span class="badge-default badge uppercase">standard</span>`
+                      },
+                      {
+                        data: 'date_publication', render: (data) => {
+                          return moment(data).format('LLL');
+                        }
+                      },
+                    ],
+                    "sDom": 'rtip',
+                    language: {
+                      url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+                    }
+                  });
+
+                $scope.Loading = false;
+              } else {
+                $scope.loading = false;
+              }
+            });
+        };
+      }]
+    }
+  }])
+  .directive('annonces', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: `${itOptions.Helper.tpls_partials}/annonces.html?ver=${itOptions.version}`,
+      scope: true,
+      controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
+        $scope.Works = [];
+        $scope.Loading = false;
+        this.$onInit = () => {
+          $scope.Loading = true;
+          $http.get(`${itOptions.Helper.ajax_url}?action=collect_annonces`, {
+            cache: false
+          })
+            .then(resp => {
+              const query = resp.data;
+              if (query.success) {
+                moment.locale('fr');
+                const table = jQuery('#annonce-table')
+                  .DataTable({
+                    pageLength: 10,
+                    fixedHeader: false,
+                    responsive: false,
+                    dom: '<"top"i><"info"r>t<"bottom"flp><"clear">',
+                    data: query.data,
+                    columns: [
+                      {
+                        data: 'title', render: (data, type, row) => {
+                          return `<a href="${row.url}" target="_blank">${data}</a>`
+                        }
+                      },
+                      {data: 'reference', render: (data) => `<span class="badge badge-info">${data}</span>`},
+                      {
+                        data: 'status', render: (data, type, row, meta) => {
+                          var activated = row.activated;
+                          var text = data === 'pending' && !activated ? 'En attente' : (data === 'publish' && activated ? 'Publier' : 'Désactiver');
+                          return `<span class="badge badge-pill badge-default"> ${text} </span>`;
+                        }
+                      },
+                      {data: 'region', render: (data) => data.name},
+                      {
+                        data: 'featured',
+                        render: (data) => data ? `<span class="badge badge-blue uppercase">à la une</span>`:
+                          `<span class="badge-default badge uppercase">standard</span>`
+                      },
+                      {
+                        data: 'date_publication', render: (data) => {
+                          return moment(data).format('LLL');
+                        }
+                      },
+                    ],
+                    "sDom": 'rtip',
+                    language: {
+                      url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+                    }
+                  });
+
+                $scope.Loading = false;
+              } else {
+                $scope.loading = false;
+              }
+            });
+        };
+      }]
+    }
+  }])
+  .controller('companyController', ['$rootScope', '$http', '$q', '$filter', 'clientFactory',
+    'clientService', 'Client', 'Regions', 'Towns', 'Areas',
     function ($rootScope, $http, $q, $filter, clientFactory, clientService, Client, Regions, Towns, Areas) {
       const self = this;
 

@@ -9,6 +9,7 @@ use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
 use includes\post\Formation;
+use includes\post\Works;
 
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
@@ -63,6 +64,8 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_get_candidat_interest_lists', [ &$this, 'get_candidat_interest_lists' ] );
         add_action( 'wp_ajax_collect_favorite_candidates', [ &$this, 'collect_favorite_candidates' ] );
         add_action( 'wp_ajax_collect_formations', [ &$this, 'collect_formations' ] );
+        add_action( 'wp_ajax_collect_works', [ &$this, 'collect_works' ] );
+        add_action( 'wp_ajax_collect_annonces', [ &$this, 'collect_annonces' ] );
         add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
         add_action( 'wp_ajax_get_candidacy', [ &$this, 'get_candidacy' ] );
         add_action( 'wp_ajax_collect_current_user_notices', [ &$this, 'collect_current_user_notices' ] );
@@ -833,6 +836,54 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_send_json_success( $results );
     }
 
+    public function collect_works() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+      $args = [
+        'post_type' => 'works',
+        'post_status' => 'any',
+        'meta_query' => [
+          [
+            'key' => 'annonce_author',
+            'value' => $this->User->ID,
+            'compare' => '='
+          ]
+        ]
+      ];
+      $works = get_posts( $args );
+      $results = [];
+      foreach ($works as $work) {
+        $results[] = new Works( $work->ID );
+      }
+
+      wp_send_json_success( $results );
+    }
+
+    public function collect_annonces() {
+      if ( ! is_user_logged_in() ) {
+        wp_send_json_error( 'Désolé, Votre session a expiré' );
+      }
+      $args = [
+        'post_type' => 'annonce',
+        'post_status' => 'any',
+        'meta_query' => [
+          [
+            'key' => 'annonce_author',
+            'value' => $this->User->ID,
+            'compare' => '='
+          ]
+        ]
+      ];
+      $works = get_posts( $args );
+      $results = [];
+      foreach ($works as $work) {
+        $results[] = new Works( $work->ID );
+      }
+
+      wp_send_json_success( $results );
+    }
+
     /**
      * Function ajax
      */
@@ -1069,15 +1120,13 @@ if ( ! class_exists( 'scClient' ) ) :
           'post_type'      => 'company',
           'Helper'         => [
             'add_formation_url' => get_the_permalink(ADD_FORMATION_PAGE),
+            'add_annonce_url'   => get_the_permalink( ADD_ANNONCE_PAGE),
             'interest_page_uri' => get_the_permalink( $interest_page_id ),
             'archive_candidate_link' => get_post_type_archive_link('candidate')
           ]
         ];
         if ($Company->sector === 1) {
           $clients['Offers'] = $this->__get_company_offers();
-        }
-
-        if ($Company->sector === 1) {
           $clients['formation_count'] = (int)$this->__get_count_formation();
         }
 

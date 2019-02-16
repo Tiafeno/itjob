@@ -53,8 +53,14 @@ if ($action) {
       $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
       $Works = new \includes\post\Works( (int)$work_id, true );
       $work_contact_mail = $Works->get_mail();
-      $mail->addBCC($Works->author->user_email);
+      $work_author = $Works->get_user();
+      if ($work_author->ID == $User->ID) {
+        do_action('add_notice', "Cette annonce est la vôtre. Vous ne pouvez pas le contacter");
+        break;
+      }
 
+
+      $mail->addBCC($Works->author->user_email);
       $mail->addAddress($work_contact_mail);
       $mail->addReplyTo($User->user_email, $name);
       $mail->CharSet = 'UTF-8';
@@ -121,7 +127,7 @@ wp_enqueue_style('themify-icons');
   <script type="text/javascript">
     (function ($) {
       $(document).ready(function () {
-        fixWorkWrap()
+        fixWorkWrap();
         function fixWorkWrap() {
           // (x1 - x2) / 2 - x1~pL
           var work_wrap = $('#work-wrap');
@@ -133,7 +139,6 @@ wp_enqueue_style('themify-icons');
           var x1pL = x1.css('padding-left');
 
           var value = Math.ceil(((parseInt(x1_width) - parseInt(x2_width))/ 2) - parseInt(x1pL));
-          console.log(x1_width, x2_width, x1pL);
           work_wrap.css({
             width: parseFloat(x2_width),
             left: value
@@ -308,7 +313,7 @@ wp_enqueue_style('themify-icons');
         </div>
       <?php endif; ?>
 
-      <?php if ($action === 'confirmation') : ?>
+      <?php if ($action === 'confirmation') : $works->add_contact_sender($User->ID); ?>
         <div class="ibox mt-lg-5">
           <div class="ibox-body">
             <div class="page-heading mb-4">
@@ -318,6 +323,11 @@ wp_enqueue_style('themify-icons');
           </div>
         </div>
       <?php endif; ?>
+
+      <?php if ($action === 'sender'):
+              do_action('get_notice');
+            endif;
+      ?>
 
       <?php
 
