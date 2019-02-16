@@ -66,7 +66,6 @@ class Annonce
     }
 
     $this->ID = $output->ID;
-    $this->post_type   = $output->post_type;
     $this->description = apply_filters('the_content', $output->post_content);
     $this->excerpt = $output->post_excerpt;
     $this->title  = $output->post_title;
@@ -75,13 +74,13 @@ class Annonce
     $this->date_publication_format = get_the_date('j F, Y', $output);
     $this->url = get_the_permalink($output->ID);
     $this->email = get_field('email', $this->ID);
-    $this->WP_User = get_field('annonce_author', $this->ID);
-    if (!$this->WP_User) {
+    $User = get_field('annonce_author', $this->ID);
+    if (!$User) {
       self::$error = new \WP_Error('broken', "L'utilisateur est introuvable");
       return false;
     }
     if ($private_access)
-      $this->author = $this->WP_User;
+      $this->author = $User;
 
     $this->get_tax_field();
     $this->get_acf_field();
@@ -92,7 +91,7 @@ class Annonce
   function is_annonce ($annonce_id)
   {
     $post_type = get_post_type($annonce_id);
-    return $post_type === self::post_type;
+    return $post_type === self::$post_type;
   }
 
   private
