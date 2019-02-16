@@ -417,7 +417,8 @@ if ( ! class_exists( 'vcOffers' ) ):
       }
 
       if ($Company->sector !== 1 ) {
-        return '<div class="alert alert-warning font-13">Vous ne pouvez pas ajouter une offre avec votre compte</div>';
+        return '<div class="alert alert-warning font-13">Votre compte ne vous permet pas d\'accéder à cette option. Vous' .
+          ' devriez vous connecter ou crée un compte en tanque recruteur pour bénéficier cette option.</div>';
       }
 
       // Params extraction

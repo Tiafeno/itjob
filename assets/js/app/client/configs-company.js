@@ -553,6 +553,58 @@ APPOC
       }]
     }
   }])
+  .directive('appFormation', [function () {
+    return {
+      restrict: 'E',
+      templateUrl: itOptions.Helper.tpls_partials + '/formation.html?ver=' + itOptions.version,
+      scope: true,
+      controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
+        $scope.Formations = [];
+        $scope.Loading = false;
+        self.Initialize = () => {
+          $scope.Loading = true;
+          $http.get(`${itOptions.Helper.ajax_url}?action=collect_formations`, {
+            cache: false
+          })
+            .then(resp => {
+              const query = resp.data;
+              if (query.success) {
+                moment.locale('fr');
+                const table = jQuery('#formation-table').DataTable({
+                  pageLength: 10,
+                  fixedHeader: false,
+                  responsive: false,
+                  dom: '<"top"i><"info"r>t<"bottom"flp><"clear">',
+                  data: query.data,
+                  columns: [
+                    {data: 'reference'},
+                    {data: 'status', render: (data, type, row, meta) => {
+                        var text =  data === 'pending' ? 'En attente' : 'Publier';
+                        return `<span class="badge badge-pill badge-default"> ${text} </span>`;
+                      }},
+                    {data: 'title'},
+                    {data: 'date_limit', render: (data) => { return moment(data).format('LL'); }},
+                    {data: 'establish_name'},
+                    {data: null, render: () => {
+                        return '<i class="fa fa-pencil"></i>';
+                      }}
+                  ],
+                  "sDom": 'rtip',
+                  language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
+                  }
+                });
+
+                $scope.Loading = false;
+              } else {
+                $scope.loading = false;
+              }
+            });
+        };
+        self.Initialize();
+      }]
+    }
+  }])
   .directive('settingsCompany', [function () {
     return {
       restrict: 'E',
@@ -587,6 +639,7 @@ APPOC
         }]
     }
   }])
+  .directive('little')
   .controller('companyController', ['$rootScope', '$http', '$q', '$filter', 'clientFactory', 'clientService', 'Client', 'Regions', 'Towns', 'Areas',
     function ($rootScope, $http, $q, $filter, clientFactory, clientService, Client, Regions, Towns, Areas) {
       const self = this;
