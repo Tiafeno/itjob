@@ -125,6 +125,17 @@ trait ModelInterest {
     return $rows;
   }
 
+  public function remove_candidate_request( $id_candidate ) {
+    global $wpdb;
+    if (!is_user_logged_in() || !$id_candidate) {
+      return false;
+    }
+    $id_candidate = (int) $id_candidate;
+    $prepare = $wpdb->prepare("DELETE FROM {$this->requestTable} WHERE id_candidate = %d", $id_candidate);
+    $rows = $wpdb->get_results($prepare);
+    return $rows;
+  }
+
   /**
    * Effacer le piéce joint d'un candidat
    * 

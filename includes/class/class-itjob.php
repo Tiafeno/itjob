@@ -103,8 +103,8 @@ if ( ! class_exists( 'itJob' ) ) {
           foreach ($offers as $offer):
             // Effacer l'offre
             $deleted = wp_delete_post($offer->ID, true);
-          if ( ! is_wp_error($deleted) )
-            $Model->remove_interest($offer->ID);
+            if ( ! is_wp_error($deleted) )
+              $Model->remove_interest($offer->ID);
           endforeach;
           wp_delete_post( $company_id, true);
 
@@ -113,6 +113,7 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( in_array( 'candidate', $user_obj->roles ) ) {
           $candidate_id = $Model->get_candidate_id_by_email($user_obj->user_email);
           wp_delete_post( $candidate_id, true);
+          $Model->remove_candidate_request($candidate_id); // Effacer le candidat dans la requete d'une offre
         }
       } );
 
@@ -241,11 +242,9 @@ if ( ! class_exists( 'itJob' ) ) {
           //$query->set( 'posts_per_page', 1 );
 
           if ( $query->is_search ) {
-
             $region  = Http\Request::getValue( 'rg' );
             $abranch = Http\Request::getValue( 'ab' );
             $s       = $_GET['s'];
-
             if ( ! empty( $region ) ) {
               $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
               $tax_query = !is_array($tax_query) ? [] : $tax_query;
@@ -298,7 +297,6 @@ if ( ! class_exists( 'itJob' ) ) {
                               WHERE {$wpdb->postmeta}.meta_key = 'reference' AND {$wpdb->postmeta}.meta_value REGEXP '({$s}).*$'
                         ))";
                     }
-
                     return $where;
                   });
                 }
@@ -328,7 +326,6 @@ if ( ! class_exists( 'itJob' ) ) {
                 BREAK;
               // Trouver des offres d'emplois
               CASE 'offers':
-
                 if ( $abranch ) {
                   $meta_query   = isset( $meta_query ) ? $meta_query : $query->get( 'meta_query' );
                   $meta_query = !is_array($meta_query) ? [] : $meta_query;
@@ -341,7 +338,6 @@ if ( ! class_exists( 'itJob' ) ) {
                 }
 
                 if ( ! empty( $s ) ) {
-
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
@@ -368,7 +364,6 @@ if ( ! class_exists( 'itJob' ) ) {
                       'type'    => 'CHAR'
                     ]
                   ];
-
                 }
 
                 // Meta query
@@ -386,12 +381,10 @@ if ( ! class_exists( 'itJob' ) ) {
                 ];
 
                 $meta_query['relation'] = "AND";
-
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
                   $query->meta_query = new \WP_Meta_Query( $meta_query );
                 endif;
-
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
                   $query->set( 'tax_query', $tax_query );
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
