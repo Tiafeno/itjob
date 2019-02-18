@@ -40,7 +40,9 @@ if ( ! class_exists( 'vcSearch' ) ):
                 'Par default' => 'default',
                 'Offres'      => 'offers',
                 'CV'          => 'candidate',
-                'Formations'  => 'formation'
+                'Formations'  => 'formation',
+                'Travail Temporaire'  => 'works',
+                'Petit Annonce'  => 'annonce'
               ],
               'std'         => 'default',
               'description' => "Modifier le mode d'affichage",
@@ -92,7 +94,8 @@ if ( ! class_exists( 'vcSearch' ) ):
         'bg_image' => $bg_image,
         'abranchs' => $abranchs,
         'regions'  => $regions,
-        'home_url' => home_url( '/' )
+        'home_url' => home_url( '/' ),
+        'post_type' => $type
       ];
 
       if ( $type === 'default' || empty( $type ) ) {
@@ -124,7 +127,7 @@ if ( ! class_exists( 'vcSearch' ) ):
         } catch ( Twig_Error_Loader $e ) {
         } catch ( Twig_Error_Runtime $e ) {
         } catch ( Twig_Error_Syntax $e ) {
-          echo $e->getRawMessage();
+          return  $e->getRawMessage();
         }
       } else {
         $func = "vc_search_" . $type . "_tpls";
@@ -265,6 +268,29 @@ if ( ! class_exists( 'vcSearch' ) ):
       } catch ( Twig_Error_Runtime $e ) {
       } catch ( Twig_Error_Syntax $e ) {
         echo $e->getRawMessage();
+      }
+    }
+
+    private function vc_search_annonce_tpls ($args) {
+      return $this->vc_search_works_tpls($args);
+    }
+    private function vc_search_works_tpls ($args) {
+      global $Engine;
+      try {
+        global $posts;
+        $search_query   = Http\Request::getValue( 's' );
+        $args           = array_merge( $args, [
+          's'              => $search_query,
+          'ab'             => Http\Request::getValue('ab', ''),
+          'rg'             => Http\Request::getValue('rg', ''),
+          'search_count'   => count( $posts )
+        ] );
+
+        return $Engine->render( '@VC/search/search-annonce.html.twig', $args );
+      } catch ( Twig_Error_Loader $e ) {
+      } catch ( Twig_Error_Runtime $e ) {
+      } catch ( Twig_Error_Syntax $e ) {
+        return $e->getRawMessage();
       }
     }
   }

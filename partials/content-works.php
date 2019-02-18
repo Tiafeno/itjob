@@ -16,8 +16,8 @@ $current_url = get_the_permalink(get_the_ID());
       <div class="font-13">
                   <span class="mr-4">Déposé le <span><?= $works->date_publication_format ?></span>
                   </span>
-        <span class=" mr-4"><i class="fa fa-database mr-2"></i><?= $works->reference ?></span>
-        <span class=""><i class="fa fa-map-marker mr-2"></i><?= $works->region->name ?></span>
+        <span class="font-bold mr-4"><i class="fa fa-database mr-2"></i><?= $works->reference ?></span>
+        <span class="font-bold"><i class="fa fa-map-marker mr-2"></i><?= $works->region->name ?></span>
       </div>
     </div>
     <div class="text-right" style="width:100px;">

@@ -67,7 +67,7 @@ class Annonce
 
     $this->ID = $output->ID;
     $this->description = apply_filters('the_content', $output->post_content);
-    $this->excerpt = $output->post_excerpt;
+    $this->excerpt = apply_filters('the_content', $output->post_excerpt);
     $this->title  = $output->post_title;
     $this->status = $output->post_status;
     $this->date_publication = $output->post_date;
@@ -85,6 +85,13 @@ class Annonce
     $this->get_tax_field();
     $this->get_acf_field();
 
+    $this->date_create = get_post_meta($this->ID, 'date_create', true);
+
+  }
+
+  public function get_author() {
+    $User = get_field('annonce_author', $this->ID);
+    return $this->author = $User;
   }
 
   public static
@@ -118,7 +125,7 @@ class Annonce
     $this->price     = get_field('price', $this->ID);
     $this->reference = get_field('reference', $this->ID);
     $this->address   = get_field('address', $this->ID);
-    $this->featured_image = wp_get_attachment_thumb_url(get_post_thumbnail_id($this->ID));
+    $this->featured_image = wp_get_attachment_image_src(get_post_thumbnail_id($this->ID), 'medium');
   }
 
   public static

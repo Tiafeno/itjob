@@ -5,7 +5,7 @@ $s = $_GET['s'];
 $search_count = $wp_query->found_posts;
 ?>
   <div class="uk-section uk-section-transparent">
-    <div class="uk-container ">
+    <div class="uk-container"  style="min-height: 375px">
       <div class="row">
         <div class="col-md-8">
           <div class="container-list-posts">

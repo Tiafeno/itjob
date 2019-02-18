@@ -216,6 +216,11 @@ wp_enqueue_style('themify-icons');
                 </tbody>
               </table>
             </div>
+            <div class="ibox-footer mt-5">
+              <div class="text-right">
+                <a href="<?= get_post_type_archive_link("works") ?>" class="btn btn-blue">Voir les autres annonces</a>
+              </div>
+            </div>
 
           </div>
           <div class="uk-width-1-3@m">
