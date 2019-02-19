@@ -7,6 +7,8 @@ use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Formation;
 use includes\post\Offers;
+use includes\post\Annonce;
+use includes\post\Works;
 use Underscore\Types\Arrays;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -62,6 +64,7 @@ class Mailing {
     add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
     add_action( 'email_new_formation', [ &$this, 'email_new_formation' ], 10, 1 );
     add_action( 'new_request_formation', [ &$this, 'new_request_formation' ], 10, 2 );
+    add_action( 'new_pending_annonce', [ &$this, 'new_pending_annonce' ], 10, 2 );
     add_action( 'send_registration_formation', [ &$this, 'send_registration_formation' ], 10, 2 );
 
     add_action( 'acf/save_post', function ( $post_id ) {
@@ -342,6 +345,51 @@ class Mailing {
     $content   .= "<p><b>{$Candidate->reference}</b> viens d'inserée une demande de formation « <b>{$sujet}</b> »</p>";
     $content   .= "<p>Voir la demande: <a href='{$this->dashboard_url}/request-formations'>Back office</a> </p> <br/>";
     $content   .= 'A bientôt. <br/><br/><br/>';
+    $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
+    // Envoyer un mail à l'entreprise
+    wp_mail( $to, $subject, $content, $headers );
+  }
+
+  /**
+   * Informer l'administrateur d'une nouvelle annonce dans le site
+   * @param $annonce_id int - post type annonce id
+   */
+  public function new_pending_annonce ($annonce_id) {
+    if (!is_numeric($annonce_id)) return false;
+    $year = Date('Y');
+    $Annonce = new Annonce($annonce_id, true);
+    $admin_emails = $this->getModeratorEmail();
+    $to        = $admin_emails;
+    $subject   = "Une nouvelle petite annonce sur ITJobMada";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = 'Bonjour, <br/>';
+    $content   .= "<p><b>Une nouvelle annonce a été inserée « <b>{$Annonce->title}</b> » portant la réfrence</p> « <b>{$Annonce->reference}</b> » sur le site ITJOBMada ";
+    $content   .= '<br/><br/><br/>';
+    $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
+    // Envoyer un mail à l'entreprise
+    wp_mail( $to, $subject, $content, $headers );
+  }
+
+  /**
+   * Envoyer un mail à l'administrateur pour informer qu'une nouvelle travail temporaire
+   * est publier
+   * @param $work_id int  - post type works id
+   */
+  public function new_pending_works ( $work_id ) {
+    if (!is_numeric($work_id)) return false;
+    $year = Date('Y');
+    $Work = new Works($work_id, true);
+    $admin_emails = $this->getModeratorEmail();
+    $to        = $admin_emails;
+    $subject   = "Une nouvelle travail publier sur ITJobMada";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $content   = 'Bonjour, <br/>';
+    $content   .= "<p><b>Une nouvelle travail a été inserée « <b>{$Work->title}</b> » portant la réfrence</p> « <b>{$Work->reference}</b> » sur le site ITJOBMada ";
+    $content   .= '<br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     // Envoyer un mail à l'entreprise
     wp_mail( $to, $subject, $content, $headers );
