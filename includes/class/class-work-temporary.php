@@ -54,7 +54,7 @@ class Works {
     $output = get_post((int) $work_id);
     $this->ID = $output->ID;
 
-    if (is_null($output)) {
+    if (is_null($output) || $output->ID === 0) {
       self::$error = new \WP_Error('broken', "Travail introuvable dans le systeme");
       return false;
     }

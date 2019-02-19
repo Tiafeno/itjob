@@ -130,10 +130,12 @@ wp_enqueue_script('camroll-slider');
                       <h6 class="uppercase font-strong">Adresse</h6>
                       <p><?= $annonce->address ?></p>
                     </div>
+                    <?php if ($annonce->town): ?>
                     <div class="col-sm-4">
                       <h6 class="uppercase font-strong">Ville</h6>
                       <p><?= $annonce->town->name ?></p>
                     </div>
+                    <?php endif; ?>
                   </div>
                 </div>
                 <hr>
