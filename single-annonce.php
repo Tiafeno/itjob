@@ -1,5 +1,103 @@
 <?php
-global $annonce;
+global $annonce, $post, $wp, $itJob;
+
+$action = Http\Request::getValue('action', false);
+$User = $itJob->services->getUser();
+$rp_path = wp_unslash( $_SERVER['REDIRECT_URL'] );
+$credit = get_user_meta($User->ID, 'credit', true);
+$credit = empty($credit) ? 5 : intval($credit);
+
+if ($action) {
+  switch ($action):
+    case 'contact':
+      if (!is_user_logged_in()) {
+        $login_url = home_url('/connexion/candidate');
+        $url = add_query_arg(['redir' => get_the_permalink($post->ID) . '?action=contact'], $login_url);
+        wp_safe_redirect($url);
+        exit;
+      }
+
+      $errno = Http\Request::getValue('errno', false);
+      if ($errno) {
+        $errno = $errno == 1 ? "Veuillez remplire correctement le formulaire" : $errno;
+        do_action('add_notice', $errno, "pink", false);
+      }
+
+      if ($credit === 0)
+        do_action('add_notice', "Vous n'avez plus de credit. Veuillez acheter de credit avant de continuer", 'pink', false);
+
+
+      $key = md5(date_i18n('Y-m-d H:i:s'));
+      setcookie( 'contact-work', $key, 0, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
+
+      break;
+
+    case 'sender':
+      $key = $_COOKIE['contact-work'];
+      $name = Http\Request::getValue('name', '');
+      $email = Http\Request::getValue('email', '');
+      $message = Http\Request::getValue('message', '');
+      $work_id = Http\Request::getValue('work_id', false);
+      $form_validate = !$work_id || !$name || !$email || !$message;
+      if ($form_validate || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        wp_safe_redirect( add_query_arg(['action' => 'contact', 'errno' => 1, 'key' => $key]) );
+        exit;
+      }
+
+      if ($credit === 0) {
+        wp_safe_redirect( add_query_arg(['action' => 'contact']) );
+      }
+
+      $post_url = get_the_permalink($post->ID);
+      $message .= "<p class='margin-top: 10px'>Voir l'annonce: <a href='{$post_url}' target='_blank'>{$post->post_title}</a> </p>";
+
+      $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+      $Works = new \includes\post\Works( (int)$work_id, true );
+      $work_contact_mail = $Works->get_mail();
+      $work_author = $Works->get_user();
+      if ($work_author->ID == $User->ID) {
+        do_action('add_notice', "Cette annonce est la vôtre. Vous ne pouvez pas le contacter");
+        break;
+      }
+
+
+      $mail->addBCC($Works->author->user_email);
+      $mail->addAddress($work_contact_mail);
+      $mail->addReplyTo($User->user_email, $name);
+      $mail->CharSet = 'UTF-8';
+      $mail->isHTML(true);
+      $mail->setFrom($User->user_email, $name);
+      $mail->Body = $message;
+      $mail->Subject = $post->post_title;
+
+      try {
+        // Envoyer le mail
+        $mail->send();
+        wp_safe_redirect( add_query_arg(['action' => 'confirmation', 'key' => $key]) );
+        exit;
+      } catch (\PHPMailer\PHPMailer\Exception $e) {
+        wp_safe_redirect( add_query_arg(['action' => 'contact', 'errno' => urlencode($e->getMessage())]) );
+      }
+      break;
+
+    case 'confirmation':
+      $key = Http\Request::getValue('key');
+      if ($key !== $_COOKIE['contact-work']) {
+        wp_safe_redirect( add_query_arg(['action' => 'contact', 'error' => 1]) );
+      }
+      // Reduire le credit du client
+      $credit = $credit ? abs((int) $credit - 1) : 4;
+      update_user_meta($User->ID, 'credit', $credit);
+      $msg = $credit ? "Il vous reste {$credit} credit(s)": "Il ne vous reste plus de credit.";
+      do_action('add_action', $msg, 'info', false);
+
+      setcookie( 'contact-work', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
+      break;
+
+
+  endswitch;
+}
+
 get_header();
 wp_enqueue_style('themify-icons');
 wp_enqueue_style('camroll-slider');

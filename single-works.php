@@ -157,6 +157,7 @@ wp_enqueue_style('themify-icons');
       while (have_posts()) : the_post();
         if ($works::is_wp_error()) {
           echo $works::is_wp_error();
+          continue;
         }
         if (!$works instanceof \includes\post\Works) continue;
         // Count view
