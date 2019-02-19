@@ -64,7 +64,8 @@ class Mailing {
     add_action( 'new_register_user', [ &$this, 'new_register_user' ], 10, 1 );
     add_action( 'email_new_formation', [ &$this, 'email_new_formation' ], 10, 1 );
     add_action( 'new_request_formation', [ &$this, 'new_request_formation' ], 10, 2 );
-    add_action( 'new_pending_annonce', [ &$this, 'new_pending_annonce' ], 10, 2 );
+    add_action( 'new_pending_annonce', [ &$this, 'new_pending_annonce' ], 10, 1 );
+    add_action( 'new_pending_works', [ &$this, 'new_pending_works' ], 10, 1 );
     add_action( 'send_registration_formation', [ &$this, 'send_registration_formation' ], 10, 2 );
 
     add_action( 'acf/save_post', function ( $post_id ) {
