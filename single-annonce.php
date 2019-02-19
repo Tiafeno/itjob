@@ -11,28 +11,50 @@ wp_enqueue_script('camroll-slider');
 
 ?>
   <style type="text/css">
-    .container {
-      max-width: 760px;
-      width: 100%;
-      padding: 0 20px;
-    }
     #slider {
       width: 100%;
       height: 404px;
       color: white;
     }
+    #slider .crs-screen-item {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: #FFFFFF;
+      background-position: bottom;
+    }
+    #slider .crs-bar-roll-current {
+      border: 4px solid #fff;
+      top: 7px;
+    }
+    .container {
+      max-width: 760px;
+      width: 100%;
+      padding: 0 20px;
+    }
     .price {
       color: #f56b2a;
       font-weight: 600;
     }
-
+    .crs-screen:before {
+      content: "";
+      display: block;
+      bottom: 0;
+      background: -webkit-gradient(linear,left top,left bottom,from(transparent),to(rgba(0,0,0,.3)));
+      background: -webkit-linear-gradient(top,transparent,rgba(0,0,0,.3));
+      background: linear-gradient(180deg,transparent 0,rgba(0,0,0,.3));
+      height: 64px;
+      width: 100%;
+      position: absolute;
+      z-index: 9;
+    }
+    .crs-bar {
+      z-index: 10;
+    }
     @media (max-width: 640px) {
-
       #slider .crs-bar-roll-current {
         width: 38px;
         height: 38px;
       }
-
       #slider .crs-bar-roll-item {
         width: 30px;
         height: 30px;
@@ -45,7 +67,6 @@ wp_enqueue_script('camroll-slider');
     $(document).ready(function () {
       $("#slider").camRollSlider();
     });
-
   })(jQuery)
 </script>
   <div class="uk-section uk-section-transparent">
@@ -59,10 +80,10 @@ wp_enqueue_script('camroll-slider');
           while (have_posts()) : the_post();
             if ($annonce::is_wp_error()) {
               echo $annonce::is_wp_error();
+              continue;
             }
             if (!$annonce instanceof \includes\post\Annonce) continue;
             $author = $annonce->get_author();
-
             ?>
           <div class="ibox">
             <div class="ibox-body">
@@ -70,32 +91,22 @@ wp_enqueue_script('camroll-slider');
                 <div id="slider" class="crs-wrap">
                   <div class="crs-screen">
                     <div class="crs-screen-roll">
-                      <div class="crs-screen-item" style="background-image: url('https://picsum.photos/1440/810?image=680')">
+
+                      <?php foreach ($annonce->gallery as $gallery): ?>
+                      <div class="crs-screen-item" style="background-image: url('<?= $gallery['url'] ?>')">
                         <div class="crs-screen-item-content"></div>
                       </div>
-                      <div class="crs-screen-item" style="background-image: url('https://picsum.photos/1440/810?image=676')">
-                        <div class="crs-screen-item-content"><h1>Lorem...</h1></div>
-                      </div>
-                      <div class="crs-screen-item" style="background-image: url('https://picsum.photos/1440/810?image=660')">
-                      </div>
-                      <div class="crs-screen-item" style="background-image: url('https://picsum.photos/1440/810?image=646')">
-                      </div>
-                      <div class="crs-screen-item" style="background-image: url('https://picsum.photos/1440/810?image=633')">
-                      </div>
-                      <div class="crs-screen-item" style="background-image: url('https://picsum.photos/1440/810?image=28')">
-                      </div>
+                      <?php endforeach; ?>
+
                     </div>
                   </div>
                   <div class="crs-bar">
                     <div class="crs-bar-roll-current"></div>
                     <div class="crs-bar-roll-wrap">
                       <div class="crs-bar-roll">
-                        <div class="crs-bar-roll-item" style="background-image: url('https://picsum.photos/1440/810?image=680')"></div>
-                        <div class="crs-bar-roll-item" style="background-image: url('https://picsum.photos/1440/810?image=676')"></div>
-                        <div class="crs-bar-roll-item" style="background-image: url('https://picsum.photos/1440/810?image=660')"></div>
-                        <div class="crs-bar-roll-item" style="background-image: url('https://picsum.photos/1440/810?image=646')"></div>
-                        <div class="crs-bar-roll-item" style="background-image: url('https://picsum.photos/1440/810?image=633')"></div>
-                        <div class="crs-bar-roll-item" style="background-image: url('https://picsum.photos/1440/810?image=628')"></div>
+                        <?php foreach ($annonce->gallery as $gallery): ?>
+                        <div class="crs-bar-roll-item" style="background-image: url('<?= $gallery['sizes']['thumbnail'] ?>')"></div>
+                        <?php endforeach; ?>
                       </div>
                     </div>
                   </div>
@@ -141,9 +152,8 @@ wp_enqueue_script('camroll-slider');
             </div>
           </div>
           <?php
-
           endwhile;
-          ?>
+        ?>
         </div>
         <div class="uk-width-1-3@s">
           <div class="ibox">
@@ -159,9 +169,7 @@ wp_enqueue_script('camroll-slider');
           </div>
           <!--     Sidebar here ...     -->
           <?php
-          if (is_active_sidebar('single-annonce-sidebar')) {
-            dynamic_sidebar('single-annonce-sidebar');
-          }
+          if (is_active_sidebar('single-annonce-sidebar')) { dynamic_sidebar('single-annonce-sidebar'); }
           ?>
         </div>
 
