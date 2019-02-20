@@ -52,16 +52,15 @@ if ($action) {
       $message .= "<p class='margin-top: 10px'>Voir l'annonce: <a href='{$post_url}' target='_blank'>{$post->post_title}</a> </p>";
 
       $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-      $Annonce = new \includes\post\Annonce( (int)$work_id, true );
+      $Annonce = new \includes\post\Annonce( (int)$annonce_id, true );
       $annonce_contact_mail = $Annonce->get_mail();
-      $annonce_author = $Annonce->get_user();
+      $annonce_author = $Annonce->get_author();
       if ($annonce_author->ID == $User->ID) {
         do_action('add_notice', "Cette annonce est la vôtre. Vous ne pouvez pas le contacter");
         break;
       }
 
-
-      $mail->addBCC($Annonce->author->user_email);
+      $mail->addBCC($annonce_author->user_email);
       $mail->addAddress($annonce_contact_mail);
       $mail->addReplyTo($User->user_email, $name);
       $mail->CharSet = 'UTF-8';
@@ -171,8 +170,6 @@ wp_enqueue_script('camroll-slider');
     <div class="uk-container uk-container-medium">
       <div uk-grid>
         <div class="uk-width-2-3@s">
-          <!--     Vérifier s'il y a une postulation en cours     -->
-          <?php do_action('get_notice'); ?>
           <!--          Content here ... -->
           <?php
           while (have_posts()) : the_post();
@@ -186,6 +183,7 @@ wp_enqueue_script('camroll-slider');
           <div class="ibox">
             <?php if (!$action): ?>
             <div class="ibox-body">
+              <?php do_action('get_notice'); ?>
               <div class="container">
                 <div id="slider" class="crs-wrap">
                   <div class="crs-screen">
@@ -315,15 +313,13 @@ wp_enqueue_script('camroll-slider');
             <?php if ($action === 'contact'): ?>
               <div class="ibox-body">
                 <h6 class="font-bold mb-4 font-15">Résumé de l’annonce</h6>
-                <h1 class="display-5 font-light">
+                <h1 class="display-5 font-18 font-light">
                   <?= $annonce->title ?>
                 </h1>
-
                 <div class="pt-2 work-content">
-                  <h5 class="font-bold">Description</h5>
+                  <h5 class="font-bold font-15">Description</h5>
                   <div style="font-size: 12px !important;"><?= $annonce->description ?></div>
                 </div>
-
                 <table class="table">
                   <tbody>
                   <?php if ($annonce->price && $annonce->price !== 0): ?>

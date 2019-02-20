@@ -93,8 +93,15 @@ class Annonce
   }
 
   public function get_author() {
-    $User = get_field('annonce_author', $this->ID);
-    return $this->author = $User;
+    if (is_null($this->author)) {
+      $User = get_field('annonce_author', $this->ID);
+      $this->author = $User;
+    }
+    return $this->author;
+  }
+
+  public function get_mail() {
+    return $this->email;
   }
 
   public static
