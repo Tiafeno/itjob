@@ -41,6 +41,7 @@ class Annonce
   public $url                = '';
   public $date_create      = '';
   public $date_publication = '';
+  public $contact_sender = [];
 
   public
   function __construct ($annonce_id = null, $private_access = false)
@@ -86,6 +87,8 @@ class Annonce
     $this->get_acf_field();
 
     $this->date_create = get_post_meta($this->ID, 'date_create', true);
+    $contact_sender = get_post_meta($this->ID, 'sender_contact', true);
+    $this->contact_sender = empty($contact_sender) ? [] : $contact_sender;
 
   }
 
@@ -142,6 +145,16 @@ class Annonce
   function is_activated ()
   {
     return $this->activated ? 1 : 0;
+  }
+
+  public function add_contact_sender( $user_id ) {
+    $senders = get_post_meta($this->ID, 'sender_contact', true);
+    $senders = is_array($senders) ? $senders : [];
+    if (intval($user_id) === 0) return false;
+    $senders[] = intval($user_id);
+
+    update_post_meta($this->ID, 'sender_contact', $senders);
+    return true;
   }
 
 }

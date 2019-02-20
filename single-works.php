@@ -307,7 +307,7 @@ wp_enqueue_style('themify-icons');
                   </tr>
                   <?php if ($works->region): ?>
                     <tr>
-                      <td>Localisation</td>
+                      <td>Région</td>
                       <td class="font-bold"><?=  $works->region->name ?> </td>
                     </tr>
                   <?php endif; ?>

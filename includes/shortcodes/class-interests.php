@@ -318,19 +318,14 @@ class scInterests
         ]
       ]);
     }
-    if (is_null($user_id) || empty($user_id)) {
-      $User = wp_get_current_user();
-      if (!in_array('company', $User->roles)) {
-        wp_send_json_error([
-          'msg' => 'Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi',
-          'status' => 'access'
-        ]);
-      }
-      $Company = Company::get_company_by($User->ID);
-    } else {
-      $Company = new Company((int)$user_id);
+    $User = wp_get_current_user();
+    if (!in_array('company', $User->roles)) {
+      wp_send_json_error([
+        'msg' => 'Votre compte ne vous permet pas de postuler une offre, veuillez vous inscrire en tant que demandeur d\'emploi',
+        'status' => 'access'
+      ]);
     }
-
+    $Company = Company::get_company_by($User->ID);
     $args = [
       'post_type' => 'offers',
       'post_status' => 'publish',
@@ -339,15 +334,26 @@ class scInterests
       'meta_compare' => '='
     ];
     $offers = get_posts($args);
+
     if (empty($offers)) {
       wp_send_json_error([
         'msg' => 'Vous devez poster une offre et qu’elle soit validée avant de pouvoir sélectionner des candidats. Merci',
         'status' => 'access'
       ]);
     }
+
+    // Crée des objets offres
     $offers = array_map(function ($offer) {
       return new Offers($offer->ID);
     }, $offers);
+
+    // Ajouter dans la liste les offres actif et non perimée 
+    $offers = array_filter($offers, function ($offer) {
+      $today   = strtotime("today");
+      $isLimited = strtotime($offer->dateLimit) < $today;
+      return !$isLimited && intval($offer->activated);
+    });
+
     wp_send_json_success($offers);
   }
 }
