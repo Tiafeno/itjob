@@ -252,6 +252,11 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
                 });
                 initScripts.__init__();
               }, 600);
+
+              // Default value
+              $rootScope.formData.notiEmploi = {};
+              $rootScope.formData.notiEmploi.with = true;
+              $rootScope.formData.newsletter = true;
             };
 
             $scope.queryJobs = function ($query) {

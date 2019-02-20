@@ -52,49 +52,48 @@ if (!class_exists('jePostule')) :
           }
         }
 
-        require_once(ABSPATH . 'wp-admin/includes/image.php');
-        require_once(ABSPATH . 'wp-admin/includes/file.php');
-        require_once(ABSPATH . 'wp-admin/includes/media.php');
+        $attachment_id = 0;
+        if ( ! empty($_FILES) ) {
+          require_once(ABSPATH . 'wp-admin/includes/image.php');
+          require_once(ABSPATH . 'wp-admin/includes/file.php');
+          require_once(ABSPATH . 'wp-admin/includes/media.php');
 
           // Let WordPress handle the upload.
           // Remember, 'file' is the name of our file input in our form above.
           // @wordpress: https://codex.wordpress.org/Function_Reference/media_handle_upload
-        $attachment_id = media_handle_upload('motivation', $id_offer);
-
-        if (is_wp_error($attachment_id)) {
+          $attachment_id = media_handle_upload('motivation', $id_offer);
+          if (is_wp_error($attachment_id))
             // There was an error uploading the file.
-          do_action('add_notice', 'Une erreur s\'est produite', 'danger');
-        } else {
-            // The file was uploaded successfully!
-
-            // Enregistrer la requete dans la base de donnée
-          $Offer = new Offers($id_offer);
-          $offer_author = $Offer->getAuthor();
-          $Company = Company::get_company_by($offer_author->ID);
-          $Candidate = Candidate::get_candidate_by($User->ID);
-          $result = $itModel->added_interest($Candidate->getId(), $id_offer, $Company->getId(), 'pending', 'apply', $attachment_id);
-          if (!$result) {
-            do_action('add_notice', 'Une erreur s\'est produite pendant la requête. Veuillez réessayer plus tard', 'warning');
-
-            return false;
-          }
-            // Récuperer les offres que le candidat a déja postulé
-          $offer_apply = get_field('itjob_cv_offer_apply', $Candidate->getId());
-          if (!is_array($offer_apply)) {
-            $offer_apply = [];
-          }
-            // On verifie si l'offre est déja dans sa liste
-          if (in_array($id_offer, $offer_apply)) {
-            return true;
-          }
-            // Ajouter l'offre dans le champ pour les offres postulé par le candidat
-          $offer_apply[] = $id_offer;
-          update_field('itjob_cv_offer_apply', $offer_apply, $Candidate->getId());
-
-          do_action('alert_admin_postuled_offer', $id_offer);
-          do_action('notice-candidate-postuled', $Candidate->getId(), $id_offer); // Ajouter une notification
-          do_action('add_notice', 'Votre candidature à bien êtes soumis', 'info');
+            do_action('add_notice', 'Une erreur s\'est produite', 'danger');
         }
+
+        // Enregistrer la requete dans la base de donnée
+        $Offer = new Offers($id_offer);
+        $offer_author = $Offer->getAuthor();
+        $Company = Company::get_company_by($offer_author->ID);
+        $Candidate = Candidate::get_candidate_by($User->ID);
+        $result = $itModel->added_interest($Candidate->getId(), $id_offer, $Company->getId(), 'pending', 'apply', $attachment_id);
+        if (!$result) {
+          do_action('add_notice', 'Une erreur s\'est produite pendant la requête. Veuillez réessayer plus tard', 'warning');
+
+          return false;
+        }
+          // Récuperer les offres que le candidat a déja postulé
+        $offer_apply = get_field('itjob_cv_offer_apply', $Candidate->getId());
+        if (!is_array($offer_apply)) {
+          $offer_apply = [];
+        }
+          // On verifie si l'offre est déja dans sa liste
+        if (in_array($id_offer, $offer_apply)) {
+          return true;
+        }
+          // Ajouter l'offre dans le champ pour les offres postulé par le candidat
+        $offer_apply[] = $id_offer;
+        update_field('itjob_cv_offer_apply', $offer_apply, $Candidate->getId());
+
+        do_action('alert_admin_postuled_offer', $id_offer);
+        do_action('notice-candidate-postuled', $Candidate->getId(), $id_offer); // Ajouter une notification
+        do_action('add_notice', 'Votre candidature à bien êtes soumis', 'info');
       }
     }, 12);
 
