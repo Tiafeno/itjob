@@ -75,7 +75,6 @@ trait ModelInterest {
     }
     $results = $wpdb->update( $this->requestTable, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%s' ], [ '%d' ] );
     if ($results && $status === 'validated') {
-      // TODO: Envoyer un mail de confirmation que le demande est validé
       $request = self::get_request($id_request);
       if (null === $request) return false;
       // Envoyer un mail pour informer la validation de cette offre

@@ -149,6 +149,7 @@ if ( ! class_exists( 'itJob' ) ) {
           `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
           `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , 
           `status` VARCHAR(20) NOT NULL DEFAULT 'pending' , 
+          `view` TINYINT(1) NOT NULL DEFAULT 0 , 
           `id_attachment` BIGINT(20) NOT NULL DEFAULT 0, 
           `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
           PRIMARY KEY (`id_cv_request`)) ENGINE = InnoDB;";

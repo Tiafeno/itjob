@@ -745,6 +745,7 @@ if ( ! class_exists( 'scClient' ) ) :
           array_push( $postuledCandidates,
             [
               'status'     => $interest->status,
+              'view'       => intval($interest->view),
               'type'       => $interest->type,
               'id_request' => (int) $interest->id_cv_request,
               'candidate'  => $Candidate
