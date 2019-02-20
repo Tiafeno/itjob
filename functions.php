@@ -268,19 +268,38 @@ add_action('init', function () {
 //  $Model = new includes\model\itModel();
 //  add_action('repair_table', [$Model, 'repair_table'], 10);
 
-  function add_sticky_column($columns) {
+  add_filter('manage_formation_posts_columns' , function ( $columns ) {
     return array_merge($columns,
       array('activated' => __('Activation')));
-  }
-  add_filter('manage_formation_posts_columns' , 'add_sticky_column');
+  });
 
-  function display_posts_stickiness( $column, $post_id ) {
+  add_action( 'manage_posts_custom_column' , function ( $column, $post_id ) {
     $activate = get_field('activated', $post_id);
     if ($column == 'activated'){
       echo '<input type="checkbox" disabled', $activate ? ' checked' : '', '/>';
     }
-  }
-  add_action( 'manage_posts_custom_column' , 'display_posts_stickiness', 10, 2 );
+  }, 10, 2 );
+
+
+  // Users
+  add_filter( 'manage_users_custom_column', function($val, $column_name, $user_id) {
+    switch ($column_name) {
+      case 'CV' :
+        $User = get_user_by('ID', $user_id);
+        if (in_array('candidate', $User->roles)) {
+          $Candidate = \includes\post\Candidate::get_candidate_by($user_id);
+          return $Candidate->title;
+        }
+        break;
+      default:
+    }
+    return $val;
+  }, 10, 3 );
+
+  add_filter( 'manage_users_columns', function ($column) {
+    $column['CV'] = 'CV';
+    return $column;
+  } );
 });
 
 
