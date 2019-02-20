@@ -288,7 +288,8 @@ add_action('init', function () {
         $User = get_user_by('ID', $user_id);
         if (in_array('candidate', $User->roles)) {
           $Candidate = \includes\post\Candidate::get_candidate_by($user_id);
-          return $Candidate->title;
+          $edit_link = get_edit_post_link($Candidate->getId());
+          return "<a target='_blank' href='{$edit_link}'>{$Candidate->title}</a>";
         }
         break;
       default:
