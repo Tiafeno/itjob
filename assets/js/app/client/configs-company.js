@@ -400,7 +400,7 @@ APPOC
 
           $scope.featuredOffer = () => {
             jQuery('#featured-dialog').modal('show');
-          }
+          };
 
           // Afficher les candidates qui ont postule
           $scope.viewApply = (offer_id) => {
@@ -418,13 +418,14 @@ APPOC
             let query = $http.get(`${itOptions.Helper.ajax_url}?action=get_postuled_candidate&oId=${$scope.offerView.ID}`, {cache: false});
             query.then(resp => {
               $scope.interestCandidats = _.map(resp.data, data => {
-                if (_.find($scope.candidateLists, (candidat_id) => candidat_id === data.candidate.ID)) {
+                if (_.find($scope.candidateLists, (id) => id === data.candidate.ID)) {
                   data.inList = true;
                 } else {
                   data.inList = false;
                 }
                 return data;
               });
+              console.log($scope.interestCandidats);
               $scope.loadingCandidats = false;
             });
             return query;

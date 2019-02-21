@@ -740,6 +740,8 @@ if ( ! class_exists( 'scClient' ) ) :
       $interests = $itModel->get_offer_interests( $offer_id );
       if ( $interests ) {
         foreach ( $interests as $interest ) {
+          $view = intval($interest->view);
+          //if (!$view && $interest->type === "apply") continue;
           $Candidate = new Candidate( (int) $interest->id_candidate );
           if (is_wp_error($Candidate->error)) continue;
           array_push( $postuledCandidates,

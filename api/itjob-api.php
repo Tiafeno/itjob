@@ -453,6 +453,7 @@ add_action('rest_api_init', function () {
               if ($status === "validated" && $Request->type === 'apply')
                 $Model->add_list((int)$Request->id_candidate, (int)$Request->id_company);
 
+              // TODO: trouveer un moyen pour metre à jour la column view de la base de donnée
             case 'request':
               $Model = new \includes\model\itModel();
               $Interests = $Model->get_offer_interests($offer_id);
