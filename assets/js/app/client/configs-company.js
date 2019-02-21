@@ -504,7 +504,7 @@ APPOC
           };
           // Filtre les candidats qui ont postuler mais qui ne sont pas encore validé
           $scope.filterPostuledCandidates = (item) => {
-            return item.type === 'apply';
+            return item.type === 'apply' && item.view === 1;
           };
 
         }]

@@ -283,7 +283,10 @@
             <span ng-click="viewApply(offer.ID)" ng-if="offer.candidat_apply.length > 0" class="badge-success badge ml-2">
               Liste des candidates
             </span>
-            <span class="badge badge-pink badge-circle" ng-if="offer.candidat_apply.length > 0" style="position:absolute; right: -13px; top: -13px;">[[ offer.candidat_apply.length ]]</span>
+            <span class="badge badge-pink badge-circle" ng-if="offer.candidat_apply.length > 0"
+                  style="position:absolute; right: -7px; top: -5px; min-width: 12px; width: 12px; height: 12px">
+              <span class="notify-signal"></span>
+            </span>
           </span>
         </td>
         <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
