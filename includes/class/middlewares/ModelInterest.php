@@ -85,6 +85,7 @@ trait ModelInterest {
     return $results;
   }
 
+
   /**
    * Cette fonction verifie si le candidat a déja postuler ou selectionner sur l'offre
    *
@@ -208,6 +209,15 @@ trait ModelInterest {
     $rows    = $wpdb->get_var( $prepare );
 
     return $rows ? true : false;
+  }
+
+  public function render_view_candidat( $id_request, $view = 0) {
+    global $wpdb;
+    if ( ! is_user_logged_in() || ! is_numeric( $id_request ) ) {
+      return false;
+    }
+    $results = $wpdb->update( $this->requestTable, [ 'view' => $view ], [ 'id_cv_request' => $id_request ], [ '%d' ], [ '%d' ] );
+    return $results;
   }
 
   /**

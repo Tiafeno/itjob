@@ -168,7 +168,7 @@
                         <div class="flex-1">
                           <div class="media-heading">
                             <a class="" target="_blank" ng-href="[[interest.candidate.candidate_url]]">[[interest.candidate.title]] </a>
-                            <span class="badge badge-default ml-2" ng-if="interest.status === 'pending'">En attente de confirmation</span>
+                            <span class="badge badge-default ml-2" ng-if="interest.status === 'pending' && interest.view === 0">En attente de confirmation</span>
                             <span class="badge badge-success ml-2" ng-if="interest.status === 'validated'">Accepter</span>
                             <span class="badge badge-danger ml-2" ng-if="interest.status === 'reject'">Rejeter</span>
                           </div>

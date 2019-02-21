@@ -961,7 +961,7 @@ if ( ! class_exists( 'scClient' ) ) :
         vous qu’à partir de là les CV sont payants au prix de 25.000 HT / CV " );
       }
       if ( $Candidate->getId() !== 0 ) {
-        $response      = $Model->add_list( $Candidate->getId() );
+        $response = $Model->add_list( $Candidate->getId() );
         if ( $response ) {
           $Model->update_interest_status( $id_request, 'validated' );
           if ($request->type === 'apply') {
