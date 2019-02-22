@@ -85,10 +85,22 @@ if ($action) {
         wp_safe_redirect( add_query_arg(['action' => 'contact', 'error' => 1]) );
       }
       // Reduire le credit du client
-      $credit = $credit ? abs((int) $credit - 1) : 4;
-      update_user_meta($User->ID, 'credit', $credit);
-      $msg = $credit ? "Il vous reste {$credit} credit(s)": "Il ne vous reste plus de credit.";
-      do_action('add_action', $msg, 'info', false);
+      $credit = $credit ? (int) $credit - 1 : 4;
+      $credit = $credit <= 0 ? 0 : $credit;
+
+      if (!$credit) {
+        do_action('add_action', "Il ne vous reste plus de credit, Veuillez acheter de credit.", 'info', false);
+        setcookie( 'contact-work', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
+        continue;
+      }
+
+      $Works = new \includes\post\Works( (int)$post->ID, true );
+      if ( ! in_array($User->ID, $Works->contact_sender)) {
+        update_user_meta($User->ID, 'credit', $credit);
+
+        $msg = "Il vous reste {$credit} credit(s)";
+        do_action('add_action', $msg, 'info', false);
+      }
 
       setcookie( 'contact-work', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
       break;

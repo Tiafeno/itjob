@@ -89,7 +89,7 @@ if ($action) {
       $credit = $credit ? (int) $credit - 1 : 4;
       $credit = $credit <= 0 ? 0 : $credit;
       if (!$credit) {
-        do_action('add_action', "Il ne vous reste plus de credit.", 'info', false);
+        do_action('add_action', "Il ne vous reste plus de credit, Veuillez acheter de credit.", 'info', false);
         setcookie( 'contact-annonce', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
         continue;
       }
