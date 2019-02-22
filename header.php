@@ -317,17 +317,21 @@
                           </div>
                           <div>
                             <h5 class="font-strong text-white"><?= $name ?></h5>
+                            <span class="text-white"><?= $User->user_email ?></span>
                           </div>
                         </div>
                         <div class="admin-menu-features">
-                          <a class="admin-features-item" href="<?= $espace_client_link ?>"><i class="ti-user"></i>
+                          <a class="admin-features-item" href="<?= $espace_client_link ?>">
+                            <i class="ti-user"></i>
                             <span>MON COMPTE</span>
                           </a>
-                          <a class="admin-features-item" href="<?= $wallet_link ?>"><i class="ti-wallet"></i>
+                          <a class="admin-features-item" href="<?= $wallet_link ?>">
+                            <i class="ti-wallet"></i>
                             <span>CREDITS</span>
                           </a>
-                          <a class="admin-features-item" href="<?= $espace_client_link ?>#!/manager/profil/settings"><i class="ti-settings"></i>
-                            <span>SETTINGS</span>
+                          <a class="admin-features-item" href="<?= $espace_client_link ?>#!/manager/profil/settings">
+                            <i class="ti-settings"></i>
+                            <span>RÉGLAGES</span>
                           </a>
                         </div>
                         <div class="admin-menu-content">
@@ -342,8 +346,6 @@
                         </div>
                       </div>
                     </li>
-
-
                     <?php
                   }
                   ?>
