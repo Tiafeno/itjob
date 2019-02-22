@@ -12,6 +12,8 @@
           <div class="rel">
           {% if content.thumbnail %}
             <img class="card-img-top" src="{{ content.thumbnail }}" alt="image" />
+            {% else %}
+            <div class="mt-4"></div>
           {% endif %}
             <div class="fab fab-bottom card-overlay-fab">
               <button class="btn btn-primary btn-icon-only btn-circle btn-air" data-toggle="button"><i class="ti-share-alt fab-icon"></i><i class="la la-close fab-icon-active"></i></button>
