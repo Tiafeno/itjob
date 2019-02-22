@@ -425,7 +425,6 @@ APPOC
                 }
                 return data;
               });
-              console.log($scope.interestCandidats);
               $scope.loadingCandidats = false;
             });
             return query;
@@ -657,7 +656,7 @@ APPOC
   .directive('smallAd', [function () {
     return {
       restrict: 'E',
-      templateUrl: `${itOptions.Helper.tpls_partials}/small-ad.html?ver=${itOptions.version}`,
+      templateUrl: `${itOptions.Helper.tpls_partials}/small-annonce.html?ver=${itOptions.version}`,
       scope: true,
       controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
         $scope.Works = [];
@@ -849,7 +848,7 @@ APPOC
         var $ = jQuery.noConflict();
         $rootScope.preloaderToogle();
         $rootScope.Company = _.clone(Client.iClient);
-        $rootScope.Helper = _.clone(Client.Helper);
+        $rootScope.Helper  = _.clone(Client.Helper);
         $rootScope.offerLists = _.clone(Client.Offers);
         $rootScope.candidateLists = _.clone(Client.ListsCandidate);
 
@@ -859,7 +858,7 @@ APPOC
           !$rootScope.Company.country || !$rootScope.Company.region || _.isEmpty($rootScope.Company.greeting)) {
 
           $rootScope.profilEditor.abranchs = _.clone(Areas);
-          $rootScope.profilEditor.regions = _.clone(Regions);
+          $rootScope.profilEditor.regions  = _.clone(Regions);
           $rootScope.profilEditor.city = [];
           $rootScope.profilEditor.city = _.map(Towns, (term) => {
             term.name = `(${term.postal_code}) ${term.name}`;
@@ -892,10 +891,10 @@ APPOC
         const Form = new FormData();
         Form.append('action', 'update_company_information');
         Form.append('abranch', $rootScope.profilEditor.form.abranch);
-        Form.append('region', $rootScope.profilEditor.form.region);
+        Form.append('region',  $rootScope.profilEditor.form.region);
         Form.append('country', $rootScope.profilEditor.form.country);
         Form.append('address', $rootScope.profilEditor.form.address);
-        Form.append('greet', $rootScope.profilEditor.form.greeting);
+        Form.append('greet',   $rootScope.profilEditor.form.greeting);
         clientFactory
           .sendPostForm(Form)
           .then(resp => {
@@ -905,7 +904,6 @@ APPOC
               setTimeout(() => {
                 location.reload(true);
               }, 1200);
-
             }
           }, (error) => {
             $rootScope.profilEditor.loading = false;

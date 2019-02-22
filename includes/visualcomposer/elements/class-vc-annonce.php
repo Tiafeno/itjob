@@ -221,7 +221,8 @@ class vcAnnonce
     $posts = $itJob->services->getRecentlyPost($post_type, 4);
     $args = [
       'title' => $title,
-      'archive_work_url' => get_post_type_archive_link('works')
+      'archive_work_url' => get_post_type_archive_link('works'),
+      'archive_annonce_url' => get_post_type_archive_link('annonce')
     ];
     if ($post_type === "works") {
       $title = $title ? $title : "Les travails temporaire ajouter récements";
