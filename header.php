@@ -187,6 +187,14 @@
       margin-top: 10px;
       color: rgba(253, 254, 255, 0.65);
     }
+
+    .btn-blue:focus, .btn-blue.focus, .btn-blue:hover,
+    .btn-blue.active, .btn-blue:active,
+    .btn-blue:disabled, .btn-blue.disabled,
+    .show > .btn-blue.dropdown-toggle {
+      background-color: #12a5d1;
+      border-color: #12a5d1;
+    }
   </style>
 </head>
 <body <?php body_class(); ?> >
@@ -273,8 +281,26 @@
                     <?php
                   } else {
                     global $wp_roles;
-                    $crUser             = wp_get_current_user();
+                    $User             = wp_get_current_user();
                     $espace_client_link = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : '#no-link';
+                    $wallet_link = WALLET_PAGE ? get_the_permalink((int) WALLET_PAGE) : '#no-link';
+                    $name = 'Administrateur';
+
+                    if (in_array('candidate', $User->roles)) {
+                      $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
+                      $first_name = $Candidate->getFirstName();
+                      $last_name = $Candidate->getLastName();
+                      $name = $first_name . ' '.$last_name;
+                    }
+
+                    if (in_array('company', $User->roles)) {
+                      $Company = \includes\post\Company::get_company_by($User->ID);
+                      $name = $Company->name;
+                    }
+
+                    $credit = get_user_meta($User->ID, 'credit', true);
+                    $credit = empty($credit) ? __CREDITS__ : intval($credit);
+
                     ?>
                     <li class="dropdown dropdown-user">
                       <a class="nav-link dropdown-toggle link btn btn-sm btn-blue" style="color: white" data-toggle="dropdown">
@@ -285,10 +311,39 @@
                       </a>
                       <div class="dropdown-menu dropdown-arrow dropdown-menu-right admin-dropdown-menu">
                         <div class="dropdown-arrow"></div>
-                        <a class="dropdown-item" href="<?= $espace_client_link ?>"><i class="ti-layout"></i>Espace Client</a>
-                        <a class="dropdown-item" href="<?= wp_logout_url( home_url( '/' ) ) ?>"><i class="ti-shift-left"></i> Déconnecter</a>
+                        <div class="dropdown-header">
+                          <div class="admin-avatar">
+                            <img src="/wp-content/themes/itjob/img/user.png" alt="image" />
+                          </div>
+                          <div>
+                            <h5 class="font-strong text-white"><?= $name ?></h5>
+                          </div>
+                        </div>
+                        <div class="admin-menu-features">
+                          <a class="admin-features-item" href="<?= $espace_client_link ?>"><i class="ti-user"></i>
+                            <span>MON COMPTE</span>
+                          </a>
+                          <a class="admin-features-item" href="<?= $wallet_link ?>"><i class="ti-wallet"></i>
+                            <span>CREDITS</span>
+                          </a>
+                          <a class="admin-features-item" href="<?= $espace_client_link ?>#!/manager/profil/settings"><i class="ti-settings"></i>
+                            <span>SETTINGS</span>
+                          </a>
+                        </div>
+                        <div class="admin-menu-content">
+                          <div class="text-muted mb-2">Mon portefeuille</div>
+                          <div><i class="ti-wallet h1 mr-3 text-light"></i>
+                            <span class="h1 text-success"><sup>¤</sup><?= $credit ?></span>
+                          </div>
+                          <div class="d-flex justify-content-between mt-2">
+                            <a class="text-muted" href="<?= $wallet_link ?>">Credits</a>
+                            <a class="d-flex align-items-center" href="<?= wp_logout_url( home_url( '/' ) ) ?>">Déconnecter<i class="ti-shift-right ml-2 font-20"></i></a>
+                          </div>
+                        </div>
                       </div>
                     </li>
+
+
                     <?php
                   }
                   ?>

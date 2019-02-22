@@ -218,6 +218,19 @@ if ( ! class_exists( 'itJob' ) ) {
           `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (`ID`)) ENGINE = InnoDB;";
         $wpdb->query($registration);
+
+        $wallet = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}wallet_history` (
+          `id_history` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+          `id_wallet` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+          `template` INT(20) NOT NULL DEFAULT '0',
+          `args` LONGTEXT NOT NULL,
+          `date_create` DATETIME NOT NULL,
+          PRIMARY KEY (`id_history`)
+        )
+        ENGINE=InnoDB;";
+        $wpdb->query($wallet);
+
+
       } );
 
       // Add acf google map api

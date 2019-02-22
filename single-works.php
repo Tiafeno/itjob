@@ -4,8 +4,11 @@ global $post, $works, $wp, $itJob;
 $action = Http\Request::getValue('action', false);
 $User = $itJob->services->getUser();
 $rp_path = wp_unslash( $_SERVER['REDIRECT_URL'] );
-$credit = get_user_meta($User->ID, 'credit', true);
-$credit = empty($credit) ? 5 : intval($credit);
+if ( ! is_wp_error($User)) {
+  $wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
+  $credit = $wallet->credit;
+}
+
 if ($action) {
   switch ($action):
     case 'contact':
@@ -84,7 +87,7 @@ if ($action) {
         wp_safe_redirect( add_query_arg(['action' => 'contact', 'error' => 1]) );
       }
       // Reduire le credit du client
-      $credit = $credit ? (int) $credit - 1 : 4;
+      $credit = $credit - 1;
       $credit = $credit <= 0 ? 0 : $credit;
 
       if (!$credit) {
@@ -95,7 +98,7 @@ if ($action) {
 
       $Works = new \includes\post\Works( (int)$post->ID, true );
       if ( ! in_array($User->ID, $Works->contact_sender)) {
-        update_user_meta($User->ID, 'credit', $credit);
+        $wallet->update_wallet($credit);
 
         $msg = "Il vous reste {$credit} credit(s)";
         do_action('add_action', $msg, 'info', false);

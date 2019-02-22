@@ -111,6 +111,31 @@ trait Register {
       'show_in_rest'    => true
     ] );
 
+    register_post_type( 'wallets', [
+      'label'           => "Les portefeuilles",
+      'labels'          => [
+        'name'               => "Les portefeuilles",
+        'singular_name'      => "Portefeuille",
+        'add_new'            => 'Ajouter',
+        'add_new_item'       => "Ajouter une nouvelle portefeuille",
+        'edit_item'          => 'Modifier',
+        'view_item'          => 'Voir',
+        'all_items'          => "Tous les postefeuilles",
+        'not_found'          => "Aucun",
+        'not_found_in_trash' => "Aucun"
+      ],
+      'public'          => false,
+      'hierarchical'    => false,
+      'menu_position'   => null,
+      'show_ui'         => true,
+      'has_archive'     => true,
+      'rewrite'         => [ 'slug' => 'wallet' ],
+      'capability_type' => 'post',
+      'menu_icon'       => 'dashicons-index-card',
+      'supports'        => [ 'title', 'custom-fields' ],
+      'show_in_rest'    => true
+    ] );
+
     register_post_type( 'annonce', [
       'label'           => "Les annonces",
       'labels'          => [

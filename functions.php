@@ -16,6 +16,7 @@
 
 define('__SITENAME__', 'itJob');
 define('minify', false);
+define('__CREDITS__', 10);
 define('__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj');
 define('TWIG_TEMPLATE_PATH', get_template_directory() . '/templates');
 if (!defined('VENDOR_URL')) {
@@ -24,8 +25,8 @@ if (!defined('VENDOR_URL')) {
 $theme = wp_get_theme('itjob');
 
 // Utiliser ces variables apres la fonction: the_post()
-$offers    = null;
-$company   = null;
+$offers = null;
+$company = null;
 $candidate = null;
 // Variable pour les alerts
 $it_alerts = [];
@@ -35,7 +36,7 @@ require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
 
 // Importation dependancy
-require 'includes/import/class-import-user.php';
+//require 'includes/import/class-import-user.php';
 
 // middlewares
 require 'includes/class/middlewares/OfferHelper.php';
@@ -50,6 +51,7 @@ require 'includes/class/middlewares/ModelAds.php';
 require 'includes/class/class-model.php';
 include 'includes/class/model/class-model-request-formation.php';
 include 'includes/class/model/class-model-subscription-formation.php';
+include 'includes/class/model/class-model-wallet.php';
 
 // widgets
 require 'includes/class/widgets/widget-shortcode.php';
@@ -73,19 +75,20 @@ require_once 'includes/class/class-particular.php';
 require_once 'includes/class/class-company.php';
 require_once 'includes/class/class-candidate.php';
 require_once 'includes/class/class-annonce.php';
+require_once 'includes/class/class-wallet.php';
 require_once 'includes/class/class-work-temporary.php';
 
-$itJob = (object)[
+$itJob = (object) [
   'version' => $theme->get('Version'),
-  'root'    => require 'includes/class/class-itjob.php',
+  'root' => require 'includes/class/class-itjob.php',
   'services' => require 'includes/class/class-jobservices.php'
 ];
 
 // shortcodes
-$shortcode = (object)[
-  'scImport' => require 'includes/shortcodes/class-import-csv.php',
-  'scLogin'  => require 'includes/shortcodes/class-login.php',
-  'scInterests' => require 'includes/shortcodes/class-interests.php'
+$shortcode = (object) [
+  //'scImport' => require 'includes/shortcodes/class-import-csv.php',
+  'scLogin' => require 'includes/shortcodes/class-login.php',
+  'scInterests' => require 'includes/shortcodes/class-interests.php',
 ];
 
 add_action('init', function () {
@@ -96,7 +99,7 @@ add_action('init', function () {
 });
 
 // Visual composer elements
-$elementsVC = (object)[
+$elementsVC = (object) [
   'vcSearch' => require 'includes/visualcomposer/elements/class-vc-search.php',
   'vcOffers' => require 'includes/visualcomposer/elements/class-vc-offers.php',
   'vcBlog' => require 'includes/visualcomposer/elements/class-vc-blog.php',
@@ -105,11 +108,12 @@ $elementsVC = (object)[
   'vcSlider' => require 'includes/visualcomposer/elements/class-slider.php',
   'vcRegisterCompany' => require 'includes/visualcomposer/elements/class-vc-register-company.php',
   'vcRegisterParticular' => require 'includes/visualcomposer/elements/class-vc-register-particular.php',
-  'vcRegisterCandidate'  => require 'includes/visualcomposer/elements/class-vc-register-candidate.php',
+  'vcRegisterCandidate' => require 'includes/visualcomposer/elements/class-vc-register-candidate.php',
   'vcAds' => require 'includes/visualcomposer/elements/class-vc-ads.php',
   'vcFormation' => require 'includes/visualcomposer/elements/class-vc-formation.php',
   'vcRequestFormation' => require 'includes/visualcomposer/elements/class-vc-request-formation.php',
-  'vcAnnonce' => require 'includes/visualcomposer/elements/class-vc-annonce.php'
+  'vcAnnonce' => require 'includes/visualcomposer/elements/class-vc-annonce.php',
+  'Credits' => require 'includes/class/class-credit.php'
 ];
 
 require 'includes/class/class-wp-city.php';
@@ -119,7 +123,7 @@ require 'includes/class/class-jhelper.php';
 require 'includes/class/class-menu-walker.php';
 require 'includes/filters/function-filters.php';
 
-$itHelper = (object)[
+$itHelper = (object) [
   'Mailing' => require 'includes/class/class-mail.php'
 ];
 
@@ -216,26 +220,24 @@ add_filter('wp_nav_menu_args', function ($args) {
   }
   if ($menu->name === 'REF219M') :
     $args['menu_class'] = "it-home-menu uk-padding-remove";
-  $args['container_class'] = "d-flex";
-  $args['walker'] = new Home_Menu_Walker();
+    $args['container_class'] = "d-flex";
+    $args['walker'] = new Home_Menu_Walker();
   endif;
 
   return $args;
 });
 
-
 add_action('init', function () {
-  
   // Yoast filter
   add_filter('wpseo_metadesc', function ($description) {
     global $post;
     if (is_object($post))
       switch ($post->post_type) {
         case 'offers':
-          $mission = get_field( 'itjob_offer_profil', $post->ID );
+          $mission = get_field('itjob_offer_profil', $post->ID);
           return strip_tags($mission);
           break;
-        
+
         default:
           # code...
           break;
@@ -248,41 +250,37 @@ add_action('init', function () {
     if (is_object($post) && !is_archive())
       switch ($post->post_type) {
         case 'offers':
-          $regions      = wp_get_post_terms( $post->ID, 'region', ["fields" => "all"] );
+          $regions = wp_get_post_terms($post->ID, 'region', ["fields" => "all"]);
           $region = is_array($regions) && !empty($regions) ? $regions[0] : '';
           $region = $region ? ' à ' . $region->name : '';
-          $branch_activity  = get_field( 'itjob_offer_abranch', $post->ID );
+          $branch_activity = get_field('itjob_offer_abranch', $post->ID);
           $branch_activity = $branch_activity ? ', ' . $branch_activity->name : '';
           return 'Emploi - ' . $post->post_title . $region . $branch_activity;
           break;
-        
+
         default:
           # code...
           break;
       }
     return $title;
   }, PHP_INT_MAX);
-  
-  //do_action('testUnits');
 
 //  $Model = new includes\model\itModel();
 //  add_action('repair_table', [$Model, 'repair_table'], 10);
 
-  add_filter('manage_formation_posts_columns' , function ( $columns ) {
+  add_filter('manage_formation_posts_columns', function ($columns) {
     return array_merge($columns,
       array('activated' => __('Activation')));
   });
-
-  add_action( 'manage_posts_custom_column' , function ( $column, $post_id ) {
+  add_action('manage_posts_custom_column', function ($column, $post_id) {
     $activate = get_field('activated', $post_id);
-    if ($column == 'activated'){
+    if ($column == 'activated') {
       echo '<input type="checkbox" disabled', $activate ? ' checked' : '', '/>';
     }
-  }, 10, 2 );
-
+  }, 10, 2);
 
   // Users
-  add_filter( 'manage_users_custom_column', function($val, $column_name, $user_id) {
+  add_filter('manage_users_custom_column', function ($val, $column_name, $user_id) {
     switch ($column_name) {
       case 'CV' :
         $User = get_user_by('ID', $user_id);
@@ -295,12 +293,11 @@ add_action('init', function () {
       default:
     }
     return $val;
-  }, 10, 3 );
-
-  add_filter( 'manage_users_columns', function ($column) {
+  }, 10, 3);
+  add_filter('manage_users_columns', function ($column) {
     $column['CV'] = 'CV';
     return $column;
-  } );
+  });
 
   function request_phone_number() {
     global $itJob;
@@ -310,14 +307,15 @@ add_action('init', function () {
     if ($post_type === 'annonce') {
       $Annonce = new \includes\post\Annonce($post->ID, true);
       $User = $itJob->services->getUser();
-      $credit = get_user_meta($User->ID, 'credit', true);
-      $credit = empty($credit) ? 5 : intval($credit);
+
+      $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
+      $credit = $Wallet->credit;
+
       if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
 
-      if ( ! in_array($User->ID, $Annonce->contact_sender)) {
-        $credit = $credit ? abs((int) $credit - 1) : 4;
-        $credit = $credit <= 0 ? 0 : $credit;
-        update_user_meta($User->ID, 'credit', $credit);
+      if (!in_array($User->ID, $Annonce->contact_sender)) {
+        $credit = $credit - 1;
+        $Wallet->update_wallet($credit);
         $Annonce->add_contact_sender($User->ID);
       }
 
@@ -326,7 +324,8 @@ add_action('init', function () {
       wp_send_json_error("Ce type de post ne possède pas un numéro de téléphone");
     }
   }
-  add_action( 'wp_ajax_request_phone_number', 'request_phone_number' );
+
+  add_action('wp_ajax_request_phone_number', 'request_phone_number');
 });
 
 
