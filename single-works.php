@@ -25,7 +25,6 @@ if ($action) {
       if ($credit === 0)
         do_action('add_notice', "Vous n'avez plus de credit. Veuillez acheter de credit avant de continuer", 'pink', false);
 
-
       $key = md5(date_i18n('Y-m-d H:i:s'));
       setcookie( 'contact-work', $key, 0, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
 
