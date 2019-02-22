@@ -15,7 +15,7 @@
           height: mediaImg.data('height'),
           cursor: 'pointer'
         });
-        // Evenement quand on click la photo
+        // Evennement quand on click la photo
         mediaImg.on('click', function (ev) {
           var url = mediaImg.data('url');
           if (_.isUndefined(url) || _.isEmpty(url)) return false;
@@ -23,7 +23,6 @@
         });
       });
     });
-
   })(jQuery)
 </script>
 <div class="row">
@@ -47,7 +46,7 @@
             <div class="media-body d-flex">
               <div class="flex-1">
                 <h5 class="media-heading font-18">
-                  <a href="{{ annonce.ID | get_permalink}}">{{ annonce.title }}</a>
+                  <a href="{{ annonce.ID | get_permalink }}">{{ annonce.title }}</a>
                 </h5>
                 <p class="font-13 text-light">{{ annonce.description|striptags|raw[:150] }} [...]</p>
                 <div class="font-12">

@@ -7,6 +7,7 @@ $rp_path = wp_unslash( $_SERVER['REDIRECT_URL'] );
 $credit = get_user_meta($User->ID, 'credit', true);
 $credit = empty($credit) ? 5 : intval($credit);
 
+
 if ($action) {
   switch ($action):
     case 'contact':
@@ -85,14 +86,24 @@ if ($action) {
         wp_safe_redirect( add_query_arg(['action' => 'contact', 'error' => 1]) );
       }
       // Reduire le credit du client
-      $credit = $credit ? abs((int) $credit - 1) : 4;
-      update_user_meta($User->ID, 'credit', $credit);
-      $msg = $credit ? "Il vous reste {$credit} credit(s)": "Il ne vous reste plus de credit.";
-      do_action('add_action', $msg, 'info', false);
+      $credit = $credit ? (int) $credit - 1 : 4;
+      $credit = $credit <= 0 ? 0 : $credit;
+      if (!$credit) {
+        do_action('add_action', "Il ne vous reste plus de credit.", 'info', false);
+        setcookie( 'contact-annonce', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
+        continue;
+      }
+
+      $Annonce = new \includes\post\Annonce( (int)$post->ID, true );
+      if ( ! in_array($User->ID, $Annonce->contact_sender)) {
+        update_user_meta($User->ID, 'credit', $credit);
+
+        $msg = "Il vous reste {$credit} credit(s)";
+        do_action('add_action', $msg, 'info', false);
+      }
 
       setcookie( 'contact-annonce', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
       break;
-
 
   endswitch;
 }
@@ -100,7 +111,9 @@ if ($action) {
 get_header();
 wp_enqueue_style('themify-icons');
 wp_enqueue_style('camroll-slider');
+wp_enqueue_style('sweetalert');
 wp_enqueue_script('camroll-slider');
+wp_enqueue_script('sweetalert');
 
 /**
  * Change the Yoast meta description for Android devices on the front/home page.
@@ -163,6 +176,42 @@ wp_enqueue_script('camroll-slider');
   (function ($) {
     $(document).ready(function () {
       $("#slider").camRollSlider();
+      $('.view-phone-number').on('click', function (ev) {
+        swal({
+            title: "Confirmation",
+            text: "Voulez-vous connaitre le numero de telephone portable de l'annonceur?",
+            type: "info",
+            showCancelButton: true,
+            confirmButtonClass: "btn-info",
+            confirmButtonText: "Oui",
+            cancelButtonText: "Non",
+            closeOnConfirm: false,
+            closeOnCancel: true,
+            showLoaderOnConfirm: true
+          },
+          function(isConfirm) {
+            if (isConfirm) {
+
+              $.ajax({
+                url: `<?= admin_url('admin-ajax.php') ?>`,
+                cache: true,
+                method: "GET",
+                data: { action : 'request_phone_number', ad_id : <?= $post->ID ?> },
+                dataType: "json"
+              })
+                .done(function (resp) {
+                  var numberPhone = resp.data;
+                  swal(numberPhone, 'Vous pouvez me contacter par téléphone avec le numéro ci-dessus');
+                })
+                .fail(function() {
+                  swal("Désolé", "Vous n'êtes pas connecter", "warning");
+                })
+                .always(function () {});
+            } else {
+
+            }
+          });
+      });
     });
   })(jQuery)
 </script>
@@ -301,7 +350,7 @@ wp_enqueue_script('camroll-slider');
 
             <?php if (!$action): ?>
               <div class="ibox-body">
-                <button type="button" class="btn btn-danger btn-fix btn-block">
+                <button type="button" class="view-phone-number btn btn-danger btn-fix btn-block">
                   <span class="btn-icon"><i class="la la-phone"></i>Voir le numéro</span>
                 </button>
                 <a href="?action=contact" data-annonce-id="<?= $annonce->ID ?>" class="btn btn-blue btn-fix d-block mt-2" id="view-number-phone">

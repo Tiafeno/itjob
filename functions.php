@@ -301,6 +301,32 @@ add_action('init', function () {
     $column['CV'] = 'CV';
     return $column;
   } );
+
+  function request_phone_number() {
+    global $itJob;
+    $post_id = Http\Request::getValue('ad_id');
+    $post = get_post(intval($post_id));
+    $post_type = get_post_type($post->ID);
+    if ($post_type === 'annonce') {
+      $Annonce = new \includes\post\Annonce($post->ID, true);
+      $User = $itJob->services->getUser();
+      $credit = get_user_meta($User->ID, 'credit', true);
+      $credit = empty($credit) ? 5 : intval($credit);
+      if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
+
+      if ( ! in_array($User->ID, $Annonce->contact_sender)) {
+        $credit = $credit ? abs((int) $credit - 1) : 4;
+        $credit = $credit <= 0 ? 0 : $credit;
+        update_user_meta($User->ID, 'credit', $credit);
+        $Annonce->add_contact_sender($User->ID);
+      }
+
+      wp_send_json_success($Annonce->cellphone);
+    } else {
+      wp_send_json_error("Ce type de post ne possède pas un numéro de téléphone");
+    }
+  }
+  add_action( 'wp_ajax_request_phone_number', 'request_phone_number' );
 });
 
 
