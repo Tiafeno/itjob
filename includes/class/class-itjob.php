@@ -706,6 +706,8 @@ if ( ! class_exists( 'itJob' ) ) {
           'before_widget' => '<div id="%1$s" class="widget mt-4 %2$s">',
           'after_widget'  => '</div>'
         ) );
+
+        // Candidate
         register_sidebar( array(
           'name'          => 'Archive Content Top (Candidate)',
           'id'            => 'archive-cv-top',
@@ -727,7 +729,6 @@ if ( ! class_exists( 'itJob' ) ) {
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
-
         register_sidebar( array(
           'name'          => 'Single Sidebar (Candidate)',
           'id'            => 'single-cv-sidebar',
@@ -735,6 +736,8 @@ if ( ! class_exists( 'itJob' ) ) {
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
+
+        // Works
         register_sidebar( array(
           'name'          => 'Archive Sidebar (Travail Temporaire)',
           'id'            => 'archive-works-sidebar',
@@ -746,6 +749,59 @@ if ( ! class_exists( 'itJob' ) ) {
           'name'          => 'Archive Header Top (Travail Temporaire)',
           'id'            => 'archive-works-top',
           'description'   => 'Afficher des widgets en haut de la liste des travails',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Single Sidebar (Travail Temporaire)',
+          'id'            => 'single-works-sidebar',
+          'description'   => '',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        // Formation
+        register_sidebar( array(
+          'name'          => 'Archive Sidebar (Formation)',
+          'id'            => 'archive-formation-sidebar',
+          'description'   => 'Afficher des widgets sur le côté à droite',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Archive Header Top (Formation)',
+          'id'            => 'archive-formation-top',
+          'description'   => 'Afficher des widgets en haut de la liste des formations',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Single Sidebar (Formation)',
+          'id'            => 'single-formation-sidebar',
+          'description'   => '',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        // Annonce
+        register_sidebar( array(
+          'name'          => 'Archive Sidebar (Annonce)',
+          'id'            => 'archive-annonce-sidebar',
+          'description'   => 'Afficher des widgets sur le côté à droite',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Archive Header Top (Annonce)',
+          'id'            => 'archive-annonce-top',
+          'description'   => 'Afficher des widgets en haut de la liste des annonces',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Single Sidebar (Annonce)',
+          'id'            => 'single-annonce-sidebar',
+          'description'   => '',
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
