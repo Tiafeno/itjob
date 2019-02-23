@@ -55,6 +55,7 @@ class Wallet {
           'post_status' => 'any',
           'meta_value' => $value,
           'meta_key' => 'user',
+          'meta_compare' => '='
         ];
         $wallets = get_posts($args);
         if (is_array($wallets) && !empty($wallets)) {
