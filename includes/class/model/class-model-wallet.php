@@ -41,8 +41,8 @@ final class Model_Wallet {
     global $wpdb;
     if (!$id_wallet) return [];
     $table = $wpdb->prefix . self::$wallet_history;
-    $sql = "SELECT * FROM `{$table}` ORDER BY date_create ASC LIMIT %d, %d";
-    $prepare = $wpdb->prepare($sql, intval($offset), intval($number));
+    $sql = "SELECT * FROM `{$table}` WHERE id_wallet = %d ORDER BY date_create ASC LIMIT %d, %d";
+    $prepare = $wpdb->prepare($sql, $id_wallet, intval($offset), intval($number));
     $results = $wpdb->get_results($prepare);
     $histories = [];
     foreach ($results as $key => $result) {

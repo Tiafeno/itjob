@@ -67,6 +67,7 @@ class credit {
       do_action('get_notice');
       $wModel = new Model_Wallet();
       /** @var STRING $title */
+      echo $wallet_id;
       return $Engine->render('@VC/wallet.html', [
         'title' => $title,
         'histories' => $wModel->collect_history( $wallet_id )
