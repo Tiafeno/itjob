@@ -4,9 +4,14 @@ global $annonce, $post, $wp, $itJob;
 $action = Http\Request::getValue('action', false);
 $User = $itJob->services->getUser();
 $rp_path = wp_unslash( $_SERVER['REDIRECT_URL'] );
+$credit = 0;
 if ( ! is_wp_error($User)) {
   $wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
-  $credit = $wallet->credit;
+  if (is_wp_error($wallet)) {
+    add_action('add_notice', $wallet->get_error_message());
+  } else {
+    $credit = $wallet->credit;
+  }
 }
 
 if ($action) {
@@ -48,6 +53,7 @@ if ($action) {
 
       if ($credit === 0) {
         wp_safe_redirect( add_query_arg(['action' => 'contact']) );
+        exit;
       }
 
       $post_url = get_the_permalink($post->ID);
@@ -75,16 +81,17 @@ if ($action) {
         // Envoyer le mail
         $mail->send();
         wp_safe_redirect( add_query_arg(['action' => 'confirmation', 'key' => $key]) );
-        exit;
       } catch (\PHPMailer\PHPMailer\Exception $e) {
         wp_safe_redirect( add_query_arg(['action' => 'contact', 'errno' => urlencode($e->getMessage())]) );
       }
+      exit;
       break;
 
     case 'confirmation':
       $key = Http\Request::getValue('key');
       if ($key !== $_COOKIE['contact-work']) {
         wp_safe_redirect( add_query_arg(['action' => 'contact', 'error' => 1]) );
+        exit;
       }
       // Reduire le credit du client
       $credit = $credit - 1;

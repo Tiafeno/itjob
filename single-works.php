@@ -4,9 +4,14 @@ global $post, $works, $wp, $itJob;
 $action = Http\Request::getValue('action', false);
 $User = $itJob->services->getUser();
 $rp_path = wp_unslash( $_SERVER['REDIRECT_URL'] );
+$credit = 0;
 if ( ! is_wp_error($User)) {
   $wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
-  $credit = $wallet->credit;
+  if (is_wp_error($wallet)) {
+    add_action('add_notice', $wallet->get_error_message());
+  } else {
+    $credit = $wallet->credit;
+  }
 }
 
 if ($action) {
@@ -38,7 +43,7 @@ if ($action) {
       $name = Http\Request::getValue('name', '');
       $email = Http\Request::getValue('email', '');
       $message = Http\Request::getValue('message', '');
-      $work_id = Http\Request::getValue('work_id', false);
+      $work_id  = Http\Request::getValue('work_id', false);
       $form_validate = !$work_id || !$name || !$email || !$message;
       if ($form_validate || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         wp_safe_redirect( add_query_arg(['action' => 'contact', 'errno' => 1, 'key' => $key]) );
@@ -47,6 +52,7 @@ if ($action) {
 
       if ($credit === 0) {
         wp_safe_redirect( add_query_arg(['action' => 'contact']) );
+        exit;
       }
 
       $post_url = get_the_permalink($post->ID);
@@ -61,7 +67,6 @@ if ($action) {
         break;
       }
 
-
       $mail->addBCC($Works->author->user_email);
       $mail->addAddress($work_contact_mail);
       $mail->addReplyTo($User->user_email, $name);
@@ -75,16 +80,17 @@ if ($action) {
         // Envoyer le mail
         $mail->send();
         wp_safe_redirect( add_query_arg(['action' => 'confirmation', 'key' => $key]) );
-        exit;
       } catch (\PHPMailer\PHPMailer\Exception $e) {
         wp_safe_redirect( add_query_arg(['action' => 'contact', 'errno' => urlencode($e->getMessage())]) );
       }
+      exit;
       break;
 
     case 'confirmation':
       $key = Http\Request::getValue('key');
       if ($key !== $_COOKIE['contact-work']) {
         wp_safe_redirect( add_query_arg(['action' => 'contact', 'error' => 1]) );
+        exit;
       }
       // Reduire le credit du client
       $credit = $credit - 1;
@@ -245,7 +251,6 @@ wp_enqueue_style('themify-icons');
                   <span class="btn-icon"><i class="la la-envelope-o"></i>Evoyer un message</span>
                 </a>
               </div>
-
             </div>
             <!--     Sidebar here ...     -->
             <?php
@@ -347,9 +352,6 @@ wp_enqueue_style('themify-icons');
       <?php if ($action === 'sender'):
               do_action('get_notice');
             endif;
-      ?>
-
-      <?php
 
       endwhile;
       ?>

@@ -62,7 +62,9 @@ class Wallet {
         } else {
           if ($create_if_not_exist) {
             // Crée une portefeuille
-            credit::create_wallet($User->ID);
+            $wallet_id = credit::create_wallet($User->ID);
+            if (is_wp_error($wallet_id)) $instance = $wallet_id;
+            $instance = new self($wallet_id);
           } else {
             $instance = new \WP_Error('broken', "Portefeuille introuvable");
           }
