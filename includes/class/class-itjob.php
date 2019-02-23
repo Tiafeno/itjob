@@ -342,7 +342,6 @@ if ( ! class_exists( 'itJob' ) ) {
                 $query->query_vars['s'] = '';
 
                 BREAK;
-              // Trouver des offres d'emplois
               CASE 'offers':
 
                 if ( ! empty( $s ) ) {
@@ -401,8 +400,6 @@ if ( ! class_exists( 'itJob' ) ) {
                 $query->query['s']      = '';
                 $query->query_vars['s'] = '';
                 BREAK;
-
-              // Trouver des candidates
               CASE 'candidate':
                 $language = Http\Request::getValue( 'lg', '' );
                 $software = Http\Request::getValue( 'ms', '' );
@@ -552,7 +549,6 @@ if ( ! class_exists( 'itJob' ) ) {
                 $query->query['s']      = '';
                 $query->query_vars['s'] = '';
                 BREAK;
-
               CASE 'annonce':
               CASE 'works':
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
@@ -580,7 +576,6 @@ if ( ! class_exists( 'itJob' ) ) {
                 $query->query_vars['s'] = '';
 
                 BREAK;
-
             } // .end switch
             // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
 
