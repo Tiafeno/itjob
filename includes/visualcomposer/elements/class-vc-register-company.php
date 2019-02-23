@@ -245,7 +245,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'post_status'  => 'pending',
         'post_author'  => 1,
         'post_type'    => 'company'
-      ] );
+      ], true );
       if ( is_wp_error( $result ) ) {
         wp_send_json( [ 'success' => false, 'msg' => $result->get_error_message() ] );
       }
