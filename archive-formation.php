@@ -1,4 +1,5 @@
 <?php
+global $wp_query;
 get_header();
 wp_enqueue_style( 'offers' );
 ?>
@@ -9,6 +10,9 @@ wp_enqueue_style( 'offers' );
         if ( is_active_sidebar( 'archive-formation-top' ) ) {
           dynamic_sidebar( 'archive-formation-top' );
         }
+        if ($wp_query->is_search) :
+          get_template_part('search', 'form');
+        endif;
         ?>
       </div>
       <div class="row">
@@ -22,13 +26,23 @@ wp_enqueue_style( 'offers' );
                   get_template_part( 'partials/content', 'formation' );
                 endwhile;
               } else {
+                if ( ! $wp_query->is_search) {
                   ?>
-                <div class="col-md-12">
-                  <div class="card mb-4">
-                    <p>Il n'y a actuellement aucune formation disponible. </p>
+                  <div class="col-lg-12">
+                    <div class="card mb-4">
+                      <p>Il n'y a actuellement aucune formation disponible. </p>
+                    </div>
                   </div>
-                </div>
-                <?php
+                  <?php
+                } else {
+                  ?>
+                  <div class="col-lg-12">
+                    <div class="card mb-4">
+                      <p>Aucune formation correspond à votre recherche. </p>
+                    </div>
+                  </div>
+                  <?php
+                }
               }
               // Affiche la pagination
               itjob_pagination();

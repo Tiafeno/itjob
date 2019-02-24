@@ -241,6 +241,14 @@ wp_enqueue_script('sweetalert');
           }
         });
 
+        var price = $('#price');
+        var priceValue = price.text();
+        price.text(new Intl.NumberFormat('de-DE', {
+          style: "currency",
+          minimumFractionDigits: 0,
+          currency: 'MGA'
+        }).format(priceValue));
+
       });
     })(jQuery);
   </script>
@@ -290,7 +298,7 @@ wp_enqueue_script('sweetalert');
                   <?php if ($works->price && $works->price !== 0): ?>
                   <tr>
                     <td>Budget indicatif</td>
-                    <td class="font-bold"><?=  $works->price ?> MGA</td>
+                    <td class="font-bold"><span id="price"><?=  $works->price ?></span></td>
                   </tr>
                   <?php endif; ?>
                   <tr>
@@ -398,7 +406,7 @@ wp_enqueue_script('sweetalert');
                   <?php if ($works->price && $works->price !== 0): ?>
                     <tr>
                       <td>Budget indicatif</td>
-                      <td class="font-bold"><?=  $works->price ?> MGA</td>
+                      <td class="font-bold"><span id="price"><?=  $works->price ?></span></td>
                     </tr>
                   <?php endif; ?>
                   <tr>

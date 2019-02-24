@@ -21,6 +21,7 @@ $current_url = get_the_permalink(get_the_ID());
       <h5 class="media-heading font-18">
         <a href="<?= $current_url ?>"><?= $annonce->title ?></a>
       </h5>
+      <p class="font-16">à partir de <span class="price"><?= $annonce->price ?></span></p>
       <p class="font-13 text-light"><?= substr(strip_tags($annonce->description), 0 , 250) ?> [...]</p>
       <div class="font-12">
                   <span class="mr-4">Déposé le <span><?= $annonce->date_publication_format ?></span>

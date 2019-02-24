@@ -1,5 +1,8 @@
 <style type="text/css">
-
+  .price {
+    color: #f56b2a;
+    font-weight: 600;
+  }
 </style>
 <script type="text/javascript">
   (function ($) {
@@ -21,6 +24,15 @@
           if (_.isUndefined(url) || _.isEmpty(url)) return false;
           window.location.href = url;
         });
+      });
+
+      $('.price').each(function (index, el) {
+        var priceValue = $(el).text().trim();
+        $(el).text(new Intl.NumberFormat('de-DE', {
+          style: "currency",
+          minimumFractionDigits: 0,
+          currency: 'MGA'
+        }).format(priceValue));
       });
     });
   })(jQuery)
@@ -48,6 +60,7 @@
                 <h5 class="media-heading font-18">
                   <a href="{{ annonce.ID | get_permalink }}">{{ annonce.title }}</a>
                 </h5>
+                <p class="font-16">à partir de <span class="price">{{ annonce.price }}</span></p>
                 <p class="font-13 text-light">{{ annonce.description|striptags|raw[:150] }} [...]</p>
                 <div class="font-12">
                   <span class="mr-4">Déposé le <span>{{ annonce.date_publication_format }}</span>

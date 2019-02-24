@@ -17,6 +17,9 @@ wp_enqueue_style( 'offers' );
         if ( is_active_sidebar( 'archive-cv-top' ) ) {
           dynamic_sidebar( 'archive-cv-top' );
         }
+        if ($wp_query->is_search) :
+          get_template_part('search', 'form');
+        endif;
         ?>
       </div>
 
@@ -38,13 +41,23 @@ wp_enqueue_style( 'offers' );
                   get_template_part( 'partials/content', 'candidate' );
                 endwhile;
               } else {
-                ?>
-                  <div class="col-md-12">
+                if ( ! $wp_query->is_search) {
+                  ?>
+                  <div class="col-lg-12">
                     <div class="card mb-4">
-                      <p>Pour le moment, aucune CV disponible n'est proposée. </p>
+                      <p>Il n'y a actuellement aucun candidat disponible. </p>
                     </div>
                   </div>
-                <?php
+                  <?php
+                } else {
+                  ?>
+                  <div class="col-lg-12">
+                    <div class="card mb-4">
+                      <p>Aucun candidat correspond à votre recherche. </p>
+                    </div>
+                  </div>
+                  <?php
+                }
               }
 
               // Affiche la pagination

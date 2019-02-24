@@ -182,7 +182,10 @@ wp_enqueue_script('sweetalert');
 <script>
   (function ($) {
     $(document).ready(function () {
-      $("#slider").camRollSlider();
+      $("#slider").each(function (i, el) {
+        $(el).camRollSlider();
+      });
+
       $('.view-phone-number').on('click', function (ev) {
         swal({
             title: "Confirmation",
@@ -219,6 +222,16 @@ wp_enqueue_script('sweetalert');
             }
           });
       });
+
+      $('.price').each(function (index, el) {
+        var priceValue = $(el).text().trim();
+        $(el).text(new Intl.NumberFormat('de-DE', {
+          style: "currency",
+          minimumFractionDigits: 0,
+          currency: 'MGA'
+        }).format(priceValue));
+      });
+
     });
   })(jQuery)
 </script>
@@ -235,6 +248,16 @@ wp_enqueue_script('sweetalert');
             }
             if (!$annonce instanceof \includes\post\Annonce) continue;
             $author = $annonce->get_author();
+            $name = 'Inconnue';
+            if (in_array('candidate', $User->roles)) {
+              $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
+              $name = $Candidate->getLastName();
+            }
+
+            if (in_array('company', $User->roles)) {
+              $Company = \includes\post\Company::get_company_by($User->ID);
+              $name = $Company->title;
+            }
             ?>
           <div class="ibox">
             <?php if (!$action): ?>
@@ -268,10 +291,10 @@ wp_enqueue_script('sweetalert');
                 <h2 class="page-title font-strong font-19"><?= $annonce->title ?></h2>
 
                 <?php if ($annonce->price && !empty($annonce->price)) : ?>
-                  <div class="price font-15"><span><?= $annonce->price ?> AR</span></div>
+                  <div class="price font-15"><span class="price"><?= $annonce->price ?></span></div>
                 <?php endif; ?>
 
-                <div>Déposer le <?= $annonce->date_publication_format ?> par <?= $author->user_nicename ?></div>
+                <div>Déposer le <?= $annonce->date_publication_format ?> par <b><?= $name ?></b></div>
                 <hr class="mt-5">
                 <div>
                   <div class="row mt-4">
@@ -383,7 +406,7 @@ wp_enqueue_script('sweetalert');
                   <?php if ($annonce->price && $annonce->price !== 0): ?>
                     <tr>
                       <td>Budget indicatif</td>
-                      <td class="font-bold"><?=  $annonce->price ?> MGA</td>
+                      <td class="font-bold"><span class="price"><?=  $annonce->price ?></span></td>
                     </tr>
                   <?php endif; ?>
                   <tr>

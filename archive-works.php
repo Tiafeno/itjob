@@ -1,4 +1,5 @@
 <?php
+global $wp_query;
 get_header();
 ?>
   <div class="uk-section uk-section-transparent">
@@ -8,6 +9,9 @@ get_header();
         if ( is_active_sidebar( 'archive-works-top' ) ) {
           dynamic_sidebar( 'archive-works-top' );
         }
+        if ($wp_query->is_search) :
+          get_template_part('search', 'form');
+        endif;
         ?>
       </div>
       <div class="row">
@@ -34,14 +38,23 @@ get_header();
                 <?php
 
                 } else {
-                  ?>
-                  <div class="col-lg-12">
-                    <div class="card mb-4">
-                      <p>Il n'y a actuellement aucun travail disponible. </p>
+                  if ( ! $wp_query->is_search) {
+                    ?>
+                    <div class="col-lg-12">
+                      <div class="card mb-4">
+                        <p>Il n'y a actuellement aucun travail disponible. </p>
+                      </div>
                     </div>
-                  </div>
-
-                  <?php
+                    <?php
+                  } else {
+                    ?>
+                    <div class="col-lg-12">
+                      <div class="card mb-4">
+                        <p>Aucun travail correspond à votre recherche. </p>
+                      </div>
+                    </div>
+                    <?php
+                  }
                 }
                 // Affiche la pagination
                 itjob_pagination();

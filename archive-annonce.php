@@ -1,4 +1,6 @@
 <?php
+global $w_query;
+
 get_header();
 ?>
   <script type="text/javascript">
@@ -21,10 +23,24 @@ get_header();
             window.location.href = url;
           });
         });
-      });
 
+        $('.price').each(function (index, el) {
+          var priceValue = $(el).text().trim();
+          $(el).text(new Intl.NumberFormat('de-DE', {
+            style: "currency",
+            minimumFractionDigits: 0,
+            currency: 'MGA'
+          }).format(priceValue));
+        });
+      });
     })(jQuery)
   </script>
+  <style type="text/css">
+    .price {
+      color: #f56b2a;
+      font-weight: 600;
+    }
+  </style>
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
       <div class="widget">
@@ -32,6 +48,9 @@ get_header();
         if ( is_active_sidebar( 'archive-annonce-top' ) ) {
           dynamic_sidebar( 'archive-annonce-top' );
         }
+        if ($wp_query->is_search) :
+          get_template_part('search', 'form');
+        endif;
         ?>
       </div>
       <div class="row">
@@ -58,16 +77,24 @@ get_header();
                 <?php
 
               } else {
-                ?>
-                <div class="col-lg-12">
-                  <div class="card mb-4">
-                    <p>Il n'y a actuellement aucune annonce disponible. </p>
+                if ( ! $wp_query->is_search) {
+                  ?>
+                  <div class="col-lg-12">
+                    <div class="card mb-4">
+                      <p>Il n'y a actuellement aucune annonce disponible. </p>
+                    </div>
                   </div>
-                </div>
-
+                  <?php
+                } else {
+                  ?>
+                  <div class="col-lg-12">
+                    <div class="card mb-4">
+                      <p>Aucune annonce correspond à votre recherche. </p>
+                    </div>
+                  </div>
                 <?php
+                }
               }
-              // Affiche la pagination
               itjob_pagination();
               ?>
             </div>
