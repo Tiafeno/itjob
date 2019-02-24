@@ -304,24 +304,42 @@ add_action('init', function () {
     $post_id = Http\Request::getValue('ad_id');
     $post = get_post(intval($post_id));
     $post_type = get_post_type($post->ID);
+    if ( ! in_array($post_type, ['annonce', 'works']))
+      wp_send_json_error("Ce type de post ne possède pas un numéro de téléphone");
+
     if ($post_type === 'annonce') {
       $Annonce = new \includes\post\Annonce($post->ID, true);
       $User = $itJob->services->getUser();
-
-//      $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
-//      $credit = $Wallet->credit;
-
-//      if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
-
       if (!in_array($User->ID, $Annonce->contact_sender)) {
-//        $credit = $credit - 1;
-//        $Wallet->update_wallet($credit);
         $Annonce->add_contact_sender($User->ID);
       }
-
       wp_send_json_success($Annonce->cellphone);
-    } else {
-      wp_send_json_error("Ce type de post ne possède pas un numéro de téléphone");
+    }
+    if ($post_type === 'works') {
+      $Works = new \includes\post\Works($post->ID, true);
+      $User = $itJob->services->getUser();
+      $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
+      $credit = $Wallet->credit;
+      if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
+      if (!in_array($User->ID, $Works->contact_sender)) {
+        $credit = $credit - 1;
+        $Wallet->update_wallet($credit);
+        $Works->add_contact_sender($User->ID);
+      }
+      $first_name = '';
+      $greet = '';
+      if (in_array('candidate', $User->roles)) {
+        $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
+        $first_name = $Candidate->getFirstName();
+        $greet  = $Candidate->greeting['label'];
+      }
+
+      if (in_array('company', $User->roles)) {
+        $Company = \includes\post\Company::get_company_by($User->ID);
+        $first_name = $Company->name;
+        $greet = $Company->greeting == 'mrs' ? "Monsieur" : "Madame";
+      }
+      wp_send_json_success(['phone' => $Works->cellphone, 'first_name' => $first_name, 'greet' => $greet ]);
     }
   }
 

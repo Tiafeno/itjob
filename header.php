@@ -297,9 +297,8 @@
                       $Company = \includes\post\Company::get_company_by($User->ID);
                       $name = $Company->name;
                     }
-
-                    $credit = get_user_meta($User->ID, 'credit', true);
-                    $credit = empty($credit) ? __CREDITS__ : intval($credit);
+                    $wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
+                    $credit = $wallet->credit;
 
                     ?>
                     <li class="dropdown dropdown-user">

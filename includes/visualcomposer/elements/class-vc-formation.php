@@ -248,6 +248,7 @@ EOF;
       'title'          => wp_strip_all_tags(Http\Request::getValue('title')),
       'region'         => (int)Http\Request::getValue('region'),
       'address'        => Http\Request::getValue('address'),
+      'price'          => Http\Request::getValue('price'),
       'diploma'        => Http\Request::getValue('diploma'),
       'duration'       => Http\Request::getValue('duration'),
       'date_limit'     => Http\Request::getValue('date_limit'),
@@ -273,6 +274,7 @@ EOF;
       update_field('duration', $form->duration, $post_id);
       update_field('address', $form->address, $post_id);
       update_field('diploma', $form->diploma, $post_id);
+      update_field('price', (int)$form->price, $post_id);
       // Ajouter une valeur par default
       update_field('featured', 0, $post_id);
       update_field('activated', 0, $post_id);

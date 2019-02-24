@@ -285,7 +285,6 @@ if ( ! class_exists( 'vcSearch' ) ):
           'rg'             => Http\Request::getValue('rg', ''),
           'search_count'   => count( $posts )
         ] );
-
         return $Engine->render( '@VC/search/search-annonce.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
       } catch ( Twig_Error_Runtime $e ) {

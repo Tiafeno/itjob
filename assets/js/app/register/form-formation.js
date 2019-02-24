@@ -62,6 +62,7 @@ angular.module('FormationApp', ['ui.router', 'ngMessages'])
       $scope.buttonDisable = false;
       $scope.uri = {};
       $scope.Form = {};
+      $scope.Form.price = 0;
       $scope.Form.distance_learning = '0';
       // Envoyer le formulaire
       $scope.submitForm = function (Form) {

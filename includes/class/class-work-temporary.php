@@ -74,7 +74,7 @@ class Works {
     $this->url = get_the_permalink($output->ID);
 
     $this->email = get_field('email', $this->ID);
-    $User = get_field('annonce_author',$this->ID);
+    $User = get_field('annonce_author', $this->ID);
     if (!$User) {
       self::$error = new \WP_Error('broken', "L'utilisateur est introuvable");
       return false;
@@ -103,7 +103,7 @@ class Works {
 
   public
   function get_user() {
-    $User = get_field('annonce_author', $this->ID);
+    $User = get_field('annonce_author', $this->ID); // WP_User
     return $this->author = $User;
   }
 

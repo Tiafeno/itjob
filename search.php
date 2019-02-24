@@ -22,7 +22,7 @@ $search_count = $wp_query->found_posts;
               <!--              <small class="text-muted">About 1,370 result ( 0.13 seconds)</small>-->
             </div>
 
-            <div class="row mb-5">
+            <div class="mb-5">
               <?php
               while (have_posts()) : the_post();
                 get_template_part('partials/content', get_post_type());

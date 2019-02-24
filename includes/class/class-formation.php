@@ -23,6 +23,7 @@ class Formation
   public  $region             = null;
   public  $activity_area      = null;
   public  $duration           = null;
+  public  $price              = 0;
   public  $description        = null;
   public  $date_limit         = null;
   public  $date_create        = null;
@@ -52,6 +53,8 @@ class Formation
     $this->address = get_field('address', $formation_id);
     $this->email = get_field('email', $formation_id);
     $this->duration = get_field('duration', $formation_id);
+    $price = get_field('price', $formation_id);
+    $this->price = $price ? intval($price) : 0;
     $this->date_limit = get_field('date_limit', $formation_id); // Format: Y-m-d
     $this->reference = get_field('reference', $formation_id);
     $this->diploma = get_field('diploma', $formation_id);

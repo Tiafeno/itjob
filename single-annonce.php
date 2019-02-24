@@ -358,7 +358,9 @@ wp_enqueue_script('sweetalert');
             <?php if (!$action): ?>
               <div class="ibox-body">
                 <button type="button" class="view-phone-number btn btn-danger btn-fix btn-block">
-                  <span class="btn-icon"><i class="la la-phone"></i>Voir le numéro</span>
+                  <span class="btn-icon"><i class="la la-phone"></i>
+                    Voir ses coordonées
+                  </span>
                 </button>
                 <a href="?action=contact" data-annonce-id="<?= $annonce->ID ?>" class="btn btn-blue btn-fix d-block mt-2" id="view-number-phone">
                   <span class="btn-icon"><i class="la la-envelope-o"></i>Evoyer un message</span>

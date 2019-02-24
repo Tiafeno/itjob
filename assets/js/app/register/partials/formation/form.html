@@ -7,6 +7,9 @@
 <form name="fForm" ng-submit="submitForm( fForm )" class="form-horizontal p-5" novalidate>
     <div class="page-heading mb-4">
       <h4 class="page-title">FORMULAIRE FORMATION</h4>
+      <div>
+        Remarque: Cette formation sera liée à votre compte.
+      </div>
     </div>
     <hr>
     <div class="ibox-body">
@@ -72,6 +75,16 @@
           <div ng-messages="fForm.address.$error" role="alert" class="alert alert-pink"
           ng-show="fForm.address.$touched && fForm.address.$invalid" ng-messages-multiple>
             <div ng-message="required">Ajouter une adresse pour votre formation.</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-4 row">
+        <label class="col-sm-4 col-form-label">Tarif de formation <span style="color: red">*</span></label>
+        <div class="col-sm-6">
+          <input class="form-control" name="price" ng-model="Form.price" type="number" placeholder="Tarif en Ariary (MGA)" required>
+          <div ng-messages="fForm.price.$error" role="alert" class="alert alert-pink"
+               ng-show="fForm.price.$touched && fForm.price.$invalid" ng-messages-multiple>
+            <div ng-message="required">Champ obligatoire.</div>
           </div>
         </div>
       </div>

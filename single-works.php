@@ -119,6 +119,8 @@ if ($action) {
 
 get_header();
 wp_enqueue_style('themify-icons');
+wp_enqueue_style('sweetalert');
+wp_enqueue_script('sweetalert');
 
 ?>
   <style type="text/css">
@@ -143,6 +145,13 @@ wp_enqueue_style('themify-icons');
       font-weight: normal;
       line-height: 1.8;
     }
+    .sweet-alert h2 {
+      margin-bottom: 40px;
+      font-size: 20px;
+    }
+    .sweet-alert .sa-button-container {
+      margin-top: 40px;
+    }
   </style>
   <script type="text/javascript">
     (function ($) {
@@ -166,7 +175,70 @@ wp_enqueue_style('themify-icons');
         }
         $(window).resize(function () {
           fixWorkWrap();
-        })
+        });
+        $('.view-phone-number').on('click', function (ev) {
+          var credit = <?= intval($credit) ?>;
+          if (credit !== 0) {
+            swal({
+                title: "1 contact avec coordonnees = 1 credit",
+                text: "Vous avez actuellement <?= $credit ?> unité(s) disponible(s) sur votre compte. " +
+                "Voulez-vous contacter directement cet annonceur?",
+                type: "",
+                showCancelButton: true,
+                confirmButtonClass: "btn-info",
+                confirmButtonText: "Oui",
+                cancelButtonText: "Non",
+                closeOnConfirm: false,
+                closeOnCancel: true,
+                showLoaderOnConfirm: true
+              },
+              function(isConfirm) {
+                if (isConfirm) {
+                  $.ajax({
+                    url: `<?= admin_url('admin-ajax.php') ?>`,
+                    cache: true,
+                    method: "GET",
+                    data: { action : 'request_phone_number', ad_id : <?= $post->ID ?> },
+                    dataType: "json"
+                  })
+                    .done(function (resp) {
+                      var query = resp;
+                      if (query.success) {
+                        swal(query.data.greet + " " + query.data.first_name, query.data.phone);
+                      } else {
+                        swal("Vous avez actuellement 0 unité disponible sur votre compte ItJob", '' +
+                          'Pour contacter directement cet annonceur, vous devez crediter votre compte en credit ITJob ', 'info');
+                      }
+
+                    })
+                    .fail(function() {
+                      swal("Désolé", "Vous n'êtes pas connecter", "warning");
+                    })
+                    .always(function () {});
+                } else {
+                }
+              });
+          } else {
+            // Acheter des credits
+            swal({
+                title: "Vous avez actuellement 0 unité disponible sur votre compte ItJob",
+                text: "Pour contacter directement cet annonceur, vous devez crediter votre compte en credit ITJob",
+                type: "info",
+                showCancelButton: true,
+                confirmButtonClass: "btn-info",
+                confirmButtonText: "Acheter des credits",
+                cancelButtonText: "Fermer",
+                closeOnConfirm: false,
+                closeOnCancel: true,
+                showLoaderOnConfirm: true
+              },
+              function(isConfirm) {
+                if (isConfirm) {
+                  window.location.href = `<?= get_the_permalink(WALLET_PAGE) ?>`;
+                }
+              });
+          }
+        });
 
       });
     })(jQuery);
@@ -247,8 +319,16 @@ wp_enqueue_style('themify-icons');
           <div class="uk-width-1-3@m">
             <div class="ibox mt-4">
               <div class="ibox-body">
-                <a href="?action=contact" class="btn btn-info btn-fix d-block">
-                  <span class="btn-icon"><i class="la la-envelope-o"></i>Evoyer un message</span>
+                <button type="button" class="view-phone-number btn btn-danger btn-fix btn-block">
+                  <span class="btn-icon"><i class="la la-phone"></i>
+                    Voir ses coordonées
+                    <span class="badge badge-pill badge-default">1 Credit</span>
+                  </span>
+                </button>
+                <a href="?action=contact" class="btn btn-info btn-fix d-block mt-2">
+                  <span class="btn-icon"><i class="la la-envelope-o"></i>
+                    Evoyer un message
+                    <span class="badge badge-pill badge-default">1 Credit</span>
                 </a>
               </div>
             </div>

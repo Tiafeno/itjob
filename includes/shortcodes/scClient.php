@@ -1148,6 +1148,7 @@ if ( ! class_exists( 'scClient' ) ) :
           'Alerts'    => $alerts,
           'post_type' => 'candidate',
           'Helper'    => [
+            'add_annonce_url'   => get_the_permalink( ADD_ANNONCE_PAGE),
             'archive_offer_link' => get_post_type_archive_link('offers')
           ]
         ] );
