@@ -85,6 +85,7 @@ class Works {
     $this->get_tax_field();
     $this->get_acf_field();
 
+    $this->date_create = get_post_meta($this->ID, 'date_create', true);
     $view = get_post_meta($this->ID, 'count_view', true);
     $contact_sender = get_post_meta($this->ID, 'sender_contact', true);
     $this->count_view = $view ? (int)$view : 0;
@@ -122,6 +123,7 @@ class Works {
   function get_acf_field() {
     $this->featured  = get_field('featured', $this->ID); // false|true
     $this->featured_datelimit = get_field('featured_datelimit', $this->ID); // Y-m-d H:i:s
+    $this->type     = get_field('type', $this->ID); // ['value' => <string>, 'label' => <string>]
     $this->cellphone = get_field('cellphone', $this->ID); // number
     $this->gallery   = get_field('gallery', $this->ID);
     $this->activated = get_field('activated', $this->ID);

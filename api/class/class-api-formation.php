@@ -200,6 +200,7 @@ class apiFormation
       'establish_name' => $objFormation->establish_name,
       'address'        => $objFormation->address,
       'duration'       => $objFormation->duration,
+      'price'          => $objFormation->price,
       'date_limit'     => date('Ymd', strtotime($objFormation->date_limit))
     ];
     foreach (get_object_vars($form) as $key => $value) {

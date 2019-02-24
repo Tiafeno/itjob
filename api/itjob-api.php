@@ -16,6 +16,8 @@ require_once 'class/class-api-helper.php';
 require_once 'class/class-api-company.php';
 require_once 'class/class-api-formation.php';
 require_once 'class/apiRequestFormation.php';
+require_once 'class/apiSmallAd.php';
+require_once 'class/apiWork.php';
 
 function post_updated_values ($post_ID)
 {

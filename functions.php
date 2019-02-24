@@ -294,6 +294,7 @@ add_action('init', function () {
     }
     return $val;
   }, 10, 3);
+
   add_filter('manage_users_columns', function ($column) {
     $column['CV'] = 'CV';
     return $column;
