@@ -97,7 +97,8 @@ if ($action) {
       $credit = $credit <= 0 ? 0 : $credit;
 
       if (!$credit) {
-        do_action('add_action', "Il ne vous reste plus de credit, Veuillez acheter de credit.", 'info', false);
+        do_action('add_action', "Vous avez actuellement 0 unité disponible sur votre compte ItJob. " .
+          "Pour contacter directement cet annonceur, vous devez crediter votre compte en credit ITJob", 'info', false);
         setcookie( 'contact-work', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
         continue;
       }
@@ -371,7 +372,7 @@ wp_enqueue_script('sweetalert');
                     </div>
                     <div class="ibox-footer">
                       <input type="hidden" name="work_id" value="<?= $works->ID ?>">
-                      <button class="btn btn-blue mr-2"  type="submit">Envoyer votre message</button>
+                      <button class="btn btn-blue mr-2"  type="submit">Envoyer votre message <span class="badge badge-pill badge-default">1 Credit</span></button>
                     </div>
                   </form>
                 </div>
