@@ -38,7 +38,7 @@ class credit {
   }
 
   public function sc_render_html( $attrs ) {
-    global $Engine;
+    global $Engine, $itJob;
 
     extract(
       shortcode_atts(
@@ -57,19 +57,17 @@ class credit {
           "Vous n'avez pas l'autorisation nécessaire pour acceder cette page".
         '</div></div>';
     }
-
-    $wallet_id = self::create_wallet();
-    if (is_wp_error($wallet_id)) {
-      $msg = $wallet_id->get_error_message();
-      return $msg;
-    }
+    $User = $itJob->services->getUser();
     try {
       do_action('get_notice');
       $wModel = new Model_Wallet();
+      $wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
+      $credit = $wallet->credit;
       /** @var STRING $title */
       return $Engine->render('@VC/wallet.html', [
         'title' => $title,
-        'histories' => $wModel->collect_history( $wallet_id )
+        'credit' => $credit,
+        'histories' => $wModel->collect_history( $wallet->getId() )
       ]);
     } catch (\Twig_Error_Loader $e) {
     } catch (\Twig_Error_Runtime $e) {
