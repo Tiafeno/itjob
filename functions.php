@@ -308,14 +308,14 @@ add_action('init', function () {
       $Annonce = new \includes\post\Annonce($post->ID, true);
       $User = $itJob->services->getUser();
 
-      $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
-      $credit = $Wallet->credit;
+//      $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
+//      $credit = $Wallet->credit;
 
-      if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
+//      if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
 
       if (!in_array($User->ID, $Annonce->contact_sender)) {
-        $credit = $credit - 1;
-        $Wallet->update_wallet($credit);
+//        $credit = $credit - 1;
+//        $Wallet->update_wallet($credit);
         $Annonce->add_contact_sender($User->ID);
       }
 

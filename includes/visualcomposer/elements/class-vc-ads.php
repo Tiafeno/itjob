@@ -114,7 +114,9 @@ class vcAds
       );
 
       $Model = new \includes\model\itModel();
-      if (null == $position) return null;
+     /** @var string $position */
+     /** @var string $size */
+     if (null == $position) return null;
       $dateNow = date_i18n('Y-m-d H:i:s');
       $Ads = $Model->get_ads_by_position($position, $dateNow);
       if (empty($Ads)) {

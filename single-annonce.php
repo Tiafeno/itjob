@@ -4,15 +4,15 @@ global $annonce, $post, $wp, $itJob;
 $action = Http\Request::getValue('action', false);
 $User = $itJob->services->getUser();
 $rp_path = wp_unslash( $_SERVER['REDIRECT_URL'] );
-$credit = 0;
-if ( ! is_wp_error($User)) {
-  $wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
-  if (is_wp_error($wallet)) {
-    add_action('add_notice', $wallet->get_error_message());
-  } else {
-    $credit = $wallet->credit;
-  }
-}
+//$credit = 0;
+//if ( ! is_wp_error($User)) {
+//  $wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
+//  if (is_wp_error($wallet)) {
+//    add_action('add_notice', $wallet->get_error_message());
+//  } else {
+//    $credit = $wallet->credit;
+//  }
+//}
 
 if ($action) {
   switch ($action):
@@ -30,9 +30,8 @@ if ($action) {
         do_action('add_notice', $errno, "pink", false);
       }
 
-      if ($credit === 0)
-        do_action('add_notice', "Vous n'avez plus de credit. Veuillez acheter de credit avant de continuer", 'pink', false);
-
+//      if ($credit === 0)
+//        do_action('add_notice', "Vous n'avez plus de credit. Veuillez acheter de credit avant de continuer", 'pink', false);
 
       $key = md5(date_i18n('Y-m-d H:i:s'));
       setcookie( 'contact-annonce', $key, 0, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
@@ -51,10 +50,10 @@ if ($action) {
         exit;
       }
 
-      if ($credit === 0) {
-        wp_safe_redirect( add_query_arg(['action' => 'contact']) );
-        exit;
-      }
+//      if ($credit === 0) {
+//        wp_safe_redirect( add_query_arg(['action' => 'contact']) );
+//        exit;
+//      }
 
       $post_url = get_the_permalink($post->ID);
       $message .= "<p class='margin-top: 10px'>Voir l'annonce: <a href='{$post_url}' target='_blank'>{$post->post_title}</a> </p>";
@@ -94,20 +93,20 @@ if ($action) {
         exit;
       }
       // Reduire le credit du client
-      $credit = $credit - 1;
-      $credit = $credit <= 0 ? 0 : $credit;
-      if (!$credit) {
-        do_action('add_action', "Il ne vous reste plus de credit, Veuillez acheter de credit.", 'info', false);
-        setcookie( 'contact-annonce', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
-        continue;
-      }
+//      $credit = $credit - 1;
+//      $credit = $credit <= 0 ? 0 : $credit;
+//      if (!$credit) {
+//        do_action('add_action', "Il ne vous reste plus de credit, Veuillez acheter de credit.", 'info', false);
+//        setcookie( 'contact-annonce', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
+//        continue;
+//      }
 
       $Annonce = new \includes\post\Annonce( (int)$post->ID, true );
       if ( ! in_array($User->ID, $Annonce->contact_sender)) {
-        $wallet->update_wallet($credit);
+//        $wallet->update_wallet($credit);
 
-        $msg = "Il vous reste {$credit} credit(s)";
-        do_action('add_action', $msg, 'info', false);
+//        $msg = "Il vous reste {$credit} credit(s)";
+//        do_action('add_action', $msg, 'info', false);
       }
 
       setcookie( 'contact-annonce', ' ', time() - YEAR_IN_SECONDS, $rp_path, COOKIE_DOMAIN, is_ssl(), true );
