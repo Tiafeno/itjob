@@ -20,7 +20,6 @@
         .on("show.bs.modal", (ev) => {
             tinymce.remove();
             $('#ask_description').val('');
-
             tinymce.init({
               language: 'fr_FR',
               menubar: false,
@@ -100,7 +99,26 @@
                   if (resp.success) {
                     swal('Succès', response, 'success');
                   } else {
-                    swal('Erreur', response, 'warning');
+                    let error = response;
+                    if (error.code === "account")
+                      swal({
+                          title: "Désolé",
+                          text: `${error.msg}`,
+                          type: "info",
+                          showCancelButton: true,
+                          confirmButtonClass: "btn-blue ml-2",
+                          confirmButtonText: "Se connecter",
+                          cancelButtonText: "Annuler",
+                          closeOnConfirm: false,
+                          showLoaderOnConfirm: true
+                        },
+                        function (willConnect) {
+                          if (willConnect) {
+                            window.location.href = "/connexion/candidate";
+                          }
+                        });
+                    if (error.code === "broken")
+                      swal("Désolé", error.msg, "error");
                   }
                   
                   buttonSubmit.text('Envoyer');

@@ -173,9 +173,25 @@ class cronModel
             // Vérifier si l'utilisateur est un candidat
             $Candidate = new includes\post\Candidate((int) $candidate->ID);
             $name = $Candidate->getFirstName() . ' ' . $Candidate->getLastName();
-            $return[] = ['reference' => $Candidate->reference, 'name' => $name];
+            $return[] = ['reference' => $Candidate->reference, 'name' => $name, 'ID' => $Candidate->getId()];
         }
 
         return $return;
+    }
+
+    public function getPendingOffer() {
+      global $wpdb;
+      $return = [];
+      $sql = "SELECT * FROM $wpdb->posts pts WHERE pts.post_type = %s AND pts.post_status = %s
+        AND pts.ID IN (SELECT pta.post_id as post_id FROM $wpdb->postmeta pta WHERE pta.meta_key = 'activated' AND pta.meta_value = 0)";
+      $prepare = $wpdb->prepare($sql , 'offers', 'pending');
+      $offers = $wpdb->get_results( $prepare );
+      foreach ($offers as $offer) {
+        // Vérifier si l'utilisateur est un candidat
+        $Offer = new includes\post\Offers((int) $offer->ID);
+        $return[] = ['reference' => $Offer->reference, 'title' => $Offer->postPromote, 'ID' => $Offer->ID];
+      }
+
+      return $return;
     }
 }

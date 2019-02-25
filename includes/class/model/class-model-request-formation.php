@@ -47,6 +47,7 @@ class Model_Request_Formation
         'topic'       => $obj->topic,
         'description' => $obj->description,
         'concerned'   => serialize([]),
+        'date_create' => $obj->date_create
       ];
       $format = ['%d', '%s', '%s', '%s', '%s'];
       $result = $wpdb->insert($wpdb->prefix . self::$table, $data, $format);

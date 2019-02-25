@@ -32,7 +32,9 @@ class vcFormation
 
     add_action('acf/save_post', function ($post_id) {
       // Mettre à jour automatiquement la référence
-      update_field('reference', strtoupper("FOM{$post_id}"), $post_id);
+      $post_type = get_post_type($post_id);
+      if ($post_type === 'formation')
+        update_field('reference', strtoupper("FOM{$post_id}"), $post_id);
     }, 10, 1);
   }
 
@@ -165,7 +167,7 @@ class vcFormation
       EXTR_OVERWRITE
     );
     $refused_access_msg = '<div class="text-left mt-5">';
-    $refused_access_msg .= '<div class="font-bold text-left font-14 badge badge-pink">Seule un compte professionnel a le pouvoir d\'ajouté une formation. <br>';
+    $refused_access_msg .= '<div class="font-bold text-left font-14 badge badge-pink" style="white-space: pre-wrap;">Seule un compte professionnel a le pouvoir d\'ajouté une formation. <br>';
     $refused_access_msg .= 'Votre compte ne vous permet pas de publier une formation. Vous devez se connecter avec votre compte professionnel.';
     $refused_access_msg .= '</div></div>';
     $redirection = Http\Request::getValue('redir');
@@ -292,20 +294,20 @@ EOF;
   function new_request_formation ()
   {
     if (!wp_doing_ajax() || !is_user_logged_in()) {
-      wp_send_json_error("Veuillez vous connecter ou inscrire en tant que particulier avant d'envoyer une demande");
+      wp_send_json_error(["msg" => "Veuillez vous connecter pour continuer", "code" => "account"]);
     }
     $subject = Http\Request::getValue('subject', false);
     $topic = Http\Request::getValue('topic', false);
     $description = Http\Request::getValue('description');
-    $diploma = Http\Request::getValue('diploma');
-    if (!$subject || !$topic || !$description) wp_send_json_error("Formulaire non valide");
+    if (!$subject || !$topic || !$description) wp_send_json_error(["msg" => "Formulaire non valide", "code" => "broken"]);
     $User = wp_get_current_user();
     if (in_array('candidate', $User->roles)) {
       $args = [
         'user_id'     => $User->ID,
         'subject'     => $subject,
         'topic'       => $topic,
-        'description' => $description
+        'description' => $description,
+        'date_create' => date_i18n( 'Y-m-d H:i:s' )
       ];
       $result = Model_Request_Formation::add_resources($args);
       if ($result) {
@@ -315,9 +317,9 @@ EOF;
 
         wp_send_json_success("Votre demande a bien été soumise");
       } else {
-        wp_send_json_error("Une erreur s'est produite. Veuillez réessayer ultérieurement");
+        wp_send_json_error(["msg" => "Une erreur s'est produite. Veuillez réessayer ultérieurement", "code" => "broken"]);
       }
-    } else wp_send_json_error("Votre compte ne vous permet pas d'envoyer une demande de formation");
+    } else wp_send_json_error(["msg" => "Votre compte ne vous permet pas d'envoyer une demande de formation", "code" => "broken"]);
   }
 
   public

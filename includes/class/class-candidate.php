@@ -72,9 +72,6 @@ final class Candidate extends UserParticular implements \iCandidate {
       if ($User->ID === 0) return false;
       $this->author = Obj\jobServices::getUserData( $User->ID );
       $this->avatar = wp_get_attachment_image_src( get_post_thumbnail_id( $this->getId() ), [300, 300] );
-
-      // TODO: Verifier si le client est une entreprise avec un compte premium
-
       // get Terms
       $this->fieldTax();
 
@@ -129,7 +126,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   public function is_activated() {
     $activation = get_field( 'activated', $this->getId() );
 
-    return (bool) $activation;
+    return boolval($activation);
   }
 
   /**

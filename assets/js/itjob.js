@@ -46,7 +46,7 @@
               swal(title, response.data, icon);
             },
             error: function (error) {
-              swal('Erreur', "Une erreur s'est produite", 'error');
+              swal('Désolé', "Une erreur s'est produite", 'error');
             }
           });
         });

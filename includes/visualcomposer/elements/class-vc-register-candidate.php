@@ -343,7 +343,8 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       update_field( 'itjob_cv_hasCV', 1, $this->Candidate->getId() );
       add_post_meta($this->Candidate->getId(), 'date_create', date_i18n('Y-m-d H:i:s'));
       // Envoyer un email de confirmation
-      do_action('submit_particular_cv', $this->Candidate->getId());
+      //do_action('submit_particular_cv', $this->Candidate->getId());
+
       do_action('notice-admin-create-cv', $this->Candidate->getId());
 
       // Alerter les entreprises
@@ -438,7 +439,6 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         wp_send_json( [ 'attachment_id' => $attachment_id, 'success' => true ] );
       }
     }
-
   }
 endif;
 

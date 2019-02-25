@@ -13,6 +13,7 @@ final class Company implements \iCompany {
   // Added Trait Class
   use \Auth;
 
+  private static $error = false;
   public $addDate;
   public $ID;
   public $greeting; // mr: Monsieur, mrs: Madame
@@ -46,6 +47,7 @@ final class Company implements \iCompany {
       case 'user_id':
         $User = get_user_by( 'ID', (int) $value );
         if ( ! $User->ID || $User->ID === 0 ) {
+          self::$error = new \WP_Error('broken', "Utilisateur introuvable");
           return false;
         }
         $args = [
@@ -56,8 +58,11 @@ final class Company implements \iCompany {
           'meta_compare' => '='
         ];
         $pts  = get_posts( $args );
+        if (is_array($pts) && empty($pts)) {
+          self::$error = new \WP_Error('broken', "Compte professionnel inrouvable");
+          return false;
+        }
         $pt   = $pts[0];
-
         return new Company( $pt->ID );
         break;
     endswitch;
@@ -73,7 +78,8 @@ final class Company implements \iCompany {
       if ( ! is_null( get_post( $post ) ) ) {
         $output = get_post( $post );
       } else {
-        return null;
+        self::$error = new \WP_Error('broken', "Identifiant incorrect");
+        return false;
       }
     }
 
@@ -87,6 +93,7 @@ final class Company implements \iCompany {
      * When $output is OBJECT, a WP_Post instance is returned.
      */
     if ( is_null( $output ) ) {
+      self::$error = new \WP_Error('broken', "Compte professionnel inrouvable");
       return false;
     }
     $this->ID      = $output->ID;
@@ -113,6 +120,15 @@ final class Company implements \iCompany {
       if ($access) {
         $this->getInterests();
       }
+    }
+  }
+
+  public static function is_wp_error ()
+  {
+    if (is_wp_error(self::$error)) {
+      return self::$error->get_error_message();
+    } else {
+      return false;
     }
   }
 
