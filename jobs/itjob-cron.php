@@ -311,13 +311,13 @@ add_action('tous_les_15_minutes', function () {
 });
 
 add_action("woocommerce_tracker_send_event", function () { // at 14h41 (Une fois par jour)
-  review_offer_limit();
-  send_pending_cv();
+  // review_offer_limit();
+  // send_pending_cv();
 });
 
 add_action('jp_purge_transients_cron', function () { // at 10h 24 (Une fois par jour)
-  send_pending_cv();
-  send_pending_offer();
+  // send_pending_cv();
+  // send_pending_offer();
 });
 
 // Envoyer les CV validés au entreprises
@@ -339,7 +339,7 @@ add_action('end_of_the_day', function () { // at 16h38 (Une fois par jour)
 /**
  * Cette action permet de supprimer un offre à la une si la date limite est atteinte
  */
-add_action('tous_les_jours', function () {
+add_action('tous_les_jours', function () { // at 06h00
   // Mettre a jour la position de l'offre
   update_offer_featured();
   // Envoyer les offres avec date de fin d'inscription de 5 jours et 1 jours
@@ -351,7 +351,7 @@ add_action('tous_les_jours', function () {
  * Cette action permet d'envoyer des mails au administrateurs du site tous les jours
  * les taches en attente.
  */
-add_action('tous_les_jours', function () {
+add_action('tous_les_jours', function () { // at 06h00
 
   // Envoyer les candidats que les entreprises s'interresent
   send_pending_interest();

@@ -1,0 +1,30 @@
+<div class="ibox">
+  <div class="ibox-body">
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="ibox-body alert alert-info alert-dismissable fade show">
+          <h4>Bonjour [[Greet]] <b>[[Company.name]]</b></h4>
+          <p>Nous vous souhaitons la bienvenue dans votre espace client .</p>
+        </div>
+        <alerts on-save="onSaveAlert()"
+                message="Je souhaite être informé quand un candidat comportent les expressions suivantes: Saissez le mot et appuyez sur entrée ou `,` pour ajouter"
+                alerts="alerts"
+                alert-loading="alertLoading">
+        </alerts>
+        <hr>
+        <change-password></change-password>
+      </div>
+      <div class="col-sm-6">
+        <general-information-company abranchs="asyncTerms('branch_activity')"
+                                     regions="asyncTerms('region')"
+                                     all-city="asyncTerms('city')"
+                                     init="Initialize()"
+                                     company="Company">
+        </general-information-company>
+        <plan-premium ng-if="false"></plan-premium>
+      </div>
+    </div>
+  </div>
+</div>
+
+

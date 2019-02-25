@@ -200,6 +200,7 @@ class apiFormation
       'establish_name' => $objFormation->establish_name,
       'address'        => $objFormation->address,
       'duration'       => $objFormation->duration,
+      'price'          => $objFormation->price,
       'date_limit'     => date('Ymd', strtotime($objFormation->date_limit))
     ];
     foreach (get_object_vars($form) as $key => $value) {
@@ -222,15 +223,16 @@ class apiFormation
 
 add_action('rest_api_init', function () {
   $post_type = "formation";
-  $formation_meta = ["diploma", "activated", "featured", "featured_datelimit", "date_limit", "duration", "establish_name"];
+  $formation_meta = ["diploma", "activated", "featured", "featured_datelimit", "date_limit", "duration",
+    "establish_name", 'price', 'reference', 'email', 'address'];
   foreach ($formation_meta as $meta):
     register_rest_field($post_type, $meta, array(
       'update_callback' => function ($value, $object, $field_name) {
-        return update_post_meta((int)$object->ID, $field_name, $value);
+        return update_field($field_name, $value, (int)$object->ID);
       },
       'get_callback'    => function ($object, $field_name) {
         $post_id = $object['id'];
-        return get_post_meta($post_id, $field_name, true);
+        return get_field($field_name, $post_id);
       },
     ));
   endforeach;

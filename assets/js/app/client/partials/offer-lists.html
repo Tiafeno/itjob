@@ -168,16 +168,15 @@
                         <div class="flex-1">
                           <div class="media-heading">
                             <a class="" target="_blank" ng-href="[[interest.candidate.candidate_url]]">[[interest.candidate.title]] </a>
-                            <span class="badge badge-default ml-2" ng-if="interest.status === 'pending'">En attente de confirmation</span>
+                            <span class="badge badge-default ml-2" ng-if="interest.status === 'pending' && interest.view === 0">En attente de confirmation</span>
                             <span class="badge badge-success ml-2" ng-if="interest.status === 'validated'">Accepter</span>
                             <span class="badge badge-danger ml-2" ng-if="interest.status === 'reject'">Rejeter</span>
                           </div>
                           <small class="text-muted">[[interest.candidate.branch_activity.name]]</small>
                         </div>
-                        <a class="btn btn-sm btn-outline-success ml-2" target="_blank" ng-href="[[interest.candidate.candidate_url]]">Voir</a>
                         <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.inList" data-ng-click="viewCandidateInformation(interest.candidate.ID, offerView.ID)">Consulter</button>
-                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.status === 'pending'" data-ng-click="addList(interest.candidate.ID, $event)">Sélectionner</button>
-                        <button class="btn btn-sm btn-outline-danger ml-2" ng-if="interest.status === 'pending'" data-ng-click="rejectCandidate(interest.candidate.ID, $event)">Rejeter</button>
+                        <button class="btn btn-sm btn-outline-primary ml-2" ng-if="interest.status === 'pending' && interest.view === 1" data-ng-click="addList(interest.candidate.ID, $event)">Sélectionner</button>
+                        <button class="btn btn-sm btn-outline-danger ml-2" ng-if="interest.status === 'pending' && interest.view === 1" data-ng-click="rejectCandidate(interest.candidate.ID, $event)">Rejeter</button>
                       </div>
                     </li>
                     <li class="media align-items-center" ng-if="collectFilterResults('filter_postuled_candidate').length <= 0">Néant</li>
@@ -284,7 +283,10 @@
             <span ng-click="viewApply(offer.ID)" ng-if="offer.candidat_apply.length > 0" class="badge-success badge ml-2">
               Liste des candidates
             </span>
-            <span class="badge badge-pink badge-circle" ng-if="offer.candidat_apply.length > 0" style="position:absolute; right: -13px; top: -13px;">[[ offer.candidat_apply.length ]]</span>
+            <span class="badge badge-pink badge-circle" ng-if="offer.candidat_apply.length > 0"
+                  style="position:absolute; right: -7px; top: -5px; min-width: 12px; width: 12px; height: 12px">
+              <span class="notify-signal"></span>
+            </span>
           </span>
         </td>
         <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>

@@ -20,7 +20,7 @@ if ( ! class_exists( 'itJob' ) ) {
         $this->initRegister();
       } );
 
-      
+
 
       /**
        * Activer l'offre.
@@ -56,7 +56,7 @@ if ( ! class_exists( 'itJob' ) ) {
           }
 
           // Crée une notification pour informer que le CV est validé
-          
+
           do_action("notice-publish-cv", $post_id);
         }
       }, 10, 1 );
@@ -103,8 +103,8 @@ if ( ! class_exists( 'itJob' ) ) {
           foreach ($offers as $offer):
             // Effacer l'offre
             $deleted = wp_delete_post($offer->ID, true);
-          if ( ! is_wp_error($deleted) )
-            $Model->remove_interest($offer->ID);
+            if ( ! is_wp_error($deleted) )
+              $Model->remove_interest($offer->ID);
           endforeach;
           wp_delete_post( $company_id, true);
 
@@ -113,6 +113,7 @@ if ( ! class_exists( 'itJob' ) ) {
         if ( in_array( 'candidate', $user_obj->roles ) ) {
           $candidate_id = $Model->get_candidate_id_by_email($user_obj->user_email);
           wp_delete_post( $candidate_id, true);
+          $Model->remove_candidate_request($candidate_id); // Effacer le candidat dans la requete d'une offre
         }
       } );
 
@@ -148,6 +149,7 @@ if ( ! class_exists( 'itJob' ) ) {
           `id_candidate` BIGINT(20) NOT NULL DEFAULT 0, 
           `id_offer` BIGINT(20) NOT NULL DEFAULT 0 , `type` VARCHAR(20) NOT NULL , 
           `status` VARCHAR(20) NOT NULL DEFAULT 'pending' , 
+          `view` TINYINT(1) NOT NULL DEFAULT 0 , 
           `id_attachment` BIGINT(20) NOT NULL DEFAULT 0, 
           `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
           PRIMARY KEY (`id_cv_request`)) ENGINE = InnoDB;";
@@ -216,6 +218,19 @@ if ( ! class_exists( 'itJob' ) ) {
           `date_create` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
           PRIMARY KEY (`ID`)) ENGINE = InnoDB;";
         $wpdb->query($registration);
+
+        $wallet = "CREATE TABLE IF NOT EXISTS `{$wpdb->prefix}wallet_history` (
+          `id_history` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+          `id_wallet` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+          `template` INT(20) NOT NULL DEFAULT '0',
+          `args` LONGTEXT NOT NULL,
+          `date_create` DATETIME NOT NULL,
+          PRIMARY KEY (`id_history`)
+        )
+        ENGINE=InnoDB;";
+        $wpdb->query($wallet);
+
+
       } );
 
       // Add acf google map api
@@ -241,11 +256,11 @@ if ( ! class_exists( 'itJob' ) ) {
           //$query->set( 'posts_per_page', 1 );
 
           if ( $query->is_search ) {
-
             $region  = Http\Request::getValue( 'rg' );
             $abranch = Http\Request::getValue( 'ab' );
             $s       = $_GET['s'];
 
+            // Region
             if ( ! empty( $region ) ) {
               $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
               $tax_query = !is_array($tax_query) ? [] : $tax_query;
@@ -257,18 +272,20 @@ if ( ! class_exists( 'itJob' ) ) {
               ];
             }
 
+            // Secteur d'activité
+            if ( $abranch ) {
+              $meta_query   = isset( $meta_query ) ? $meta_query : $query->get( 'meta_query' );
+              $meta_query = !is_array($meta_query) ? [] : $meta_query;
+              $meta_query[] = [
+                'key'     => 'itjob_offer_abranch',
+                'value'   => (int) $abranch,
+                'compare' => '=',
+                'type'    => 'NUMERIC'
+              ];
+            }
+
             switch ( $post_type ) {
               CASE 'formation':
-                if ( $abranch ) {
-                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
-                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
-                  $tax_query[] = [
-                    'taxonomy'         => 'branch_activity',
-                    'field'            => 'term_id',
-                    'terms'            => (int) $abranch,
-                    'include_children' => false
-                  ];
-                }
 
                 if ( ! isset( $meta_query ) ) {
                   $meta_query = $query->get( 'meta_query' );
@@ -280,7 +297,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   add_filter('posts_where', function ( $where ) {
                     global $wpdb;
                     $s = \Http\Request::getValue('s');
-                    $s = $wpdb->esc_like( $s );
+                    $s = $wpdb->esc_like( wp_unslash($s) );
                     $s = implode('|', explode(' ', $s));
                     if (!is_admin()) {
                       $where .= " 
@@ -298,11 +315,10 @@ if ( ! class_exists( 'itJob' ) ) {
                               WHERE {$wpdb->postmeta}.meta_key = 'reference' AND {$wpdb->postmeta}.meta_value REGEXP '({$s}).*$'
                         ))";
                     }
-
                     return $where;
                   });
                 }
-                
+
                 $meta_query = !is_array($meta_query) ? [] : $meta_query;
                 $meta_query[] = [
                   [
@@ -326,22 +342,9 @@ if ( ! class_exists( 'itJob' ) ) {
                 $query->query_vars['s'] = '';
 
                 BREAK;
-              // Trouver des offres d'emplois
               CASE 'offers':
 
-                if ( $abranch ) {
-                  $meta_query   = isset( $meta_query ) ? $meta_query : $query->get( 'meta_query' );
-                  $meta_query = !is_array($meta_query) ? [] : $meta_query;
-                  $meta_query[] = [
-                    'key'     => 'itjob_offer_abranch',
-                    'value'   => (int) $abranch,
-                    'compare' => '=',
-                    'type'    => 'NUMERIC'
-                  ];
-                }
-
                 if ( ! empty( $s ) ) {
-
                   if ( ! isset( $meta_query ) ) {
                     $meta_query = $query->get( 'meta_query' );
                   }
@@ -368,7 +371,6 @@ if ( ! class_exists( 'itJob' ) ) {
                       'type'    => 'CHAR'
                     ]
                   ];
-
                 }
 
                 // Meta query
@@ -386,12 +388,10 @@ if ( ! class_exists( 'itJob' ) ) {
                 ];
 
                 $meta_query['relation'] = "AND";
-
                 if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                   $query->set( 'meta_query', $meta_query );
                   $query->meta_query = new \WP_Meta_Query( $meta_query );
                 endif;
-
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
                   $query->set( 'tax_query', $tax_query );
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
@@ -400,23 +400,11 @@ if ( ! class_exists( 'itJob' ) ) {
                 $query->query['s']      = '';
                 $query->query_vars['s'] = '';
                 BREAK;
-
-              // Trouver des candidates
               CASE 'candidate':
                 $language = Http\Request::getValue( 'lg', '' );
                 $software = Http\Request::getValue( 'ms', '' );
 
-                if ( $abranch ) {
-                  $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
-                  $tax_query = !is_array($tax_query) ? [] : $tax_query;
-                  $tax_query[] = [
-                    'taxonomy'         => 'branch_activity',
-                    'field'            => 'term_id',
-                    'terms'            => (int) $abranch,
-                    'include_children' => false
-                  ];
-                }
-
+                // Language
                 if ( ! empty( $language ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query = !is_array($tax_query) ? [] : $tax_query;
@@ -428,7 +416,7 @@ if ( ! class_exists( 'itJob' ) ) {
                   ];
                 }
 
-                // Rechercher dans les logiciel si le champ n'es pas vide
+                // Logiciel
                 if ( ! empty( $software ) ) {
                   $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
                   $tax_query = !is_array($tax_query) ? [] : $tax_query;
@@ -561,7 +549,33 @@ if ( ! class_exists( 'itJob' ) ) {
                 $query->query['s']      = '';
                 $query->query_vars['s'] = '';
                 BREAK;
+              CASE 'annonce':
+              CASE 'works':
+                if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
+                  $query->set( 'tax_query', $tax_query );
+                  $query->tax_query = new \WP_Tax_Query( $tax_query );
+                }
 
+                add_filter('posts_where', function ( $where ) {
+                  global $wpdb;
+                  $s = isset($_GET['s']) ? wp_unslash($_GET['s']) : '';
+                  $s = $wpdb->esc_like( $s );
+                  $s = implode('|', explode(' ', $s));
+                  if (!is_admin()) {
+                    $where .= " AND ({$wpdb->posts}.post_title REGEXP '({$s}).*$'
+                                    OR {$wpdb->posts}.post_content REGEXP '({$s}).*$')
+                                  AND ({$wpdb->posts}.ID IN (
+                                    SELECT {$wpdb->postmeta}.post_id as post_id
+                                      FROM {$wpdb->postmeta}
+                                      WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1))";
+                  }
+                  return $where;
+                });
+
+                $query->query['s']      = '';
+                $query->query_vars['s'] = '';
+
+                BREAK;
             } // .end switch
             // FEATURE: Supprimer la condition de trouver le ou les mots dans le titre et le contenue
 
@@ -628,7 +642,7 @@ if ( ! class_exists( 'itJob' ) ) {
             $annonce = new Post\Annonce( $post_object->ID );
             $GLOBALS[ $post_object->post_type ] = $annonce;
             break;
-            
+
           case 'works':
             $work = new Post\Works( $post_object->ID );
             $GLOBALS[ 'works' ] = $work;
@@ -680,7 +694,6 @@ if ( ! class_exists( 'itJob' ) ) {
           'before_widget' => '<div id="%1$s" class="widget mt-4 %2$s">',
           'after_widget'  => '</div>'
         ) );
-
         register_sidebar( array(
           'name'          => 'Single Sidebar (Offer)',
           'id'            => 'single-offer-sidebar',
@@ -689,7 +702,7 @@ if ( ! class_exists( 'itJob' ) ) {
           'after_widget'  => '</div>'
         ) );
 
-        // CV
+        // Candidate
         register_sidebar( array(
           'name'          => 'Archive Content Top (Candidate)',
           'id'            => 'archive-cv-top',
@@ -697,7 +710,6 @@ if ( ! class_exists( 'itJob' ) ) {
           'before_widget' => '<div id="%1$s" class="widget mb-4 %2$s">',
           'after_widget'  => '</div>'
         ) );
-
         register_sidebar( array(
           'name'          => 'Archive Sidebar (Candidate)',
           'id'            => 'archive-cv-sidebar',
@@ -705,7 +717,6 @@ if ( ! class_exists( 'itJob' ) ) {
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
-
         register_sidebar( array(
           'name'          => 'Archive Header Top (Candidate)',
           'id'            => 'cv-header',
@@ -713,11 +724,79 @@ if ( ! class_exists( 'itJob' ) ) {
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
-
         register_sidebar( array(
           'name'          => 'Single Sidebar (Candidate)',
           'id'            => 'single-cv-sidebar',
           'description'   => 'Afficher des widgets sur le côté à droite',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        // Works
+        register_sidebar( array(
+          'name'          => 'Archive Sidebar (Travail Temporaire)',
+          'id'            => 'archive-works-sidebar',
+          'description'   => 'Afficher des widgets sur le côté à droite',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Archive Header Top (Travail Temporaire)',
+          'id'            => 'archive-works-top',
+          'description'   => 'Afficher des widgets en haut de la liste des travails',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Single Sidebar (Travail Temporaire)',
+          'id'            => 'single-works-sidebar',
+          'description'   => '',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        // Formation
+        register_sidebar( array(
+          'name'          => 'Archive Sidebar (Formation)',
+          'id'            => 'archive-formation-sidebar',
+          'description'   => 'Afficher des widgets sur le côté à droite',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Archive Header Top (Formation)',
+          'id'            => 'archive-formation-top',
+          'description'   => 'Afficher des widgets en haut de la liste des formations',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Single Sidebar (Formation)',
+          'id'            => 'single-formation-sidebar',
+          'description'   => '',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+
+        // Annonce
+        register_sidebar( array(
+          'name'          => 'Archive Sidebar (Annonce)',
+          'id'            => 'archive-annonce-sidebar',
+          'description'   => 'Afficher des widgets sur le côté à droite',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Archive Header Top (Annonce)',
+          'id'            => 'archive-annonce-top',
+          'description'   => 'Afficher des widgets en haut de la liste des annonces',
+          'before_widget' => '<div id="%1$s" class="widget %2$s">',
+          'after_widget'  => '</div>'
+        ) );
+        register_sidebar( array(
+          'name'          => 'Single Sidebar (Annonce)',
+          'id'            => 'single-annonce-sidebar',
+          'description'   => '',
           'before_widget' => '<div id="%1$s" class="widget %2$s">',
           'after_widget'  => '</div>'
         ) );
@@ -751,6 +830,7 @@ if ( ! class_exists( 'itJob' ) ) {
         $this->register_enqueue_scripts();
         wp_register_style( 'offers', get_template_directory_uri() . '/assets/css/offers.css', [ 'adminca' ], $itJob->version );
         wp_register_style( 'candidate', get_template_directory_uri() . '/assets/css/candidate.css', [ 'adminca' ], $itJob->version );
+        wp_register_style( 'annonce', get_template_directory_uri() . '/assets/css/annonce.css', [ 'camroll-slider' ], $itJob->version );
 
         wp_enqueue_style( 'adminca' );
         wp_enqueue_style( 'themify-icons' );
@@ -815,10 +895,12 @@ if ( ! class_exists( 'itJob' ) ) {
       wp_register_script( 'ng-tags', get_template_directory_uri() . '/assets/js/ng-tags-input.min.js', [ 'angular' ], '3.2.0', true );
 
       wp_register_script( 'typeahead', get_template_directory_uri() . '/assets/js/typeahead.bundle.js', [ 'jquery' ], '0.11.1', true );
+      wp_register_script( 'camroll-slider', get_template_directory_uri() . '/assets/js/libs/camroll-slider/camroll_slider.min.js', [ 'jquery' ], $itJob->version, true );
 
       wp_register_style( 'adminca-animate', VENDOR_URL . '/animate.css/animate.min.css', '', '3.5.1' );
       wp_register_style( 'toastr', VENDOR_URL . '/toastr/toastr.min.css', '', '3.5.1' );
       wp_register_style( 'bootstrap-select', VENDOR_URL . '/bootstrap-select/dist/css/bootstrap-select.min.css', '', '1.12.4' );
+      wp_register_style( 'camroll-slider', get_template_directory_uri() . '/assets/js/libs/camroll-slider/camroll_slider.min.css' );
 
       // Load the main stylesheet
       wp_register_style( 'style', get_stylesheet_uri(), [

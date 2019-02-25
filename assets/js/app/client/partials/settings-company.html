@@ -1,0 +1,54 @@
+<div class="ibox-body">
+  <div>
+    <h3 class="ml-2 mb-3">Informations générales</h3>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <form name="settings" ng-submit="saveSettings( settings )" novalidate>
+        <ul class="media-list media-list-divider">
+          <li class="media">
+            <div class="media-body d-flex">
+              <div class="text-left ml-2">
+                <div class="form-group">
+                  <label class="checkbox checkbox-success">
+                    <input type="checkbox" name="notification" ng-model="options.notification"  ng-checked="options.notification">
+                    <span class="input-span"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="flex-1">
+                <div class="media-heading">Souhaitez-vous recevoir une notiﬁcation quand un nouveau CV est insérer dans
+                  Itjobmada?
+                </div>
+              </div>
+
+            </div>
+          </li>
+          <li class="media">
+            <div class="media-body d-flex">
+              <div class="text-right ml-2">
+                <div class="form-group">
+                  <label class="checkbox checkbox-success">
+                    <input type="checkbox" name="newsletter" ng-model="options.newsletter" ng-checked="options.newsletter">
+                    <span class="input-span"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="flex-1">
+                <div class="media-heading">Est ce que vous voulez recevoir notre newsletter?</div>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="mt-4">
+          <div class="d-flex">
+            <div class="text-right ml-2">
+              <button type="submit" ng-disabled="loading" class="btn btn-outline-success">Enregistrer les modifications</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

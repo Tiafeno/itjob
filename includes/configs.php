@@ -7,10 +7,12 @@ if ( function_exists( 'get_field' ) ):
   define( 'LOGIN_PAGE', get_field( 'login_page_id', 'option' ) );
   define( 'ADD_OFFER_PAGE', get_field( 'add_offer_page_id', 'option' ) );
   define( 'ADD_FORMATION_PAGE', get_field( 'add_formation_page_id', 'option' ) );
+  define( 'ADD_ANNONCE_PAGE', get_field( 'add_annonce_page_id', 'option' ) );
   define( 'REGISTER_COMPANY_PAGE_ID', get_field( 'register_company_page_id', 'option' ) );
   define( 'REGISTER_CANDIDATE_PAGE_ID', get_field( 'register_candidate_page_id', 'option' ) );
   define( 'REGISTER_PARTICULAR_PAGE_ID', get_field( 'register_particular_page_id', 'option' ) );
   define( 'DOWNLOAD_CV_PAGE', get_field('download_cv_page', 'option'));
+  define( 'WALLET_PAGE', get_field('wallet', 'option'));
 else:
   echo "Unable to active ACF Plugin";
 endif;

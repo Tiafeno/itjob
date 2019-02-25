@@ -75,7 +75,6 @@ trait ModelInterest {
     }
     $results = $wpdb->update( $this->requestTable, [ 'status' => $status ], [ 'id_cv_request' => $id_request ], [ '%s' ], [ '%d' ] );
     if ($results && $status === 'validated') {
-      // TODO: Envoyer un mail de confirmation que le demande est validé
       $request = self::get_request($id_request);
       if (null === $request) return false;
       // Envoyer un mail pour informer la validation de cette offre
@@ -85,6 +84,7 @@ trait ModelInterest {
     do_action("notice-change-request-status", (int)$id_request, $status);
     return $results;
   }
+
 
   /**
    * Cette fonction verifie si le candidat a déja postuler ou selectionner sur l'offre
@@ -121,6 +121,17 @@ trait ModelInterest {
       return false;
     }
     $prepare = $wpdb->prepare("DELETE FROM {$this->requestTable} WHERE id_offer = %d", $id_offer);
+    $rows = $wpdb->get_results($prepare);
+    return $rows;
+  }
+
+  public function remove_candidate_request( $id_candidate ) {
+    global $wpdb;
+    if (!is_user_logged_in() || !$id_candidate) {
+      return false;
+    }
+    $id_candidate = (int) $id_candidate;
+    $prepare = $wpdb->prepare("DELETE FROM {$this->requestTable} WHERE id_candidate = %d", $id_candidate);
     $rows = $wpdb->get_results($prepare);
     return $rows;
   }
@@ -198,6 +209,15 @@ trait ModelInterest {
     $rows    = $wpdb->get_var( $prepare );
 
     return $rows ? true : false;
+  }
+
+  public function render_view_candidat( $id_request, $view = 0) {
+    global $wpdb;
+    if ( ! is_user_logged_in() || ! is_numeric( $id_request ) ) {
+      return false;
+    }
+    $results = $wpdb->update( $this->requestTable, [ 'view' => $view ], [ 'id_cv_request' => $id_request ], [ '%d' ], [ '%d' ] );
+    return $results;
   }
 
   /**

@@ -81,6 +81,10 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         // Ajouter une clé d'activation pour rejeter le mot de passe
         get_password_reset_key( $user );
 
+        // Ajouter le secteur de l'entreprise
+        $sector = Http\Request::getValue( 'sector', 1 ); // Recruteur par default (1)
+        update_user_meta($user->ID, 'sector', $sector);
+
         return $value;
       } else {
         return $value;
@@ -216,6 +220,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
       if ( $userExist ) {
         wp_send_json_error( 'L\'adresse e-mail ou l\'utilisateur existe déja');
       }
+      $user = &$userExist;
 
       $form = (object) [
         'greeting'           => Http\Request::getValue( 'greeting' ),
@@ -240,7 +245,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         'post_status'  => 'pending',
         'post_author'  => 1,
         'post_type'    => 'company'
-      ] );
+      ], true );
       if ( is_wp_error( $result ) ) {
         wp_send_json( [ 'success' => false, 'msg' => $result->get_error_message() ] );
       }

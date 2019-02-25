@@ -89,6 +89,7 @@ if ( ! $candidate->is_activated()) { return; }
       </div>
     </div>
 
+    <?php if (!empty($candidate->tags)): ?>
     <div class="card-footer">
       <div class="d-flex align-items-center justify-content-between">
         <div class="text-primary">
@@ -96,5 +97,6 @@ if ( ! $candidate->is_activated()) { return; }
         </div>
       </div>
     </div>
+    <?php endif; ?>
   </div>
 </div>

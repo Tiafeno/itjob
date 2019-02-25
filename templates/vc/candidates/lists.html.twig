@@ -82,7 +82,7 @@
 
             </div>
           </div>
-
+          {% if candidate.tags is not empty %}
           <div class="card-footer">
             <div class="d-flex align-items-center justify-content-between">
               <div class="text-primary">
@@ -90,6 +90,7 @@
               </div>
             </div>
           </div>
+          {% endif %}
         </div>
       </div>
     {% endfor %}

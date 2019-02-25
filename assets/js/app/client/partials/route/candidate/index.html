@@ -1,0 +1,29 @@
+<div class="ibox">
+  <div class="ibox-body">
+    <div class="row">
+      <div class="col-sm-6">
+        <!-- Information général directive -->
+        <general-information-candidate abranchs="asyncTerms('branch_activity')" regions="asyncTerms('region')"
+                                       all-city="asyncTerms('city')" candidate="Candidate">
+        </general-information-candidate>
+        <change-password></change-password>
+      </div>
+      <div class="col-sm-6">
+        <div class="content">
+          <div class="ibox-body pb-0">
+            <a class="btn btn-warning mt-2" ng-href="[[Helper.archive_offer_link]]" target="_blank">
+              <span class="btn-icon"><i class="fa fa-link"></i> Voir les offres d'emplois</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Alerts directive -->
+        <alerts on-save="onSaveAlert()"
+                alerts="alerts"
+                alert-loading="alertLoading"
+                message="Je souhaite être informé quand une publication comportent les mots suivants:">
+        </alerts>
+      </div>
+    </div>
+  </div>
+</div>

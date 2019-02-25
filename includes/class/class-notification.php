@@ -365,8 +365,8 @@ final class NotificationHelper
         $companyNotice->needle = [$Candidate->reference, $Offer->title];
 
         if ($Interest->type === 'apply') {
-          $companyNotice->tpl_msg = 14;
-          $companyNotice->needle = [$Offer->title];
+          $candidateNotice->tpl_msg = 14;
+          $candidateNotice->needle = [$Offer->title];
         }
         break;
     }

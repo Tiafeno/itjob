@@ -36,6 +36,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   public $branch_activity;
   public $tags;
   public $privateInformations;
+  public $error = false;
 
   /**
    * Candidate constructor.
@@ -44,6 +45,7 @@ final class Candidate extends UserParticular implements \iCandidate {
    */
   public function __construct( $postId = null, $privateAccess = false ) {
     if ( is_null( $postId ) ) {
+      $this->error = new \WP_Error('broken', 'Parametre manquante (post_id)');
       return false;
     }
     /**
@@ -53,6 +55,7 @@ final class Candidate extends UserParticular implements \iCandidate {
      */
     $output = get_post( (int) $postId );
     if ( is_null( $output ) ) {
+      $this->error = new \WP_Error('broken', "Le CV est introuvable");
       return false;
     }
     $this->setId( $output->ID );
@@ -149,7 +152,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [] );
 
     $this->centerInterest = $this->acfGroupField( 'itjob_cv_centerInterest', [ 'various', 'projet' ] );
-    $newsletter     = get_field( 'itjob_cv_newsletter', $this->getId() );
+    $newsletter       = get_field( 'itjob_cv_newsletter', $this->getId() );
     $this->newsletter = boolval($newsletter);
     $this->driveLicences  = get_field( 'itjob_cv_driveLicence', $this->getId() );
 

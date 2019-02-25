@@ -13,6 +13,7 @@ if (!class_exists('WPBakeryShortCode')) {
 use Http;
 use includes\model\Model_Request_Formation;
 use includes\post\Candidate;
+use includes\post\Company;
 
 class vcFormation
 {
@@ -167,8 +168,10 @@ class vcFormation
       EXTR_OVERWRITE
     );
     $refused_access_msg = '<div class="text-left mt-5">';
-    $refused_access_msg .= '<div class="font-bold text-left font-14 badge badge-pink" style="white-space: pre-wrap;">Seule un compte professionnel a le pouvoir d\'ajouté une formation. <br>';
-    $refused_access_msg .= 'Votre compte ne vous permet pas de publier une formation. Vous devez se connecter avec votre compte professionnel.';
+    $refused_access_msg .= '<div class="font-bold text-left font-14 badge badge-pink" style="white-space: pre-wrap;">Seule ' .
+      'un compte professionnel a le pouvoir d\'ajouté une formation. <br>';
+    $refused_access_msg .= 'Votre compte ne vous permet pas d\'accéder à cette option. Vous devriez vous connecter ou ' .
+      'crée un compte en tanque formateur pour bénéficier cette option.';
     $refused_access_msg .= '</div></div>';
     $redirection = Http\Request::getValue('redir');
     $redirection = $redirection ? $redirection : get_post_type_archive_link('candidate');
@@ -177,9 +180,14 @@ class vcFormation
       return do_shortcode('[itjob_login role="company" redir="' . $redirection . '"]', true);
     }
 
-    $User = wp_get_current_user();
+    $User = $itJob->services->getUser();
     if (in_array('company', $User->roles)) {
       // Autoriser à ajouter une formation
+      // Vérifier si le secteur de l'entreprise est un formateur
+      $Company = Company::get_company_by($User->ID);
+      if ($Company->sector !== 2 ) {
+        return $refused_access_msg;
+      }
     } else {
       return $refused_access_msg;
     }
@@ -240,6 +248,7 @@ EOF;
       'title'          => wp_strip_all_tags(Http\Request::getValue('title')),
       'region'         => (int)Http\Request::getValue('region'),
       'address'        => Http\Request::getValue('address'),
+      'price'          => Http\Request::getValue('price'),
       'diploma'        => Http\Request::getValue('diploma'),
       'duration'       => Http\Request::getValue('duration'),
       'date_limit'     => Http\Request::getValue('date_limit'),
@@ -265,6 +274,7 @@ EOF;
       update_field('duration', $form->duration, $post_id);
       update_field('address', $form->address, $post_id);
       update_field('diploma', $form->diploma, $post_id);
+      update_field('price', (int)$form->price, $post_id);
       // Ajouter une valeur par default
       update_field('featured', 0, $post_id);
       update_field('activated', 0, $post_id);

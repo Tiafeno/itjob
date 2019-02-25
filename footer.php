@@ -1,6 +1,6 @@
-<footer class="uk-section uk-section-secondary">
+<footer class="uk-section uk-section-secondary pb-4">
   <div class="uk-container uk-container-medium">
-    <div class="row mt-4 mb-5">
+    <div class="row mt-4 mb-4">
       <div class="col-md-4 col-sm-6 mt-4">
         <div class="footer-body">
           <?php
@@ -63,6 +63,11 @@
           endif;
           ?>
         </div>
+      </div>
+    </div>
+    <div class="row pt-5">
+      <div class="col-lg-12">
+        <div class="text-right">STRATÉGIE, CONCEPTION SOUTENU PAR FALICREA</div>
       </div>
     </div>
   </div>

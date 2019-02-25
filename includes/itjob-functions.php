@@ -65,14 +65,14 @@ function itjob_has_notice() {
 }
 
 // Récupérer la notification
-add_action('get_notice', 'itjob_get_notice');
-function itjob_get_notice() {
+add_action('get_notice', 'itjob_get_notice', 10, 1);
+function itjob_get_notice($size = "uk-width-1-2") {
   global $it_alerts;
   $notice = '';
   if ( ! empty($it_alerts) && is_array($it_alerts)) {
     foreach ($it_alerts as $alert) {
       $alert = (object)$alert;
-      $notice .= "<div class=\"alert alert-{$alert->type} alert-dismissable fade show uk-width-1-2 uk-margin-auto mt-5\">";
+      $notice .= "<div class=\"alert alert-{$alert->type} alert-dismissable fade show {$size} uk-margin-auto mt-5\">";
       if ($alert->close)
         $notice .= "<button class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"></button>";
       $notice .= $alert->message;

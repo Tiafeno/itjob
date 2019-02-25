@@ -111,7 +111,7 @@ class vcAnnonce
             'heading'     => 'Afficher',
             'param_name'  => 'post_type',
             'value'       => [
-              '-Selectionnez-' => '',
+              '--Selectionnez--' => '',
               'Travail Temporaire'  => 'works',
               'Annonce' => 'annonce'
             ],
@@ -137,14 +137,12 @@ class vcAnnonce
     // 1: Service ou travail temporaire, 2: Autres annonce
     $service_or_annonce = (int)Http\Request::getValue('annonce', false);
     // Type d'annonce: 1 & 2
-    $type = (int)Http\Request::getValue('type', 0);
-
+    $type  = (int)Http\Request::getValue('type', 0);
     $title = Http\Request::getValue('title', ' ');
     $description = Http\Request::getValue('description', null);
-
     $region = Http\Request::getValue('region', 0);
-    $town = Http\Request::getValue('town', 0);
-    $address = Http\Request::getValue('address', null);
+    $town   = Http\Request::getValue('town', 0);
+    $address   = Http\Request::getValue('address', null);
     $cellphone = Http\Request::getValue('cellphone', null);
     $price = (int)Http\Request::getValue('price', 0);
     $email = Http\Request::getValue('email', null);
@@ -192,6 +190,17 @@ class vcAnnonce
     update_field('reference', $slug . $post_id, $post_id);
     update_post_meta($post_id, 'date_create', date_i18n('Y-m-d H:i:s'));
 
+    // Envoyer un mail à l'administrateur
+    switch ($service_or_annonce) {
+      case 2: // Annonce
+        do_action('new_pending_annonce', $post_id);
+        break;
+
+      case 1: // Travails temporaire
+        do_action('new_pending_works', $post_id);
+        break;
+    }
+
     $annonce = new Annonce($post_id);
     wp_send_json_success($annonce);
   }
@@ -208,11 +217,31 @@ class vcAnnonce
     ), EXTR_OVERWRITE);
 
     /** @var string $post_type */
-    $works = $itJob->services->getRecentlyPost($post_type, 4);
-    try {
-      return $Engine->render('@VC/annonce/work-list.html', [
-        'works' => $works
+    /** @var string $title - Shortcode variable attribute */
+    $posts = $itJob->services->getRecentlyPost($post_type, 4);
+    $args = [
+      'title' => $title,
+      'archive_work_url' => get_post_type_archive_link('works'),
+      'archive_annonce_url' => get_post_type_archive_link('annonce')
+    ];
+    if ($post_type === "works") {
+      $title = $title ? $title : "Les travails temporaire ajouter récements";
+      $template = "work-list.html";
+      $args = array_merge($args, [
+        'title' => $title,
+        'works' => $posts
       ]);
+    } else {
+      $title = $title ? $title : "Les annonces ajouter récements";
+      $template = "annonce-list.html";
+      $args = array_merge($args, [
+        'title' => $title,
+        'annonces' => $posts
+      ]);
+    }
+
+    try {
+      return $Engine->render("@VC/annonce/{$template}", $args);
     } catch (\Twig_Error_Loader $e) {
     } catch (\Twig_Error_Runtime $e) {
     } catch (\Twig_Error_Syntax $e) {
@@ -274,7 +303,6 @@ class vcAnnonce
 EOF;
 
     return $content;
-
   }
 
   public

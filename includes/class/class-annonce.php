@@ -17,14 +17,13 @@ if (!defined('ABSPATH')) {
 final
 class Annonce
 {
-  private static $error = false;
-  private        $email = null;
-  private        $WP_User = 0;
+  private static    $error   = false;
+  private           $email   = null;
+  private $author            = null;
   public $ID                 = 0;
   public $status             = '';
-  public static $post_types   = ['annonce', 'works'];
+  public static $post_type   = 'annonce';
   public $activated          = false;
-  public $author             = null;
   public $title              = null;
   public $price              = 0;
   public $reference          = null;
@@ -42,6 +41,7 @@ class Annonce
   public $url                = '';
   public $date_create      = '';
   public $date_publication = '';
+  public $contact_sender = [];
 
   public
   function __construct ($annonce_id = null, $private_access = false)
@@ -67,33 +67,48 @@ class Annonce
     }
 
     $this->ID = $output->ID;
-    $this->post_type   = $output->post_type;
     $this->description = apply_filters('the_content', $output->post_content);
-    $this->excerpt = $output->post_excerpt;
+    $this->excerpt = apply_filters('the_content', $output->post_excerpt);
     $this->title  = $output->post_title;
     $this->status = $output->post_status;
     $this->date_publication = $output->post_date;
     $this->date_publication_format = get_the_date('j F, Y', $output);
     $this->url = get_the_permalink($output->ID);
     $this->email = get_field('email', $this->ID);
-    $this->WP_User = get_field('annonce_author', $this->ID);
-    if (!$this->WP_User) {
+    $User = get_field('annonce_author', $this->ID);
+    if (!$User) {
       self::$error = new \WP_Error('broken', "L'utilisateur est introuvable");
       return false;
     }
     if ($private_access)
-      $this->author = jobServices::getUserData($this->WP_User->data);
+      $this->author = $User;
 
     $this->get_tax_field();
     $this->get_acf_field();
 
+    $this->date_create = get_post_meta($this->ID, 'date_create', true);
+    $contact_sender = get_post_meta($this->ID, 'sender_contact', true);
+    $this->contact_sender = empty($contact_sender) ? [] : $contact_sender;
+
+  }
+
+  public function get_author() {
+    if (is_null($this->author)) {
+      $User = get_field('annonce_author', $this->ID);
+      $this->author = $User;
+    }
+    return $this->author;
+  }
+
+  public function get_mail() {
+    return $this->email;
   }
 
   public static
   function is_annonce ($annonce_id)
   {
     $post_type = get_post_type($annonce_id);
-    return in_array($post_type, self::$post_types);
+    return $post_type === self::$post_type;
   }
 
   private
@@ -120,7 +135,7 @@ class Annonce
     $this->price     = get_field('price', $this->ID);
     $this->reference = get_field('reference', $this->ID);
     $this->address   = get_field('address', $this->ID);
-    $this->featured_image = wp_get_attachment_thumb_url(get_post_thumbnail_id($this->ID));
+    $this->featured_image = wp_get_attachment_image_src(get_post_thumbnail_id($this->ID), 'medium');
   }
 
   public static
@@ -137,6 +152,16 @@ class Annonce
   function is_activated ()
   {
     return $this->activated ? 1 : 0;
+  }
+
+  public function add_contact_sender( $user_id ) {
+    $senders = get_post_meta($this->ID, 'sender_contact', true);
+    $senders = is_array($senders) ? $senders : [];
+    if (intval($user_id) === 0) return false;
+    $senders[] = intval($user_id);
+
+    update_post_meta($this->ID, 'sender_contact', $senders);
+    return true;
   }
 
 }

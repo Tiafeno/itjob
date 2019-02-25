@@ -1,0 +1,69 @@
+<div id="wallet pt-4">
+  <div class="ibox">
+    <div class="ibox-body mt-4">
+      <div class="row">
+        <div class="col-lg-3">
+          <div>
+            <div class="font-bold font-16 text-center uppercase">
+              <i class="ti-wallet d-inline-block pr-2"></i>Mon portefeuille
+            </div>
+            <div class="mt-4">
+              <div class="row mb-2 font-extra-bold font-14">
+                <div class="col-6">Credits</div>
+                <div class="col-6 badge badge-dark text-right">{{ credit }}</div>
+              </div>
+              <div class="mt-5">
+                <h5>Acheter de credit</h5>
+                <p>
+                  Pour toutes informations veuillez contacter le service commercial aux numéros suivants: <br>
+                  032 45 378 60 - 033 82 591 13 - 034 93 962 18.
+                </p>
+              </div>
+              <div class="text-center">
+                <!--<a href="" class="btn btn-outline-info btn-sm">Acheter</a>-->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-9">
+          <div class="row pl-4">
+            <div class="col-lg-6">
+              <h5 class="font-strong mb-4 ml-2">Activités récentes</h5>
+              <ul class="timeline">
+                {% for history in histories %}
+                <li class="timeline-item">
+                  <span class="timeline-point"></span>{{ history.msg }}
+                  <small class="float-right text-muted ml-2 nowrap">{{ history.date_create }}</small>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            <div class="col-lg-6">
+              <p>
+              <h4>A quoi servent les credits ITJob ?</h4>
+              <ul>
+                <li>Les credits vous servent à obtenir les coordonnées désirées des autres membres: 1 credit consommée = 1 contact</li>
+                <li>en consommant une credit vous obtenez à l'écran sur l'annonce choisie les coordonnées complètes de l'annonceur.</li>
+                <li>Ces coordonnées resteront affichées sur l'annonce tant que cette annonce ne sera pas supprimée.</li>
+                <li>Les credits peuvent également vous servir pour souscrire des options d'affichage sur vos annonces afin de multiplier le nombre de vos contacts</li>
+                <li>La durée d'utilisation des credits n'est pas limité dans le temps.</li>
+                <li>Quand vous chargez votre compte en credit, vous garder toujours sur la partie droite en haut de l'ecran le nombre de credit qu'il vous reste de disponible.</li>
+                <li>La vente de credit est la seule rémunération du site www.itjobmada.com. En souscrivant des credits vous nous aidez aussi à faire progresser notre système.
+                  Vous augmentez ainsi vos chances de trouver de meilleurs interlocuteurs d'affaire</li>
+              </ul>
+
+
+
+
+
+
+
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

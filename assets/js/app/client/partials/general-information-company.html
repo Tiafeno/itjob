@@ -1,4 +1,3 @@
-
 <!-- Modal -->
 <div id="modal-edit-user-overflow" uk-modal>
   <div class="uk-modal-dialog">
@@ -9,7 +8,7 @@
     <div class="uk-modal-body" uk-overflow-auto>
       <form name="editUserForm" novalidate>
         <div class="form-group mb-2 row ">
-          <div  class="col-sm-4">
+          <div class="col-sm-4">
             <label class="col-form-label ">Salutation <span style="color: red">*</span></label>
             <div class="form-group">
               <select class="form-control" name="greet" ng-model="userEditor.greeting"
@@ -28,11 +27,11 @@
         </div>
 
         <div class="form-group mb-2 row">
-          <div  class="col-sm-6">
+          <div class="col-sm-6">
             <label class="col-form-label ">NIF <span style="color: red">*</span></label>
             <div class="form-group">
               <input class="form-control" name="nif" ng-model="userEditor.nif"
-                      title="NIF" required>
+                     title="NIF" required>
             </div>
           </div>
           <div class="col-sm-6">
@@ -60,7 +59,9 @@
             <label class="col-form-label">Code postal ou nom d'une ville </label>
             <div class="form-group">
               <select class="form-control input-mode country" name="country" ng-model="userEditor.country" required>
-                <option value="[[city.term_id]]" ng-value="userEditor.country" ng-repeat="city in Citys">([[city.postal_code]]) [[city.name]]</option>
+                <option value="[[city.term_id]]" ng-value="userEditor.country" ng-repeat="city in Citys">
+                  ([[city.postal_code]]) [[city.name]]
+                </option>
               </select>
             </div>
           </div>
@@ -71,7 +72,8 @@
             <label class="col-form-label ">Adresse <span style="color: red">*</span></label>
             <div class="form-group">
               <div class="input-group ">
-                <input ng-model="userEditor.address" ng-disabled="true" autocomplete="off" name="address" class="form-control" required>
+                <input ng-model="userEditor.address" ng-disabled="true" autocomplete="off" name="address"
+                       class="form-control" required>
               </div>
             </div>
           </div>
@@ -106,46 +108,45 @@
 </div>
 <!-- .end Modal-->
 
-
-
 <div class="profil-box">
-    <div class="ibox-body">
-      <h5 class="font-strong mb-4">MES INFORMATIONS
-        <!--  Target: #modal-contact-overflow is in -->
-        <span class="badge badge-blue badge-circle ml-3" data-toggle="modal" data-target="#modal-contact-overflow" style="cursor: pointer">
+  <div class="ibox-body">
+    <h5 class="font-strong mb-4">MES INFORMATIONS
+      <!--  Target: #modal-contact-overflow is in -->
+      <span class="badge badge-blue badge-circle ml-3" data-toggle="modal" data-target="#modal-contact-overflow"
+            style="cursor: pointer">
           <i class="ti-pencil"></i>
         </span>
-      </h5>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">Secteur d'activité:</div>
-        <div class="col-6">[[Entreprise.branch_activity.name]]</div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">Adresse de l'entreprise:</div>
-        <div class="col-6">[[Entreprise.address]]</div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">NIF:</div>
-        <div class="col-6">[[Entreprise.nif]]</div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">STAT:</div>
-        <div class="col-6">[[Entreprise.stat]]</div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">Région:</div>
-        <div class="col-6">[[Entreprise.region.name]]</div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">Numéros de téléphone:</div>
-        <div class="col-6">[[Entreprise.phone === 'undefined' ? '' : Entreprise.phone]]
-          <span ng-if="Entreprise.phone !== 'undefined' && Entreprise.phone !== ''">/</span>
-          <span ng-repeat="cellphone in Entreprise.cellphones"> [[ cellphone ]]<span ng-if="!$last">/</span></span>
-        </div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-6 text-muted">Email:</div>
-        <div class="col-6">[[Entreprise.email]]</div>
+    </h5>
+    <div class="row mb-2">
+      <div class="col-6 text-muted">Secteur d'activité:</div>
+      <div class="col-6">[[Entreprise.branch_activity.name]]</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-6 text-muted">Adresse de l'entreprise:</div>
+      <div class="col-6">[[Entreprise.address]]</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-6 text-muted">NIF:</div>
+      <div class="col-6">[[Entreprise.nif]]</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-6 text-muted">STAT:</div>
+      <div class="col-6">[[Entreprise.stat]]</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-6 text-muted">Région:</div>
+      <div class="col-6">[[Entreprise.region.name]]</div>
+    </div>
+    <div class="row mb-2">
+      <div class="col-6 text-muted">Numéros de téléphone:</div>
+      <div class="col-6">[[Entreprise.phone === 'undefined' ? '' : Entreprise.phone]]
+        <span ng-if="Entreprise.phone !== 'undefined' && Entreprise.phone !== ''">/</span>
+        <span ng-repeat="cellphone in Entreprise.cellphones"> [[ cellphone ]]<span ng-if="!$last">/</span></span>
       </div>
     </div>
+    <div class="row mb-2">
+      <div class="col-6 text-muted">Email:</div>
+      <div class="col-6">[[Entreprise.email]]</div>
+    </div>
   </div>
+</div>

@@ -29,7 +29,7 @@ class apiRequestFormation
           $rf_id = (int) $rq['id'];
           if ($rf_id === 0) return new WP_Error(404, "L'identifiant de la demande n'est pas valide");
           $request_formations = Model_Request_Formation::get_resources($rf_id);
-
+          $request_formations->concerned = unserialize($request_formations->concerned);
           return new WP_REST_Response($request_formations);
         }
       ),
@@ -85,6 +85,18 @@ class apiRequestFormation
                 }
               }
               return new WP_REST_Response($candidates);
+              break;
+
+            case 'update':
+              global $wpdb;
+              $subject = Http\Request::getValue('subject');
+              $description = Http\Request::getValue('description');
+              $topic = Http\Request::getValue('topic');
+              $result = $wpdb->update($wpdb->prefix . "request_training",
+                ['subject' => $subject, 'topic' => $topic, 'description' => $description],
+                ['ID' => (int)$request_formation_id], ['%s', '%s'], ['%d']);
+
+              return new WP_REST_Response($result);
               break;
 
             case 'remove':
