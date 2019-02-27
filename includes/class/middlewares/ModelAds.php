@@ -34,14 +34,31 @@ trait ModelAds
         return $ads;
     }
 
-    public function get_beetween_ads($start, $end)
+  /**
+   * @return array|null|object
+   */
+  public function collect_ads($length = 0, $offset) {
+      global $wpdb;
+      $ads = $wpdb->get_results("SELECT * FROM {$this->Table} LIMIT {$offset}, {$length}");
+      return $ads;
+    }
+
+  /**
+   * @param $start integer
+   * @param $end integer
+   * @return array|null|object
+   */
+  public function get_beetween_ads($start, $end)
     {
         global $wpdb;
-        $sql = "SELECT * FROM $this->Table as ads 
-                    WHERE ads.start 
-                    BETWEEN CAST('$start' AS DATE) AND CAST('$end' AS DATE)
-                    OR ads.end BETWEEN CAST('$start' AS DATE) AND CAST('$end' AS DATE)
-                    OR ads.start <= CAST('$start' AS DATE) <= ads.end";
+        $sql = /** @lang sql */
+          <<<SQL
+SELECT * FROM $this->Table as ads 
+  WHERE ads.start 
+    BETWEEN CAST('$start' AS DATE) AND CAST('$end' AS DATE)
+    OR ads.end BETWEEN CAST('$start' AS DATE) AND CAST('$end' AS DATE)
+    OR ads.start <= CAST('$start' AS DATE) <= ads.end
+SQL;
         $results = $wpdb->get_results($sql);
         return $results;
     }

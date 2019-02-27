@@ -205,6 +205,11 @@ class vcAnnonce
     wp_send_json_success($annonce);
   }
 
+  /**
+   * Afficher les 4 premier annonces
+   * @param $attrs Array
+   * @return string
+   */
   public
   function annonce_list_render ($attrs) {
     global $Engine, $itJob;
@@ -257,11 +262,15 @@ class vcAnnonce
     extract(shortcode_atts(
       array(
         'title' => '',
-        'type'  => 1 // Service ou travail temporaire, voir form.html (annonce) at line 18
+        'type'  => null // Service ou travail temporaire, voir form.html (annonce) at line 18
       ),
       $attrs
     ), EXTR_OVERWRITE);
 
+    if (!is_user_logged_in()) {
+      $redirection = get_the_permalink();
+      return do_shortcode('[itjob_login role="candidate" redir="' . $redirection . '"]', true);
+    }
 
     wp_enqueue_style('sweetalert');
     wp_enqueue_style('alertify');
@@ -281,8 +290,13 @@ class vcAnnonce
       'sweetalert'
     ], $itJob->version, true);
 
+    $httpType = Http\Request::getValue('type', null);
+    $httpType = !is_null($httpType) ? (intval($httpType) === 0 ? null : intval($httpType)): null;
+    /** @var integer $type */
+    $type = is_null($httpType) ? $type : $httpType;
     wp_localize_script('form-annonce', 'itOptions', [
       'version'  => $wp_version,
+      'type' => $type,
       'ajax_url' => admin_url('admin-ajax.php'),
       'helper'   => [
         'redir'    => home_url('/'),

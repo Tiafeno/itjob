@@ -85,13 +85,12 @@ add_action('rest_api_init', function () {
         $ref = isset($_REQUEST['ref']) ? stripslashes($_REQUEST['ref']) : false;
         if ($ref) {
           $candidate_id = (int)$request['id'];
-          $Candidate = new Candidate($candidate_id);
+          $Candidate = new Candidate($candidate_id, true);
           if (is_null($Candidate->title)) {
             return new WP_Error('no_candidate', 'Aucun candidate ne correpond à cette id', array('status' => 404));
           }
           switch ($ref) {
             case 'collect':
-              $Candidate->__get_access();
               $Candidate->isActive = $Candidate->is_activated();
               return new WP_REST_Response($Candidate);
 
@@ -248,7 +247,7 @@ add_action('rest_api_init', function () {
         $ref = isset($_REQUEST['ref']) ? stripslashes($_REQUEST['ref']) : false;
         if ($ref) {
           $company_id = (int)$request['id'];
-          $Company = new \includes\post\Company($company_id);
+          $Company = new \includes\post\Company($company_id, true);
           if (is_null($Company->title)) {
             return new WP_Error('no_company', 'Aucun candidate ne correpond à cette id', array('status' => 404));
           }
@@ -1066,8 +1065,7 @@ add_action('rest_api_init', function () {
     ]
   );
 
-  register_rest_route('it-api', '/blogs/',
-    [
+  register_rest_route('it-api', '/blogs/', [
       // Récuperer les blogs
       [
         'methods'             => WP_REST_Server::READABLE,
@@ -1117,9 +1115,7 @@ add_action('rest_api_init', function () {
           return current_user_can('edit_posts');
         }
       ],
-    ]
-  );
-
+    ]);
 
   register_rest_route('it-api', '/users/', [
     [
@@ -1138,23 +1134,40 @@ add_action('rest_api_init', function () {
     [
       'methods'             => WP_REST_Server::READABLE,
       'callback'            => function () {
+        global $wpdb;
+
         $Model = new \includes\model\itModel();
-        $start = $_REQUEST['start'];
-        $end = $_REQUEST['end'];
-        $start = date("Y-m-d H:i:s", (int)$start);
-        $end = date("Y-m-d H:i:s", (int)$end);
-        $results = $Model->get_beetween_ads($start, $end);
+        $length  = Http\Request::getValue('length', 0);
+        $offset = Http\Request::getValue('offset', 0);
+        if (isset($_REQUEST['start']) && isset($_REQUEST['end'])) {
+          $start = $_REQUEST['start'];
+          $end = $_REQUEST['end'];
+          $start = date("Y-m-d H:i:s", (int)$start);
+          $end = date("Y-m-d H:i:s", (int)$end);
+          $ads = $Model->get_beetween_ads($start, $end);
+          $results = [
+            "recordsTotal"    => (int)$wpdb->num_rows,
+            "recordsFiltered" => (int)$wpdb->num_rows,
+            'data'            => $ads
+          ];
+        } else {
+          $ads = $Model->collect_ads($length, $offset);
+          $results = [
+            "recordsTotal"    => (int)$wpdb->num_rows,
+            "recordsFiltered" => (int)$wpdb->num_rows,
+            'data'            => $ads
+          ];
+        }
         return new WP_REST_Response($results);
       },
       'permission_callback' => function ($data) {
-        return current_user_can('delete_users');
+        return current_user_can('delete_posts');
       }
     ],
-    [
+    [ // Ajouter une publicité
       'methods'             => WP_REST_Server::CREATABLE,
       'callback'            => function () {
         global $wpdb;
-
         $ads = stripslashes($_POST['ads']);
         $ads = json_decode($ads);
         $table = $wpdb->prefix . 'ads';
@@ -1164,7 +1177,7 @@ add_action('rest_api_init', function () {
           'img_size'      => $ads->img_size,
           'start'         => date($ads->start),
           'end'           => date($ads->end),
-          'classname'     => $ads->className,
+          'classname'     => isset($ads->className) ? $ads->className : null,
           'id_user'       => (int)$ads->id_user,
           'position'      => $ads->position,
           'paid'          => (int)$ads->paid,
@@ -1176,7 +1189,7 @@ add_action('rest_api_init', function () {
         return new WP_REST_Response($result);
       },
       'permission_callback' => function ($data) {
-        return current_user_can('edit_posts');
+        return current_user_can('delete_posts');
       }
     ]
   ]);
@@ -1194,7 +1207,7 @@ add_action('rest_api_init', function () {
             wp_delete_attachment((int)$ads->id_attachment, true);
           }
         }
-        $result = $wpdb->delete($wpdb->prefix . 'ads', array('id_ads' => $adsId));
+        $result = $wpdb->delete($table, array('id_ads' => $adsId));
         return new WP_REST_Response($result);
       }
     ],
@@ -1211,7 +1224,7 @@ add_action('rest_api_init', function () {
           'start'     => date($ads->start),
           'end'       => date($ads->end),
           'img_size'  => $ads->img_size,
-          'classname' => $ads->className,
+          'classname' => isset($ads->className) ? $ads->className : null,
           'position'  => $ads->position,
           'paid'      => (int)$ads->paid
         ];
@@ -1230,15 +1243,18 @@ add_action('rest_api_init', function () {
         $s = $wpdb->esc_like($s);
         $s = implode('|', explode(' ', $s));
         $sql
-          = "SELECT pts.ID FROM $wpdb->posts pts 
-               WHERE pts.post_title REGEXP '({$s}).*$' 
-                  AND post_type = 'company'
-                  AND post_status = 'publish'
-                  AND pts.ID IN  (
-                     SELECT {$wpdb->postmeta}.post_id as post_id
-                     FROM {$wpdb->postmeta}
-                        WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
-                  )";
+          = /** @lang sql */
+          <<<SQL
+SELECT pts.ID FROM $wpdb->posts pts 
+   WHERE pts.post_title REGEXP '({$s}).*$' 
+      AND post_type = 'company'
+      AND post_status = 'publish'
+      AND pts.ID IN  (
+         SELECT {$wpdb->postmeta}.post_id as post_id
+         FROM {$wpdb->postmeta}
+            WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+      )
+SQL;
 
         $posts = $wpdb->get_results($sql);
         $entreprises = [];

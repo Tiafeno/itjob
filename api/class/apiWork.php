@@ -160,7 +160,7 @@ new apiWork();
 add_action('rest_api_init', function() {
   $post_type = "works";
   $formation_meta = ["activated", "type", "reference", "featured", "featured_date_limit", "email", "annonce_author",
-    "address", 'cellphone', 'price', 'gallery'];
+    "address", 'cellphone', 'price'];
   foreach ($formation_meta as $meta):
     register_rest_field($post_type, $meta, array(
       'update_callback' => function ($value, $object, $field_name) {
@@ -211,6 +211,20 @@ add_action('rest_api_init', function() {
         'region' =>  empty($regions) ? null : $regions[0],
         'area' => empty($areas) ? null : $areas[0]
       ];
+    }
+  ]);
+
+  register_rest_field($post_type, 'client', [
+    'get_callback' => function ($object) {
+      $SmallAd = new \includes\post\Annonce((int)$object['id'], true);
+      $author = $SmallAd->get_author();
+      if (in_array('candidate', $author->roles)) {
+        return \includes\post\Candidate::get_candidate_by($author->ID, 'user_id', true);
+      }
+
+      if (in_array('company', $author->roles)) {
+        return \includes\post\Company::get_company_by($author->ID);
+      }
     }
   ]);
 });

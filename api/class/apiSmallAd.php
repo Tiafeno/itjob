@@ -192,24 +192,17 @@ add_action('rest_api_init', function() {
     ));
   endforeach;
 
-  register_rest_field($post_type, 'tax_values', [
-    'update_callback' => function ($value, $object, $name) {
-      $taxonomies = is_array($value) ? $value : [];
-      $formation_id = intval($object->ID);
-      if (!empty($taxonomies)) {
-        if (isset($taxonomies['region']))
-          wp_set_object_terms($formation_id, (int)$taxonomies['region'], 'region');
-        if (isset($taxonomies['city']))
-          wp_set_object_terms($formation_id, (int)$taxonomies['city'], 'city');
+  register_rest_field($post_type, 'client', [
+    'get_callback' => function ($object) {
+      $SmallAd = new \includes\post\Annonce((int)$object['id'], true);
+      $author = $SmallAd->get_author();
+      if (in_array('candidate', $author->roles)) {
+        return \includes\post\Candidate::get_candidate_by($author->ID, 'user_id', true);
       }
 
-      return true;
-    },
-    'get_callback' => function ($object) {
-      $regions = wp_get_post_terms($object['id'], 'region');
-      return [
-        'region' =>  empty($regions) ? null : $regions[0]
-      ];
+      if (in_array('company', $author->roles)) {
+        return \includes\post\Company::get_company_by($author->ID);
+      }
     }
   ]);
 

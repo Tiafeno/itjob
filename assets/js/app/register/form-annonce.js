@@ -41,7 +41,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               $scope.abranchs = _.clone(abranchs);
               $scope.allCity = _.clone(allCity);
               $scope.categories = _.clone(categories);
-
+              $rootScope.annonce.type_annonce = 1;
               Services.setLoading(false);
             };
             $rootScope.featuredImage = null;
@@ -65,7 +65,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               toolbar: 'undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat '
             };
 
-            $scope.submitForm = function (Form) {
+            $scope.submitForm = Form => {
               if (Form.$invalid) {
                 angular.forEach(Form.$error, function (field) {
                   angular.forEach(field, function (errorField) {
@@ -82,9 +82,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                 Form.email.$validate();
                 $('select.form-control').trigger('blur');
               }
-
               if (!Form.$valid) return;
-
               Services.setLoading(true, "Enregistrement en cours");
               $scope.sendSubmitForm(Form).then(resp => {
                 if ( ! _.isNull($rootScope.annonce.featuredImg)) {
@@ -107,7 +105,6 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                   Services.setLoading(false);
                 }
               });
-
             };
 
             $scope.sendSubmitForm = (Form) => {
@@ -307,7 +304,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
 
             var $ = jQuery.noConflict();
             /** Load jQuery elements **/
-            var jqSelects = $("select.form-control");
+            var jqSelects = $("select.form-control:not('.no-select2')");
             $.each(jqSelects, function (index, element) {
               var selectElement = $(element);
               var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
@@ -410,7 +407,6 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
         var preloadMessage = $('.page-preloader');
         var display = load ? 'block' : 'none';
         preloader.css('display', display);
-        console.log(display);
         preloadMessage.text(message);
       }
     }
@@ -432,8 +428,6 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
     $rootScope.annonce = {};
     $rootScope.annonce.gallery = [];
     $rootScope.annonce.featuredImg = null;
-
-
   }]).run(['$state', function ($state) {
     var loadingPath = itOptions.template + '/img/loading.gif';
     $state.defaultErrorHandler(function (error) {

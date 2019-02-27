@@ -279,11 +279,13 @@ if ( ! class_exists( 'vcSearch' ) ):
       try {
         global $posts;
         $search_query   = Http\Request::getValue( 's' );
+        $publish_ad_link = get_the_permalink( ADD_ANNONCE_PAGE );
         $args           = array_merge( $args, [
           's'              => $search_query,
           'ab'             => Http\Request::getValue('ab', ''),
           'rg'             => Http\Request::getValue('rg', ''),
-          'search_count'   => count( $posts )
+          'search_count'   => count( $posts ),
+          'publish_ad_link' => $publish_ad_link
         ] );
         return $Engine->render( '@VC/search/search-annonce.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
