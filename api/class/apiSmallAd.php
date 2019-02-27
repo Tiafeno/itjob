@@ -160,3 +160,35 @@ class apiSmallAd {
 }
 
 new apiSmallAd();
+
+add_action('rest_api_init', function() {
+  $post_type = "annonce";
+  $formation_meta = ["activated", "type", "reference", "featured", "featured_date_limit", "email", "annonce_author",
+    "address", 'cellphone', 'price', 'gallery'];
+  foreach ($formation_meta as $meta):
+    register_rest_field($post_type, $meta, array(
+      'update_callback' => function ($value, $object, $field_name) {
+        if ($field_name === 'activated') {
+          $activated = intval($value);
+          update_field('activated', $activated, (int)$object->ID);
+          $annonce_status = get_post_status((int)$object->ID);
+          $result = true;
+          if ($annonce_status !== 'publish')
+            $result = wp_update_post(['ID' => (int)$object->ID, 'post_status' => 'publish'], true);
+          if (is_wp_error($result)) return false;
+          if (!is_wp_error($result) && $activated) {
+            // Envoyer un mail de confirmation de publication
+          }
+
+          return true;
+        }
+        return update_field($field_name, $value, (int)$object->ID);
+      },
+      'get_callback'    => function ($object, $field_name) {
+        $post_id = $object['id'];
+        if (!is_user_logged_in()) return null;
+        return get_field($field_name, $post_id);
+      },
+    ));
+  endforeach;
+});

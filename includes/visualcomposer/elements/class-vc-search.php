@@ -1,6 +1,6 @@
 <?php
 if ( ! class_exists( 'WPBakeryShortCode' ) ) {
-  die( 'WPBakery plugins missing!' );
+  new WP_Error('WPBakery', 'WPBakery plugins missing!' );
 }
 if ( ! class_exists( 'vcSearch' ) ):
   class vcSearch {

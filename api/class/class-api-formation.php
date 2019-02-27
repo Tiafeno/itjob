@@ -231,6 +231,7 @@ add_action('rest_api_init', function () {
         return update_field($field_name, $value, (int)$object->ID);
       },
       'get_callback'    => function ($object, $field_name) {
+        if (!is_user_logged_in()) return null;
         $post_id = $object['id'];
         return get_field($field_name, $post_id);
       },
@@ -265,6 +266,29 @@ add_action('rest_api_init', function () {
     'get_callback'    => function ($object, $field_name) {
       return \includes\model\Model_Subscription_Formation::get_subscription($object['id']);
     },
+  ]);
+
+  register_rest_field($post_type, 'tax_values', [
+    'update_callback' => function ($value, $object, $name) {
+      $taxonomies = is_array($value) ? $value : [];
+      $formation_id = intval($object->ID);
+      if (!empty($taxonomies)) {
+        if (isset($taxonomies['region']))
+          wp_set_object_terms($formation_id, (int)$taxonomies['region'], 'region');
+        if (isset($taxonomies['area']))
+          wp_set_object_terms($formation_id, (int)$taxonomies['area'], 'branch_activity');
+      }
+
+      return true;
+    },
+    'get_callback' => function ($object) {
+      $regions = wp_get_post_terms($object['id'], 'region');
+      $areas = wp_get_post_terms($object['id'], 'branch_activity');
+      return [
+        'region' =>  empty($regions) ? null : $regions[0],
+        'area' => empty($areas) ? null : $areas[0]
+      ];
+    }
   ]);
 
 });
