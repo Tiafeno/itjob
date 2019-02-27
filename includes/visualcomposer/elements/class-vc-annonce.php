@@ -253,7 +253,7 @@ class vcAnnonce
   public
   function form_annonce_render ($attrs)
   {
-    global $itJob, $theme;
+    global $itJob, $wp_version;
     extract(shortcode_atts(
       array(
         'title' => '',
@@ -282,7 +282,7 @@ class vcAnnonce
     ], $itJob->version, true);
 
     wp_localize_script('form-annonce', 'itOptions', [
-      'version'  => $theme->get('Version'),
+      'version'  => $wp_version,
       'ajax_url' => admin_url('admin-ajax.php'),
       'helper'   => [
         'redir'    => home_url('/'),

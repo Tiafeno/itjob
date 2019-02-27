@@ -22,6 +22,7 @@ define('TWIG_TEMPLATE_PATH', get_template_directory() . '/templates');
 if (!defined('VENDOR_URL')) {
   define('VENDOR_URL', get_template_directory_uri() . '/assets/vendors');
 }
+global $wp_version;
 $theme = wp_get_theme('itjob');
 
 // Utiliser ces variables apres la fonction: the_post()
@@ -79,7 +80,7 @@ require_once 'includes/class/class-wallet.php';
 require_once 'includes/class/class-work-temporary.php';
 
 $itJob = (object) [
-  'version' => $theme->get('Version'),
+  'version' => $wp_version,
   'root' => require 'includes/class/class-itjob.php',
   'services' => require 'includes/class/class-jobservices.php'
 ];
