@@ -20,12 +20,10 @@ class apiFormation
       if (is_null($Formation->title)) {
         return new WP_Error('no_formation', 'Aucune formation ne correpond à cette id', array('status' => 404));
       }
-
       switch ($ref) {
         case 'collect':
           return new WP_REST_Response($Formation);
           break;
-
         case 'subscription':
           $subscriptions = \includes\model\Model_Subscription_Formation::get_subscription($formation_id);
           $results = [];
@@ -39,7 +37,6 @@ class apiFormation
           }
           return new WP_REST_Response($results);
           break;
-
         case 'activated':
           $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
           if (is_null($status)) new WP_Error(404, 'Parametre manquant');
@@ -57,7 +54,6 @@ class apiFormation
 
           return new WP_REST_Response(['success' => true, 'message' => "Formation mis à jour avec succès"]);
           break;
-
         case 'featured':
           $featured = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
           $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;

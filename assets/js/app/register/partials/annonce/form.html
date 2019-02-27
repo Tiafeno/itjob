@@ -104,7 +104,8 @@
           <input class="form-control" name="price" ng-model="annonce.price" type="number" placeholder="Budget en ariary (MGA)">
         </div>
       </div>
-      <div class="form-group mb-4 row ">
+
+      <div class="form-group mb-4 row " ng-if="annonce.type_annonce == 1">
         <label class="col-sm-4 col-form-label ">Secteur d'activité</label>
         <div class="col-sm-6">
           <div class="form-group">
