@@ -281,12 +281,14 @@ if ( ! class_exists( 'vcSearch' ) ):
         $search_query   = Http\Request::getValue( 's' );
         $publish_ad_link = get_the_permalink( ADD_ANNONCE_PAGE );
         $type = $args['post_type'] === 'annonce' ? 2 : 1;
+        $btn_msg = $type === 1 ? "Deposer un travail temporaire" : "Deposer une petite annonce";
         $args           = array_merge( $args, [
           's'              => $search_query,
           'ab'             => Http\Request::getValue('ab', ''),
           'rg'             => Http\Request::getValue('rg', ''),
           'search_count'   => count( $posts ),
-          'publish_ad_link' => $publish_ad_link . '?type=' . $type
+          'publish_ad_link' => $publish_ad_link . '?type=' . $type,
+          'BTN_MSG' => $btn_msg
         ] );
         return $Engine->render( '@VC/search/search-annonce.html.twig', $args );
       } catch ( Twig_Error_Loader $e ) {
