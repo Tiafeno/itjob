@@ -185,7 +185,8 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
           foreach ($terms as $term) {
             $valid = get_term_meta( $term->term_id, 'activated', true);
             if ($valid) {
-              $term->name = apply_filters('the_content', $term->name);
+              //$term->name = apply_filters('the_content', $term->name);
+              $term->name = mb_convert_encoding($term->name, 'UTF-8');
               array_push($termValid, $term);
             }
           }

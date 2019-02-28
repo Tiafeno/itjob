@@ -344,7 +344,6 @@ add_action('init', function () {
       wp_send_json_success(['phone' => $Works->cellphone, 'first_name' => $first_name, 'greet' => $greet ]);
     }
   }
-
   add_action('wp_ajax_request_phone_number', 'request_phone_number');
 });
 
