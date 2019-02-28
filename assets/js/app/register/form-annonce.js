@@ -41,7 +41,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               $scope.abranchs = _.clone(abranchs);
               $scope.allCity = _.clone(allCity);
               $scope.categories = _.clone(categories);
-              $rootScope.annonce.type_annonce = 1;
+              $rootScope.annonce.type_annonce = _.clone(itOptions.type);
               Services.setLoading(false);
             };
             $rootScope.featuredImage = null;
