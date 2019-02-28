@@ -185,14 +185,16 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
           foreach ($terms as $term) {
             $valid = get_term_meta( $term->term_id, 'activated', true);
             if ($valid) {
-              //$term->name = apply_filters('the_content', $term->name);
-              $term->name = mb_convert_encoding($term->name, 'UTF-8');
-              array_push($termValid, $term);
+              $termValid[] = $term;
             }
           }
         else:
           $termValid = &$terms;
         endif;
+
+        foreach ($termValid as $key => $term) {
+            $termValid[$key]->name = mb_convert_encoding($term->name, 'UTF-8');
+        }
 
         if ( \wp_doing_ajax() || !empty( $_GET ) ) {
           wp_send_json( $termValid );
