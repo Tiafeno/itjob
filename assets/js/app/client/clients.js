@@ -452,7 +452,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
        * @param {File} file
        * @returns {Promise<any>}
        */
-      this.imgPromise = (file) => {
+      const imgPromise = (file) => {
         return new Promise((resolve, reject) => {
           const byteLimite = 2097152; // 2Mb
           if (file && file.size <= byteLimite) {
@@ -484,7 +484,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
       $rootScope.uploadImage = function (file, errFiles) {
         $rootScope.avatarFile = file;
         if (_.isNull(file)) return;
-        this.imgPromise(file)
+        imgPromise(file)
           .then(result => {
             $rootScope.$apply(() => {
               $rootScope.profilEditor.featuredImage = result.src;
