@@ -122,10 +122,12 @@ if ( ! class_exists( 'scClient' ) ) :
 
       $client       = get_userdata( $this->User->ID );
       $client_roles = $client->roles;
+      $theme = wp_get_theme();
+
       try {
         do_action( 'get_notice' );
         $wp_localize_script_args = [
-          'version' => $wp_version,
+          'version' => $theme->get('Version'),
           'Helper'  => [
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
             'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
