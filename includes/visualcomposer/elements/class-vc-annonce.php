@@ -290,10 +290,10 @@ class vcAnnonce
       'sweetalert'
     ], $itJob->version, true);
 
-    $httpType = Http\Request::getValue('type', null);
-    $httpType = !is_null($httpType) ? (intval($httpType) === 0 ? null : intval($httpType)): null;
+    $httpType = Http\Request::getValue('type', false);
+    $httpType = $httpType ? (intval($httpType) === 0 ? '' : intval($httpType)): '';
     /** @var integer $type */
-    $type = is_null($httpType) ? $type : $httpType;
+    $type = empty($httpType) ? $type : $httpType;
     wp_localize_script('form-annonce', 'itOptions', [
       'version'  => $wp_version,
       'type' => $type,
