@@ -482,7 +482,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
        * @param errFiles
        */
       $rootScope.uploadImage = function (file, errFiles) {
-        $scope.avatarFile = file;
+        $rootScope.avatarFile = file;
         if (_.isNull(file)) return;
         this.imgPromise(file)
           .then(result => {

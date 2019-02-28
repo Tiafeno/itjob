@@ -9,6 +9,7 @@
 namespace includes\object;
 
 use includes\model\Model_Wallet;
+use includes\post\Wallet;
 
 if (!defined('ABSPATH')) {
   exit;
@@ -30,7 +31,7 @@ class credit {
           'param_name'  => 'title',
           'value'       => '',
           'description' => "Ajouter un titre",
-          'admin_label' => false,
+          'admin_label' => true,
           'weight'      => 0
         ),
       ]
@@ -61,7 +62,7 @@ class credit {
     try {
       do_action('get_notice');
       $wModel = new Model_Wallet();
-      $wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
+      $wallet = Wallet::getInstance($User->ID, 'user_id', true);
       $credit = $wallet->credit;
       /** @var STRING $title */
       return $Engine->render('@VC/wallet.html', [
@@ -72,7 +73,7 @@ class credit {
     } catch (\Twig_Error_Loader $e) {
     } catch (\Twig_Error_Runtime $e) {
     } catch (\Twig_Error_Syntax $e) {
-      echo $e->getRawMessage();
+      return $e->getRawMessage();
     }
 
   }
