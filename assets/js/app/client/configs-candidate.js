@@ -1012,8 +1012,8 @@ APPOC
       }]
     }
   }])
-  .controller('candidateController', ['$rootScope', '$scope', '$http', '$filter', 'Client', 'Regions', 'Towns', 'Areas',
-    function ($rootScope, $scope, $http, $filter, Client, Regions, Towns, Areas) {
+  .controller('candidateController', ['$rootScope', '$scope', '$http', '$filter', 'Upload', 'Client', 'Regions', 'Towns', 'Areas',
+    function ($rootScope, $scope, $http, $filter, Upload, Client, Regions, Towns, Areas) {
       const self = this;
 
       $rootScope.alertLoading = false; // Directive alert

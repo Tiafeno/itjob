@@ -1,4 +1,5 @@
-const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinymce', 'ui.router', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
+const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinymce',
+  'ui.router', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
   .factory('clientFactory', ['$http', function ($http) {
     return {
       getCity: function () {
