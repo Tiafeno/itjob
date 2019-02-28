@@ -193,10 +193,11 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
         endif;
 
         foreach ($termValid as $key => $term) {
-            $termValid[$key]->name = mb_convert_encoding($term->name, 'UTF-8');
+          $name = html_entity_decode( $term->name, ENT_QUOTES, 'UTF-8');
+          $termValid[$key]->name = $name;
         }
 
-        if ( \wp_doing_ajax() || !empty( $_GET ) ) {
+        if ( wp_doing_ajax() || !empty( $_GET ) ) {
           wp_send_json( $termValid );
         } else {
           return $termValid;
