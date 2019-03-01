@@ -5,6 +5,7 @@ namespace includes\shortcode;
 use Http;
 use includes\model\itModel;
 use includes\object\jobServices;
+use includes\post\Annonce;
 use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
@@ -881,10 +882,10 @@ if ( ! class_exists( 'scClient' ) ) :
           ]
         ]
       ];
-      $works = get_posts( $args );
+      $annonces = get_posts( $args );
       $results = [];
-      foreach ($works as $work) {
-        $results[] = new Works( $work->ID );
+      foreach ($annonces as $annonce) {
+        $results[] = new Annonce( $annonce->ID );
       }
 
       wp_send_json_success( $results );
