@@ -14,6 +14,17 @@
                       ligne</span>
           <span class="badge badge-danger" ng-if="Candidate.state === 'publish' && Candidate._activated !== true">Désactiver</span>
           <div class="mb-4"></div>
+          <!-- Statistic -->
+          <div class="row mb-5">
+            <div class="col-6 text-center" style="border-right: 1px solid rgba(0,0,0,.1);">
+              <div class="text-muted uppercase">CANDIDATURES ENVOYÉES</div>
+              <h2 class="text-success mt-1">[[ Candidate.postuled ? Candidate.postuled.length : 0 ]]</h2>
+            </div>
+            <div class="col-6 text-center" style="border-right: 1px solid rgba(0,0,0,.1);">
+              <div class="text-muted uppercase">VUE(S)</div>
+              <h2 class="text-success mt-1">[[ Candidate.view ]]</h2>
+            </div>
+          </div>
           <!-- Emploi rechercher -->
           <job-search jobs="Candidate.jobSought"></job-search>
           <!-- Experience directive -->

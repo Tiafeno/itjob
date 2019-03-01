@@ -67,10 +67,17 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
           <!--          Content here ... -->
           <?php
           while ( have_posts() ) : the_post();
+            if ( ! $candidate instanceof \includes\post\Candidate) {
+              echo "Le Candidat est introuvable";
+              break;
+            }
             if ( ! $candidate->has_cv ) {
               echo sprintf( "CV en attente de confirmation. Veillez réessayer plus tard." );
               break;
             }
+            $view = get_post_meta($candidate->getId(), 'view', true);
+            $view = !$view ? 0 : intval($view);
+            update_post_meta($candidate->getId(), 'view', $view + 1);
             ?>
             <div class="candidate-section ibox-body">
               <div class="candidate-top d-block pb-4">

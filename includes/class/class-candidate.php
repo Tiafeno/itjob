@@ -37,10 +37,10 @@ final class Candidate extends UserParticular implements \iCandidate {
   public $tags;
   public $privateInformations;
   public $error = false;
+  public $view = 0;
 
   /**
    * Candidate constructor.
-   *
    * @param int $postId - ID post 'candidate' type
    */
   public function __construct( $postId = null, $privateAccess = false ) {
@@ -225,6 +225,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->privateInformations->author = $this->author;
     $this->privateInformations->avatar = $this->avatar;
 
+    $this->view = get_post_meta($this->getId(), 'view', true);
   }
 
   /**

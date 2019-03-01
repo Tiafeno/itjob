@@ -45,19 +45,11 @@ APPOC
           url: '/profil',
           templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/profil.html?ver=${itOptions.version}`,
           controller: ["$rootScope", function ($rootScope) {
-
-          }]
-        },
-        {
-          name: 'manager.profil.index',
-          url: '/index',
-          templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/index.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
             UIkit.util.on('#modal-candidate-profil-editor', 'show', function (e) {
               e.preventDefault();
               $rootScope.$apply(() => {
                 $rootScope.onViewModalCandidateProfil();
-              })
+              });
             });
 
             UIkit.util.on('#modal-candidate-profil-editor', 'hide', function (e) {
@@ -65,6 +57,13 @@ APPOC
               $rootScope.avatarFile = false;
               $rootScope.profilEditor = {};
             });
+          }]
+        },
+        {
+          name: 'manager.profil.index',
+          url: '/index',
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/index.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", function ($rootScope) {
 
             UIkit.util.on('#modal-information-editor', 'show', function (e) {
               e.preventDefault();
@@ -889,7 +888,6 @@ APPOC
                 };
                 return value;
                 break;
-
               default:
                 return value;
                 break;
@@ -1077,7 +1075,6 @@ APPOC
       $rootScope.cv.addCVUrl = itOptions.Helper.add_cv;
       $rootScope.Candidate = {};
 
-
       $rootScope.preloaderToogle = () => {
         $rootScope.preloader = !$rootScope.preloader;
       };
@@ -1256,7 +1253,6 @@ APPOC
             })
       };
 
-
       /**
        * Récuperer les terms d'une taxonomie
        * @param {string} Taxonomy
@@ -1302,6 +1298,4 @@ APPOC
             $rootScope.profilEditor.loading = false;
           });
       };
-
-
     }])
