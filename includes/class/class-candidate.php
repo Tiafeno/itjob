@@ -128,7 +128,6 @@ final class Candidate extends UserParticular implements \iCandidate {
    */
   public function is_activated() {
     $activation = get_field( 'activated', $this->getId() );
-
     return boolval($activation);
   }
 
