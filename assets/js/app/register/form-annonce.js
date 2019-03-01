@@ -426,10 +426,14 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
     };
   }])
   .controller('annonceController', ['$rootScope', function ($rootScope) {
+    $rootScope.helpers = {};
     $rootScope.isSubmit = !1;
     $rootScope.annonce = {};
     $rootScope.annonce.gallery = [];
     $rootScope.annonce.featuredImg = null;
+    this.$onInit = () => {
+      $rootScope.helpers = _.clone(itOptions.helper)
+    }
   }]).run(['$state', function ($state) {
     var loadingPath = itOptions.template + '/img/loading.gif';
     $state.defaultErrorHandler(function (error) {

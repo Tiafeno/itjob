@@ -306,6 +306,9 @@ class vcAnnonce
         'redir'    => home_url('/'),
         'partials' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template' => get_template_directory_uri(),
+        'home_url' => home_url('/'),
+        'client_area_url' => get_the_permalink(ESPACE_CLIENT_PAGE),
+        'archive_annonce_url' => get_post_type_archive_link('annonce')
       ]
     ]);
 
