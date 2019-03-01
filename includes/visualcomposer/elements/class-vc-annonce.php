@@ -169,10 +169,13 @@ class vcAnnonce
     $post_id = (int)$result;
     wp_set_post_terms($post_id, [(int)$region], 'region');
     wp_set_post_terms($post_id, [(int)$town], 'city');
-    wp_set_post_terms($post_id, [(int)$activity_area], 'branch_activity');
     update_field('type', (int)$type, $post_id);
     if ($service_or_annonce === 2) {
       wp_set_post_terms($post_id, [(int)$categorie], 'categorie');
+    }
+
+    if ($service_or_annonce === 1) {
+      wp_set_post_terms($post_id, [(int)$activity_area], 'branch_activity');
     }
 
     // Add acf field
@@ -294,8 +297,9 @@ class vcAnnonce
     $httpType = $httpType ? (intval($httpType) === 0 ? '' : intval($httpType)): '';
     /** @var integer $type */
     $type = empty($httpType) ? $type : $httpType;
+    $theme = wp_get_theme();
     wp_localize_script('form-annonce', 'itOptions', [
-      'version'  => $wp_version,
+      'version'  => $theme->get('Version'),
       'type' => $type,
       'ajax_url' => admin_url('admin-ajax.php'),
       'helper'   => [

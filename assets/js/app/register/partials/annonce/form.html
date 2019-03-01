@@ -14,7 +14,7 @@
       <label class="col-sm-4 col-form-label ">Type d'annonce <span style="color: red">*</span></label>
       <div class="col-sm-8">
         <div class="form-group">
-          <select class="form-control no-select2" name="type_annonce" ng-model="annonce.type_annonce" ng-value="annonce.type_annonce" title="Type" required>
+          <select ng-change="loadScript()" class="form-control no-select2" name="type_annonce" ng-model="annonce.type_annonce" ng-value="annonce.type_annonce" title="Type" required>
             <option value=""></option>
             <option value="1">Prestation service ou Travail temporaire</option>
             <option value="2">Autres type d'annonce</option>

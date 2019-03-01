@@ -59,7 +59,6 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               },
               content_css: [
                 '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i',
-                itOptions.template_url + '/assets/vendors/tinymce/css/content.min.css'
               ],
               selector: 'textarea',
               toolbar: 'undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat '
@@ -124,11 +123,13 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                 Fm.append('cellphone', Form.phone.$modelValue);
                 Fm.append('price', _.isUndefined(price) ? 0 : parseInt(price));
                 Fm.append('email', Form.email.$modelValue);
-                Fm.append('activity_area', parseInt(Form.activity_area.$modelValue));
                 Fm.append('type', Form.type.$modelValue);
 
                 if (annonce === 2) { // Autres type d'annonce
                   Fm.append('categorie', parseInt(Form.categorie.$modelValue));
+                } else {
+                  if (!_.isUndefined(Form.activity_area.$modelValue))
+                    Fm.append('activity_area', parseInt(Form.activity_area.$modelValue));
                 }
                 Factory
                   .$send(Fm)
@@ -301,24 +302,26 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               $rootScope.gallery = [];
             };
 
-            var $ = jQuery.noConflict();
             /** Load jQuery elements **/
-            var jqSelects = $("select.form-control:not('.no-select2')");
-            $.each(jqSelects, function (index, element) {
-              var selectElement = $(element);
-              var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
-              $(element)
-                .select2({
-                  placeholder: placeholder,
-                  allowClear: true,
-                  width: '100%'
-                })
-                .on('select2:closing', function (e) {
-                  var el = e.currentTarget;
-                  $(el).blur();
-                });
-            });
-
+            var $ = jQuery.noConflict();
+            $rootScope.loadScript = () => {
+              var jqSelects = $("select.form-control:not('.no-select2')");
+              $.each(jqSelects, function (index, element) {
+                var selectElement = $(element);
+                var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
+                $(element)
+                  .select2({
+                    placeholder: placeholder,
+                    allowClear: true,
+                    width: '100%'
+                  })
+                  .on('select2:closing', function (e) {
+                    var el = e.currentTarget;
+                    $(el).blur();
+                  });
+              });
+            };
+            $rootScope.loadScript();
             $(".form-control.country, .form-control.categorie").select2({
               placeholder: "Selectioner un choix",
               allowClear: true,
