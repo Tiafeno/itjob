@@ -225,7 +225,8 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->privateInformations->author = $this->author;
     $this->privateInformations->avatar = $this->avatar;
 
-    $this->view = get_post_meta($this->getId(), 'view', true);
+    $view = get_post_meta($this->getId(), 'view', true);
+    $this->view = !$view ? 0 : intval($view);
   }
 
   /**
