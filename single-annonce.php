@@ -187,40 +187,21 @@ wp_enqueue_script('sweetalert');
       });
 
       $('.view-phone-number').on('click', function (ev) {
-        swal({
-            title: "Confirmation",
-            text: "Voulez-vous connaitre le numero de telephone portable de l'annonceur?",
-            type: "info",
-            showCancelButton: true,
-            confirmButtonClass: "btn-info",
-            confirmButtonText: "Oui",
-            cancelButtonText: "Non",
-            closeOnConfirm: false,
-            closeOnCancel: true,
-            showLoaderOnConfirm: true
-          },
-          function(isConfirm) {
-            if (isConfirm) {
-
-              $.ajax({
-                url: `<?= admin_url('admin-ajax.php') ?>`,
-                cache: true,
-                method: "GET",
-                data: { action : 'request_phone_number', ad_id : <?= $post->ID ?> },
-                dataType: "json"
-              })
-                .done(function (resp) {
-                  var numberPhone = resp.data;
-                  swal(numberPhone, 'Vous pouvez me contacter par téléphone avec le numéro ci-dessus');
-                })
-                .fail(function() {
-                  swal("Désolé", "Vous n'êtes pas connecter", "warning");
-                })
-                .always(function () {});
-            } else {
-
-            }
-          });
+        $.ajax({
+          url: `<?= admin_url('admin-ajax.php') ?>`,
+          cache: true,
+          method: "GET",
+          data: { action : 'request_phone_number', ad_id : <?= $post->ID ?> },
+          dataType: "json"
+        })
+          .done(function (resp) {
+            var numberPhone = resp.data;
+            swal(numberPhone, 'Vous pouvez me contacter par téléphone avec le numéro ci-dessus');
+          })
+          .fail(function() {
+            swal("Désolé", "Vous n'êtes pas connecter", "warning");
+          })
+          .always(function () {});
       });
 
       $('.price').each(function (index, el) {
