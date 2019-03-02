@@ -1129,7 +1129,9 @@ if ( ! class_exists( 'scClient' ) ) :
             'add_formation_url' => get_the_permalink(ADD_FORMATION_PAGE),
             'add_annonce_url'   => get_the_permalink( ADD_ANNONCE_PAGE),
             'interest_page_uri' => get_the_permalink( $interest_page_id ),
-            'archive_candidate_link' => get_post_type_archive_link('candidate')
+            'archive_candidate_link' => get_post_type_archive_link('candidate'),
+            'archive_annonce_link' => get_post_type_archive_link('annonce'),
+            'archive_work_link' => get_post_type_archive_link('works')
           ]
         ];
         if ($Company->sector === 1) {
@@ -1152,12 +1154,13 @@ if ( ! class_exists( 'scClient' ) ) :
           'post_type' => 'candidate',
           'Helper'    => [
             'add_annonce_url'   => get_the_permalink( ADD_ANNONCE_PAGE),
-            'archive_offer_link' => get_post_type_archive_link('offers')
+            'archive_offer_link' => get_post_type_archive_link('offers'),
+            'archive_annonce_link' => get_post_type_archive_link('annonce'),
+            'archive_works_link' => get_post_type_archive_link('works')
           ]
         ] );
       }
     }
-
 
     public function __get_company_offers($Company = null) {
       $resolve      = [];

@@ -313,6 +313,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                     columns: [
                       {
                         data: 'title', render: (data, type, row) => {
+                          let activate = (row.status === 'publish' && row.activated) ? 1 : 0;
+                          if (!activate) return data;
                           return `<a href="${row.url}" target="_blank">${data}</a>`
                         }
                       },
@@ -378,6 +380,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                     columns: [
                       {
                         data: 'title', render: (data, type, row) => {
+                          let activate = (row.status === 'publish' && row.activated) ? 1 : 0;
+                          if (!activate) return data;
                           return `<a href="${row.url}" target="_blank">${data}</a>`
                         }
                       },
