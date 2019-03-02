@@ -270,7 +270,6 @@ wp_enqueue_script('sweetalert');
                 $gallery['url'] = get_the_post_thumbnail_url($annonce->ID, 'full');
                 $gallery['sizes'] = [];
                 $gallery['sizes']['thumbnail'] = get_the_post_thumbnail_url($annonce->ID, 'thumbnail');
-                var_dump($annonce->gallery);
                 array_push($annonce->gallery, $gallery);
                 ?>
                 <?php if (!empty($annonce->gallery)): ?>

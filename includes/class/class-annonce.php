@@ -131,7 +131,7 @@ class Annonce
     $this->type     = get_field('type', $this->ID); // ['value' => <string>, 'label' => <string>]
     $this->cellphone = get_field('cellphone', $this->ID); // number
     $gallery   = get_field('gallery', $this->ID);
-    $this->gallery = !is_array($gallery) ? $gallery : [];
+    $this->gallery = is_array($gallery) ? $gallery : [];
     $this->activated = get_field('activated', $this->ID);
     $this->price     = get_field('price', $this->ID);
     $this->reference = get_field('reference', $this->ID);
