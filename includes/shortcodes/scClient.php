@@ -1131,7 +1131,7 @@ if ( ! class_exists( 'scClient' ) ) :
             'interest_page_uri' => get_the_permalink( $interest_page_id ),
             'archive_candidate_link' => get_post_type_archive_link('candidate'),
             'archive_annonce_link' => get_post_type_archive_link('annonce'),
-            'archive_work_link' => get_post_type_archive_link('works')
+            'archive_works_link' => get_post_type_archive_link('works')
           ]
         ];
         if ($Company->sector === 1) {
