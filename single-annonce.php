@@ -264,6 +264,15 @@ wp_enqueue_script('sweetalert');
             <div class="ibox-body">
               <?php do_action('get_notice'); ?>
               <div class="container">
+                <?php
+                $gallery = [];
+                $thumbnail_id = get_post_thumbnail_id($annonce->ID);
+                $gallery['url'] = get_the_post_thumbnail_url($annonce->ID, 'full');
+                $gallery['sizes'] = [];
+                $gallery['sizes']['thumbnail'] = get_the_post_thumbnail_url($annonce->ID, 'thumbnail');
+                array_push($annonce->gallery, $gallery);
+                ?>
+                <?php if (!empty($annonce->gallery)): ?>
                 <div id="slider" class="crs-wrap">
                   <div class="crs-screen">
                     <div class="crs-screen-roll">
@@ -287,6 +296,8 @@ wp_enqueue_script('sweetalert');
                     </div>
                   </div>
                 </div>
+                <?php endif; ?>
+
                 <div class="mt-3"></div>
                 <h2 class="page-title font-strong font-19"><?= $annonce->title ?></h2>
 
