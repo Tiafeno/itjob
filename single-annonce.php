@@ -280,7 +280,7 @@ wp_enqueue_script('sweetalert');
                 <?php endif; ?>
 
                 <div class="mt-3"></div>
-                <h2 class="page-title font-strong font-19"><?= $annonce->title ?></h2>
+                <h2 class="page-title font-strong font-19"><?= ucfirst($annonce->title) ?></h2>
 
                 <?php if ($annonce->price && !empty($annonce->price)) : ?>
                   <div class="price font-15"><span class="price"><?= $annonce->price ?></span></div>

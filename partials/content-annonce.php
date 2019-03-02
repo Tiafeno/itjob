@@ -18,7 +18,7 @@ $current_url = get_the_permalink(get_the_ID());
   <div class="media-body d-flex">
     <div class="flex-1">
       <h5 class="media-heading font-18">
-        <a href="<?= $current_url ?>"><?= $annonce->title ?></a>
+        <a href="<?= $current_url ?>"><?= ucfirst($annonce->title) ?></a>
       </h5>
       <p class="font-16">à partir de <span class="price"><?= $annonce->price ?></span></p>
       <p class="font-13 text-light"><?= substr(strip_tags($annonce->description), 0 , 250) ?> [...]</p>
