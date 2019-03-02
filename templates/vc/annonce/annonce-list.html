@@ -10,7 +10,7 @@
       var media = $('.media');
       media.each(function (index, element) {
         var mediaImg = $(element).find(".media-img");
-        var bgImg = mediaImg.data('bg-image');
+        var bgImg = mediaImg.data('bg-image').trim();
         mediaImg.css({
           'background': `#cad1d9 url(${bgImg}}) no-repeat center center`,
           'background-size': 'contain',

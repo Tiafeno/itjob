@@ -6,8 +6,6 @@ if (!$annonce->is_activated()) {
 $current_url = get_the_permalink(get_the_ID());
 ?>
 <li class="media">
-
-
   <div data-bg-image="<?= empty($annonce->featured_image) ? '' : $annonce->featured_image[0] ?>"  data-url="<?= $current_url ?>" class="media-img mr-3"
        data-height="170" data-width="240">
     <div class="d-none">
