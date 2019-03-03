@@ -17,7 +17,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   private $avatar;
 
   public $title;
-  public $state;
+  public $state; // post type
   public $candidate_url;
   public $reference;
   public $region; // Region

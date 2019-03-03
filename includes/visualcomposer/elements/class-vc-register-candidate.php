@@ -114,11 +114,16 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         return $message_access_refused;
       }
       
-      $hasCV = get_field('itjob_cv_hasCV', $this->Candidate->getId());
-      if ($hasCV && $this->Candidate->is_publish()) {
+      if ($this->Candidate->has_cv && $this->Candidate->state === 'pending' ) {
         return $Engine->render( '@VC/candidates/pending-cv.html.twig', [
           'offer_archive' => get_post_type_archive_link('offers')
         ] );
+      }
+
+      if ($this->Candidate->state === 'publish' && !$this->Candidate->is_activated()) {
+        return $Engine->render('@VC/candidates/has-cv.html', [
+          'offer_archive' => get_post_type_archive_link('offers')
+        ]);
       }
 
       wp_enqueue_style( 'b-datepicker-3' );
