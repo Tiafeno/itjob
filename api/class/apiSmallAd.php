@@ -83,17 +83,6 @@ class apiSmallAd {
       $meta_query = [];
       $tax_query = [];
 
-      $status = preg_replace('/\s+/', '', $searchs[1]);
-      $status = empty($status) && $status !== '0' ? null : intval($status);
-      if ($status === 1 || $status === 0) {
-        $meta_query[] = ['relation' => "AND"];
-        $meta_query[] = [
-          'key'     => 'activated',
-          'value'   => (int)$status,
-          'compare' => '='
-        ];
-      }
-
       // Effectuer une recherche par mots
       if (!empty($searchs[0]) && $searchs[0] !== ' ') {
         $s = $searchs[0];
@@ -104,6 +93,17 @@ class apiSmallAd {
             'value'   => "({$s}).*$",
             'compare' => 'REGEXP'
           ]
+        ];
+      }
+      
+      $status = preg_replace('/\s+/', '', $searchs[1]);
+      $status = empty($status) && $status !== '0' ? null : intval($status);
+      if ($status === 1 || $status === 0) {
+        $meta_query[] = ['relation' => "AND"];
+        $meta_query[] = [
+          'key'     => 'activated',
+          'value'   => (int)$status,
+          'compare' => '='
         ];
       }
 
