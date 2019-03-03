@@ -120,7 +120,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         ] );
       }
 
-      if ($this->Candidate->state === 'publish' && !$this->Candidate->is_activated()) {
+      if ($this->Candidate->state === 'publish' && $this->Candidate->is_activated()) {
         return $Engine->render('@VC/candidates/has-cv.html', [
           'offer_archive' => get_post_type_archive_link('offers')
         ]);
