@@ -147,7 +147,7 @@ class cronModel
     public function getPendingApply() {
         global $wpdb;
         $interest_tb =  $wpdb->prefix . 'cv_request';
-        $prepare = $wpdb->prepare( "SELECT * FROM $interest_tb WHERE type = %s AND view = %d", 'apply', 0 );
+        $prepare = $wpdb->prepare( "SELECT * FROM $interest_tb WHERE type = %s AND view = %d AND status = %s", 'apply', 0, "pending" );
         $rows    = $wpdb->get_results( $prepare );
 
         $infos = [];
