@@ -85,7 +85,7 @@ if (!class_exists('vcRegisterParticular')) :
 
     if (is_user_logged_in()) {
       return '<div class="d-flex align-items-center">' .
-        '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">
+        '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right">
         Désolé, Nous avons eu un problème avec votre demande.
         </div></div>';
     }
