@@ -670,6 +670,7 @@ add_action('rest_api_init', function () {
                 $Notice->date_create = $row->date_create;
                 $Notice->status = $row->status;
                 $Notice->guid = $row->guid;
+                $Notice->type = $row->template;
                 $tpl = $Template->tpls[(int)$row->template];
                 set_error_handler(function ($errno, $errstr) {
                 });
