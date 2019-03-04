@@ -124,6 +124,9 @@ final class Company implements \iCompany {
       if ($access) {
         $this->getInterests();
       }
+    } else {
+      self::$error = new \WP_Error('broke', "Désolé, Nous avons eu un problème avec votre demande car vous utilisez un compte particulier.
+      Veuillez vous connecter avec un compte professionel. Merci");
     }
   }
 
