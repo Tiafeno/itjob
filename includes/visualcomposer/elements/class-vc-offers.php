@@ -400,7 +400,7 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       $user = $itJob->services->getUser(  );
       $Company = Company::get_company_by($user->ID);
-      $error = $Company->is_wp_error();
+      $error = $Company::is_wp_error();
       if ($error) {
         return "<div class='alert alert-warning'>{$error}</div>";
       }
