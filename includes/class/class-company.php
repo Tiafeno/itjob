@@ -48,8 +48,8 @@ final class Company implements \iCompany {
       case 'user_id':
         $User = get_user_by( 'ID', (int) $value );
         if ( ! $User->ID || $User->ID === 0 ) {
-          self::$error = new \WP_Error('broken', "Utilisateur introuvable");
-          return false;
+          self::$error = new \WP_Error('broken', "Désolé, L'utilisateur est introuvable dans notre base de donnée");
+          return self::$error;
         }
         $args = [
           'post_status'  => [ 'pending', 'publish' ],
@@ -60,8 +60,9 @@ final class Company implements \iCompany {
         ];
         $pts  = get_posts( $args );
         if (is_array($pts) && empty($pts)) {
-          self::$error = new \WP_Error('broken', "Compte professionnel inrouvable");
-          return false;
+          self::$error = new \WP_Error('broken', "Désolé, Nous avons eu un problème avec votre demande car vous utilisez un compte particulier.
+          Veuillez vous connecter avec un compte professionel. Merci");
+          return self::$error;
         }
         $pt   = $pts[0];
         return new Company( $pt->ID );
