@@ -400,6 +400,7 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       $user = $itJob->services->getUser(  );
       $Company = Company::get_company_by($user->ID);
+      // Vérifier si le compte professionnel est valide
       if (is_wp_error( $Company )) {
         $error = $Company->get_error_message();
         return "<div class='alert alert-warning'>{$error}</div>";
@@ -411,7 +412,7 @@ if ( ! class_exists( 'vcOffers' ) ):
         return '<div class="alert alert-success font-13"><strong class="font-18">Informations incomplétes</strong>
         <br>Vous ne pouvez pas ajouter une offre tant que vos informations ne sont pas à jours. <br>
         Veuillez-vous rendre à votre <a class="font-16 badge badge-pink" style="color: white" href="'.$espace_client_url.'"> ' .
-          'Espace client </a> <br>Merci </div>';
+          'Espace client</a> </div>';
       }
 
       if ($Company->sector !== 1 ) {

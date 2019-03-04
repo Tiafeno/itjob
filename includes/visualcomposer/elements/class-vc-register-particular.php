@@ -85,7 +85,9 @@ if (!class_exists('vcRegisterParticular')) :
 
     if (is_user_logged_in()) {
       return '<div class="d-flex align-items-center">' .
-        '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Access refuser</div></div>';
+        '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">
+        Désolé, Nous avons eu un problème avec votre demande.
+        </div></div>';
     }
     wp_enqueue_style('b-datepicker-3');
     wp_enqueue_style('sweetalert');
