@@ -40,17 +40,22 @@ final class Company implements \iCompany {
   private $interests = [];
 
   /**
+   * @param int $value
    * @param string $handler - user_id, post_id (company post type) & email
-   * @param int|string $value
+   * @return Company|\WP_Error
    */
-  public static function get_company_by( $value, $handler = 'user_id' ) {
+  public static function get_company_by( $value, $handler = 'user_id', $private_access = false ) {
     switch ( $handler ):
       case 'user_id':
         $User = get_user_by( 'ID', (int) $value );
         if ( ! $User->ID || $User->ID === 0 ) {
-          self::$error = new \WP_Error('broken', "Utilisateur introuvable");
-          return false;
+          return new \WP_Error('broke', "Utilisateur introuvable");
         }
+
+        if ( ! in_array('company', $User->roles) ) {
+          return new \WP_Error('broke', "Compte invalide");
+        }
+
         $args = [
           'post_status'  => [ 'pending', 'publish' ],
           'post_type'    => 'company',
@@ -60,11 +65,10 @@ final class Company implements \iCompany {
         ];
         $pts  = get_posts( $args );
         if (is_array($pts) && empty($pts)) {
-          self::$error = new \WP_Error('broken', "Compte professionnel inrouvable");
-          return false;
+          return new \WP_Error('broke', "Compte professionnel inrouvable");
         }
         $pt   = $pts[0];
-        return new Company( $pt->ID );
+        return new Company( $pt->ID, $private_access );
         break;
     endswitch;
   }
@@ -79,8 +83,7 @@ final class Company implements \iCompany {
       if ( ! is_null( get_post( $post ) ) ) {
         $output = get_post( $post );
       } else {
-        self::$error = new \WP_Error('broken', "Identifiant incorrect");
-        return false;
+        return new \WP_Error('broke', "Identifiant incorrect");
       }
     }
 
@@ -94,8 +97,11 @@ final class Company implements \iCompany {
      * When $output is OBJECT, a WP_Post instance is returned.
      */
     if ( is_null( $output ) ) {
-      self::$error = new \WP_Error('broken', "Compte professionnel inrouvable");
-      return false;
+      return new \WP_Error('broke', "Compte professionnel inrouvable");
+    }
+
+    if ( ! $this->is_company() ) {
+      return new \WP_Error('broke', "Désolé, Votre compte n'est pas une compte professionnel");
     }
 
     $this->ID      = $output->ID;
@@ -105,25 +111,24 @@ final class Company implements \iCompany {
     $this->addDate = get_the_date( 'l, j F Y', $output );
     $this->add_create = $output->post_date;
 
-    if ( $this->is_company() ) {
-      $this->email = get_field( 'itjob_company_email', $this->ID );
-      $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
-      $this->author = Obj\jobServices::getUserData( $user->ID );
-      $sector = get_user_meta($user->ID, 'sector', true);
-      $this->sector = $sector ? (int)$sector : 1;
-      // Récuperer la region
-      $regions      = wp_get_post_terms( $this->ID, 'region' );
-      $this->region = is_array($regions) && !empty($regions)  ? $regions[0] : null;
-      // Récuperer le nom et la code postal de la ville
-      $country       = wp_get_post_terms( $this->ID, 'city' );
-      $this->country = is_array($country) && !empty($country)  ? $country[0] : null;
-      // Récuperer le secteur d'activité
-      $abranch               = wp_get_post_terms( $this->ID, 'branch_activity', [ "fields" => "all" ] );
-      $this->branch_activity = is_array($abranch) && !empty($abranch)  ? $abranch[0] : null;
-      $this->init();
-      if ($access) {
-        $this->getInterests();
-      }
+    $this->email = get_field( 'itjob_company_email', $this->ID );
+    $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
+    $this->author = Obj\jobServices::getUserData( $user->ID );
+    $sector = get_user_meta($user->ID, 'sector', true);
+    $this->sector = $sector ? (int)$sector : 1;
+    // Récuperer la region
+    $regions      = wp_get_post_terms( $this->ID, 'region' );
+    $this->region = is_array($regions) && !empty($regions)  ? $regions[0] : null;
+    // Récuperer le nom et la code postal de la ville
+    $country       = wp_get_post_terms( $this->ID, 'city' );
+    $this->country = is_array($country) && !empty($country)  ? $country[0] : null;
+    // Récuperer le secteur d'activité
+    $abranch               = wp_get_post_terms( $this->ID, 'branch_activity', [ "fields" => "all" ] );
+    $this->branch_activity = is_array($abranch) && !empty($abranch)  ? $abranch[0] : null;
+
+    $this->init();
+    if ($access) {
+      $this->getInterests();
     }
   }
 

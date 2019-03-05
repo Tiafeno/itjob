@@ -153,20 +153,16 @@ if ( ! class_exists( 'vcOffers' ) ):
      * La premiere (1) étape du formulaire d'ajout
      */
     public function ajx_insert_offers() {
-      if ( ! \wp_doing_ajax() || ! \is_user_logged_in() ) {
-        return;
+      global $itJob;
+      if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
+        wp_send_json_error("Désolé, Vous n'avez pas l'autorisation nécessaire pour voir cette page");
       }
 
-      $User    = wp_get_current_user();
-      if (in_array('company', $User->roles)) {
-        $Company = Company::get_company_by( $User->ID );
-        if ( ! $Company->is_company() ) {
-          wp_send_json( [ 'success' => false, 'msg' => 'Utilisateur n\'est pas une entreprise', 'user' => $Company ] );
-        }
-      } else {
-        wp_send_json(['success' => false, 'msg' => "Utilisateur n'est pas une entreprise"]);
+      $User = $itJob->services->getUser();
+      $Company = Company::get_company_by( $User->ID );
+      if (is_wp_error($Company)) {
+        wp_send_json_error($Company->get_error_message());
       }
-
 
       $form = (object) [
         'post'            => Http\Request::getValue( 'post' ),

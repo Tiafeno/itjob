@@ -45,8 +45,7 @@ final class Candidate extends UserParticular implements \iCandidate {
    */
   public function __construct( $postId = null, $privateAccess = false ) {
     if ( is_null( $postId ) ) {
-      $this->error = new \WP_Error('broken', 'Parametre manquante (post_id)');
-      return false;
+      return new \WP_Error('broken', 'Parametre manquante (post_id)');
     }
     /**
      * @func get_post
@@ -55,9 +54,13 @@ final class Candidate extends UserParticular implements \iCandidate {
      */
     $output = get_post( (int) $postId );
     if ( is_null( $output ) ) {
-      $this->error = new \WP_Error('broken', "Le CV est introuvable");
-      return false;
+      return new \WP_Error('broken', "Page CV introuvable");
     }
+
+    if ( ! $this->is_candidate() ) {
+      return new \WP_Error('broke', "Compte invalide");
+    }
+
     $this->setId( $output->ID );
     // Initialiser l'utilisateur particulier
     parent::__construct();
@@ -67,24 +70,22 @@ final class Candidate extends UserParticular implements \iCandidate {
     $this->candidate_url = get_the_permalink( $this->getId() );
     $this->postType      = $output->post_type;
 
-    if ( $this->is_candidate() ) {
-      $this->acfElements();
-      $this->email = get_field( 'itjob_cv_email', $this->getId() );
-      $User        = get_user_by( 'email', $this->email );
-      // Remove login information (security)
-      if ($User->ID === 0) return false;
-      $this->author = Obj\jobServices::getUserData( $User->ID );
-      $this->avatar = wp_get_attachment_image_src( get_post_thumbnail_id( $this->getId() ), [300, 300] );
-      // get Terms
-      $this->fieldTax();
+    $this->acfElements();
+    $this->email = get_field( 'itjob_cv_email', $this->getId() );
+    $User        = get_user_by( 'email', $this->email );
+    // Remove login information (security)
+    if ($User->ID === 0) return false;
+    $this->author = Obj\jobServices::getUserData( $User->ID );
+    $this->avatar = wp_get_attachment_image_src( get_post_thumbnail_id( $this->getId() ), [300, 300] );
+    // get Terms
+    $this->fieldTax();
 
-      // Cette methode appel une fonction qui ajoute une propriété (has_cv) de type boolean
-      // qui constitue à verifier si le candidate posséde un CV ou autrement.
-      $this->hasCV();
+    // Cette methode appel une fonction qui ajoute une propriété (has_cv) de type boolean
+    // qui constitue à verifier si le candidate posséde un CV ou autrement.
+    $this->hasCV();
 
-      if ($privateAccess) {
-        $this->__get_access();
-      }
+    if ($privateAccess) {
+      $this->__get_access();
     }
   }
 
@@ -95,17 +96,17 @@ final class Candidate extends UserParticular implements \iCandidate {
 
   public static function get_candidate_by( $value, $handler = 'user_id', $private_access = false ) {
     if ( $handler === 'user_id' ) {
-      $usr        = get_user_by( 'id', (int) $value );
+      $User        = get_user_by( 'id', (int) $value );
       $args       = [
         'post_type'      => 'candidate',
         'post_status'    => [ 'publish', 'pending' ],
         'meta_key'       => 'itjob_cv_email',
-        'meta_value'     => $usr->user_email,
+        'meta_value'     => $User->user_email,
         'meta_compare'   => '='
       ];
       $candidates = get_posts( $args );
       if ( empty( $candidates ) ) {
-        return null;
+        return new \WP_Error('broke', "Désolé, le compte du candidat est introuvable");
       }
       $candidate = reset( $candidates );
 

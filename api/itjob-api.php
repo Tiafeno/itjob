@@ -249,8 +249,8 @@ add_action('rest_api_init', function () {
         if ($ref) {
           $company_id = (int)$request['id'];
           $Company = new \includes\post\Company($company_id, true);
-          if (is_null($Company->title)) {
-            return new WP_Error('no_company', 'Aucun candidate ne correpond à cette id', array('status' => 404));
+          if (is_wp_error($Company)) {
+            return new WP_Error('no_company', $Company->get_error_message(), array('status' => 404));
           }
           switch ($ref) {
             case 'collect':
@@ -738,7 +738,6 @@ add_action('rest_api_init', function () {
           'number'     => $length,
           'offset'     => $start
         ];
-
         if (isset($_REQUEST['search']) && !empty($_REQUEST['search']['value'])) {
           $s = $_REQUEST['search']['value'];
           $s = wp_unslash($s);
