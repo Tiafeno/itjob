@@ -49,7 +49,7 @@ final class Company implements \iCompany {
       case 'user_id':
         $User = get_user_by( 'ID', (int) $value );
         if ( ! $User->ID || $User->ID === 0 ) {
-          return new \WP_Error('broke', "Utilisateur introuvable");
+          return new \WP_Error('broke', "Désolé, L'utilisateur est introuvable dans notre base de donnée");
         }
 
         if ( ! in_array('company', $User->roles) ) {
@@ -65,7 +65,7 @@ final class Company implements \iCompany {
         ];
         $pts  = get_posts( $args );
         if (is_array($pts) && empty($pts)) {
-          return new \WP_Error('broke', "Compte professionnel inrouvable");
+          return new \WP_Error('broke', "Désolé, Nous avons eu un problème avec votre demande car vous utilisez un compte particulier");
         }
         $pt   = $pts[0];
         return new Company( $pt->ID, $private_access );
@@ -101,7 +101,8 @@ final class Company implements \iCompany {
     }
 
     if ( ! $this->is_company() ) {
-      return new \WP_Error('broke', "Désolé, Votre compte n'est pas une compte professionnel");
+      return new \WP_Error('broke', "Désolé, Nous avons eu un problème avec votre demande car vous utilisez un compte particulier.
+      Veuillez vous connecter avec un compte professionel. Merci");
     }
 
     $this->ID      = $output->ID;
@@ -110,7 +111,6 @@ final class Company implements \iCompany {
     $this->postType = $output->post_type;
     $this->addDate = get_the_date( 'l, j F Y', $output );
     $this->add_create = $output->post_date;
-
     $this->email = get_field( 'itjob_company_email', $this->ID );
     $user        = get_user_by( 'email', trim( $this->email ) ); // WP_User
     $this->author = Obj\jobServices::getUserData( $user->ID );

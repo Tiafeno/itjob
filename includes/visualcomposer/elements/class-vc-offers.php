@@ -396,21 +396,19 @@ if ( ! class_exists( 'vcOffers' ) ):
 
       $user = $itJob->services->getUser(  );
       $Company = Company::get_company_by($user->ID);
-
-      // featured: Verifier si l'utilicateur est une entreprise
-      // Réfuser l'access s'il n'est pas une entreprise
-      if ( ! itjob_current_user_is_company() ) {
-        return '<div class="alert alert-danger"><strong>Validation</strong>
-        <br>Vous ne pouvez pas ajouté une offre pour le moment car votre compte est en cours de validation. <br>Veuillez reessayer plus tard. Merci </div>';
+      // Vérifier si le compte professionnel est valide
+      if (is_wp_error( $Company )) {
+        $error = $Company->get_error_message();
+        return "<div class='alert alert-warning'>{$error}</div>";
       }
 
       // Vérifier que l'entreprise à des informations valide
       if (empty($Company->region) || empty($Company->country) || empty($Company->address)) {
         $espace_client_url  = get_the_permalink( (int)ESPACE_CLIENT_PAGE );
         return '<div class="alert alert-success font-13"><strong class="font-18">Informations incomplétes</strong>
-        <br>Vous ne pouvez pas ajouter une offre tant que votre information n’est pas à jours. <br>
+        <br>Vous ne pouvez pas ajouter une offre tant que vos informations ne sont pas à jours. <br>
         Veuillez-vous rendre à votre <a class="font-16 badge badge-pink" style="color: white" href="'.$espace_client_url.'"> ' .
-          'Espace client </a> <br>Merci </div>';
+          'Espace client</a> </div>';
       }
 
       if ($Company->sector !== 1 ) {

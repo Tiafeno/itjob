@@ -431,14 +431,16 @@ function send_pending_postuled_candidate() {
 
   $msg = "Bonjour, <br/>";
   $msg .= "<p>Voici la liste des candidats qui ont postulé sur des offres, en attente de validation :</p> ";
+  $msg .= "<ul>";
   foreach ($pendingApply as $apply) {
     $first = $apply->candidate->getFirstName();
     $last = $apply->candidate->getLastName();
     $msg
-      .= "<p> * <strong>{$first} {$last}</strong> portant la reférence « <strong>{$apply->candidate->title}</strong> »
+      .= "<li> * <strong>{$first} {$last}</strong> portant la reférence « <strong>{$apply->candidate->title}</strong> »
          à postuler sur l'offre <a href='https://admin.itjobmada.com/offer/{$apply->offer->ID}/edit' target='_blank'>" .
-      "<b>{$apply->offer->postPromote}</b></a> de reference {$apply->offer->reference} à {$apply->date}.</p>";
+      "<b>{$apply->offer->postPromote}</b></a> de reference {$apply->offer->reference} à {$apply->date}.</li>";
   }
+  $msg .= "</ul>";
   if (empty($pendingApply))
     $msg .= "<b>Aucun</b>";
   $msg .= "<br>";

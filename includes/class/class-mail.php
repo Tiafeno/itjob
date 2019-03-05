@@ -389,7 +389,7 @@ class Mailing {
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p><b>Une nouvelle travail a été inserée « <b>{$Work->title}</b> » portant la réfrence</p> « <b>{$Work->reference}</b> » sur le site ITJOBMada ";
+    $content   .= "<p><b>Un nouveau travail a été inseré « <b>{$Work->title}</b> » portant la réfrence</p> « <b>{$Work->reference}</b> » sur le site ITJOBMada ";
     $content   .= '<br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     // Envoyer un mail à l'entreprise
