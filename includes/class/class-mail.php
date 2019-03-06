@@ -89,7 +89,7 @@ class Mailing {
     $User = new \WP_User( (int)$user_id );
     if ( in_array( 'company', $User->roles ) ) {
       // Création d'un compte entreprise reussi
-      $Company   = Company::get_company_by( $User->ID );
+      $Company   = Company::get_company_by( $user_id );
       $to        = $User->user_email;
       $subject   = "Confirmation de l’enregistrement de « {$Company->title} »";
       $headers   = [];
@@ -97,7 +97,6 @@ class Mailing {
       $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
       $content   = '';
       try {
-        $Company   = Company::get_company_by( $User->ID );
         $greeting  = isset( $Company->greeting['value'] ) ? $Company->greeting['value'] : "Mr/Mme";
         $con_query = add_query_arg( [
           'action' => "rp",
