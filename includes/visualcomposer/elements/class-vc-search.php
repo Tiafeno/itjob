@@ -131,7 +131,6 @@ if ( ! class_exists( 'vcSearch' ) ):
         }
       } else {
         $func = "vc_search_" . $type . "_tpls";
-
         //return $this->$func( $data );
         return call_user_func_array( array( $this, $func ), array( $data ) );
       }
@@ -178,19 +177,6 @@ if ( ! class_exists( 'vcSearch' ) ):
       return $results;
     }
 
-    // Invoked in vc_search_template methode
-    private function vc_search_company_tpls( $args ) {
-      global $Engine;
-      try {
-        return $Engine->render( '@VC/search/search-company.html.twig', $args );
-      } catch ( Twig_Error_Loader $e ) {
-      } catch ( Twig_Error_Runtime $e ) {
-      } catch ( Twig_Error_Syntax $e ) {
-        echo $e->getRawMessage();
-      }
-    }
-
-    // Invoked in vc_search_template methode
     private function vc_search_offers_tpls( $args ) {
       global $Engine;
       try {
@@ -211,7 +197,6 @@ if ( ! class_exists( 'vcSearch' ) ):
       }
     }
 
-    // Invoked in vc_search_template methode
     private function vc_search_candidate_tpls( $args ) {
       global $Engine, $posts;
       try {
@@ -272,6 +257,12 @@ if ( ! class_exists( 'vcSearch' ) ):
     }
 
     private function vc_search_annonce_tpls ($args) {
+      unset($args['abranchs']);
+      $categories = get_terms( 'categorie', [
+        'hide_empty' => false,
+        'fields'     => 'all'
+      ] );
+      $args['categories'] = $categories;
       return $this->vc_search_works_tpls($args);
     }
     private function vc_search_works_tpls ($args) {
@@ -286,6 +277,7 @@ if ( ! class_exists( 'vcSearch' ) ):
           's'              => $search_query,
           'ab'             => Http\Request::getValue('ab', ''),
           'rg'             => Http\Request::getValue('rg', ''),
+          'ctg'             => Http\Request::getValue('ctg', ''),
           'search_count'   => count( $posts ),
           'publish_ad_link' => $publish_ad_link . '?type=' . $type,
           'BTN_MSG' => $btn_msg

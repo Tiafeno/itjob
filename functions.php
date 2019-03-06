@@ -228,6 +228,7 @@ add_filter('wp_nav_menu_args', function ($args) {
   return $args;
 });
 
+
 add_action('init', function () {
   // Yoast filter
   add_filter('wpseo_metadesc', function ($description) {

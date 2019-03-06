@@ -1,6 +1,8 @@
 <?php
 
 namespace includes\object;
+use includes\post\Offers;
+
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
 }
@@ -10,6 +12,7 @@ if ( ! class_exists( 'jobServices' ) ) :
     public $args;
     private $User = null;
     private $Client = false;
+
     public function __construct() {
       if (is_user_logged_in()) {
         $this->User = wp_get_current_user();
@@ -26,10 +29,49 @@ if ( ! class_exists( 'jobServices' ) ) :
     }
 
     public function getUser() {
-      if (is_null($this->User)) return new \WP_Error('broken', "Votre session a expirer");
+      if (is_null($this->User)) return new \WP_Error('broke', "Votre session a expirer");
       return $this->User;
     }
 
+    // Récuperer le prixe des plan tarifaire pour les offres
+    public function get_plan_option( $slug ) {
+      if (empty($slug)) return new \WP_Error('broke', "Parametre manquant (slug)");
+      $plan_price = get_field("product_plan_{$slug}", 'option');
+      return $plan_price ? intval($plan_price) : false;
+    }
+
+    // Récuperer le prix d'un credit
+    public function get_option_wallet() {
+      $wallet_price = get_field("product_wallet", 'option');
+      return $wallet_price ? intval($wallet_price) : false;
+    }
+
+    /**
+     * @param int $offer_id
+     * @param null|string $rateplan
+     * @return int|\WP_Error
+     */
+    public function register_offer_same_product($offer_id, $rateplan = null ) {
+      if ( ! is_numeric($offer_id) || empty($offer_id) ) return new \WP_Error('error', "Parameter error (offer_id)");
+      $Offer = new Offers($offer_id, true);
+      $rateplan = strtoupper($rateplan);
+      $args = [
+        'post_title' => "{$rateplan} ({$Offer->postPromote})",
+        'post_status' => "publish",
+        'post_type' => 'product',
+      ];
+
+      $product_id = wp_insert_post($args, true);
+      if ( ! is_wp_error($product_id) ) {
+        // Add product meta here ...
+
+        return $product_id;
+      } else return $product_id;
+    }
+
+    public function set_billing() {
+
+    }
     /**
      * Récuperer les informations nécessaire d'un utilisateur
      *

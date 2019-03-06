@@ -27,6 +27,7 @@ class Mailing {
   }
 
   public function onInit() {
+    if ( ! function_exists('get_field')) return false;
     $oc_id          = jobServices::page_exists( 'Espace client' );
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );

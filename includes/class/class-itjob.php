@@ -258,6 +258,7 @@ if ( ! class_exists( 'itJob' ) ) {
           if ( $query->is_search ) {
             $region  = Http\Request::getValue( 'rg' );
             $abranch = Http\Request::getValue( 'ab' );
+            $categorie = Http\Request::getValue( 'ctg' );
             $s       = $_GET['s'];
 
             // Region
@@ -281,6 +282,18 @@ if ( ! class_exists( 'itJob' ) ) {
                 'value'   => (int) $abranch,
                 'compare' => '=',
                 'type'    => 'NUMERIC'
+              ];
+            }
+
+            // Categorie (custom taxonomy)
+            if ( ! empty( $categorie ) ) {
+              $tax_query   = isset( $tax_query ) ? $tax_query : $query->get( 'tax_query' );
+              $tax_query = !is_array($tax_query) ? [] : $tax_query;
+              $tax_query[] = [
+                'taxonomy' => 'categorie',
+                'field'    => 'term_id',
+                'terms'    => (int) $categorie,
+                'operator' => 'IN'
               ];
             }
 
@@ -437,58 +450,45 @@ if ( ! class_exists( 'itJob' ) ) {
                     //global $wp_query;
                     $s = isset($_GET['s']) ? $_GET['s'] : '';
                     $s = $wpdb->esc_like( $s );
-                    if (!is_admin()) {
-                      $where .= " AND {$wpdb->posts}.ID IN (
-                                      SELECT
-                                        pt.ID
-                                      FROM {$wpdb->posts} as pt
-                                      INNER JOIN {$wpdb->postmeta} as pm1 ON (pt.ID = pm1.post_id)
-                                      WHERE pt.post_type = 'candidate'
-                                        AND pt.post_status = 'publish'
-                                        AND (pt.ID IN (
-                                          SELECT {$wpdb->postmeta}.post_id as post_id
-                                          FROM {$wpdb->postmeta}
-                                          WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
-                                        ))
-                                        AND (pt.ID IN (
-                                          SELECT {$wpdb->postmeta}.post_id as post_id
-                                          FROM {$wpdb->postmeta}
-                                          WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
-                                        ))
-                                        
-                                        AND (pt.ID IN(
-                                          SELECT trs.object_id as post_id
-                                          FROM {$wpdb->terms} as terms
-                                            INNER JOIN {$wpdb->term_relationships} as trs
-                                            INNER JOIN {$wpdb->term_taxonomy} as ttx ON (trs.term_taxonomy_id = ttx.term_taxonomy_id)
-                                          WHERE terms.term_id = ttx.term_id
-                                          AND ttx.taxonomy = 'job_sought'
-                                          AND terms.name LIKE '%{$s}%'
-                                        ))
-                                        OR (
-                                            pt.ID IN (
-                                            SELECT {$wpdb->postmeta}.post_id
-                                            FROM {$wpdb->postmeta}
-                                            WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value LIKE '%{$s}%'
-                                           ) 
-                                            AND pt.ID IN (
-                                            SELECT {$wpdb->postmeta}.post_id as post_id
-                                            FROM {$wpdb->postmeta}
-                                            WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
-                                           )
-                                           AND pt.ID IN (
-                                            SELECT {$wpdb->postmeta}.post_id as post_id
-                                            FROM {$wpdb->postmeta}
-                                            WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
-                                          )
-                                        )";
+                    $s = implode('|', explode(' ', trim($s)));
+                    if ( ! is_admin() ) {
+                      $where .= /** @lang sql */
+                        <<<SQL
+AND {$wpdb->posts}.ID IN (SELECT pt.ID FROM {$wpdb->posts} as pt
+WHERE pt.post_type = 'candidate'
+  AND pt.post_status = 'publish'
+  AND (pt.ID IN (
+      SELECT {$wpdb->postmeta}.post_id as post_id_
+      FROM {$wpdb->postmeta}
+      WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1
+    )
+    AND pt.ID IN (
+      SELECT {$wpdb->postmeta}.post_id as post_id
+      FROM {$wpdb->postmeta}
+      WHERE {$wpdb->postmeta}.meta_key = 'itjob_cv_hasCV' AND {$wpdb->postmeta}.meta_value = 1
+    ))
+  
+  AND (pt.ID IN( SELECT trs.object_id as post_id
+    FROM {$wpdb->terms} as terms
+      INNER JOIN {$wpdb->term_relationships} as trs
+      INNER JOIN {$wpdb->term_taxonomy} as ttx ON (trs.term_taxonomy_id = ttx.term_taxonomy_id)
+    WHERE terms.term_id = ttx.term_id
+    AND ttx.taxonomy = 'job_sought'
+    AND terms.name REGEXP '({$s}).*$'
+    ) OR
+    pt.ID IN ( SELECT {$wpdb->postmeta}.post_id FROM {$wpdb->postmeta}
+      WHERE {$wpdb->postmeta}.meta_key = '_old_job_sought' AND {$wpdb->postmeta}.meta_value REGEXP '({$s}).*$'
+    ) OR
+    pt.ID IN (SELECT pta.post_id as post_id FROM $wpdb->postmeta pta WHERE pta.meta_key REGEXP '^itjob_cv_experiences_[0-9]{1,2}_exp_positionHeld' AND pta.meta_value REGEXP '({$s}).*$')
+    )
+SQL;
                       /**
                        * Si une taxonomie est definie on effectuer une recherche sur le titre de l'article seulement si on
                        * le trouve pas dans l'emploi (job_sought) et l'ancien empoi rechercher.
                        */
                       if (!empty($tax_query)) {
                         $where .= " OR (pt.ID IN (SELECT {$wpdb->posts}.ID FROM {$wpdb->posts} 
-                          WHERE {$wpdb->posts}.post_title LIKE '%{$s}%'
+                          WHERE {$wpdb->posts}.post_title REGEXP '({$s}).*$'
                           AND {$wpdb->posts}.ID IN (
                             SELECT {$wpdb->postmeta}.post_id
                             FROM {$wpdb->postmeta}
@@ -500,7 +500,7 @@ if ( ! class_exists( 'itJob' ) ) {
                       if (empty($tax_query)):
                         // Si une taxonomie n'est pas definie on ajoute cette condition dans la recherche
                         $where .= "  OR (
-                                        {$wpdb->posts}.post_title LIKE  '%{$s}%'
+                                        {$wpdb->posts}.post_title REGEXP '({$s}).*$'
                                         AND {$wpdb->posts}.post_type = 'candidate'
                                         AND {$wpdb->posts}.post_status = 'publish'
                                         AND ({$wpdb->posts}.ID IN (
@@ -551,6 +551,7 @@ if ( ! class_exists( 'itJob' ) ) {
                 BREAK;
               CASE 'annonce':
               CASE 'works':
+
                 if ( isset( $tax_query ) && ! empty( $tax_query ) ) {
                   $query->set( 'tax_query', $tax_query );
                   $query->tax_query = new \WP_Tax_Query( $tax_query );
@@ -627,20 +628,20 @@ if ( ! class_exists( 'itJob' ) ) {
       add_action( 'the_post', function ( $post_object ) {
         switch ( $post_object->post_type ) {
           case 'candidate':
-            $GLOBALS[ $post_object->post_type ] = new Post\Candidate( $post_object->ID );
+            $GLOBALS[ 'candidate' ] = new Post\Candidate( $post_object->ID );
             break;
 
           case 'offers':
-            $GLOBALS[ $post_object->post_type ] = new Post\Offers( $post_object->ID );
+            $GLOBALS[ 'offers' ] = new Post\Offers( $post_object->ID );
             break;
 
           case 'formation':
-            $GLOBALS[ $post_object->post_type ] = new Post\Formation( $post_object->ID );
+            $GLOBALS[ 'formation' ] = new Post\Formation( $post_object->ID );
             break;
 
           case 'annonce':
             $annonce = new Post\Annonce( $post_object->ID );
-            $GLOBALS[ $post_object->post_type ] = $annonce;
+            $GLOBALS[ 'annonce' ] = $annonce;
             break;
 
           case 'works':

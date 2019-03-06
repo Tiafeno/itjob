@@ -8,9 +8,12 @@
   <div class="row">
     <div class="col-md-3 no-pd">
       <div class="form-group">
-        <input class="form-control" name="s" value="{{ s }}" type="text" placeholder="Mot clé">
+        <input class="form-control" style="font-family: Poppins, 'sans-serif'; font-size: 12px" name="s" value="{{ s }}"
+               type="text" placeholder="Mot clé">
       </div>
     </div>
+
+    {% if abranchs is not empty %}
     <div class="col-md-4">
       <div class="form-group">
         <select class="form-control" name="ab" title="Secteur d'activité">
@@ -25,6 +28,25 @@
         </select>
       </div>
     </div>
+    {% endif %}
+
+    {% if categories is not empty %}
+      <div class="col-md-4">
+        <div class="form-group">
+          <select class="form-control" name="ctg" title="Categories">
+            <option></option>
+
+            {% for categorie in categories %}
+              <option value="{{ categorie.term_id }}" {% if ctg == categorie.term_id %} selected="selected" {% endif %}>
+                {{ categorie.name|html_entity_decode }}
+              </option>
+            {% endfor %}
+
+          </select>
+        </div>
+      </div>
+    {% endif %}
+
     <div class="col-md-3">
       <div class="form-group">
         <select class="form-control" name="rg" title="Région">

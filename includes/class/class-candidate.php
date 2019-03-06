@@ -17,6 +17,7 @@ final class Candidate extends UserParticular implements \iCandidate {
   private $avatar;
 
   public $title;
+  public $postType;
   public $state; // post type
   public $candidate_url;
   public $reference;
@@ -45,7 +46,7 @@ final class Candidate extends UserParticular implements \iCandidate {
    */
   public function __construct( $postId = null, $privateAccess = false ) {
     if ( is_null( $postId ) ) {
-      return new \WP_Error('broken', 'Parametre manquante (post_id)');
+      return new \WP_Error('broke', 'Parametre manquante (post_id)');
     }
     /**
      * @func get_post
@@ -54,10 +55,9 @@ final class Candidate extends UserParticular implements \iCandidate {
      */
     $output = get_post( (int) $postId );
     if ( is_null( $output ) ) {
-      return new \WP_Error('broken', "Page CV introuvable");
+      return new \WP_Error('broke', "Page CV introuvable");
     }
-
-    if ( ! $this->is_candidate() ) {
+    if ( $output->post_type !== 'candidate' ) {
       return new \WP_Error('broke', "Compte invalide");
     }
 
@@ -67,8 +67,8 @@ final class Candidate extends UserParticular implements \iCandidate {
 
     $this->title         = $this->reference = $output->post_title;
     $this->state         = $output->post_status;
-    $this->candidate_url = get_the_permalink( $this->getId() );
     $this->postType      = $output->post_type;
+    $this->candidate_url = get_the_permalink( $this->getId() );
 
     $this->acfElements();
     $this->email = get_field( 'itjob_cv_email', $this->getId() );
@@ -87,11 +87,6 @@ final class Candidate extends UserParticular implements \iCandidate {
     if ($privateAccess) {
       $this->__get_access();
     }
-  }
-
-  // Getter
-  public function getAuthor() {
-    return $this->author;
   }
 
   public static function get_candidate_by( $value, $handler = 'user_id', $private_access = false ) {
@@ -377,6 +372,11 @@ final class Candidate extends UserParticular implements \iCandidate {
     wp_reset_postdata();
 
     return $allCandidate;
+  }
+
+  // Getter
+  public function getAuthor() {
+    return $this->author;
   }
 
   public function remove() {

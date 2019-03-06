@@ -10,7 +10,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
     const states = [{
         name: 'form',
-        templateUrl: itOptions.partials_url + '/form.html?ver=' + itOptions.version,
+        templateUrl: itOptions.helper.partials_url + '/form.html?ver=' + itOptions.version,
         url: '/form',
         resolve: {
           abranchs: ['offerService', function (offerService) {
@@ -62,10 +62,11 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                 if (data.success) {
                   swal({
                     title: 'Reussi',
-                    text: "Votre offre a été enregistré avec succès et en cours de validation. Nous vous enverrons une notification quand elle sera prête. merci",
+                    text: "Votre offre a été enregistré avec succès et en cours de validation. " +
+                    "Nous vous enverrons une notification quand elle sera prête. merci",
                     type: "info",
                   }, () => {
-                    window.location.href = itOptions.urlHelper.redir;
+                    window.location.href = itOptions.helper.redir_url;
                   });
                 }
               });
@@ -78,7 +79,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
       {
         name: 'form.add-offer',
         url: '/add-offer',
-        templateUrl: itOptions.partials_url + '/add-offer.html?ver=' + itOptions.version,
+        templateUrl: itOptions.helper.partials_url + '/add-offer.html?ver=' + itOptions.version,
         controller: ['$rootScope', '$scope', '$state', 'abranchs', 'regions', 'offerFactory',
           function ($rootScope, $scope, $state, abranchs, regions, offerFactory) {
             this.$onInit = function () {
@@ -97,8 +98,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                   
                 },
                 content_css: [
-                  '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i',
-                  itOptions.template_url + '/assets/vendors/tinymce/css/content.min.css'
+                  '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i'
                 ],
                 selector: 'textarea',
                 toolbar: 'undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat '
