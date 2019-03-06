@@ -1,6 +1,7 @@
 <?php
 global $wp_query;
 get_header();
+wp_enqueue_style( 'offers' );
 ?>
   <div class="uk-section uk-section-transparent">
     <div class="uk-container uk-container-medium">
