@@ -61,12 +61,39 @@ if ( ! class_exists( 'jobServices' ) ) :
         'post_type' => 'product',
       ];
 
-      $product_id = wp_insert_post($args, true);
-      if ( ! is_wp_error($product_id) ) {
+      $current_post_id = wp_insert_post($args, true);
+      if ( ! is_wp_error($current_post_id) ) {
+        $plan_price = $this->get_plan_option($rateplan);
         // Add product meta here ...
+        wp_set_object_terms($current_post_id, 'simple', 'product_type');
+        update_post_meta( $current_post_id, '_visibility', 'visible');
+        update_post_meta( $current_post_id, '_stock_status', 'instock');
+        update_post_meta( $current_post_id, 'total_sales', '0');
+        update_post_meta( $current_post_id, '_downloadable', 'no');
+        update_post_meta( $current_post_id, '_virtual', 'yes');
+        update_post_meta( $current_post_id, '_regular_price', $plan_price);
+        update_post_meta( $current_post_id, '_sale_price', '');
+        update_post_meta( $current_post_id, '_purchase_note', '');
+        update_post_meta( $current_post_id, '_featured', 'no');
+        update_post_meta( $current_post_id, '_weight', '');
+        update_post_meta( $current_post_id, '_length', '');
+        update_post_meta( $current_post_id, '_width', '');
+        update_post_meta( $current_post_id, '_height', '');
+        update_post_meta( $current_post_id, '_sku', "{$rateplan}{$current_post_id}");
+        update_post_meta( $current_post_id, '_sale_price_dates_from', '');
+        update_post_meta( $current_post_id, '_sale_price_dates_to', '');
+        update_post_meta( $current_post_id, '_price', $plan_price);
+        update_post_meta( $current_post_id, '_sold_individually', 'yes');
+        update_post_meta( $current_post_id, '_manage_stock', 'no');
+        update_post_meta( $current_post_id, '_backorders', 'no');
+        update_post_meta( $current_post_id, '_stock', '');
+        update_post_meta( $current_post_id, '_product_image_gallery', "");
 
-        return $product_id;
-      } else return $product_id;
+        // Custom field ...
+        update_post_meta( $current_post_id, '_type', 'offers');
+        update_post_meta( $current_post_id, '_id', $offer_id);
+        return $current_post_id;
+      } else return false;
     }
 
     public function set_billing() {
