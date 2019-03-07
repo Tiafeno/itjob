@@ -228,6 +228,9 @@ add_filter('wp_nav_menu_args', function ($args) {
   return $args;
 });
 
+add_action('widgets_init', function () {
+  do_action('register_user_company',2380);
+});
 
 add_action('init', function () {
   // Yoast filter

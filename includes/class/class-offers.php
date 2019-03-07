@@ -78,7 +78,7 @@ final class Offers implements \iOffer {
 
   public function __construct( $postId = null, $private_access = false ) {
     if ( is_null( $postId ) ) {
-      return false;
+      return new \WP_Error('broke', "Désolé, l'identification est introuvable");
     }
 
     /**
@@ -88,30 +88,33 @@ final class Offers implements \iOffer {
      */
     $output             = get_post( $postId );
     $this->ID           = $output->ID;
+
+    if ( ! $this->is_offer()) {
+      return new \WP_Error('broke', "Désolé, Votre post n'est pas une offre valide");
+    }
+
     $this->post_type    = $output->post_type;
     $this->title        = $output->post_title; // Position Filled
     $this->offer_url    = get_the_permalink( $output->ID );
     $this->offer_status = $output->post_status;
     $this->datePublication = get_the_date( 'j F, Y', $output );
     $this->date_create  = $output->post_date;
-    if ( $this->is_offer() ) {
-      $this->id_offer = &$this->ID;
-      $this->post_url = get_the_permalink( $this->ID );
-      $this->acfElements()->getOfferTaxonomy();
 
-      if ($private_access) {
-        $this->__get_access();
-      }
+    $this->id_offer = &$this->ID;
+    $this->post_url = get_the_permalink( $this->ID );
+    $this->acfElements()->getOfferTaxonomy();
 
-      // La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
-      // Retourne post entreprise...
-      $post_company   = get_field( "itjob_offer_company", $this->ID );
-      if (empty($post_company) || !isset($post_company->ID)) return $this;
-      $company_email  = get_field( 'itjob_company_email', $post_company->ID );
-      $post_user      = get_user_by( 'email', trim($company_email) );
-      $this->author   = Obj\jobServices::getUserData( $post_user->ID );
-
+    if ($private_access) {
+      $this->__get_access();
     }
+
+    // La variable `author` contient l'information de l'utilisateur qui a publier l'offre.
+    // Retourne post entreprise...
+    $post_company   = get_field( "itjob_offer_company", $this->ID );
+    if (empty($post_company) || !isset($post_company->ID)) return $this;
+    $company_email  = get_field( 'itjob_company_email', $post_company->ID );
+    $post_user      = get_user_by( 'email', trim($company_email) );
+    $this->author   = Obj\jobServices::getUserData( $post_user->ID );
     return $this;
   }
 

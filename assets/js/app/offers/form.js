@@ -8,7 +8,8 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
   })
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
     $interpolateProvider.startSymbol('[[').endSymbol(']]');
-    const states = [{
+    const states = [
+      {
         name: 'form',
         templateUrl: itOptions.helper.partials_url + '/form.html?ver=' + itOptions.version,
         url: '/form',
@@ -103,6 +104,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                 toolbar: 'undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat '
               };
               $rootScope.searchCityFn = (city) => {
+                let rg;
                 if (!_.isUndefined($rootScope.offers.region)) {
                   let region = parseInt($rootScope.offers.region);
                   rg = _.findWhere($scope.regions, {
@@ -258,14 +260,6 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
   }])
   .factory('offerFactory', ['$http', function ($http) {
     return {
-      checkLogin: function (log) {
-        return $http.get(itOptions.ajax_url + '?action=ajx_user_exist&log=' + log, {
-            cache: true
-          })
-          .then(function (resp) {
-            return resp.data;
-          });
-      },
       sendPostForm: function (formData) {
         return $http({
           url: itOptions.ajax_url,
