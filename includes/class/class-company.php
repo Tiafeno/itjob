@@ -88,7 +88,7 @@ final class Company implements \iCompany {
     }
 
     if ( $post instanceof \WP_Post ) {
-      $output = $post;
+      $output = &$post;
     }
 
     /**

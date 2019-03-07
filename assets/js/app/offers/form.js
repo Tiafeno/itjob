@@ -33,12 +33,11 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
       {
         name: 'form.subscription',
         url: '/subscription',
-        templateUrl: itOptions.partials_url + '/subscription.html?ver=' + itOptions.version,
+        templateUrl: itOptions.helper.partials_url + '/subscription.html?ver=' + itOptions.version,
         resolve: {
           offer: ['$q', '$rootScope', function ($q, $rootScope) {
             // for test
             //return $q.resolve(true);
-
             if (typeof $rootScope.offers === 'undefined' || _.isEmpty($rootScope.offers)) {
               return $q.reject({
                 redirect: 'form.add-offer'
