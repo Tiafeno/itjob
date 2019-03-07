@@ -229,7 +229,7 @@ add_filter('wp_nav_menu_args', function ($args) {
 });
 
 add_action('widgets_init', function () {
-  do_action('register_user_company',2380);
+  // code here ...
 });
 
 add_action('init', function () {
@@ -277,6 +277,7 @@ add_action('init', function () {
     return array_merge($columns,
       array('activated' => __('Activation')));
   });
+
   add_action('manage_posts_custom_column', function ($column, $post_id) {
     $activate = get_field('activated', $post_id);
     if ($column == 'activated') {
@@ -349,7 +350,34 @@ add_action('init', function () {
     }
   }
   add_action('wp_ajax_request_phone_number', 'request_phone_number');
+
+  // Status de paiement
+  add_action('woocommerce_order_status_completed', 'payment_complete', 100, 1);
+  add_action('woocommerce_payment_complete', 'payment_complete', 100, 1);
 });
+
+
+function payment_complete ($order_id) {
+  // Get an instance of the WC_Order object
+  $order = wc_get_order($order_id);
+  // Iterating through each WC_Order_Item_Product objects
+  foreach ($order->get_items() as $item_key => $item ):
+
+    // Item ID is directly accessible from the $item_key in the foreach loop or
+    $product = $item->get_product(); // WP_Product
+    $type = get_post_meta($product->get_id(), '__type', true);
+    if ($type && $type === 'offers') {
+      $offer_id = get_post_meta($product->get_id(), '__id', true);
+      $offer_id = intval($offer_id);
+      if (0 === $offer_id) return false;
+
+      // Mettre à jour le status de paiement de l'offre
+      update_field('itjob_offer_paid', 1, $offer_id);
+    }
+  endforeach;
+}
+
+
 
 
 

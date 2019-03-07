@@ -61,6 +61,7 @@ final class Offers implements \iOffer {
 
   /** @var string $rateplan - Mode de diffusion (sereine, standard et premium) */
   public $rateplan;
+  public $paid = 0;
 
   /** @var string $profil - Type de profil réchercher pour l'offre */
   public $profil;
@@ -185,7 +186,12 @@ final class Offers implements \iOffer {
       $this->featuredDateLimit = strtotime($featuredDateLimit);
     }
     $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID ); // Objet Term
-    $this->rateplan         = get_field( 'itjob_offer_rateplan', $this->ID ); // String
+    $rateplan       = get_field( 'itjob_offer_rateplan', $this->ID ); // String
+    $this->rateplan = $rateplan ? $rateplan : 'standard';
+    if ($this->rateplan !== 'standard') {
+      $paid = get_field('itjob_offer_paid', $this->ID); // bool
+      $this->paid = $paid ? intval($paid) : 0;
+    }
 
     return $this;
   }

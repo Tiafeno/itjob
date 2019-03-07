@@ -83,7 +83,7 @@
               <div class="flexbox-b mb-3 text-muted"><i class="la la-times-circle mr-3 font-18"></i>Publicité</div>
               <div class="flexbox-b mb-3 text-muted"><i class="la la-times-circle mr-3 font-18"></i>ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre</div>
             </div>
-            <button class="btn btn-secondary" ng-click="rateplan = 'standard'" type="submit" style="width:170px;">SELECTIONNER</button>
+            <button class="btn btn-secondary" ng-click="rateplan = 'standard'" ng-disabled="loading" type="submit" style="width:170px;">SELECTIONNER</button>
           </div>
         </div>
       </div>
@@ -102,10 +102,10 @@
               <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>Publicité</div>
               <div class="flexbox-b mb-3 text-muted"><i class="la la-times-circle mr-3 font-18"></i>ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre</div>
             </div>
-            <div>
+            <div class="mb-3">
               <small>*Option payant, un de nos aggents vous contactera dans le plus bref délai</small>
             </div>
-            <button class="btn btn-success btn-air" ng-click="rateplan = 'premium'" type="submit" style="width:170px;">SELECTIONNER</button>
+            <button class="btn btn-success btn-air" ng-click="rateplan = 'premium'" ng-disabled="loading" type="submit" style="width:170px;">SELECTIONNER</button>
           </div>
         </div>
       </div>
@@ -124,10 +124,10 @@
               <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>Publicité</div>
               <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre</div>
             </div>
-            <div>
+            <div class="mb-3">
               <small>*Option payant, un de nos aggents vous contactera dans le plus bref délai</small>
             </div>
-            <button class="btn btn-secondary" ng-click="rateplan = 'sereine'" type="submit" style="width:170px;">SELECTIONNER</button>
+            <button class="btn btn-secondary" ng-click="rateplan = 'sereine'" ng-disabled="loading" type="submit" style="width:170px;">SELECTIONNER</button>
           </div>
         </div>
       </div>

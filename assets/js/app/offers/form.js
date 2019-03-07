@@ -49,8 +49,10 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
         },
         controller: ['$rootScope', '$scope', 'offerFactory', function ($rootScope, $scope, offerFactory) {
           // Mode de diffusion par default
+          $scope.loading = false;
           $scope.rateplan = 'standard';
           $scope.sendSubscription = () => {
+            $scope.loading = true;
             const sendData = new FormData();
             sendData.append('action', 'ajx_update_offer_rateplan');
             sendData.append('rateplan', $scope.rateplan);
@@ -66,9 +68,10 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                     "Nous vous enverrons une notification quand elle sera prête. merci",
                     type: "info",
                   }, () => {
-                    window.location.href = itOptions.helper.redir_url;
+                     window.location.href = _.isUndefined(data.checkout) ? itOptions.helper.redir_url : data.checkout;
                   });
                 }
+                $scope.loading = false;
               });
           };
 

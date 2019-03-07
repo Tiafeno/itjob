@@ -13,7 +13,7 @@ use includes\post\Offers;
 if (!class_exists('vcOffers')):
   class vcOffers extends \WPBakeryShortCode {
     public function __construct() {
-      add_action('init', [$this, 'vc_offers_mapping']);
+      add_action('init', [$this, '__init__']);
       add_filter('acf/update_value/name=itjob_offer_abranch', [&$this, 'update_offer_reference'], 10, 2);
       add_filter('acf/update_value/name=itjob_offer_post', [&$this, 'update_offer_title'], 10, 2);
 
@@ -33,7 +33,8 @@ if (!class_exists('vcOffers')):
     /**
      * Definir dans cette fonction les elements Visual composer
      */
-    public function vc_offers_mapping() {
+    public function __init__() {
+
       // Stop all if VC is not enabled
       if (!defined('WPB_VC_VERSION')) {
         return;
@@ -217,17 +218,17 @@ if (!class_exists('vcOffers')):
       if ($offer_id && $rateplan) {
         $Offer = new Offers((int) $offer_id);
         update_field('itjob_offer_rateplan', $rateplan, $Offer->ID);
-
-        $plan_price = $itJob->services->get_plan_option($rateplan);
-        if ($plan_price && $rateplan !== 'standard') {
+        if ($rateplan !== 'standard') {
+          WC()->cart->empty_cart(); // Clear cart
+          update_field('itjob_offer_paid', 0, $Offer->ID); // Aucun paiement effectuer par default
           $checkout = get_permalink(wc_get_page_id('checkout'));
-//          $result = $itJob->services->register_offer_same_product($offer_id, $rateplan); // return int|WP_Error
-//          if (!is_wp_error($result)) {
-//            $id = &$result;
-//            WC()->cart->add_to_cart($id);
-//          } else {
-//            wp_send_json(['success' => false, 'error' => $result->get_error_message()]);
-//          }
+          $result = $itJob->services->register_offer_same_product($offer_id, $rateplan); // return int|WP_Error
+          if (!is_wp_error($result)) {
+            $id = &$result;
+            WC()->cart->add_to_cart($id); // Add new product in cart
+          } else {
+            wp_send_json(['success' => false, 'error' => $result->get_error_message()]);
+          }
           wp_send_json(['success' => true, 'checkout' => $checkout]);
         } else {
           wp_send_json(['success' => true]);
