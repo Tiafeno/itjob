@@ -125,9 +125,9 @@ class Mailing {
         $to        = $admin_emails;
         $subject   = "Inscription d'une nouvelle entreprise - {$Company->title}";
         $headers   = [];
-        $headers[] = 'Content-Type: text/html; charset=UTF-8';
+        $headers[] = "Content-Type: text/html; charset=UTF-8";
         $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
-        $content   = 'Bonjour, <br/>';
+        $content   = "Bonjour, <br/>";
         $content   .= "Une inscription de « <b>{$Company->title}</b> » en tant que entreprise a été éffectuée ";
         $content   .= "<p>Espace admnistration: <a href='{$this->dashboard_url}/company-lists'>Back office</a> </p> <br/>";
         $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";

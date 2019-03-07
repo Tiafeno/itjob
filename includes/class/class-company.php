@@ -15,7 +15,7 @@ final class Company implements \iCompany {
 
   private static $error = false;
   public $addDate;
-  public $ID;
+  public $ID = 0;
   public $greeting; // mr: Monsieur, mrs: Madame
   // Le nom de l'utilisateur ou le responsable
   public $name;
@@ -99,13 +99,12 @@ final class Company implements \iCompany {
     if ( is_null( $output ) ) {
       return new \WP_Error('broke', "Compte professionnel inrouvable");
     }
-
+    $this->ID = $output->ID;
     if ( ! $this->is_company() ) {
       return new \WP_Error('broke', "Désolé, Nous avons eu un problème avec votre demande car vous utilisez un compte particulier.
       Veuillez vous connecter avec un compte professionel. Merci");
     }
 
-    $this->ID      = $output->ID;
     $this->title   = $output->post_title;
     $this->post_status = $output->post_status;
     $this->postType = $output->post_type;
