@@ -230,13 +230,13 @@ wp_enqueue_script('sweetalert');
             if (!$annonce instanceof \includes\post\Annonce) continue;
             $author = $annonce->get_author();
             $name = 'Inconnue';
-            if (in_array('candidate', $User->roles)) {
-              $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
+            if (in_array('candidate', $author->roles)) {
+              $Candidate = \includes\post\Candidate::get_candidate_by($author->ID);
               $name = $Candidate->getLastName();
             }
 
-            if (in_array('company', $User->roles)) {
-              $Company = \includes\post\Company::get_company_by($User->ID);
+            if (in_array('company', $author->roles)) {
+              $Company = \includes\post\Company::get_company_by($author->ID);
               $name = $Company->title;
             }
             ?>
