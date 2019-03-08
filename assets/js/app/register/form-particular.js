@@ -112,9 +112,6 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       }
     }
   })
-  .controller('particularCtrl', ["$scope", function ($scope) {
-    $scope.error = false;
-  }])
   .component('formComponent', {
     bindings: {
       region: '<',
@@ -282,3 +279,6 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       });
     }
   })
+  .controller('particularCtrl', ["$scope", function ($scope) {
+    $scope.error = false;
+  }]);
