@@ -199,7 +199,7 @@ wp_enqueue_script('sweetalert');
             swal(numberPhone, 'Vous pouvez me contacter par téléphone avec le numéro ci-dessus');
           })
           .fail(function() {
-            swal("Désolé", "Vous n'êtes pas connecter", "warning");
+            swal("Désolé", "Une erreur s'est produite. Veuillez réessayer ulterieurement", "warning");
           })
           .always(function () {});
       });
