@@ -134,7 +134,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       $scope.uri.singin = itOptions.urlHelper.singin;
       $scope.uri.redir = itOptions.urlHelper.redir;
       $scope.particularForm = {};
-      $scope.particularForm.greeting = 'mr';
+      $scope.particularForm.greeting = '';
       $scope.particularForm.cellphone = [{
         id: 0,
         value: ''
