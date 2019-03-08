@@ -52,12 +52,11 @@ class credit {
     wp_enqueue_script('sweetalert');
     wp_enqueue_style('sweetalert');
 
-    if ( ! is_user_logged_in()) {
-      return '<div class="d-flex align-items-center">' .
-        '<div class="uk-margin-large-top uk-margin-auto-left badge badge-danger uk-margin-auto-right">' .
-          "Vous n'avez pas l'autorisation nécessaire pour acceder cette page".
-        '</div></div>';
+    if ( ! is_user_logged_in() ) {
+      $redirection = get_the_permalink();
+      return do_shortcode('[itjob_login role="candidate" redir="' . $redirection . '"]', true);
     }
+
     $User = $itJob->services->getUser();
     try {
       do_action('get_notice');

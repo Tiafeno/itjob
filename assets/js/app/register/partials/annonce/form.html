@@ -136,7 +136,7 @@
   </div>
   <div class="ibox-body ibox-footer">
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Email joigniable pour cette annonce<span style="color: red">*</span></label>
+      <label class="col-sm-4 col-form-label">Email joignable pour cette annonce<span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="email" ng-model="annonce.email"
                ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/"
@@ -153,7 +153,7 @@
       <label class="col-sm-4 col-form-label">Numero de téléphone <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="phone" ng-model="annonce.phone" ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/" type="text"
-               placeholder="Numéro de téléphone joigniable" required>
+               placeholder="Numéro de téléphone joignable" required>
         <div ng-messages="form.phone.$error" role="alert" class="input-message-animation"
              ng-show="form.phone.$invalid && form.phone.$touched">
           <div ng-message="pattern">Numéro de téléphone invalide</div>
