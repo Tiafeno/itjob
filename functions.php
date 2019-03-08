@@ -354,6 +354,12 @@ add_action('init', function () {
   // Status de paiement
   add_action('woocommerce_order_status_completed', 'payment_complete', 100, 1);
   add_action('woocommerce_payment_complete', 'payment_complete', 100, 1);
+
+  add_filter( 'mailchimp_sync_user_data', function( $data, $user ) {
+    $role = is_array($user->roles) ? $user->roles[0] : '';
+    $data['ROLE'] = $role;
+    return $data;
+}, 10, 2 );
 });
 
 
