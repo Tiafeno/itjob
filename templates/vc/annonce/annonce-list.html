@@ -46,7 +46,7 @@
           {% for annonce in annonces %}
           <li class="media">
 
-            <div data-bg-image="{% if annonce.featured_image is empty %} '' {% else %} {{ annonce.featured_image[0] }} {% endif %}"  data-url="{{ annonce.ID | get_permalink }}" class="media-img mr-3"
+            <div data-bg-image="{% if annonce.featured_image is empty %} '' {% else %}{{ annonce.featured_image[0] }}{% endif %}"  data-url="{{ annonce.ID | get_permalink }}" class="media-img mr-3"
                  data-height="170" data-width="240">
               <div class="d-none">
                 {% if annonce.featured_image is not empty %}

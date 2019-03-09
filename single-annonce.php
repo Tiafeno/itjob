@@ -199,7 +199,7 @@ wp_enqueue_script('sweetalert');
             swal(numberPhone, 'Vous pouvez me contacter par téléphone avec le numéro ci-dessus');
           })
           .fail(function() {
-            swal("Désolé", "Vous n'êtes pas connecter", "warning");
+            swal("Désolé", "Une erreur s'est produite. Veuillez réessayer ulterieurement. Merci", "warning");
           })
           .always(function () {});
       });
@@ -230,13 +230,13 @@ wp_enqueue_script('sweetalert');
             if (!$annonce instanceof \includes\post\Annonce) continue;
             $author = $annonce->get_author();
             $name = 'Inconnue';
-            if (in_array('candidate', $User->roles)) {
-              $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
+            if (in_array('candidate', $author->roles)) {
+              $Candidate = \includes\post\Candidate::get_candidate_by($author->ID);
               $name = $Candidate->getLastName();
             }
 
-            if (in_array('company', $User->roles)) {
-              $Company = \includes\post\Company::get_company_by($User->ID);
+            if (in_array('company', $author->roles)) {
+              $Company = \includes\post\Company::get_company_by($author->ID);
               $name = $Company->title;
             }
             ?>

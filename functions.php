@@ -350,6 +350,7 @@ add_action('init', function () {
     }
   }
   add_action('wp_ajax_request_phone_number', 'request_phone_number');
+  add_action('wp_ajax_nopriv_request_phone_number', 'request_phone_number');
 
   // Status de paiement
   add_action('woocommerce_order_status_completed', 'payment_complete', 100, 1);

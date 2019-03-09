@@ -11,21 +11,23 @@
   <hr>
   <div class="ibox-body">
     <div class="form-group mb-4 row ">
-      <label class="col-sm-4 col-form-label ">Type d'annonce <span style="color: red">*</span></label>
-      <div class="col-sm-8">
+      <div class="col-sm-12">
         <div class="form-group">
-          <select ng-change="loadScript()" class="form-control no-select2" name="type_annonce" ng-model="annonce.type_annonce" ng-value="annonce.type_annonce" title="Type" required>
-            <option value=""></option>
-            <option value="1">Prestation service ou Travail temporaire</option>
-            <option value="2">Autres type d'annonce</option>
-          </select>
+          <div class="col-sm-12 d-flex align-items-center">
+            <label class="radio radio-grey radio-primary radio-inline">
+              <input type="radio" ng-change="loadScript()" name="type_annonce" ng-model="annonce.type_annonce" ng-value="1" value="1" ng-checked="annonce.type_annonce == 1">
+              <span class="input-span"></span>Prestation service ou Travail temporaire</label>
+            <label class="radio radio-grey radio-primary radio-inline">
+              <input type="radio" ng-change="loadScript()" name="type_annonce" ng-model="annonce.type_annonce" ng-value="2" value="2" ng-checked="annonce.type_annonce == 2">
+              <span class="input-span"></span>Autres type d'annonce</label>
+          </div>
           <div class="input-message-animation" ng-if="form.type_annonce.$touched && form.type_annonce.$error.required">Ce champ est obligatoire.</div>
         </div>
       </div>
     </div>
     <div ng-show="annonce.type_annonce == 2">
       <div class="form-group mb-4 row ">
-        <label class="col-sm-4 col-form-label ">Categorie <span style="color: red">*</span></label>
+        <label class="col-sm-4 col-form-label font-bold">Categorie <span style="color: red">*</span></label>
         <div class="col-sm-6">
           <div class="form-group">
             <select class="form-control categorie" name="categorie" ng-model="annonce.categorie" ng-value="" title="Categorie"
@@ -54,7 +56,7 @@
         </div>
       </div>
       <div class="form-group mb-4 row">
-        <label class="col-sm-4 col-form-label">Titre de l'annonce <span style="color: red">*</span></label>
+        <label class="col-sm-4 col-form-label font-bold">Titre de l'annonce <span style="color: red">*</span></label>
         <div class="col-sm-6">
           <input class="form-control" name="title" ng-model="annonce.title" type="text" autocomplete="off" placeholder="Titre de l'annonce"
                  required>
@@ -65,7 +67,7 @@
         </div>
       </div>
       <div class="form-group mb-4 row ">
-        <label class="col-sm-4 col-form-label ">Region <span style="color: red">*</span></label>
+        <label class="col-sm-4 col-form-label font-bold">Region <span style="color: red">*</span></label>
         <div class="col-sm-6">
           <div class="form-group">
             <select class="form-control" name="region" ng-model="annonce.region" ng-value="" title="Region" required>
@@ -77,7 +79,7 @@
         </div>
       </div>
       <div class="form-group mb-4 row">
-        <label class="col-sm-4 col-form-label">Code postal ou nom d'une ville <span style="color: red">*</span></label>
+        <label class="col-sm-4 col-form-label font-bold">Code postal ou nom d'une ville <span style="color: red">*</span></label>
         <div class="col-md-8 form-group">
           <select class="form-control input-mode country" name="town" ng-model="annonce.town" ng-disabled="!annonce.region" ng-value="" required>
             <option></option>
@@ -86,7 +88,7 @@
         </div>
       </div>
       <div class="form-group mb-4 row">
-        <label class="col-sm-4 col-form-label">Adresse physique de l'annonce <span style="color: red">*</span></label>
+        <label class="col-sm-4 col-form-label font-bold">Adresse physique de l'annonce <span style="color: red">*</span></label>
         <div class="col-sm-8">
           <input class="form-control" name="address" ng-model="annonce.address"  type="text" placeholder="Adresse"
                  required>
@@ -98,15 +100,14 @@
         </div>
       </div>
       <div class="form-group mb-4 row">
-        <label class="col-sm-4 col-form-label">Budget </label>
+        <label class="col-sm-4 col-form-label font-bold">Prix </label>
         <div class="col-sm-6">
-          <p class="mb-1 font-13">A partir de </p>
           <input class="form-control" name="price" ng-model="annonce.price" type="number" placeholder="Budget en ariary (MGA)">
         </div>
       </div>
 
       <div class="form-group mb-4 row " ng-if="annonce.type_annonce == 1">
-        <label class="col-sm-4 col-form-label ">Secteur d'activité</label>
+        <label class="col-sm-4 col-form-label font-bold">Secteur d'activité</label>
         <div class="col-sm-6">
           <div class="form-group">
             <select class="form-control" name="activity_area" ng-model="annonce.activity_area"
@@ -136,7 +137,7 @@
   </div>
   <div class="ibox-body ibox-footer">
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Email joigniable pour cette annonce<span style="color: red">*</span></label>
+      <label class="col-sm-4 col-form-label font-bold">Email joignable pour cette annonce<span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="email" ng-model="annonce.email"
                ng-pattern="/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/"
@@ -150,10 +151,10 @@
       </div>
     </div>
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Numero de téléphone <span style="color: red">*</span></label>
+      <label class="col-sm-4 col-form-label font-bold">Numero de téléphone <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <input class="form-control" name="phone" ng-model="annonce.phone" ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/" type="text"
-               placeholder="Numéro de téléphone joigniable" required>
+               placeholder="Numéro de téléphone joignable" required>
         <div ng-messages="form.phone.$error" role="alert" class="input-message-animation"
              ng-show="form.phone.$invalid && form.phone.$touched">
           <div ng-message="pattern">Numéro de téléphone invalide</div>
@@ -162,7 +163,7 @@
       </div>
     </div>
     <div ng-show="annonce.type_annonce == 2" class="form-group d-flex mb-4 row">
-      <label class="col-sm-4 col-form-label">Image en avant <span style="color: red">*</span></label>
+      <label class="col-sm-4 col-form-label font-bold">Image en avant <span style="color: red">*</span></label>
       <div class="col-sm-6">
         <div class="p-relative">
           <div style="width: 125px; bottom: -62px;">

@@ -13,6 +13,8 @@ wp_enqueue_style( 'offers' );
         if ($wp_query->is_search) :
           get_template_part('search', 'form');
         endif;
+
+        echo do_shortcode("[vc_itjob_ads position='position-12' size='1120x210']");
         ?>
       </div>
       <div class="row">
@@ -67,6 +69,8 @@ wp_enqueue_style( 'offers' );
         </div>
         <div class="col-md-4">
           <?php
+          echo do_shortcode("[vc_itjob_ads position='position-13' size='354x330']");
+
           if ( is_active_sidebar( 'archive-works-sidebar' ) ) {
             dynamic_sidebar( 'archive-works-sidebar' );
           }

@@ -112,9 +112,6 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       }
     }
   })
-  .controller('particularCtrl', ["$scope", function ($scope) {
-    $scope.error = false;
-  }])
   .component('formComponent', {
     bindings: {
       region: '<',
@@ -134,7 +131,7 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       $scope.uri.singin = itOptions.urlHelper.singin;
       $scope.uri.redir = itOptions.urlHelper.redir;
       $scope.particularForm = {};
-      $scope.particularForm.greeting = 'mr';
+      $scope.particularForm.greeting = '';
       $scope.particularForm.cellphone = [{
         id: 0,
         value: ''
@@ -282,3 +279,6 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       });
     }
   })
+  .controller('particularCtrl', ["$scope", function ($scope) {
+    $scope.error = false;
+  }]);
