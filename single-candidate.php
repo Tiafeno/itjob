@@ -321,15 +321,15 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                       <hr class="uk-devider">
                       <ol class="candidate-language-list mt-0">
                         <?php
-                        if ( isset( $candidate->centerInterest->various ) ) {
+                        if ( isset( $candidate->centerInterest->various ) && !empty($candidate->centerInterest->various) ) {
                           $various = $candidate->centerInterest->various;
                           foreach ( explode( ',', $various ) as $item ) :
+                            if (empty($item)) continue;
                             echo sprintf( "<li><p class='mb-0'>%s</p></li>", $item );
                           endforeach;
                         } else {
                           echo "Neant";
                         }
-
                         ?>
                       </ol>
                     </div>
