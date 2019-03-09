@@ -355,6 +355,9 @@ add_action('init', function () {
   add_action('woocommerce_order_status_completed', 'payment_complete', 100, 1);
   add_action('woocommerce_payment_complete', 'payment_complete', 100, 1);
 
+  // Cette action est utilisé par le plugins mailChimp
+  // Plugin Name: MailChimp User Sync
+  // @url https://fr.wordpress.org/plugins/mailchimp-sync/
   add_filter( 'mailchimp_sync_user_data', function( $data, $user ) {
     $role = is_array($user->roles) ? $user->roles[0] : '';
     $data['ROLE'] = $role;
