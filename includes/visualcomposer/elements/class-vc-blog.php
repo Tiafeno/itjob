@@ -166,6 +166,7 @@ if ( ! class_exists( 'vcBlog' ) ):
         ] );
       }
       wp_reset_postdata();
+      shuffle($blogs);
 
       return $blogs;
 
