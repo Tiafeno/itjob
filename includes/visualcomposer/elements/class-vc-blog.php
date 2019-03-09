@@ -143,8 +143,7 @@ if ( ! class_exists( 'vcBlog' ) ):
       $args       = [
         'post_type'      => $post_type,
         'post_status'    => 'publish',
-        'order'          => 'ASC',
-        'orderby'        => 'date',
+        'orderby'        => 'rand',
         'tax_query'      => [
           [
             'taxonomy' => 'category',
