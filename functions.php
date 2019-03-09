@@ -199,7 +199,7 @@ add_action('after_setup_theme', function () {
 if (function_exists('acf_add_options_page')) {
   $parent = acf_add_options_page(array(
     'page_title' => 'General Settings',
-    'menu_title' => 'itJob Settings',
+    'menu_title' => 'ITJOB General Settings',
     'capability' => 'edit_posts',
     'redirect' => false
   ));
