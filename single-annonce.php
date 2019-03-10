@@ -187,40 +187,21 @@ wp_enqueue_script('sweetalert');
       });
 
       $('.view-phone-number').on('click', function (ev) {
-        swal({
-            title: "Confirmation",
-            text: "Voulez-vous connaitre le numero de telephone portable de l'annonceur?",
-            type: "info",
-            showCancelButton: true,
-            confirmButtonClass: "btn-info",
-            confirmButtonText: "Oui",
-            cancelButtonText: "Non",
-            closeOnConfirm: false,
-            closeOnCancel: true,
-            showLoaderOnConfirm: true
-          },
-          function(isConfirm) {
-            if (isConfirm) {
-
-              $.ajax({
-                url: `<?= admin_url('admin-ajax.php') ?>`,
-                cache: true,
-                method: "GET",
-                data: { action : 'request_phone_number', ad_id : <?= $post->ID ?> },
-                dataType: "json"
-              })
-                .done(function (resp) {
-                  var numberPhone = resp.data;
-                  swal(numberPhone, 'Vous pouvez me contacter par téléphone avec le numéro ci-dessus');
-                })
-                .fail(function() {
-                  swal("Désolé", "Vous n'êtes pas connecter", "warning");
-                })
-                .always(function () {});
-            } else {
-
-            }
-          });
+        $.ajax({
+          url: `<?= admin_url('admin-ajax.php') ?>`,
+          cache: true,
+          method: "GET",
+          data: { action : 'request_phone_number', ad_id : <?= $post->ID ?> },
+          dataType: "json"
+        })
+          .done(function (resp) {
+            var numberPhone = resp.data;
+            swal(numberPhone, 'Vous pouvez me contacter par téléphone avec le numéro ci-dessus');
+          })
+          .fail(function() {
+            swal("Désolé", "Une erreur s'est produite. Veuillez réessayer ulterieurement. Merci", "warning");
+          })
+          .always(function () {});
       });
 
       $('.price').each(function (index, el) {
@@ -249,13 +230,13 @@ wp_enqueue_script('sweetalert');
             if (!$annonce instanceof \includes\post\Annonce) continue;
             $author = $annonce->get_author();
             $name = 'Inconnue';
-            if (in_array('candidate', $User->roles)) {
-              $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
+            if (in_array('candidate', $author->roles)) {
+              $Candidate = \includes\post\Candidate::get_candidate_by($author->ID);
               $name = $Candidate->getLastName();
             }
 
-            if (in_array('company', $User->roles)) {
-              $Company = \includes\post\Company::get_company_by($User->ID);
+            if (in_array('company', $author->roles)) {
+              $Company = \includes\post\Company::get_company_by($author->ID);
               $name = $Company->title;
             }
             ?>
@@ -264,6 +245,15 @@ wp_enqueue_script('sweetalert');
             <div class="ibox-body">
               <?php do_action('get_notice'); ?>
               <div class="container">
+                <?php
+                $gallery = [];
+                $thumbnail_id = get_post_thumbnail_id($annonce->ID);
+                $gallery['url'] = get_the_post_thumbnail_url($annonce->ID, 'full');
+                $gallery['sizes'] = [];
+                $gallery['sizes']['thumbnail'] = get_the_post_thumbnail_url($annonce->ID, 'thumbnail');
+                array_push($annonce->gallery, $gallery);
+                ?>
+                <?php if (!empty($annonce->gallery)): ?>
                 <div id="slider" class="crs-wrap">
                   <div class="crs-screen">
                     <div class="crs-screen-roll">
@@ -287,8 +277,10 @@ wp_enqueue_script('sweetalert');
                     </div>
                   </div>
                 </div>
+                <?php endif; ?>
+
                 <div class="mt-3"></div>
-                <h2 class="page-title font-strong font-19"><?= $annonce->title ?></h2>
+                <h2 class="page-title font-strong font-19"><?= ucfirst($annonce->title) ?></h2>
 
                 <?php if ($annonce->price && !empty($annonce->price)) : ?>
                   <div class="price font-15"><span class="price"><?= $annonce->price ?></span></div>

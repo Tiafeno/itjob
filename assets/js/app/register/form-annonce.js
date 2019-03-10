@@ -41,7 +41,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               $scope.abranchs = _.clone(abranchs);
               $scope.allCity = _.clone(allCity);
               $scope.categories = _.clone(categories);
-
+              $rootScope.annonce.type_annonce = _.clone(itOptions.type);
               Services.setLoading(false);
             };
             $rootScope.featuredImage = null;
@@ -59,13 +59,12 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               },
               content_css: [
                 '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i',
-                itOptions.template_url + '/assets/vendors/tinymce/css/content.min.css'
               ],
               selector: 'textarea',
               toolbar: 'undo redo | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat '
             };
 
-            $scope.submitForm = function (Form) {
+            $scope.submitForm = Form => {
               if (Form.$invalid) {
                 angular.forEach(Form.$error, function (field) {
                   angular.forEach(field, function (errorField) {
@@ -82,9 +81,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                 Form.email.$validate();
                 $('select.form-control').trigger('blur');
               }
-
               if (!Form.$valid) return;
-
               Services.setLoading(true, "Enregistrement en cours");
               $scope.sendSubmitForm(Form).then(resp => {
                 if ( ! _.isNull($rootScope.annonce.featuredImg)) {
@@ -107,7 +104,6 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                   Services.setLoading(false);
                 }
               });
-
             };
 
             $scope.sendSubmitForm = (Form) => {
@@ -127,11 +123,13 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
                 Fm.append('cellphone', Form.phone.$modelValue);
                 Fm.append('price', _.isUndefined(price) ? 0 : parseInt(price));
                 Fm.append('email', Form.email.$modelValue);
-                Fm.append('activity_area', parseInt(Form.activity_area.$modelValue));
                 Fm.append('type', Form.type.$modelValue);
 
                 if (annonce === 2) { // Autres type d'annonce
                   Fm.append('categorie', parseInt(Form.categorie.$modelValue));
+                } else {
+                  if (!_.isUndefined(Form.activity_area.$modelValue))
+                    Fm.append('activity_area', parseInt(Form.activity_area.$modelValue));
                 }
                 Factory
                   .$send(Fm)
@@ -169,7 +167,6 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               }
               return false;
             };
-
 
             const fileFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
             /**
@@ -305,24 +302,26 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
               $rootScope.gallery = [];
             };
 
-            var $ = jQuery.noConflict();
             /** Load jQuery elements **/
-            var jqSelects = $("select.form-control");
-            $.each(jqSelects, function (index, element) {
-              var selectElement = $(element);
-              var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
-              $(element)
-                .select2({
-                  placeholder: placeholder,
-                  allowClear: true,
-                  width: '100%'
-                })
-                .on('select2:closing', function (e) {
-                  var el = e.currentTarget;
-                  $(el).blur();
-                });
-            });
-
+            var $ = jQuery.noConflict();
+            $rootScope.loadScript = () => {
+              var jqSelects = $("select.form-control:not('.no-select2')");
+              $.each(jqSelects, function (index, element) {
+                var selectElement = $(element);
+                var placeholder = (selectElement.attr('title') === undefined) ? 'Please select' : selectElement.attr('title');
+                $(element)
+                  .select2({
+                    placeholder: placeholder,
+                    allowClear: true,
+                    width: '100%'
+                  })
+                  .on('select2:closing', function (e) {
+                    var el = e.currentTarget;
+                    $(el).blur();
+                  });
+              });
+            };
+            $rootScope.loadScript();
             $(".form-control.country, .form-control.categorie").select2({
               placeholder: "Selectioner un choix",
               allowClear: true,
@@ -410,7 +409,6 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
         var preloadMessage = $('.page-preloader');
         var display = load ? 'block' : 'none';
         preloader.css('display', display);
-        console.log(display);
         preloadMessage.text(message);
       }
     }
@@ -428,12 +426,14 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
     };
   }])
   .controller('annonceController', ['$rootScope', function ($rootScope) {
+    $rootScope.helpers = {};
     $rootScope.isSubmit = !1;
     $rootScope.annonce = {};
     $rootScope.annonce.gallery = [];
     $rootScope.annonce.featuredImg = null;
-
-
+    this.$onInit = () => {
+      $rootScope.helpers = _.clone(itOptions.helper)
+    }
   }]).run(['$state', function ($state) {
     var loadingPath = itOptions.template + '/img/loading.gif';
     $state.defaultErrorHandler(function (error) {

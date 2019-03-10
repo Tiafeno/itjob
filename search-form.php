@@ -5,8 +5,8 @@ $search_count = $wp_query->found_posts;
 ?>
 <div>
   <?php
-  $post_type = get_query_var("post_type");
-  echo do_shortcode("[vc_itjob_search type='$post_type' bg_image='']");
+  //$post_type = get_query_var("post_type");
+  //echo do_shortcode("[vc_itjob_search type='$post_type' bg_image='']");
   ?>
 </div>
 <div class="mb-4">

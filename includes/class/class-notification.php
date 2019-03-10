@@ -91,10 +91,7 @@ final class NotificationHelper
   public function notice_admin_create_cv($id_cv) {
     $Model = new itModel();
     $Candidate = new Candidate((int)$id_cv);
-
-    $Author = $Candidate->getAuthor();
     $firstname = $Candidate->getFirstName();
-
     $Notice = new \stdClass();
     $Notice->tpl_msg = 1;
     $Notice->needle = [$firstname, $Candidate->title];
@@ -144,7 +141,6 @@ final class NotificationHelper
     $Candidate = new Candidate((int)$id_candidate);
 
     $Notice = new \stdClass();
-    $Author = $Candidate->getAuthor();
     $firstname = $Candidate->getFirstName();
 
     $Notice->tpl_msg = 4;
@@ -311,8 +307,6 @@ final class NotificationHelper
   { // Company object
     $Model = new itModel();
     $Notice = new \stdClass();
-    $id = $Company->getId();
-
     $Notice->tpl_msg = 10;
     $Notice->needle = [$Company->title];
     $Notice->guid = "/company-lists/?s={$Company->title}";

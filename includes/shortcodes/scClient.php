@@ -5,6 +5,7 @@ namespace includes\shortcode;
 use Http;
 use includes\model\itModel;
 use includes\object\jobServices;
+use includes\post\Annonce;
 use includes\post\Candidate;
 use includes\post\Company;
 use includes\post\Offers;
@@ -78,7 +79,7 @@ if ( ! class_exists( 'scClient' ) ) :
      * Afficher l'espace client
      */
     public function sc_render_html( $attrs, $content = '' ) {
-      global $Engine, $itJob, $theme;
+      global $Engine, $itJob, $wp_version;
       if ( ! is_user_logged_in() ) {
         $customer_area_url = ESPACE_CLIENT_PAGE ? get_the_permalink( (int) ESPACE_CLIENT_PAGE ) : get_permalink();
 
@@ -122,6 +123,8 @@ if ( ! class_exists( 'scClient' ) ) :
 
       $client       = get_userdata( $this->User->ID );
       $client_roles = $client->roles;
+      $theme = wp_get_theme();
+
       try {
         do_action( 'get_notice' );
         $wp_localize_script_args = [
@@ -879,10 +882,10 @@ if ( ! class_exists( 'scClient' ) ) :
           ]
         ]
       ];
-      $works = get_posts( $args );
+      $annonces = get_posts( $args );
       $results = [];
-      foreach ($works as $work) {
-        $results[] = new Works( $work->ID );
+      foreach ($annonces as $annonce) {
+        $results[] = new Annonce( $annonce->ID );
       }
 
       wp_send_json_success( $results );
@@ -1126,7 +1129,9 @@ if ( ! class_exists( 'scClient' ) ) :
             'add_formation_url' => get_the_permalink(ADD_FORMATION_PAGE),
             'add_annonce_url'   => get_the_permalink( ADD_ANNONCE_PAGE),
             'interest_page_uri' => get_the_permalink( $interest_page_id ),
-            'archive_candidate_link' => get_post_type_archive_link('candidate')
+            'archive_candidate_link' => get_post_type_archive_link('candidate'),
+            'archive_annonce_link' => get_post_type_archive_link('annonce'),
+            'archive_works_link' => get_post_type_archive_link('works')
           ]
         ];
         if ($Company->sector === 1) {
@@ -1149,12 +1154,13 @@ if ( ! class_exists( 'scClient' ) ) :
           'post_type' => 'candidate',
           'Helper'    => [
             'add_annonce_url'   => get_the_permalink( ADD_ANNONCE_PAGE),
-            'archive_offer_link' => get_post_type_archive_link('offers')
+            'archive_offer_link' => get_post_type_archive_link('offers'),
+            'archive_annonce_link' => get_post_type_archive_link('annonce'),
+            'archive_works_link' => get_post_type_archive_link('works')
           ]
         ] );
       }
     }
-
 
     public function __get_company_offers($Company = null) {
       $resolve      = [];

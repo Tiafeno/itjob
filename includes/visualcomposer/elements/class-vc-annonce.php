@@ -169,10 +169,13 @@ class vcAnnonce
     $post_id = (int)$result;
     wp_set_post_terms($post_id, [(int)$region], 'region');
     wp_set_post_terms($post_id, [(int)$town], 'city');
-    wp_set_post_terms($post_id, [(int)$activity_area], 'branch_activity');
     update_field('type', (int)$type, $post_id);
     if ($service_or_annonce === 2) {
       wp_set_post_terms($post_id, [(int)$categorie], 'categorie');
+    }
+
+    if ($service_or_annonce === 1) {
+      wp_set_post_terms($post_id, [(int)$activity_area], 'branch_activity');
     }
 
     // Add acf field
@@ -205,6 +208,11 @@ class vcAnnonce
     wp_send_json_success($annonce);
   }
 
+  /**
+   * Afficher les 4 premier annonces
+   * @param $attrs Array
+   * @return string
+   */
   public
   function annonce_list_render ($attrs) {
     global $Engine, $itJob;
@@ -253,15 +261,19 @@ class vcAnnonce
   public
   function form_annonce_render ($attrs)
   {
-    global $itJob, $theme;
+    global $itJob, $wp_version;
     extract(shortcode_atts(
       array(
         'title' => '',
-        'type'  => 1 // Service ou travail temporaire, voir form.html (annonce) at line 18
+        'type'  => null // Service ou travail temporaire, voir form.html (annonce) at line 18
       ),
       $attrs
     ), EXTR_OVERWRITE);
 
+    if (!is_user_logged_in()) {
+      $redirection = get_the_permalink();
+      return do_shortcode('[itjob_login role="candidate" redir="' . $redirection . '"]', true);
+    }
 
     wp_enqueue_style('sweetalert');
     wp_enqueue_style('alertify');
@@ -281,13 +293,22 @@ class vcAnnonce
       'sweetalert'
     ], $itJob->version, true);
 
+    $httpType = Http\Request::getValue('type', false);
+    $httpType = $httpType ? (intval($httpType) === 0 ? '' : intval($httpType)): '';
+    /** @var integer $type */
+    $type = empty($httpType) ? $type : $httpType;
+    $theme = wp_get_theme();
     wp_localize_script('form-annonce', 'itOptions', [
       'version'  => $theme->get('Version'),
+      'type' => $type,
       'ajax_url' => admin_url('admin-ajax.php'),
       'helper'   => [
         'redir'    => home_url('/'),
         'partials' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template' => get_template_directory_uri(),
+        'home_url' => home_url('/'),
+        'client_area_url' => get_the_permalink(ESPACE_CLIENT_PAGE),
+        'archive_annonce_url' => get_post_type_archive_link('annonce')
       ]
     ]);
 

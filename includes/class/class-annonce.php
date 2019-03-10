@@ -130,7 +130,8 @@ class Annonce
     $this->featured_datelimit = get_field('featured_datelimit', $this->ID); // Y-m-d H:i:s
     $this->type     = get_field('type', $this->ID); // ['value' => <string>, 'label' => <string>]
     $this->cellphone = get_field('cellphone', $this->ID); // number
-    $this->gallery   = get_field('gallery', $this->ID);
+    $gallery   = get_field('gallery', $this->ID);
+    $this->gallery = is_array($gallery) ? $gallery : [];
     $this->activated = get_field('activated', $this->ID);
     $this->price     = get_field('price', $this->ID);
     $this->reference = get_field('reference', $this->ID);

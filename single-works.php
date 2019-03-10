@@ -213,7 +213,7 @@ wp_enqueue_script('sweetalert');
 
                     })
                     .fail(function() {
-                      swal("Désolé", "Vous n'êtes pas connecter", "warning");
+                      swal("Désolé", "Une erreur s'est produite. Veuillez réessayer ulterieurement. Merci", "warning");
                     })
                     .always(function () {});
                 } else {

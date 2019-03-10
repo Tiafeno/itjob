@@ -9,6 +9,7 @@
 namespace includes\object;
 
 use includes\model\Model_Wallet;
+use includes\post\Wallet;
 
 if (!defined('ABSPATH')) {
   exit;
@@ -30,7 +31,7 @@ class credit {
           'param_name'  => 'title',
           'value'       => '',
           'description' => "Ajouter un titre",
-          'admin_label' => false,
+          'admin_label' => true,
           'weight'      => 0
         ),
       ]
@@ -51,17 +52,16 @@ class credit {
     wp_enqueue_script('sweetalert');
     wp_enqueue_style('sweetalert');
 
-    if ( ! is_user_logged_in()) {
-      return '<div class="d-flex align-items-center">' .
-        '<div class="uk-margin-large-top uk-margin-auto-left badge badge-danger uk-margin-auto-right">' .
-          "Vous n'avez pas l'autorisation nécessaire pour acceder cette page".
-        '</div></div>';
+    if ( ! is_user_logged_in() ) {
+      $redirection = get_the_permalink();
+      return do_shortcode('[itjob_login role="candidate" redir="' . $redirection . '"]', true);
     }
+
     $User = $itJob->services->getUser();
     try {
       do_action('get_notice');
       $wModel = new Model_Wallet();
-      $wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
+      $wallet = Wallet::getInstance($User->ID, 'user_id', true);
       $credit = $wallet->credit;
       /** @var STRING $title */
       return $Engine->render('@VC/wallet.html', [
@@ -72,7 +72,7 @@ class credit {
     } catch (\Twig_Error_Loader $e) {
     } catch (\Twig_Error_Runtime $e) {
     } catch (\Twig_Error_Syntax $e) {
-      echo $e->getRawMessage();
+      return $e->getRawMessage();
     }
 
   }

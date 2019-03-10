@@ -61,10 +61,9 @@ class vcAds
                      'Archive Formation Top (position-15)' => 'position-15',
                      'Archive Formation Side Right (position-16)' => 'position-16',
                      'Single Formation Side Right (position-17)' => 'position-17',
-
                      'Archive Annonce Top (position-18)' => 'position-18',
                      'Archive Annonce Side Right (position-19)' => 'position-19',
-                     'Single Annonce Side Right (position-20)' => 'position-20'
+                     'Single Annonce Side Right (position-20)' => 'position-20',
                   ],
                   'std' => null,
                   'description' => "Ajouter une position",

@@ -80,7 +80,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
      * @return string
      */
     public function register_render_html( $attrs ) {
-      global $Engine, $itJob, $theme;
+      global $Engine, $itJob, $wp_version;
 
       $message_access_refused = '<div class="d-flex align-items-center">';
       $message_access_refused .= '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right text-uppercase">Access refuser</div></div>';
@@ -114,11 +114,16 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
         return $message_access_refused;
       }
       
-      $hasCV = get_field('itjob_cv_hasCV', $this->Candidate->getId());
-      if ($hasCV && $this->Candidate->is_publish()) {
+      if ($this->Candidate->has_cv && $this->Candidate->state === 'pending' ) {
         return $Engine->render( '@VC/candidates/pending-cv.html.twig', [
           'offer_archive' => get_post_type_archive_link('offers')
         ] );
+      }
+
+      if ($this->Candidate->state === 'publish' && $this->Candidate->has_cv) {
+        return $Engine->render('@VC/candidates/has-cv.html', [
+          'offer_archive' => get_post_type_archive_link('offers')
+        ]);
       }
 
       wp_enqueue_style( 'b-datepicker-3' );
@@ -146,7 +151,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
 
       // Verifier si l'ajout du CV consiste à postuler sur une offre
       wp_localize_script( 'form-candidate', 'itOptions', [
-        'version'      => $theme->get('Version'),
+        'version'      => $wp_version,
         'ajax_url'     => admin_url( 'admin-ajax.php' ),
         'partials_url' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template_url' => get_template_directory_uri(),

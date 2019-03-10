@@ -91,7 +91,7 @@ if (!class_exists('jePostule')) :
         $offer_apply[] = $id_offer;
         update_field('itjob_cv_offer_apply', $offer_apply, $Candidate->getId());
 
-        do_action('alert_admin_postuled_offer', $id_offer);
+        //do_action('alert_admin_postuled_offer', $id_offer); // Envoyer un mail à l'administrateur
         do_action('notice-candidate-postuled', $Candidate->getId(), $id_offer); // Ajouter une notification
         do_action('add_notice', 'Votre candidature à bien êtes soumis', 'info');
       }

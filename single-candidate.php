@@ -67,10 +67,17 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
           <!--          Content here ... -->
           <?php
           while ( have_posts() ) : the_post();
+            if ( ! $candidate instanceof \includes\post\Candidate) {
+              echo "Le Candidat est introuvable";
+              break;
+            }
             if ( ! $candidate->has_cv ) {
               echo sprintf( "CV en attente de confirmation. Veillez réessayer plus tard." );
               break;
             }
+            $view = get_post_meta($candidate->getId(), 'view', true);
+            $view = !$view ? 0 : intval($view);
+            update_post_meta($candidate->getId(), 'view', $view + 1);
             ?>
             <div class="candidate-section ibox-body">
               <div class="candidate-top d-block pb-4">
@@ -314,15 +321,15 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                       <hr class="uk-devider">
                       <ol class="candidate-language-list mt-0">
                         <?php
-                        if ( isset( $candidate->centerInterest->various ) ) {
+                        if ( isset( $candidate->centerInterest->various ) && !empty($candidate->centerInterest->various) ) {
                           $various = $candidate->centerInterest->various;
                           foreach ( explode( ',', $various ) as $item ) :
+                            if (empty($item)) continue;
                             echo sprintf( "<li><p class='mb-0'>%s</p></li>", $item );
                           endforeach;
                         } else {
                           echo "Neant";
                         }
-
                         ?>
                       </ol>
                     </div>

@@ -1,4 +1,5 @@
-const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinymce', 'ui.router', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
+const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinymce',
+  'ui.router', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
   .factory('clientFactory', ['$http', function ($http) {
     return {
       getCity: function () {
@@ -312,6 +313,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                     columns: [
                       {
                         data: 'title', render: (data, type, row) => {
+                          let activate = (row.status === 'publish' && row.activated) ? 1 : 0;
+                          if (!activate) return data;
                           return `<a href="${row.url}" target="_blank">${data}</a>`
                         }
                       },
@@ -377,6 +380,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                     columns: [
                       {
                         data: 'title', render: (data, type, row) => {
+                          let activate = (row.status === 'publish' && row.activated) ? 1 : 0;
+                          if (!activate) return data;
                           return `<a href="${row.url}" target="_blank">${data}</a>`
                         }
                       },
@@ -452,7 +457,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
        * @param {File} file
        * @returns {Promise<any>}
        */
-      this.imgPromise = (file) => {
+      const imgPromise = (file) => {
         return new Promise((resolve, reject) => {
           const byteLimite = 2097152; // 2Mb
           if (file && file.size <= byteLimite) {
@@ -482,9 +487,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
        * @param errFiles
        */
       $rootScope.uploadImage = function (file, errFiles) {
-        $scope.avatarFile = file;
+        $rootScope.avatarFile = file;
         if (_.isNull(file)) return;
-        this.imgPromise(file)
+        imgPromise(file)
           .then(result => {
             $rootScope.$apply(() => {
               $rootScope.profilEditor.featuredImage = result.src;

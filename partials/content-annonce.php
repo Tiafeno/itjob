@@ -6,20 +6,19 @@ if (!$annonce->is_activated()) {
 $current_url = get_the_permalink(get_the_ID());
 ?>
 <li class="media">
-
-  <?php if (!empty($annonce->featured_image)): ?>
-  <div data-bg-image="<?= $annonce->featured_image[0] ?>"  data-url="<?= $current_url ?>" class="media-img mr-3"
+  <div data-bg-image="<?= empty($annonce->featured_image) ? '' : $annonce->featured_image[0] ?>"  data-url="<?= $current_url ?>" class="media-img mr-3"
        data-height="170" data-width="240">
     <div class="d-none">
+      <?php if (!empty($annonce->featured_image)): ?>
       <img src="<?= $annonce->featured_image[0] ?>" alt="<?= $annonce->title ?>" >
+      <?php endif; ?>
     </div>
   </div>
-  <?php endif; ?>
 
   <div class="media-body d-flex">
     <div class="flex-1">
       <h5 class="media-heading font-18">
-        <a href="<?= $current_url ?>"><?= $annonce->title ?></a>
+        <a href="<?= $current_url ?>"><?= ucfirst($annonce->title) ?></a>
       </h5>
       <p class="font-16">à partir de <span class="price"><?= $annonce->price ?></span></p>
       <p class="font-13 text-light"><?= substr(strip_tags($annonce->description), 0 , 250) ?> [...]</p>

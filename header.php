@@ -315,7 +315,9 @@
                             <img src="/wp-content/themes/itjob/img/user.png" alt="image" />
                           </div>
                           <div>
-                            <h5 class="font-strong text-white"><a class="text-white" href="<?= $espace_client_link ?>"><?= $name ?></a> </h5>
+                            <h5 class="font-strong text-white"><a class="text-white" href="<?= $espace_client_link ?>">
+                                <?= ucfirst($name) ?></a>
+                            </h5>
                             <span class="text-white"><?= $User->user_email ?></span>
                           </div>
                         </div>

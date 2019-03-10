@@ -55,7 +55,6 @@ wp_enqueue_style('offers');
                     do_action("send_registration_formation", $user_id, $formation->ID);
                   }
                   break;
-
                 default:
                   # code...
                   break;

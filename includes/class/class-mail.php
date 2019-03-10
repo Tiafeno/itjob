@@ -27,6 +27,7 @@ class Mailing {
   }
 
   public function onInit() {
+    if ( ! function_exists('get_field')) return false;
     $oc_id          = jobServices::page_exists( 'Espace client' );
     $custom_logo_id = get_theme_mod( 'custom_logo' );
     $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
@@ -88,7 +89,7 @@ class Mailing {
     $User = new \WP_User( (int)$user_id );
     if ( in_array( 'company', $User->roles ) ) {
       // Création d'un compte entreprise reussi
-      $Company   = Company::get_company_by( $User->ID );
+      $Company   = Company::get_company_by( $user_id );
       $to        = $User->user_email;
       $subject   = "Confirmation de l’enregistrement de « {$Company->title} »";
       $headers   = [];
@@ -96,7 +97,6 @@ class Mailing {
       $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
       $content   = '';
       try {
-        $Company   = Company::get_company_by( $User->ID );
         $greeting  = isset( $Company->greeting['value'] ) ? $Company->greeting['value'] : "Mr/Mme";
         $con_query = add_query_arg( [
           'action' => "rp",
@@ -125,9 +125,9 @@ class Mailing {
         $to        = $admin_emails;
         $subject   = "Inscription d'une nouvelle entreprise - {$Company->title}";
         $headers   = [];
-        $headers[] = 'Content-Type: text/html; charset=UTF-8';
+        $headers[] = "Content-Type: text/html; charset=UTF-8";
         $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
-        $content   = 'Bonjour, <br/>';
+        $content   = "Bonjour, <br/>";
         $content   .= "Une inscription de « <b>{$Company->title}</b> » en tant que entreprise a été éffectuée ";
         $content   .= "<p>Espace admnistration: <a href='{$this->dashboard_url}/company-lists'>Back office</a> </p> <br/>";
         $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
@@ -389,7 +389,7 @@ class Mailing {
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p><b>Une nouvelle travail a été inserée « <b>{$Work->title}</b> » portant la réfrence</p> « <b>{$Work->reference}</b> » sur le site ITJOBMada ";
+    $content   .= "<p><b>Un nouveau travail a été inseré « <b>{$Work->title}</b> » portant la réfrence</p> « <b>{$Work->reference}</b> » sur le site ITJOBMada ";
     $content   .= '<br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     // Envoyer un mail à l'entreprise

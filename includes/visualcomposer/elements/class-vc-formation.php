@@ -157,7 +157,7 @@ class vcFormation
   public
   function form_formation_render_html ($attrs)
   {
-    global $itJob, $theme;
+    global $itJob, $wp_version;
     extract(
       shortcode_atts(
         array(
@@ -210,7 +210,7 @@ class vcFormation
     ], $itJob->version, true);
 
     wp_localize_script('form-formation', 'itOptions', [
-      'version'  => $theme->get('Version'),
+      'version'  => $wp_version,
       'ajax_url' => admin_url('admin-ajax.php'),
       'helper'   => [
         'partials' => get_template_directory_uri() . '/assets/js/app/register/partials',
