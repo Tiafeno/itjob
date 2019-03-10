@@ -38,3 +38,12 @@ final class apiHelper
     return new WP_REST_Response($rTerm);
   }
 }
+
+// Convertir les caractéres en UTF-8 pour la taxonomie 'categorie'
+function prepare_restful_categories($response, $item, $request) {
+  // Do stuff to categorie
+  $name = $response->data['name'];
+  $response->data['name'] = html_entity_decode( $name, ENT_QUOTES, 'UTF-8');
+  return $response;
+}
+add_filter('rest_prepare_categorie', 'prepare_restful_categories', 10, 3);
