@@ -78,7 +78,7 @@ class cronModel
             $query .= "$user->ID";
             if ($endEl->ID !== $user->ID) $query .= ', ';
         }
-        $sql = "DELETE FROM {$wpdb->prefix}notices as ntc WHERE ntc.date_create <= '$lastDayString' AND ntc.id_user IN ( $query )";
+        $sql = "DELETE FROM {$wpdb->prefix}notices WHERE date_create <= CAST('$lastDayString' AS DATETIME) AND id_user IN ( $query )";
         $rows = $wpdb->query( $sql );
         
         return $rows;
