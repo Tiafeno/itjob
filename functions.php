@@ -375,6 +375,9 @@ add_action('init', function () {
   add_action('woocommerce_order_status_completed', 'payment_complete', 100, 1);
   add_action('woocommerce_payment_complete', 'payment_complete', 100, 1);
 
+  // Ajouter cette action dans le code du plugins vanilla pay enfin de mettre à jour la commande
+  add_action('itjob_wc_payment_success', 'payment_complete', 100, 1);
+
   // Cette action est utilisé par le plugins mailChimp
   // Plugin Name: MailChimp User Sync
   // @url https://fr.wordpress.org/plugins/mailchimp-sync/
