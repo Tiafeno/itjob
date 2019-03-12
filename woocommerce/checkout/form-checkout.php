@@ -29,7 +29,19 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 
 ?>
 
-<form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
+<style>
+  span.woocommerce-input-wrapper {
+    display: block;
+    width: 100%;
+  }
+
+  .input-text {
+    font-family: Poppins, 'sans-serif';
+  }
+
+</style>
+
+<form name="checkout" method="post" class="checkout woocommerce-checkout mb-4" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
 
   <?php if ( $checkout->get_checkout_fields() ) : ?>
 
