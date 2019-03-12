@@ -199,8 +199,10 @@ add_action('after_setup_theme', function () {
 if (function_exists('acf_add_options_page')) {
   $parent = acf_add_options_page(array(
     'page_title' => 'General Settings',
+    'capability' => 'delete_users',
     'menu_title' => 'ITJOB General Settings',
     'capability' => 'edit_posts',
+    'autoload' => true,
     'redirect' => false
   ));
 }
@@ -272,11 +274,9 @@ add_action('init', function () {
 
 
   /**
-   *
    * Combined with the manage_{$post_type}_posts_columns filter,
    * this allows you to add or remove (unset) custom columns to the list
    * post/page/custom post type pages (which automatically appear in Screen Options).
-   *
    */
   add_filter('manage_posts_columns', function ($columns) {
     return array_merge($columns,
