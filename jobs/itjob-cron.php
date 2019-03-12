@@ -177,7 +177,8 @@ function newsletter_daily_company ()
       $sender = $company->author->user_email;
       $mail->addBCC($sender);
     }
-    $subject = "Notification des nouveaux candidats - ItJobMada";
+    $count_candidate = count($candidates);
+    $subject = "{$count_candidate} nouveaux candidats publiés sur Itjobmada.com";
     $content = '';
     try {
       $custom_logo_id = get_theme_mod('custom_logo');
