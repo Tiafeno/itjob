@@ -194,4 +194,27 @@ class cronModel
 
       return $return;
     }
+
+  /**
+   * Cette fonction récupére les candidats qui n'on pas encore postuler sur une offre
+   */
+    public function getCandidatsNotApplied() {
+
+    }
+
+    /**
+     * Cette fonction permet de récuperer les candidats qui n'ont pas postuler depuis long temp
+     */
+    public function getCandidatsNotAppliedLongTime() {
+        $days = "5 days";
+    }
+
+    /**
+     * Cette fonction permet de récuperer les utilisateurs particuliers qui n'on pas de CV
+     */
+    public function getCandidatsNoCV() {
+      global $wpdb;
+
+      $sql = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = %s AND pts.post_type = %s ";
+    }
 }

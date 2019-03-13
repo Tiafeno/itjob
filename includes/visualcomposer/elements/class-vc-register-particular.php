@@ -198,6 +198,7 @@ if (!class_exists('vcRegisterParticular')) :
 
     // Ne pas activer le CV de l'utilisateur
     update_field('activated', 0, $post_id);
+    update_field('itjob_cv_hasCV', 0, $post_id);
 
     wp_send_json(['success' => true, 'msg' => 'Vous avez réussi votre inscription']);
   }
