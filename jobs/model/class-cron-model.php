@@ -199,6 +199,19 @@ class cronModel
    * Cette fonction récupére les candidats qui n'on pas encore postuler sur une offre
    */
     public function getCandidatsNotApplied() {
+      global $wpdb;
+      $sql = <<<SQL
+SELECT pts.ID, pts.post_title as reference FROM $wpdb->posts as pts WHERE pts.post_type = "candidate" 
+AND pts.post_status = "publish"
+AND pts.ID NOT IN (SELECT pm.post_id as ID FROM $wpdb->postmeta as pm WHERE pm.meta_key = "itjob_cv_offer_apply" AND pm.meta_value != "")
+SQL;
+      $results = $wpdb->get_results($sql);
+      $candidats = [];
+      foreach ($results as $result):
+        $candidats[] = new \includes\post\Candidate($result['ID']);
+      endforeach;
+
+      return $candidats;
 
     }
 
@@ -206,7 +219,19 @@ class cronModel
      * Cette fonction permet de récuperer les candidats qui n'ont pas postuler depuis long temp
      */
     public function getCandidatsNotAppliedLongTime() {
-        $days = "5 days";
+      global $wpdb;
+      $days = "5 days";
+      $sql = <<<SQL
+SELECT id_candidate, id_offer, max(date_add) as date_create FROM {$wpdb->prefix}cv_request
+WHERE type = 'apply'
+GROUP BY id_candidate
+HAVING COUNT(*) > 0
+SQL;
+      $requests = $wpdb->get_results($sql);
+      foreach ($requests as $request) {
+
+      }
+
     }
 
     /**
@@ -215,6 +240,18 @@ class cronModel
     public function getCandidatsNoCV() {
       global $wpdb;
 
-      $sql = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = %s AND pts.post_type = %s ";
+      $sql = <<<SQL
+SELECT pts.ID, pts.post_title as reference FROM $wpdb->posts as pts WHERE pts.post_type = "candidate" 
+AND pts.post_status = "publish"
+AND pts.ID IN (SELECT pm.post_id as ID FROM $wpdb->postmeta as pm WHERE pm.meta_key = "activated" AND pm.meta_value = 1)
+AND pts.ID NOT IN (SELECT pm2.post_id as ID FROM $wpdb->postmeta as pm2 WHERE pm2.meta_key = "itjob_cv_hasCV" AND pm2.meta_value = 1)
+SQL;
+      $results = $wpdb->get_results($sql);
+      $candidats = [];
+      foreach ($results as $result):
+        $candidats[] = new \includes\post\Candidate($result['ID']);
+      endforeach;
+
+      return $candidats;
     }
 }
