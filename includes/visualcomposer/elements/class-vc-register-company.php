@@ -296,7 +296,7 @@ if ( ! class_exists( 'vcRegisterCompany' ) ) :
 
       // save repeater field
       $value  = [];
-      $phones = json_decode( $form->cellphone );
+      $phones = json_decode( stripslashes($form->cellphone) );
       foreach ( $phones as $row => $phone ) {
         $value[] = [ 'number' => $phone->value ];
       }
