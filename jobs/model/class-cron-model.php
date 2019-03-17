@@ -208,7 +208,7 @@ SQL;
       $results = $wpdb->get_results($sql);
       $candidats = [];
       foreach ($results as $result):
-        $candidats[] = new \includes\post\Candidate($result['ID']);
+        $candidats[] = new \includes\post\Candidate($result->ID);
       endforeach;
 
       return $candidats;
@@ -220,7 +220,7 @@ SQL;
      */
     public function getCandidatsNotAppliedLongTime() {
       global $wpdb;
-      $days = "5 days";
+      $days = "5";
       $sql = <<<SQL
 SELECT id_candidate, id_offer, max(date_add) as date_create FROM {$wpdb->prefix}cv_request
 WHERE type = 'apply'
@@ -228,9 +228,18 @@ GROUP BY id_candidate
 HAVING COUNT(*) > 0
 SQL;
       $requests = $wpdb->get_results($sql);
+      $candidates = [];
+      $today = date('Y-m-d H:i:s');
       foreach ($requests as $request) {
-
+        $last_datetime =  new DateTime("$today -{$days} day");
+        $time_limit = strtotime($last_datetime->format('Y-m-d H:i:s'));
+        $current_apply_datetime = strtotime($request->date_create);
+        if ($current_apply_datetime <= $time_limit) {
+            $candidates[] = new \includes\post\Candidate((int)$request->id_candidate);
+        }
       }
+
+      return $candidates;
 
     }
 
@@ -249,7 +258,7 @@ SQL;
       $results = $wpdb->get_results($sql);
       $candidats = [];
       foreach ($results as $result):
-        $candidats[] = new \includes\post\Candidate($result['ID']);
+        $candidats[] = new \includes\post\Candidate($result->ID);
       endforeach;
 
       return $candidats;
