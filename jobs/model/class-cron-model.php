@@ -208,15 +208,18 @@ SQL;
       $results = $wpdb->get_results($sql);
       $candidats = [];
       foreach ($results as $result):
-        $candidats[] = new \includes\post\Candidate($result->ID);
+        $candidats[] = new \includes\post\Candidate($result->ID, true);
       endforeach;
 
+      $notAppliedLonTime = $this->getCandidatsNotAppliedLongTime();
+      if (is_array($notAppliedLonTime) && !empty($notAppliedLonTime))
+        $candidats = array_merge($candidats, $notAppliedLonTime);
       return $candidats;
 
     }
 
     /**
-     * Cette fonction permet de récuperer les candidats qui n'ont pas postuler depuis long temp
+     * Cette fonction permet de récuperer les candidats qui n'ont pas postuler depuis long temps
      */
     public function getCandidatsNotAppliedLongTime() {
       global $wpdb;
@@ -235,7 +238,7 @@ SQL;
         $time_limit = strtotime($last_datetime->format('Y-m-d H:i:s'));
         $current_apply_datetime = strtotime($request->date_create);
         if ($current_apply_datetime <= $time_limit) {
-            $candidates[] = new \includes\post\Candidate((int)$request->id_candidate);
+            $candidates[] = new \includes\post\Candidate((int)$request->id_candidate, true);
         }
       }
 
@@ -258,7 +261,7 @@ SQL;
       $results = $wpdb->get_results($sql);
       $candidats = [];
       foreach ($results as $result):
-        $candidats[] = new \includes\post\Candidate($result->ID);
+        $candidats[] = new \includes\post\Candidate($result->ID, true);
       endforeach;
 
       return $candidats;
