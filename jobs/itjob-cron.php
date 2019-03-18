@@ -52,22 +52,6 @@ function fix_duplicates_cv_reference ()
   }
 }
 
-function update_offer_featured ()
-{
-  $cronModel = new cronModel();
-  $featuredOffers = $cronModel->getFeaturedOffers();
-  foreach ($featuredOffers as $offer) {
-    $isFeatured = $offer->isFeatured();
-    if ($isFeatured) {
-      $featuredDateLimit = $offer->featuredDateLimit;
-      if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
-        update_field('itjob_offer_featured', 0, $offer->ID);
-        update_field('itjob_offer_featured_datelimit', '', $offer->ID);
-      }
-    }
-  }
-}
-
 function remove_notice_after_5days ()
 {
   $cronModel = new cronModel();
@@ -75,74 +59,6 @@ function remove_notice_after_5days ()
   //An array containing a list of found users.
   $users = $user_query->results;
   $cronModel->deleteNoticeforLastDays(5, $users);
-}
-
-function review_offer_limit ()
-{
-  global $Engine;
-  $cronModel = new cronModel();
-  $results = $cronModel->getOffer5DaysLimitDate();
-  $offers = [];
-  if ($results) {
-    foreach ($results as $result) {
-      $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-
-      $mail->CharSet = 'UTF-8';
-      $mail->isHTML(true);
-      $mail->setFrom("no-reply@itjobmada.com", "ITJob Team");
-      $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
-
-      // Envoyer une mail de notification au entreprise
-      $Offer = new includes\post\Offers((int)$result->offer_id);
-      $msg = '';
-      try {
-        $custom_logo_id = get_theme_mod('custom_logo');
-        $logo = wp_get_attachment_image_src($custom_logo_id, 'full');
-        $msg .= $Engine->render('@MAIL/review-offer-limit.html', [
-          'offer'    => $Offer,
-          'logo'     => $logo[0],
-          'home_url' => home_url("/")
-        ]);
-
-        $mail->addAddress($Offer->getAuthor()->user_email);
-        $mail->Body = $msg;
-        $mail->Subject = "Date limite offre";
-        // Envoyer le mail
-        $mail->send();
-
-      } catch (Twig_Error_Loader $e) {
-      } catch (Twig_Error_Runtime $e) {
-      } catch (Twig_Error_Syntax $e) {
-        continue;
-      }
-
-      $offers[] = $Offer;
-    }
-
-    // Envoyer un mail au administrateur et modérateur
-    if (!empty($offers)) {
-      try {
-        $msg = $Engine->render('@MAIL/admin/review-admin-offer-limit.html', [
-          'offers'              => $offers,
-          'dashboard_offer_url' => "https://admin.itjobmada.com/offer-lists",
-          'Year'                => Date('Y')
-        ]);
-
-      } catch (\Twig_Error_Loader $e) {
-      } catch (\Twig_Error_Runtime $e) {
-      } catch (\Twig_Error_Syntax $e) {
-        return false;
-      }
-
-      $subject = "Date limite des offres ";
-      $to = getModerators();
-      $headers = [];
-      $headers[] = 'Content-Type: text/html; charset=UTF-8';
-      $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
-
-      wp_mail($to, $subject, $msg, $headers);
-    }
-  }
 }
 
 function newsletter_daily_company ()
@@ -341,12 +257,6 @@ function send_not_applied_candidate( $candidates ) {
     }
 }
 
-
-
-add_action('action_scheduler_run_queue', function () {
-  // fix_pending_cv();
-});
-
 add_action('action_scheduler_run_week', function() {
     $model = new cronModel();
     send_not_applied_candidate($model->getCandidatsNotApplied());
@@ -362,17 +272,7 @@ add_action('tous_les_15_minutes', function () {
   remove_notice_after_5days();
 });
 
-add_action("woocommerce_tracker_send_event", function () { // at 14h41 (Une fois par jour)
-  // review_offer_limit();
-  // send_pending_cv();
-});
-
-add_action('jp_purge_transients_cron', function () { // at 10h 24 (Une fois par jour)
-  // send_pending_cv();
-  // send_pending_offer();
-});
-
-// Envoyer les CV validés au entreprises
+// Exécuter tous les jours dans la fin de journée
 add_action('end_of_the_day', function () { // at 16h38 (Une fois par jour)
   newsletter_daily_company();
   newsletter_daily_candidate();
@@ -387,16 +287,6 @@ add_action('end_of_the_day', function () { // at 16h38 (Une fois par jour)
 /**
  * Action @tous_les_jours:
  */
-
-/**
- * Cette action permet de supprimer un offre à la une si la date limite est atteinte
- */
-add_action('tous_les_jours', function () { // at 06h00
-  // Mettre a jour la position de l'offre
-  update_offer_featured();
-  // Envoyer les offres avec date de fin d'inscription de 5 jours et 1 jours
-  review_offer_limit();
-});
 
 
 /**
@@ -419,6 +309,12 @@ add_action('tous_les_jours', function () { // at 06h00
 
   // Envoyer les offres en attente de validation
   send_pending_offer();
+
+  // Mettre a jour la position de l'offre
+  update_offer_featured();
+
+  // Envoyer les offres avec date de fin d'inscription de 5 jours et 1 jours
+  review_offer_limit();
 });
 
 function send_pending_cv() {
@@ -569,4 +465,88 @@ function send_pending_interest() {
   $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
 
   wp_mail($to, $subject, $msg, $headers);
+}
+
+function update_offer_featured ()
+{
+    $cronModel = new cronModel();
+    $featuredOffers = $cronModel->getFeaturedOffers();
+    foreach ($featuredOffers as $offer) {
+        $isFeatured = $offer->isFeatured();
+        if ($isFeatured) {
+            $featuredDateLimit = $offer->featuredDateLimit;
+            if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
+                update_field('itjob_offer_featured', 0, $offer->ID);
+                update_field('itjob_offer_featured_datelimit', '', $offer->ID);
+            }
+        }
+    }
+}
+
+function review_offer_limit ()
+{
+  global $Engine;
+  $cronModel = new cronModel();
+  $results = $cronModel->getOffer5DaysLimitDate();
+  $offers = [];
+  if ($results) {
+    foreach ($results as $result) {
+      $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+
+      $mail->CharSet = 'UTF-8';
+      $mail->isHTML(true);
+      $mail->setFrom("no-reply@itjobmada.com", "ITJob Team");
+      $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
+
+      // Envoyer une mail de notification au entreprise
+      $Offer = new includes\post\Offers((int)$result->offer_id);
+      $msg = '';
+      try {
+        $custom_logo_id = get_theme_mod('custom_logo');
+        $logo = wp_get_attachment_image_src($custom_logo_id, 'full');
+        $msg .= $Engine->render('@MAIL/review-offer-limit.html', [
+          'offer'    => $Offer,
+          'logo'     => $logo[0],
+          'home_url' => home_url("/")
+        ]);
+
+        $mail->addAddress($Offer->getAuthor()->user_email);
+        $mail->Body = $msg;
+        $mail->Subject = "Date limite offre";
+        // Envoyer le mail
+        $mail->send();
+
+      } catch (Twig_Error_Loader $e) {
+      } catch (Twig_Error_Runtime $e) {
+      } catch (Twig_Error_Syntax $e) {
+        continue;
+      }
+
+      $offers[] = $Offer;
+    }
+
+    // Envoyer un mail au administrateur et modérateur
+    if (!empty($offers)) {
+      try {
+        $msg = $Engine->render('@MAIL/admin/review-admin-offer-limit.html', [
+          'offers'              => $offers,
+          'dashboard_offer_url' => "https://admin.itjobmada.com/offer-lists",
+          'Year'                => Date('Y')
+        ]);
+
+      } catch (\Twig_Error_Loader $e) {
+      } catch (\Twig_Error_Runtime $e) {
+      } catch (\Twig_Error_Syntax $e) {
+        return false;
+      }
+
+      $subject = "Date limite des offres ";
+      $to = getModerators();
+      $headers = [];
+      $headers[] = 'Content-Type: text/html; charset=UTF-8';
+      $headers[] = "From: ItJobMada <no-reply-notification@itjobmada.com>";
+
+      wp_mail($to, $subject, $msg, $headers);
+    }
+  }
 }
