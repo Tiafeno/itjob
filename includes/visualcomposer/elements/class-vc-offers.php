@@ -199,8 +199,9 @@ if (!class_exists('vcOffers')):
       wp_set_post_terms($post_id, [(int) $form->region], 'region');
       wp_set_post_terms($post_id, [(int) $form->country], 'city');
 
-      do_action('notice-admin-new-offer', $post_id);
+      //do_action('notice-admin-new-offer', $post_id);
       do_action('create_pending_offer_mail', $post_id);
+      do_action('new_offer', $post_id); // Mail
 
       wp_send_json(['success' => true, 'offer' => new Offers($post_id)]);
     }
@@ -256,6 +257,7 @@ if (!class_exists('vcOffers')):
       update_field('itjob_offer_otherinformation', $form->other, $post_id);
       update_field('itjob_offer_abranch', $form->branch_activity, $post_id);
       update_field('itjob_offer_featured', 0, $post_id);
+      // Ajouter l'identifiant de l'entreprise dans ce champ ACF
       update_field('itjob_offer_company', $form->company_id, $post_id);
 
       // Ne pas activer l'offre, En attente de validation de l'administrateur
@@ -473,6 +475,7 @@ if (!class_exists('vcOffers')):
             'redir_url' => $redir,
             'partials_url' => get_template_directory_uri() . '/assets/js/app/offers/partials',
             'template_url' => get_template_directory_uri(),
+            'rest_url_options' => get_rest_url(null, 'api/options')
           ]
         ]);
 

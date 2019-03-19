@@ -885,7 +885,7 @@ add_action('rest_api_init', function () {
 
               break;
 
-            // Remplacer le term par une autre
+            // Remplacer le term par une autres
             case 'replace':
               $params = $_REQUEST['params'];
               $params = json_decode(stripslashes($params));
@@ -1293,6 +1293,26 @@ SQL;
         }
 
         return new WP_REST_Response($terms);
+      }
+    ]
+  ]);
+
+  register_rest_route('api', '/options/', [
+    [
+      'methods'             => WP_REST_Server::READABLE,
+      'callback'            => function () {
+        $plan_premium = get_field('product_plan_premium', 'option');
+        $plan_sereine = get_field('product_plan_sereine', 'option');
+        $credit_price = get_field('product_wallet', 'option');
+
+        $featured_plan = get_field('featured_plan', 'option');
+
+        return new WP_REST_Response([
+          'premium' => $plan_premium,
+          'sereine' => $plan_sereine,
+          'credit'  => $credit_price,
+          'featured' => $featured_plan
+        ]);
       }
     ]
   ]);

@@ -334,6 +334,11 @@ add_action('init', function () {
     $data['ROLE'] = $role;
     return $data;
   }, 10, 2 );
+
+
+//  $Model = new cronModel();
+//  $companies = $Model->getCompanyNoOffers();
+//  print_r($companies);
 });
 
 

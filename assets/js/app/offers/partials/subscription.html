@@ -7,6 +7,7 @@
   .price {
     padding: 15px;
     background-color: #e3e6e7;
+    font-size: 20px;
   }
 
   .price sup {
@@ -72,40 +73,30 @@
         <div class="ibox shadow-wide text-center">
           <h4 class="pricing-title text-success">STANDARD</h4>
           <div class="price">
+            GRATUIT
           </div>
           <div class="price-arrow">
             <div></div>
           </div>
           <div class="ibox-body">
             <div class="pt-4 pb-5 text-left">
-              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>Notifications</div>
-              <div class="flexbox-b mb-3 "><i class="la la-check mr-3 font-18"></i>Notification par mail</div>
-              <div class="flexbox-b mb-3 text-muted"><i class="la la-times-circle mr-3 font-18"></i>Publicité</div>
-              <div class="flexbox-b mb-3 text-muted"><i class="la la-times-circle mr-3 font-18"></i>ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre</div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Les postulants sont tous envoyés chez le client sans distinction aucune
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Le client peut sélectionner autant de CV qu’il le souhaite suivant l’offre posté
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Partage de l’offre dans notre groupe, sur les réseaux sociaux
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Partage de l’offre dans d’autres groupes, sur les réseaux sociaux
+              </div>
+              <div class="flexbox-b mb-3 text-muted"><i class="la la-times-circle mr-3 font-18"></i>
+                Notre intervention : néant
+              </div>
             </div>
             <button class="btn btn-secondary" ng-click="rateplan = 'standard'" ng-disabled="loading" type="submit" style="width:170px;">SELECTIONNER</button>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4 pricing-item-active">
-        <div class="ibox shadow-wide text-center">
-          <h4 class="pricing-title">PREMIUM</h4>
-          <div class="price">
-          </div>
-          <div class="price-arrow">
-            <div></div>
-          </div>
-          <div class="ibox-body">
-            <div class="pt-4 pb-5 text-left">
-              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>Notifications</div>
-              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>Notification par mail</div>
-              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>Publicité</div>
-              <div class="flexbox-b mb-3 text-muted"><i class="la la-times-circle mr-3 font-18"></i>ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre</div>
-            </div>
-            <div class="mb-3">
-              <small>*Option payant, un de nos aggents vous contactera dans le plus bref délai</small>
-            </div>
-            <button class="btn btn-success btn-air" ng-click="rateplan = 'premium'" ng-disabled="loading" type="submit" style="width:170px;">SELECTIONNER</button>
           </div>
         </div>
       </div>
@@ -113,21 +104,83 @@
         <div class="ibox shadow-wide text-center">
           <h4 class="pricing-title text-success">SEREINE</h4>
           <div class="price">
+            [[price.sereine | currencyFormat]] HT
           </div>
           <div class="price-arrow">
             <div></div>
           </div>
           <div class="ibox-body">
             <div class="pt-4 pb-5 text-left">
-              <div class="flexbox-b mb-3 text-muted"><i class="la la-times-circle mr-3 font-18"></i>Notifications</div>
-              <div class="flexbox-b mb-3 text-muted"><i class="la la-times-circle mr-3 font-18"></i>Notification par mail</div>
-              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>Publicité</div>
-              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>ITJOB se chargera de sélectionner pour vous le bon candidat pour votre offre</div>
-            </div>
-            <div class="mb-3">
-              <small>*Option payant, un de nos aggents vous contactera dans le plus bref délai</small>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Les postulants sont filtrés par rapport à l’annonce
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Itjobmada sélectionnera un certain nombre de candidats suivant l’offre
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Prise de contact téléphonique avec les candidats sélectionnés (disponibilité du candidat et
+                adéquation du profil par rapport à l’offre)
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Publicité ciblée sur les réseaux sociaux pendant une semaine
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Partage de l’offre dans notre groupe, sur les réseaux sociaux
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Partage de l’offre dans d’autres groupe, sur les réseaux sociaux
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Notre intervention : Oui sur une durée d’un mois
+              </div>
             </div>
             <button class="btn btn-secondary" ng-click="rateplan = 'sereine'" ng-disabled="loading" type="submit" style="width:170px;">SELECTIONNER</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 pricing-item-active">
+        <div class="ibox shadow-wide text-center">
+          <h4 class="pricing-title">PREMIUM</h4>
+          <div class="price">
+            [[price.premium | currencyFormat]] HT
+          </div>
+          <div class="price-arrow">
+            <div></div>
+          </div>
+          <div class="ibox-body">
+            <div class="pt-4 pb-5 text-left">
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Les postulants sont filtrés par rapport à l’annonce
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Itjobmada sélectionnera un certain nombre de candidats suivant l’offre
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Entretien avec les candidats sélectionnés.
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Rendez-vous assurés chez le client par itjobmada
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Présentation auprès du client des candidats sélectionnés
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Publicité ciblée sur les réseaux sociaux pendant deux semaines
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Partage de l’offre dans notre groupe, sur les réseaux sociaux
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Partage de l’offre dans d’autres groupe, sur les réseaux sociaux
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Offre à la une pendant un mois
+              </div>
+              <div class="flexbox-b mb-3"><i class="la la-check mr-3 font-18"></i>
+                Notre intervention : Oui sur une durée d’un mois
+              </div>
+            </div>
+            <button class="btn btn-success btn-air" ng-click="rateplan = 'premium'" ng-disabled="loading" type="submit" style="width:170px;">SELECTIONNER</button>
           </div>
         </div>
       </div>

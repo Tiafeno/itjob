@@ -6,6 +6,8 @@
 
 require_once 'model/class-cron-model.php';
 require_once 'class/class-cron.php';
+require_once 'cron-candidate.php';
+require_once 'cron-company.php';
 
 function getModerators ()
 {
@@ -124,13 +126,6 @@ function newsletter_daily_company ()
   }
 }
 
-// TODO: Envoyer un mail au candidats tous les jours
-function newsletter_daily_candidate ()
-{
-
-}
-
-
 function alert_daily_company()
 {
   global $wpdb, $itHelper;
@@ -213,55 +208,6 @@ function fix_pending_cv ()
   update_option('walk_fix_last_offset', $walk_cv, true);
 }
 
-/**
- * Cette fonction permet d'envyer
- * @param $candidates
- * @return bool
- * @throws \PHPMailer\PHPMailer\Exception
- */
-function send_not_applied_candidate( $candidates ) {
-    $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-    $mail->addAddress('no-reply@itjobmada.com', 'ITJOB Team');
-    $mail->addReplyTo('no-reply@itjobmada.com', 'ITJOB Team');
-    foreach ($candidates as $candidate) {
-        $author = $candidate->privateInformations->author;
-        $mail->addBCC($author->user_email);
-    }
-    $subject = "Cela fait un moment que vous êtes inscrit sur Itjobmada";
-    $archive_offers_link = get_post_type_archive_link("offers");
-    $content = '';
-    $content .= "Madame/ Monsieur, <br><br>Cela fait un moment que vous êtes inscrit sur Itjobmada et nous constatons que " .
-        "vous n’avez postulé à aucune offre d’emploi. Si vous recherchez toujours activement un emploi nous vous invitons " .
-        "à postuler aux offres qui vous correspondent. Cela est gratuit <br> Nous vous souhaitons une bonne journée <br><br>";
-    $content .= "<a href='{$archive_offers_link}' style='color: white;background-color: #1733d4; padding: 12px;font-weight: bold;' " .
-        "target='_blank'>Voir les offres sur ITJob</a> <br><br>";
-
-    $content .= "Tompoko, <br><br>
-    Efa andro maromaro izay ianao no nisoratra anarana tao amin’ny tranokala itjobmada, nefa hitanay fa tsy mandray " .
-    "anjara amin’ny tolotr’asa mihintsy. <br>Raha mbola eo ampitadiavana asa ianao, dia manasa anao izahay handray anjara " .
-    "amin’ireo tolotr ‘asa izay mety mifandraika aminao. Maimaim-poana izany. <br> Miraray tontolo andro mahafinaritra ho anao <br><br>";
-    $content .= "<a href='{$archive_offers_link}' style='color: white;background-color: #1733d4; padding: 12px;font-weight: bold;' " .
-        "target='_blank'>Hijery ny tolotr'asa ao aminy ITJob</a> <br><br><br>";
-
-    $mail->CharSet = 'UTF-8';
-    $mail->isHTML(true);
-    $mail->setFrom("no-reply-notification@itjobmada.com", "Équipe ITJob");
-    $mail->Body = $content;
-    $mail->Subject = $subject;
-
-    try {
-        // Envoyer le mail
-        $mail->send();
-    } catch (\PHPMailer\PHPMailer\Exception $e) {
-        return false;
-    }
-}
-
-add_action('action_scheduler_run_week', function() {
-    $model = new cronModel();
-    send_not_applied_candidate($model->getCandidatsNotApplied());
-
-});
 
 add_action('tous_les_15_minutes', function () {
   // Mettre a jour la cle du telechargement
@@ -275,7 +221,6 @@ add_action('tous_les_15_minutes', function () {
 // Exécuter tous les jours dans la fin de journée
 add_action('end_of_the_day', function () { // at 16h38 (Une fois par jour)
   newsletter_daily_company();
-  newsletter_daily_candidate();
   send_pending_cv();
   send_pending_offer();
 
@@ -285,13 +230,9 @@ add_action('end_of_the_day', function () { // at 16h38 (Une fois par jour)
 
 
 /**
- * Action @tous_les_jours:
- */
-
-
-/**
- * Cette action permet d'envoyer des mails au administrateurs du site tous les jours
- * les taches en attente.
+ *
+ * Cette action permet d'envoyer des mails au administrateurs du site tous les jours.
+ *
  */
 add_action('tous_les_jours', function () { // at 06h00
 
@@ -329,9 +270,13 @@ function send_pending_cv() {
   if (empty($candidats)) return false;
   $msg = "Bonjour, <br/>";
   $msg .= "<p>Voici la liste des candidats en attente de validation :</p> ";
+  $msg .= "<ul>";
   foreach ($candidats as $candidate) {
-    $msg .= "<p> * <a href='https://admin.itjobmada.com/candidate/{$candidate['ID']}/edit' target='_blank' title='{$candidate['name']}'><strong>{$candidate['name']}</strong></a> portant la reférence « <strong>{$candidate['reference']}</strong> ». </p>";
+    $msg .= "<li><a href='https://admin.itjobmada.com/candidate/{$candidate['ID']}/edit' target='_blank' " .
+      "title='{$candidate['name']}'><strong>{$candidate['name']}</strong></a> portant la reférence " .
+      "« <strong>{$candidate['reference']}</strong> ». </li>";
   }
+  $msg .= "</ul>";
   $msg .= "<br>";
   $msg .= "A bientôt. <br/><br/><br/>";
   $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
@@ -353,11 +298,12 @@ function send_edit_pending_cv() {
 
   $msg = "Bonjour, <br/>";
   $msg .= "<p>Voici la liste des candidats qui ont modifié leurs CV, en attente de validation :</p> ";
+  $msg .= "<ul>";
   foreach ($candidats as $candidate) {
-    $msg .= "<p> * <strong>{$candidate['name']}</strong> portant la reférence « <strong>{$candidate['reference']}</strong> ». </p>";
+    $msg .= "<li> <strong>{$candidate['name']}</strong> portant la reférence « <strong>{$candidate['reference']}" .
+      "</strong> ». </li>";
   }
-  if (empty($candidats))
-    $msg .= "<b>Aucun</b>";
+  $msg .= "</ul>";
   $msg .= "<br>";
   $msg .= "A bientôt. <br/><br/><br/>";
   $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
@@ -383,8 +329,10 @@ function send_pending_postuled_candidate() {
   foreach ($pendingApply as $apply) {
     $first = $apply->candidate->getFirstName();
     $last = $apply->candidate->getLastName();
+    $candidate_id = $apply->candidate->getId();
     $msg
-      .= "<li> * <strong>{$first} {$last}</strong> portant la reférence « <strong>{$apply->candidate->title}</strong> »
+      .= "<li style='padding-bottom: 5px'><strong>{$first} {$last}</strong> portant la reférence « " .
+      "<a href='https://admin.itjobmada.com/candidate/{$candidate_id}/edit' target='_blank'><strong>{$apply->candidate->title}</strong></a> »
          à postuler sur l'offre <a href='https://admin.itjobmada.com/offer/{$apply->offer->ID}/edit' target='_blank'>" .
       "<b>{$apply->offer->postPromote}</b></a> de reference {$apply->offer->reference} à {$apply->date}.</li>";
   }
@@ -416,10 +364,12 @@ function send_pending_offer() {
 
   $msg = "Bonjour, <br/>";
   $msg .= "<p>Voici la liste des offres en attente de validation :</p> ";
+  $msg .= "<ul>";
   foreach ($offers as $offer) {
-    $msg .= "<p> * <a href='https://admin.itjobmada.com/offer/{$offer['ID']}/edit' target='_blank' title='{$offer['title']}'>" .
-      "<strong>{$offer['title']}</strong></a> portant la reférence « <strong>{$offer['reference']}</strong> ». </p>";
+    $msg .= "<li> <a href='https://admin.itjobmada.com/offer/{$offer['ID']}/edit' target='_blank' title='{$offer['title']}'>" .
+      "<strong>{$offer['title']}</strong></a> portant la reférence « <strong>{$offer['reference']}</strong> ». </li>";
   }
+  $msg .= "</ul>";
   $msg .= "<br>";
   $msg .= "A bientôt. <br/><br/><br/>";
   $msg .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
