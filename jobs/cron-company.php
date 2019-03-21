@@ -53,7 +53,6 @@ function run_once_month() {
   endif;
 }
 
-
 // Envoyer 2 fois par semaine
 add_action('action_scheduler_run_twice_week', 'run_twice_week');
 function run_twice_week() {
@@ -106,8 +105,6 @@ function run_twice_week() {
     unset($mail);
   endif;
 }
-
-
 
 // Envoyer une (1) fois par semaine
 add_action('action_scheduler_run_week', 'run_week');

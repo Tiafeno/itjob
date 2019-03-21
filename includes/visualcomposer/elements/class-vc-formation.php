@@ -170,8 +170,9 @@ class vcFormation
     $refused_access_msg = '<div class="text-left mt-5">';
     $refused_access_msg .= '<div class="font-bold text-left font-14 badge badge-pink" style="white-space: pre-wrap;">Seule ' .
       'un compte professionnel a le pouvoir d\'ajouté une formation. <br>';
-    $refused_access_msg .= 'Votre compte ne vous permet pas d\'accéder à cette option. Vous devriez vous connecter ou ' .
-      'crée un compte en tanque formateur pour bénéficier cette option.';
+    $refused_access_msg .= "Votre compte ne vous permet pas d'accéder à cette option. Nous vous invitons à vous ' .
+      'connecter avec un compte formateur ou à en créer un pour bénéficier de cette option.<br>";
+    $refused_access_msg .= "Remerciements";
     $refused_access_msg .= '</div></div>';
     $redirection = Http\Request::getValue('redir');
     $redirection = $redirection ? $redirection : get_post_type_archive_link('candidate');

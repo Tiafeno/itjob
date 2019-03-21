@@ -17,6 +17,18 @@ final class Model_Subscription_Formation {
         return $result;
     }
 
+    public static function is_register($formation_id, $user_id) {
+      global $wpdb;
+      if (!is_numeric($formation_id) || !is_numeric($user_id)) {
+        return false;
+      }
+      $sql = "SELECT * FROM {$wpdb->prefix}registration_training WHERE formation_id = %d AND user_id = %d";
+      $results = $wpdb->prepare($sql, $formation_id, $user_id);
+
+      return $wpdb->get_results($results);
+    }
+
+
     public static function get_subscription( $formation_id = 0 ) {
       global $wpdb;
       if (!is_numeric($formation_id) || $formation_id === 0) return false;
