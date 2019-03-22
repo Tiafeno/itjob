@@ -415,7 +415,7 @@ APPOC
 
           // Actualiser la liste des candidats dans la gestion des candidats
           self.refreshInterestCandidate = () => {
-            let query = $http.get(`${itOptions.Helper.ajax_url}?action= &oId=${$scope.offerView.ID}`, {cache: false});
+            let query = $http.get(`${itOptions.Helper.ajax_url}?action=get_postuled_candidate&oId=${$scope.offerView.ID}`, {cache: false});
             query.then(resp => {
               $scope.interestCandidats = _.map(resp.data, data => {
                 if (_.find($scope.candidateLists, (id) => id === data.candidate.ID)) {
