@@ -64,7 +64,7 @@ class vcRequestFormation
     if (empty($request_formations->results)) return null;
 
     $title = empty($title) ? "Formation les plus demanders" : $title;
-    $content = "<div class='mt-4 '>";
+    $content = "<div class='mt-4 mb-4'>";
     $content .= "<h5 class='vc-element-title request-formation-title'>
                   {$title}
                   <div class='text-muted'>Cliquer sur une formation pour s'inscrire</div>

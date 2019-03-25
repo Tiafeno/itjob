@@ -1,5 +1,5 @@
 <!-- Modal -->
-<div id="modal-edit-user-overflow" uk-modal>
+<div id="modal-edit-user-overflow" uk-modal="esc-close: false; bg-close: false">
   <div class="uk-modal-dialog">
     <button class="uk-modal-close-default" type="button" uk-close></button>
     <div class="uk-modal-header">
@@ -8,19 +8,9 @@
     <div class="uk-modal-body" uk-overflow-auto>
       <form name="editUserForm" novalidate>
         <div class="form-group mb-2 row ">
-          <div class="col-sm-4">
-            <label class="col-form-label ">Salutation <span style="color: red">*</span></label>
-            <div class="form-group">
-              <select class="form-control" name="greet" ng-model="userEditor.greeting"
-                      title="Salutation" required>
-                <option value="mr">Monsieur</option>
-                <option value="mrs">Madame</option>
-              </select>
-            </div>
-          </div>
           <div class="col-sm-8">
             <label class="col-form-label">Nom du responsable <span style="color: red">*</span></label>
-            <input class="form-control" ng-disabled="true" name="name" ng-model="userEditor.name" type="text"
+            <input class="form-control" name="name" ng-model="userEditor.name" type="text"
                    placeholder="Nom du responsable"
                    required>
           </div>
@@ -30,13 +20,13 @@
           <div class="col-sm-6">
             <label class="col-form-label ">NIF <span style="color: red">*</span></label>
             <div class="form-group">
-              <input class="form-control" name="nif" ng-model="userEditor.nif"
+              <input class="form-control" name="nif" ng-disabled="true" ng-model="userEditor.nif"
                      title="NIF" required>
             </div>
           </div>
           <div class="col-sm-6">
             <label class="col-form-label">STAT <span style="color: red">*</span></label>
-            <input class="form-control" name="stat" ng-model="userEditor.stat" type="text"
+            <input class="form-control" name="stat" ng-disabled="true" ng-model="userEditor.stat" type="text"
                    placeholder="Numero statistique"
                    required>
           </div>
@@ -59,7 +49,7 @@
             <label class="col-form-label">Code postal ou nom d'une ville </label>
             <div class="form-group">
               <select class="form-control input-mode country" name="country" ng-model="userEditor.country" required>
-                <option value="[[city.term_id]]" ng-value="userEditor.country" ng-repeat="city in Citys">
+                <option value="[[city.term_id]]" ng-value="city.term_id" ng-repeat="city in Towns|filter:searchCityFn">
                   ([[city.postal_code]]) [[city.name]]
                 </option>
               </select>
@@ -72,7 +62,7 @@
             <label class="col-form-label ">Adresse <span style="color: red">*</span></label>
             <div class="form-group">
               <div class="input-group ">
-                <input ng-model="userEditor.address" ng-disabled="true" autocomplete="off" name="address"
+                <input ng-model="userEditor.address" autocomplete="off" name="address"
                        class="form-control" required>
               </div>
             </div>
@@ -85,7 +75,7 @@
             <div class="form-group">
               <select class="form-control" name="branch_activity" ng-model="userEditor.branch_activity"
                       title="Secteur d'activité" required>
-                <option ng-repeat="ab in branchActivity" ng-value="ab.term_id">[[ab.name]]</option>
+                <option ng-repeat="ab in Areas" ng-value="ab.term_id">[[ab.name]]</option>
               </select>
             </div>
           </div>
@@ -108,11 +98,15 @@
 </div>
 <!-- .end Modal-->
 
+<div class="preloader-backdrop" ng-if="preLoader">
+  <div class="page-preloader">Chargement</div>
+</div>
+
 <div class="profil-box">
   <div class="ibox-body">
     <h5 class="font-strong mb-4">MES INFORMATIONS
       <!--  Target: #modal-contact-overflow is in -->
-      <span class="badge badge-blue badge-circle ml-3" data-toggle="modal" data-target="#modal-contact-overflow"
+      <span class="badge badge-blue badge-circle ml-3" ng-click="openEditor()"
             style="cursor: pointer">
           <i class="ti-pencil"></i>
         </span>

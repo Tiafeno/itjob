@@ -3,9 +3,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
   .factory('clientFactory', ['$http', function ($http) {
     return {
       getCity: function () {
-        return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {
-            cache: true
-          })
+        return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {cache: true})
           .then(function (resp) {
             return resp.data;
           });
@@ -19,10 +17,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
           },
           data: formData
         });
+      },
+      getOptions: function () {
+        return $http.get(itOptions.Helper.rest_options, {cache: true}).then(resp => resp.data);
       }
     };
   }])
-  .service('clientService', [function () {
+  .service('clientService', ['$rootScope', function ($rootScope) {
     this.offers = _.clone(itOptions.offers);
     this.months = [
       'janvier', 'février', 'mars',
@@ -30,6 +31,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
       'juillet', 'août', 'septembre',
       'octobre', 'novembre', 'décembre'
     ];
+    this.setLoading = (loading) => {
+      $rootScope.preLoader = true;
+    };
   }])
   .filter('FormatStatus', [function () {
     let status = [{
@@ -421,7 +425,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
     }
   }])
   .run(['$rootScope', '$state', '$filter', function ($rootScope, $state, $filter) {
-
+      $rootScope.preLoader = false;
       /**
        * Cette fonction permet de redimensionner une image
        *

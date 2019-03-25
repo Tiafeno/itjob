@@ -339,25 +339,38 @@ add_action('init', function () {
 //  $Model = new cronModel();
 //  $companies = $Model->getCompanyNoOffers();
 //  print_r($companies);
+
+  //payment_complete(13026);
 });
 
 
 function payment_complete ($order_id) {
   // Get an instance of the WC_Order object
   $order = wc_get_order($order_id);
+  if ( ! $order->has_status('completed'))
+    $order->update_status('completed');
   // Iterating through each WC_Order_Item_Product objects
   foreach ($order->get_items() as $item_key => $item ):
 
     // Item ID is directly accessible from the $item_key in the foreach loop or
     $product = $item->get_product(); // WP_Product
-    $type = get_post_meta($product->get_id(), '__type', true);
-    if ($type && $type === 'offers') {
-      $offer_id = get_post_meta($product->get_id(), '__id', true);
-      $offer_id = intval($offer_id);
-      if (0 === $offer_id) return false;
+    $type = $product->get_meta( '__type' );
+    if ($type) {
+      $post_id = $product->get_meta( '__id' );
+      $object_id = intval($post_id);
+      if (0 === $object_id) return false;
+      switch ($type):
+        case 'offers':
+          // Mettre à jour le status de paiement de l'offre
+          update_field('itjob_offer_paid', 1, $object_id);
+          break;
 
-      // Mettre à jour le status de paiement de l'offre
-      update_field('itjob_offer_paid', 1, $offer_id);
+        case 'formation':
+          // Mettre à jour le status de paiement de l'offre
+          update_field('paid', 1, $object_id);
+          break;
+      endswitch;
+
     }
   endforeach;
 }

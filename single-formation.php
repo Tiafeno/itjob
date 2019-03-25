@@ -51,7 +51,7 @@ wp_enqueue_style('offers');
                   $args = ['formation_id' => $formation->ID, 'user_id' => $User->ID];
                   $ModelFormation = new \includes\model\Model_Subscription_Formation();
                   // Vérifier si l'utilisateur s'est déja inscrit
-                  $hasRegister = $ModelFormation::is_register((int)$formation->ID, $User->ID);
+                  $hasRegister = $ModelFormation::is_register( (int)$formation->ID, $User->ID );
                   if ($hasRegister && !empty($hasRegister)) {
                     $error = new WP_Error('warning', "Désolé, Vous étes déja inscrit à cette formation");
                     break;

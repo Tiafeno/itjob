@@ -251,11 +251,11 @@
 
     <thead class="thead-default thead-lg">
       <tr>
-        <th>ID</th>
-        <th>Status</th>
+        <th>Poste à promouvoir</th>
+        <th>Statuts</th>
         <th>En ligne</th>
         <th>Candidat(s)</th>
-        <th>Poste à promouvoir</th>
+        <th>Etat de paiement</th>
         <th>Type de contrat</th>
         <th>Secteur d'activité</th>
         <th>Réference</th>
@@ -266,7 +266,7 @@
     <tbody>
       <tr ng-repeat="offer in Offers">
 
-        <td>[[offer.ID]]</td>
+        <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
         <td>
           <span class="badge badge-pill" ng-class="{'badge-blue' : offer.offer_status == 'publish', 'badge-warning' : offer.offer_status == 'pending'}">
             [[ offer.offer_status|Status]]
@@ -279,7 +279,7 @@
         </td>
         <td>
           <span style="cursor: pointer" class="p-relative" >
-            <span ng-if="offer.candidat_apply.length <= 0">[[ offer.candidat_apply.length ]]</span>
+            <span ng-if="offer.candidat_apply.length <= 0" class="badge badge-default">[[ offer.candidat_apply.length ]]</span>
             <span ng-click="viewApply(offer.ID)" ng-if="offer.candidat_apply.length > 0" class="badge-success badge ml-2">
               Liste des candidates
             </span>
@@ -289,8 +289,11 @@
             </span>
           </span>
         </td>
-        <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
-
+        <td>
+          <span class="badge badge-pill" ng-class="{'badge-blue' : offer.paid , 'badge-default' : !offer.paid }">
+            [[offer.paid ? 'Terminée' : 'En attente']]
+          </span>
+        </td>
         <td>[[ offer.contractType[ 'label' ] ]]</td>
         <td>[[ offer.branch_activity.name ]]</td>
         <td><span class="badge badge-info badge-pill">[[ offer.reference ]]</span></td>

@@ -84,8 +84,13 @@ if ( ! class_exists( 'jobServices' ) ) :
         // Custom field ...
         update_post_meta( $current_post_id, '__type', 'offers');
         update_post_meta( $current_post_id, '__id', $offer_id);
+
         return $current_post_id;
       } else return false;
+    }
+
+    public function register_formation_same_product($formation_id) {
+
     }
 
     public function set_billing() {

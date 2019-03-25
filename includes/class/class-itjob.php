@@ -73,10 +73,10 @@ if ( ! class_exists( 'itJob' ) ) {
       } );
 
       add_action( 'delete_post', function ($post_id) {
-        $pst = get_post( $post_id );
-        if ($pst->post_type === "attachment") {
+        $post_type = get_post_type((int) $post_id);
+        if ($post_type === "attachment") {
           $Model = new itModel();
-          $Model->remove_attachment($pst->ID);
+          $Model->remove_attachment((int) $post_id);
         }
       }, 10 );
 
@@ -336,6 +336,11 @@ if ( ! class_exists( 'itJob' ) ) {
                 $meta_query[] = [
                   [
                     'key'     => 'activated',
+                    'value'   => 1,
+                    'compare' => '=',
+                  ],
+                  [
+                    'key'     => 'paid',
                     'value'   => 1,
                     'compare' => '=',
                   ],
@@ -611,6 +616,15 @@ SQL;
                 $query->set('order', 'DESC');
               }
 
+              if ($post_type === "formation") {
+                $meta_query[] = [
+                  'key'     => 'paid',
+                  'value'   => 1,
+                  'compare' => '=',
+                  'type'    => 'NUMERIC'
+                ];
+              }
+
               if ( isset( $meta_query ) && ! empty( $meta_query ) ):
                 $query->set( 'meta_query', $meta_query );
                 $query->meta_query = new \WP_Meta_Query( $meta_query );
@@ -841,13 +855,15 @@ SQL;
           'underscore',
           'numeral',
           'bluebird',
-          'uikit'
+          'uikit',
+          'wpapi'
         ], $itJob->version, true );
       } );
     }
 
     /**
      * Enregistrer des styles et scripts
+     * call at line 831
      */
     public function register_enqueue_scripts() {
       global $itJob;
@@ -950,6 +966,16 @@ SQL;
         'toastr',
         'bootstrap-select'
       ], $itJob->version, true );
+
+      wp_register_script( 'wpapi', get_template_directory_uri() . '/assets/js/libs/wpapi/wpapi.min.js', [], '3.0.0', true );
+
+      if (is_user_logged_in()) :
+        wp_localize_script( 'wpapi', 'WP',
+          array(
+            'root' => esc_url_raw( rest_url() ),
+            'nonce' => wp_create_nonce( 'wp_rest' ),
+          ) );
+      endif;
     }
   }
 }

@@ -133,6 +133,8 @@ if ( ! class_exists( 'scClient' ) ) :
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
             'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
             'img_url'       => get_template_directory_uri() . '/img',
+            'rest_options' =>  get_rest_url(null, 'api/options'),
+            'checkout_url' => get_permalink(wc_get_page_id("checkout"))
           ]
         ];
         define( 'OC_URL', get_template_directory_uri() . '/assets/js/app/client' );
@@ -180,10 +182,6 @@ if ( ! class_exists( 'scClient' ) ) :
      */
     public function client_trash_offer() {
       global $wpdb;
-      /**
-       * @func wp_doing_ajax
-       * (bool) True if it's a WordPress Ajax request, false otherwise.
-       */
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         return;
       }
@@ -271,39 +269,29 @@ if ( ! class_exists( 'scClient' ) ) :
         'region'          => Http\Request::getValue( 'region' ),
         'city'            => Http\Request::getValue( 'country' ),
       ];
-      if ( ! empty( $company_id ) ) {
+      if ( ! is_null( $company_id ) ) {
+        $company_id = intval($company_id);
         $form = [
-          //'address'  => Http\Request::getValue( 'address' ),
-          'greeting' => Http\Request::getValue( 'greeting', null ),
-          'name'     => Http\Request::getValue( 'name' ),
+          'address'  => Http\Request::getValue( 'address', null ),
+          'name'     => Http\Request::getValue( 'name', null),
           'stat'     => Http\Request::getValue( 'stat', null ),
           'nif'      => Http\Request::getValue( 'nif', null )
         ];
         foreach ( $form as $key => $value ) {
-          if ( ! is_null( $value ) ) {
-            update_field( "itjob_company_{$key}", $value, $company_id );
-          }
-        }
-      } else {
-        $input = [
-          //'address'  => Http\Request::getValue( 'address' ),
-          'greeting' => Http\Request::getValue( 'greeting' ),
-        ];
-        foreach ( $input as $key => $value ) {
-          if ( $value ) {
-            update_field( "itjob_cv_{$key}", $value, $candidate_id );
-          }
+          if (!$value) continue;
+          update_field( "itjob_company_{$key}", $value, $company_id );
         }
       }
-      $post_id = is_null( $candidate_id ) ? $company_id : $candidate_id;
+      $post_id =  $candidate_id ? $candidate_id : $company_id;
       foreach ( $terms as $key => $value ) {
+        $post_id = intval($post_id);
         $isError = wp_set_post_terms( $post_id, [ (int) $value ], $key );
         if ( is_wp_error( $isError ) ) {
           wp_send_json( [ 'success' => false, 'msg' => $isError->get_error_message() ] );
         }
       }
 
-      wp_send_json( [ 'success' => true ] );
+      wp_send_json( [ 'success' => true, 'resource_id' => $candidate_id. '|'.$company_id  ] );
     }
 
     /**
@@ -891,9 +879,6 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_send_json_success( $results );
     }
 
-    /**
-     * Function ajax
-     */
     public function collect_favorite_candidates() {
       global $itJob;
       if ( ! is_user_logged_in() ) {
@@ -924,10 +909,6 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_send_json_error( "Bad request" );
     }
 
-    /**
-     * Function ajax
-     * Récuperer les notifications de l'utilisateur
-     */
     public function collect_current_user_notices() {
       global $itJob;
       if ( ! is_user_logged_in() ) {
