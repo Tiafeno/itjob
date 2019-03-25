@@ -8,8 +8,6 @@
 
 class apiProduct {
   public function __construct() {
-    add_action('rest_api_init', [&$this, 'initProduct']);
-
     add_action('wp_loaded', function () {
       add_action('woocommerce_product_options_general_product_data', function () {
         woocommerce_wp_text_input(array(

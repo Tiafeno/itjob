@@ -229,7 +229,7 @@ wp_enqueue_script('sweetalert');
             }
             if (!$annonce instanceof \includes\post\Annonce) continue;
             $author = $annonce->get_author();
-            $name = 'Inconnue';
+            $name = 'Anonyme';
             if (in_array('candidate', $author->roles)) {
               $Candidate = \includes\post\Candidate::get_candidate_by($author->ID);
               $name = $Candidate->getFirstName();
