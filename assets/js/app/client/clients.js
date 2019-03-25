@@ -128,6 +128,16 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
       return moment(entry, 'YYYY-MM-DD h:mm:ss', 'fr').fromNow();
     }
   }])
+  .filter('currency', [function () {
+    return (entry) => {
+      let numb = parseInt(entry);
+      return new Intl.NumberFormat('de-DE', {
+        style: "currency",
+        minimumFractionDigits: 0,
+        currency: 'MGA'
+      }).format(numb);
+    }
+  }])
   .directive('changePassword', ['$http', function ($http) {
     return {
       restrict: 'E',

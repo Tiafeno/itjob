@@ -220,7 +220,7 @@ class apiFormation
 add_action('rest_api_init', function () {
   $post_type = "formation";
   $formation_meta = ["diploma", "activated", "featured", "featured_datelimit", "featured_formation", "date_limit", "duration",
-    "establish_name", 'price', 'reference', 'email', 'address','paid'];
+    "establish_name", 'price', 'reference', 'email', 'address','paid', 'tariff'];
   foreach ($formation_meta as $meta):
     register_rest_field($post_type, $meta, array(
       'update_callback' => function ($value, $object, $field_name) {

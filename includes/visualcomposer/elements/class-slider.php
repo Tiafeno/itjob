@@ -68,6 +68,7 @@ if ( ! class_exists( 'vcSlider' ) ):
       // Recuperer dans le service les offres publier et à la une
       switch ($post_type) {
         case 'offers':
+
           $offers = $itJob->services->getFeaturedPost( 'offers', [
             'key'     => 'itjob_offer_featured',
             'value'   => 1,

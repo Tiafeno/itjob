@@ -1,0 +1,63 @@
+<div class="ibox">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="ibox-body">
+        <div class="flexbox-b mb-3">
+          <div>
+            <div class="mb-4">
+              <a ui-sref="manager.profil.formation.lists" class="btn btn-sm btn-primary">Retour</a>
+            </div>
+            <h5 class="font-strong">[[ Formation.title.rendered ]]</h5>
+            <div class="text-light">
+              <p ng-bind-html="Formation.content.rendered"></p>
+            </div>
+          </div>
+        </div>
+        <div class="ibox">
+          <div class="ibox-body">
+            <div class="ibox-fullwidth-block">
+              <table class="table pricing-table">
+                <thead>
+                <tr>
+                  <th></th>
+                  <th>
+                    <div class="h4 font-strong">OFFRE</div>
+                    <div class="text-muted font-normal"></div>
+                  </th>
+                  <th>
+                    <div class="h4 font-strong">OFFRE</div>
+                    <div class="text-muted font-normal"></div>
+                  </th>
+                </tr>
+                </thead>
+                <thead class="thead-default thead-lg">
+                <tr>
+                  <th>PRIX</th>
+                  <th ng-repeat="tarif in TARIFFS track by tarif._p">
+                    <div class="h1 font-strong text-primary mb-0">[[ tarif._p | currency]]</div>
+                  </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td></td>
+                  <td width="50%" ng-repeat="tarif in TARIFFS track by tarif._p">
+                    <p ng-bind-html="tarif._d">
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td ng-repeat="tarif in TARIFFS track by tarif._p">
+                    <button class="btn btn-primary btn-air" ng-click="choisePlan( tarif._t )">ACHETER</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

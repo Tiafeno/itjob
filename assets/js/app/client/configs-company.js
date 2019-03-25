@@ -208,6 +208,123 @@ APPOC
           }]
         },
         {
+          name: 'manager.profil.formation.paiement',
+          url: '/paiement/{id}',
+          resolve: {
+            access: ['$rootScope', '$state', function ($rootScope, $state) {
+              if ($rootScope.sector !== 2) {
+                $state.go('manager.profil.index');
+              }
+            }],
+            $id: ['$transition$', function ($transition$) {
+              return $transition$.params().id;
+            }]
+          },
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/formation-paiement.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", "$scope", "$http", "$id", function ($rootScope, $scope, $http, $id) {
+            $scope.Formation = {};
+            $scope.TARIFFS = [];
+            this.$onInit = () => {
+              moment.locale('fr');
+              $rootScope.preloaderToogle();
+              $rootScope.WPEndpoint.formation().id($id).then(resp => {
+                $scope.Formation = _.clone(resp);
+                jQuery('.form-control.date').datepicker({
+                  format: "dd-mm-yyyy",
+                  language: "fr",
+                  startView: 2,
+                  todayBtn: false,
+                  keyboardNavigation: true,
+                  forceParse: false,
+                  autoclose: true
+                });
+                $rootScope.$apply(() => {
+                  $rootScope.preloaderToogle();
+                });
+              });
+              $scope.TARIFFS = _.clone($rootScope.options.pub.formation);
+            };
+
+            $scope.choisePlan = (rate) => {
+              const key = $rootScope.options.wc._k;
+              const secret = $rootScope.options.wc._s;
+              const pubTariff = $rootScope.options.pub;
+              let tariffFormation = null;
+              tariffFormation = _.findWhere(pubTariff.formation, {_t: rate});
+              if (!tariffFormation) return false;
+              let priceFormation = tariffFormation._p;
+              swal({
+                title: 'Paiement',
+                text: "Il vous en coutera XXXAr, souhaitez-vous procéder au paiement ? ",
+                type: 'info',
+                showCancelButton: true,
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true,
+                cancelButtonText: "Non",
+                confirmButtonText: "Oui"
+              }, function () {
+                $rootScope.preloaderToogle();
+                $scope.WPEndpoint.product()
+                  .param('consumer_key', key)
+                  .param('consumer_secret', secret)
+                  .create({
+                    status: 'publish',
+                    type: 'simple',
+                    name: `FORMATION (${$scope.Formation.title.rendered})`,
+                    price: priceFormation, // string accepted
+                    regular_price: priceFormation, // string accepted
+                    sold_individually: true,
+                    virtual: true,
+                    sku: `FORM${$scope.Formation.id}`,
+                    meta_data: [
+                      {key: '__type', value: 'formation'},
+                      {key: '__id', value: $scope.Formation.id}
+                    ]
+
+                  }).then(resp => {
+                    let product = _.clone(resp);
+                    $scope.$apply(() => {
+                      $scope.addProductCart(product.id, rate);
+                    });
+                  }).catch(err => {
+                    if (!_.isUndefined(err.code)) {
+                      if (err.code === "product_invalid_sku" || err.code === "product_invalid_sku") {
+                        $scope.$apply(() => {
+                          $scope.addProductCart(err.data.resource_id, rate);
+                        });
+                      }
+                    }
+                  });
+              });
+            };
+
+            $scope.addProductCart = (product_id, rate) => {
+              $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`, {cache: false})
+                .then((resp) => {
+                  let response = resp.data;
+                  $scope.WPEndpoint
+                    .formation()
+                    .id($scope.Formation.id)
+                    .update({ tariff: rate })
+                    .then((formation) => {
+                      if (response.success) {
+                        $scope.$apply(() => {
+                          $rootScope.preloaderToogle();
+                        });
+                        swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                        setTimeout(() => {
+                          window.location.href = response.data;
+                        }, 2000);
+                      }
+                    })
+                })
+                .then(() => {
+                });
+            };
+
+          }]
+        },
+        {
           name: 'manager.profil.formation.editor',
           url: '/edit/{id}',
           resolve: {
@@ -222,24 +339,21 @@ APPOC
           },
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/formation-edit.html?ver=${itOptions.version}`,
           controller: ["$rootScope", "$scope", "$id", function ($rootScope, $scope, $id) {
-            $scope.preload = false;
             $scope.Editor = {};
             this.$onInit = () => {
               moment.locale('fr');
-              $scope.preload = true;
+              $rootScope.preloaderToogle();
               $rootScope.WPEndpoint.formation().id($id).then(resp => {
                 let formation = _.clone(resp);
-                $scope.Editor = _.clone(formation);
-                $scope.Editor.region = _.isArray(formation.region) ? formation.region[0] : null;
-                $scope.Editor.title = formation.title.rendered;
-                $scope.Editor.date_limit = moment(formation.date_limit, 'YYYY-MM-DD').format('DD-MM-YYYY');
-                $scope.Editor.price = parseInt(formation.price);
-                $scope.Editor.branch_activity = _.isArray(formation.branch_activity) ? formation.branch_activity[0] : null;
-
                 $scope.$apply(() => {
-                  $scope.preload = false;
+                  $scope.Editor = _.clone(formation);
+                  $scope.Editor.region = _.isArray(formation.region) ? formation.region[0] : null;
+                  $scope.Editor.title = formation.title.rendered;
+                  $scope.Editor.date_limit = moment(formation.date_limit, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                  $scope.Editor.price = parseInt(formation.price);
+                  $scope.Editor.branch_activity = _.isArray(formation.branch_activity) ? formation.branch_activity[0] : null;
+                  $rootScope.preloaderToogle();
                 });
-
                 jQuery('.form-control.date').datepicker({
                   format: "dd-mm-yyyy",
                   language: "fr",
@@ -254,36 +368,38 @@ APPOC
 
             $scope.submitEditFormation = (Form) => {
               if (Form.$valid && Form.$dirty) {
-                $scope.preload = true;
-                $rootScope.WPEndpoint.formation().id($id).update({
-                  address: Form.address.$modelValue,
-                  branch_activity: Form.branch_activity.$modelValue,
-                  date_limit: moment(Form.date_limit.$modelValue, 'DD-MM-YYYY').format('YYYY-MM-DD'),
-                  diploma: Form.diploma.$modelValue,
-                  price: parseInt(Form.price.$modelValue),
-                  region: Form.region.$modelValue,
-                  title: Form.title.$modelValue,
+                $rootScope.preloaderToogle();
+                $rootScope.WPEndpoint
+                  .formation()
+                  .id($id)
+                  .update({
+                    address: Form.address.$modelValue,
+                    branch_activity: Form.branch_activity.$modelValue,
+                    date_limit: moment(Form.date_limit.$modelValue, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+                    diploma: Form.diploma.$modelValue,
+                    price: parseInt(Form.price.$modelValue),
+                    region: Form.region.$modelValue,
+                    title: Form.title.$modelValue,
 
-                  status: "pending",
-                  activated: 0
-                }).then(resp => {
-                  swal({
-                    title: 'Succès',
-                    text: "Formation modifier avec succès ",
-                    type: 'info',
-                    showCancelButton: false,
-                    closeOnConfirm: true,
-                    confirmButtonText: "Oui"
-                  }, function () {
+                    status: "pending",
+                    activated: 0
+                  }).then(resp => {
+                    swal({
+                      title: 'Succès',
+                      text: "Formation modifier avec succès ",
+                      type: 'info',
+                      showCancelButton: false,
+                      closeOnConfirm: true,
+                      confirmButtonText: "Oui"
+                    }, function () {
+                      $scope.$apply(() => {
+                        $rootScope.preloaderToogle();
+                      });
+                    });
+
+                  }).catch(err => {
 
                   });
-                  $scope.$apply(() => {
-                    $scope.preload = false;
-                  });
-
-                }).catch(err => {
-
-                });
               }
             }
           }]
@@ -895,46 +1011,7 @@ APPOC
                     jQuery('#formation-table tbody').on('click', '.paiement-process', ev => {
                       ev.preventDefault();
                       let Formation = $scope.getDataTableColumn(ev);
-                      const key = $rootScope.options.wc._k;
-                      const secret = $rootScope.options.wc._s;
-                      const plan = $rootScope.options.pub.formation;
-                      swal({
-                        title: 'Paiement',
-                        text: "Il vous en coutera " + plan + "Ar, souhaitez-vous procéder au paiement ? ",
-                        type: 'info',
-                        showCancelButton: true,
-                        closeOnConfirm: false,
-                        showLoaderOnConfirm: true,
-                        cancelButtonText: "Non",
-                        confirmButtonText: "Oui"
-                      }, function () {
-                        $scope.WPEndpoint.product()
-                          .param('consumer_key', key)
-                          .param('consumer_secret', secret)
-                          .create({
-                            status: 'publish',
-                            type: 'simple',
-                            name: `FORMATION (${Formation.title})`,
-                            price: $scope.options.pub.formation, // string accepted
-                            regular_price: $scope.options.pub.formation, // string accepted
-                            sold_individually: true,
-                            virtual: true,
-                            sku: `FORM${Formation.ID}`,
-                            meta_data: [
-                              {key: '__type', value: 'formation'},
-                              {key: '__id', value: Formation.ID}
-                            ]
-
-                          }).then(resp => {
-                          let product = _.clone(resp);
-                          $scope.addProductCart(product.id);
-
-                        }).catch(err => {
-                          if (!_.isUndefined(err.code) && err.code === "product_invalid_sku") {
-                            $scope.addProductCart(err.data.resource_id);
-                          }
-                        });
-                      });
+                      $state.go('manager.profil.formation.paiement', {id: Formation.ID});
                     });
                   },
                   "sDom": 'rtip',
@@ -950,18 +1027,6 @@ APPOC
 
         };
 
-        $scope.addProductCart = (product_id) => {
-          $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`, {cache: false})
-            .then(function (resp) {
-              let response = resp.data;
-              if (response.success) {
-                swal("Vous serez rediriger vers la page de paiement");
-                window.location.href = response.data;
-              } else {
-
-              }
-            });
-        };
       }]
     }
   }])

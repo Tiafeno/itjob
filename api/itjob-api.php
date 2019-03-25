@@ -1306,8 +1306,8 @@ SQL;
         $plan_sereine = get_field('product_plan_sereine', 'option');
         $credit_price = get_field('product_wallet', 'option');
 
-        $featured_plan = get_field('featured_plan', 'option');
-        $publication_plan = get_field('publication_plan', 'option');
+        $featured_tariff = get_field('featured_tariff', 'option');
+        $publication_tariff = get_field('publication_tariff', 'option');
         $woocommerce_api_options = get_field('woocommerce_api', 'option');
         $woocommerce_api_options['_k'] = $woocommerce_api_options['key_client'];
         $woocommerce_api_options['_s'] = $woocommerce_api_options['secret_client'];
@@ -1316,8 +1316,8 @@ SQL;
           'premium' => $plan_premium,
           'sereine' => $plan_sereine,
           'credit'  => $credit_price,
-          'featured' => $featured_plan,
-          'pub' => $publication_plan,
+          'featured' => $featured_tariff,
+          'pub' => $publication_tariff,
           'wc' => $woocommerce_api_options
         ]);
       }
