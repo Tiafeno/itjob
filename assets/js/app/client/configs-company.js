@@ -255,7 +255,7 @@ APPOC
               let priceFormation = tariffFormation._p;
               swal({
                 title: 'Paiement',
-                text: "Il vous en coutera XXXAr, souhaitez-vous procéder au paiement ? ",
+                text: `Il vous en coutera ${priceFormation} MGA, souhaitez-vous procéder au paiement ?`,
                 type: 'info',
                 showCancelButton: true,
                 closeOnConfirm: false,
