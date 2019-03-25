@@ -24,6 +24,39 @@ if ( ! class_exists( 'scClient' ) ) :
 
     public function __construct() {
       if ( is_user_logged_in() ) {
+
+        add_action('admin_init', function () {
+          $company = get_role('company');
+          $company->add_cap( 'edit_formation' );
+          $company->add_cap( 'read_formation' );
+          $company->add_cap( 'publish_formations' );
+          $company->add_cap( 'edit_formations' );
+          $company->add_cap( 'edit_others_formations' );
+          $company->add_cap( 'edit_published_formations' );
+          $company->add_cap( 'edit_read_formations' );
+
+          $candidate = get_role('candidate');
+          $candidate->add_cap( 'read_formation' );
+
+
+          $administrator = get_role('administrator');
+          $administrator->add_cap( 'edit_formation' );
+          $administrator->add_cap( 'edit_formations' );
+          $administrator->add_cap( 'read_private_formation' );
+          $administrator->add_cap( 'read_formation' );
+          $administrator->add_cap( 'edit_published_formations' );
+          $administrator->add_cap( 'edit_others_formations' );
+          $administrator->add_cap( 'edit_private_formations' );
+          $administrator->add_cap( 'delete_formation' );
+          $administrator->add_cap( 'delete_formations' );
+          $administrator->add_cap( 'delete_others_formations' );
+          $administrator->add_cap( 'delete_private_formations' );
+          $administrator->add_cap( 'delete_published_formations' );
+          $administrator->add_cap( 'delete_private_formations' );
+          $administrator->add_cap( 'publish_formations' );
+
+        });
+
         add_action( 'wp_ajax_update_request_status', [ &$this, 'update_request_status' ] );
         add_action( 'wp_ajax_get_all_request', [ &$this, 'get_all_request' ] );
 
@@ -141,7 +174,7 @@ if ( ! class_exists( 'scClient' ) ) :
 
         // Load company template
         if ( in_array( 'company', $client_roles, true ) ) {
-          wp_enqueue_script( 'app-company', OC_URL."/configs-company{$suffix}.js", [ 'espace-client' ], $itJob->version, true );
+          wp_enqueue_script( 'app-company', OC_URL."/configs-company{$suffix}.js", [ 'espace-client', 'wp-api' ], $itJob->version, true );
           $wp_localize_script_args['Helper']['add_offer_url'] = get_permalink( (int) ADD_OFFER_PAGE );
           $wp_localize_script_args['client_type']             = 'company';
           $wp_localize_script_args['token']                   = $client->user_pass;

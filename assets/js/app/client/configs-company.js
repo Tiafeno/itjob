@@ -201,13 +201,63 @@ APPOC
                 $state.go('manager.profil.index');
               }
             }],
-            formation: ['$transition$', function ($transition$) {
+            $id: ['$transition$', function ($transition$) {
               return $transition$.params().id;
             }]
           },
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/formation-edit.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
+          controller: ["$rootScope", "$scope", "$id", function ($rootScope, $scope, $id) {
+            $scope.preload = false;
+            $scope.Editor = {};
+            this.$onInit = () => {
+              moment.locale('fr');
+              $scope.preload = true;
+              $rootScope.WPEndpoint.formation().id($id).then(resp => {
+                console.log(resp);
+                let formation = _.clone(resp);
+                $scope.Editor = _.clone(formation);
+                $scope.Editor.region = _.isArray(formation.region) ? formation.region[0] : null;
+                $scope.Editor.title = formation.title.rendered;
+                $scope.Editor.date_limit = moment(formation.date_limit, 'YYYY-MM-DD').format('DD-MM-YYYY');
+                $scope.Editor.price = parseInt(formation.price);
+                $scope.Editor.branch_activity = _.isArray(formation.branch_activity) ? formation.branch_activity[0] : null;
 
+                $scope.$apply(() => {
+                  $scope.preload = false;
+                });
+
+                jQuery('.form-control.date').datepicker({
+                  format: "dd-mm-yyyy",
+                  language: "fr",
+                  startView: 2,
+                  todayBtn: false,
+                  keyboardNavigation: true,
+                  forceParse: false,
+                  autoclose: true
+                });
+              });
+            };
+
+            $scope.submitEditFormation = (Form) => {
+              if (Form.$valid && Form.$dirty) {
+                $rootScope.WPEndpoint.formation().id($id).update({
+                  address: Form.address.$modelValue,
+                  branch_activity: Form.branch_activity.$modelValue,
+                  date_limit: moment(Form.date_limit.$modelValue, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+                  diploma: Form.diploma.$modelValue,
+                  price: parseInt(Form.price.$modelValue),
+                  region: Form.region.$modelValue,
+                  title: Form.title.$modelValue,
+
+                  status: "pending",
+                  activated: 0
+                }).then(resp => {
+                  console.log(resp);
+                }).catch(err => {
+
+                });
+              }
+            }
           }]
         },
         {
@@ -246,95 +296,95 @@ APPOC
       },
       controller: ['$rootScope', '$scope', '$q', '$state', 'clientFactory', 'clientService',
         function ($rootScope, $scope, $q, $state, clientFactory, clientService) {
-        $scope.status = false;
-        $scope.userEditor = {};
-
-        this.$onInit = () => {
-          $scope.Areas = _.clone($rootScope.Areas);
-          $scope.Regions = _.clone($rootScope.Regions);
-          $scope.Towns = _.clone($rootScope.Towns);
-        };
-
-        /**
-         * Ouvrir l'editeur d'information utilisateur
-         */
-        $scope.openEditor = () => {
-          const incInput = ['address', 'name', 'stat', 'nif'];
-          const incTerm = ['branch_activity', 'region', 'country'];
-          incInput.forEach((InputValue) => {
-            if ($scope.Entreprise.hasOwnProperty(InputValue)) {
-              $scope.userEditor[InputValue] = _.clone($scope.Entreprise[InputValue]);
-            }
-          });
-
-          incTerm.forEach(TermValue => {
-            if ($scope.Entreprise.hasOwnProperty(TermValue)) {
-              if (!_.isUndefined($scope.Entreprise[TermValue].term_id)) {
-                $scope.userEditor[TermValue] = parseInt($scope.Entreprise[TermValue].term_id);
-              } else {
-                $scope.userEditor[TermValue] = '';
-              }
-            }
-          });
-          if (!_.isEmpty($scope.userEditor)) {
-            UIkit.modal('#modal-edit-user-overflow').show();
-            console.log($scope.userEditor);
-          }
-        };
-
-        $scope.searchCityFn = (city) => {
-          if (!_.isUndefined($scope.userEditor.region)) {
-            let region = parseInt($scope.userEditor.region);
-            rg = _.findWhere($rootScope.Regions, {
-              term_id: region
-            });
-            if (rg) {
-              if (city.name.indexOf(rg.name) > -1) {
-                return true;
-              }
-            }
-          }
-          return false;
-        };
-
-        /**
-         * Mettre à jours les informations de l'utilisateur
-         */
-        $scope.updateUser = () => {
-          $scope.status = "Enregistrement en cours ...";
-          let userForm = new FormData();
-          let formObject = Object.keys($scope.userEditor);
-          userForm.append('action', 'update_profil');
-          userForm.append('company_id', parseInt($scope.Entreprise.ID));
-          formObject.forEach(function (property) {
-            let propertyValue = Reflect.get($scope.userEditor, property);
-            userForm.set(property, propertyValue);
-          });
-          clientService.setLoading(true);
-          clientFactory
-            .sendPostForm(userForm)
-            .then(resp => {
-              let dat = resp.data;
-              clientService.setLoading(false);
-              if (dat.success) {
-                $scope.status = 'Votre information a bien été enregistrer avec succès';
-                UIkit.modal('#modal-edit-user-overflow').hide();
-                $state.reload();
-              } else {
-                $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
-              }
-
-            });
-        };
-
-        // Event on modal dialog close or hide
-        UIkit.util.on('#modal-edit-user-overflow', 'hide', function (e) {
-          e.preventDefault();
-          e.target.blur();
           $scope.status = false;
-        });
+          $scope.userEditor = {};
 
-      }]
+          this.$onInit = () => {
+            $scope.Areas = _.clone($rootScope.Areas);
+            $scope.Regions = _.clone($rootScope.Regions);
+            $scope.Towns = _.clone($rootScope.Towns);
+          };
+
+          /**
+           * Ouvrir l'editeur d'information utilisateur
+           */
+          $scope.openEditor = () => {
+            const incInput = ['address', 'name', 'stat', 'nif'];
+            const incTerm = ['branch_activity', 'region', 'country'];
+            incInput.forEach((InputValue) => {
+              if ($scope.Entreprise.hasOwnProperty(InputValue)) {
+                $scope.userEditor[InputValue] = _.clone($scope.Entreprise[InputValue]);
+              }
+            });
+
+            incTerm.forEach(TermValue => {
+              if ($scope.Entreprise.hasOwnProperty(TermValue)) {
+                if (!_.isUndefined($scope.Entreprise[TermValue].term_id)) {
+                  $scope.userEditor[TermValue] = parseInt($scope.Entreprise[TermValue].term_id);
+                } else {
+                  $scope.userEditor[TermValue] = '';
+                }
+              }
+            });
+            if (!_.isEmpty($scope.userEditor)) {
+              UIkit.modal('#modal-edit-user-overflow').show();
+              console.log($scope.userEditor);
+            }
+          };
+
+          $scope.searchCityFn = (city) => {
+            if (!_.isUndefined($scope.userEditor.region)) {
+              let region = parseInt($scope.userEditor.region);
+              rg = _.findWhere($rootScope.Regions, {
+                term_id: region
+              });
+              if (rg) {
+                if (city.name.indexOf(rg.name) > -1) {
+                  return true;
+                }
+              }
+            }
+            return false;
+          };
+
+          /**
+           * Mettre à jours les informations de l'utilisateur
+           */
+          $scope.updateUser = () => {
+            $scope.status = "Enregistrement en cours ...";
+            let userForm = new FormData();
+            let formObject = Object.keys($scope.userEditor);
+            userForm.append('action', 'update_profil');
+            userForm.append('company_id', parseInt($scope.Entreprise.ID));
+            formObject.forEach(function (property) {
+              let propertyValue = Reflect.get($scope.userEditor, property);
+              userForm.set(property, propertyValue);
+            });
+            clientService.setLoading(true);
+            clientFactory
+              .sendPostForm(userForm)
+              .then(resp => {
+                let dat = resp.data;
+                clientService.setLoading(false);
+                if (dat.success) {
+                  $scope.status = 'Votre information a bien été enregistrer avec succès';
+                  UIkit.modal('#modal-edit-user-overflow').hide();
+                  $state.reload();
+                } else {
+                  $scope.status = 'Une erreur s\'est produit pendant l\'enregistrement, Veuillez réessayer ultérieurement';
+                }
+
+              });
+          };
+
+          // Event on modal dialog close or hide
+          UIkit.util.on('#modal-edit-user-overflow', 'hide', function (e) {
+            e.preventDefault();
+            e.target.blur();
+            $scope.status = false;
+          });
+
+        }]
     }
   }])
   .directive('planPremium', [function () {
@@ -764,15 +814,26 @@ APPOC
                          *
                          * @type value {number}
                          */
-                        let value = data && row.activation ? 1 : (!row.activation && row.status === 'publish' ? 2 :
-                          (row.status === 'pending' && !data ? 3 : 4));
-                        let text = value === 1 ? 'Terminée' : (value === 2 ? 'Annulée' :
-                          (value === 3 ? "Attente publication" : 'Attente paiement'));
+                        let value, text, style;
 
-                        let style = value === 1 ? 'success' : (value === 2 ? 'pink' : (value === 3 ? 'default' : 'info'));
-                        if (value === 4) {
+                        if (data && row.activation && row.status === "publish") {
+                          text = 'Terminée';
+                          style = "success";
+                        } else if (data && !row.activation && row.status === 'pending') {
+                          text = 'Terminée';
+                          style = "success";
+                        } else if (row.status == 'publish' && !row.activation) {
+                          text = 'Annulée';
+                          style = "pink";
+                        } else if (row.status === 'pending' && !data) {
+                          text = "Attente publication";
+                          style = "default";
+                        } else if (row.activation && !data) {
+                          text = "Attente paiement";
+                          style = "info";
                           elClass += " paiement-process";
                         }
+
                         return `<span class="badge badge-pill badge-${style} ${elClass}"> ${text} </span>`;
                       }
                     },
@@ -837,14 +898,14 @@ APPOC
                             ]
 
                           }).then(resp => {
-                            let product = _.clone(resp);
-                            $scope.addProductCart(product.id);
+                          let product = _.clone(resp);
+                          $scope.addProductCart(product.id);
 
-                          }).catch(err => {
-                            if ( ! _.isUndefined(err.code) && err.code === "product_invalid_sku") {
-                              $scope.addProductCart(err.data.resource_id);
-                            }
-                          });
+                        }).catch(err => {
+                          if (!_.isUndefined(err.code) && err.code === "product_invalid_sku") {
+                            $scope.addProductCart(err.data.resource_id);
+                          }
+                        });
                       });
                     });
                   },
@@ -914,6 +975,7 @@ APPOC
     'clientService', 'Client', 'Regions', 'Towns', 'Areas', 'Options',
     function ($rootScope, $http, $q, $filter, clientFactory, clientService, Client, Regions, Towns, Areas, Options) {
       const self = this;
+      $rootScope.WPEndpoint = null;
       $rootScope.options = {};
       $rootScope.sector = 0;
       $rootScope.formationCount = 0;
@@ -988,6 +1050,17 @@ APPOC
         $rootScope.formationCount = !_.isUndefined(Client.formation_count) ? Client.formation_count : 0;
         $rootScope.sector = _.clone(Client.iClient.sector);
         $rootScope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
+
+
+        let origin = document.location.origin;
+        $rootScope.WPEndpoint = new WPAPI({endpoint: `${origin}/wp-json`});
+        let namespace = 'wp/v2'; // use the WP API namespace
+        let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
+        let route_formation = '/formation/(?P<id>\\d+)';
+        let route_product = '/products/(?P<id>\\d+)';
+        $rootScope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
+        $rootScope.WPEndpoint.formation = $rootScope.WPEndpoint.registerRoute(namespace, route_formation);
+        $rootScope.WPEndpoint.product = $rootScope.WPEndpoint.registerRoute(wc_namespace, route_product);
       };
 
 
