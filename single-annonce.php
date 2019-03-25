@@ -232,7 +232,7 @@ wp_enqueue_script('sweetalert');
             $name = 'Inconnue';
             if (in_array('candidate', $author->roles)) {
               $Candidate = \includes\post\Candidate::get_candidate_by($author->ID);
-              $name = $Candidate->getLastName();
+              $name = $Candidate->getFirstName();
             }
 
             if (in_array('company', $author->roles)) {
