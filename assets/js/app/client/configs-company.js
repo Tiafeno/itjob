@@ -213,7 +213,6 @@ APPOC
               moment.locale('fr');
               $scope.preload = true;
               $rootScope.WPEndpoint.formation().id($id).then(resp => {
-                console.log(resp);
                 let formation = _.clone(resp);
                 $scope.Editor = _.clone(formation);
                 $scope.Editor.region = _.isArray(formation.region) ? formation.region[0] : null;
@@ -240,6 +239,7 @@ APPOC
 
             $scope.submitEditFormation = (Form) => {
               if (Form.$valid && Form.$dirty) {
+                $scope.preload = true;
                 $rootScope.WPEndpoint.formation().id($id).update({
                   address: Form.address.$modelValue,
                   branch_activity: Form.branch_activity.$modelValue,
@@ -252,7 +252,20 @@ APPOC
                   status: "pending",
                   activated: 0
                 }).then(resp => {
-                  console.log(resp);
+                  swal({
+                    title: 'Succès',
+                    text: "Formation modifier avec succès ",
+                    type: 'info',
+                    showCancelButton: false,
+                    closeOnConfirm: true,
+                    confirmButtonText: "Oui"
+                  }, function () {
+
+                  });
+                  $scope.$apply(() => {
+                    $scope.preload = false;
+                  });
+
                 }).catch(err => {
 
                 });
