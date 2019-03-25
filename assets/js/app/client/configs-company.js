@@ -193,6 +193,21 @@ APPOC
           }]
         },
         {
+          name: 'manager.profil.formation.subscription',
+          url: '/{id}/subscription',
+          resolve: {
+            access: ['$rootScope', '$state', function ($rootScope, $state) {
+              if ($rootScope.sector !== 2) {
+                $state.go('manager.profil.index');
+              }
+            }]
+          },
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/formation-subscription.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", function ($rootScope) {
+
+          }]
+        },
+        {
           name: 'manager.profil.formation.editor',
           url: '/edit/{id}',
           resolve: {
@@ -819,14 +834,6 @@ APPOC
                     {
                       data: 'paid', render: (data, type, row) => {
                         let elClass = "";
-                        /**
-                         * 1: Paiement terminée
-                         * 2: Paiement annulée
-                         * 3: Paiement en attente
-                         * 4: Attente de validation de la formation
-                         *
-                         * @type value {number}
-                         */
                         let value, text, style;
 
                         if (data && row.activation && row.status === "publish") {
@@ -844,7 +851,7 @@ APPOC
                         } else if (row.activation && !data) {
                           text = "Attente paiement";
                           style = "info";
-                          elClass += " paiement-process";
+                          elClass += "paiement-process";
                         }
 
                         return `<span class="badge badge-pill badge-${style} ${elClass}"> ${text} </span>`;
@@ -864,7 +871,8 @@ APPOC
                     },
                     {
                       data: null, render: () => {
-                        return '<span class="edit-formation"><i class="fa fa-pencil"></i></span>';
+                        return '<span class="edit-formation icon-pill"><i class="fa fa-pencil"></i></span>' +
+                          '<span class="view-candidate ml-2 icon-pill"><i class="fa fa-address-card"></i></span>';
                       }
                     }
                   ],
@@ -874,6 +882,13 @@ APPOC
                       ev.preventDefault();
                       let Formation = $scope.getDataTableColumn(ev);
                       $state.go('manager.profil.formation.editor', {id: Formation.ID});
+                    });
+
+                    // Voir les inscriptions dans la formation
+                    jQuery('#formation-table tbody').on('click', '.view-candidate', ev => {
+                      ev.preventDefault();
+                      let Formation = $scope.getDataTableColumn(ev);
+                      $state.go('manager.profil.formation.subscription', {id: Formation.ID});
                     });
 
                     // Paiement
