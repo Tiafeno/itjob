@@ -249,8 +249,7 @@ APPOC
               const key = $rootScope.options.wc._k;
               const secret = $rootScope.options.wc._s;
               const pubTariff = $rootScope.options.pub;
-              let tariffFormation = null;
-              tariffFormation = _.findWhere(pubTariff.formation, {_t: rate});
+              let tariffFormation = _.findWhere(pubTariff.formation, {_t: rate});
               if (!tariffFormation) return false;
               let priceFormation = tariffFormation._p;
               swal({
