@@ -208,6 +208,21 @@ APPOC
           }]
         },
         {
+          name: 'manager.profil.formation.featured',
+          url: '/{id}/featured',
+          resolve: {
+            access: ['$rootScope', '$state', function ($rootScope, $state) {
+              if ($rootScope.sector !== 2) {
+                $state.go('manager.profil.index');
+              }
+            }]
+          },
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/formation-featured.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", function ($rootScope) {
+
+          }]
+        },
+        {
           name: 'manager.profil.formation.paiement',
           url: '/paiement/{id}',
           resolve: {
@@ -976,7 +991,8 @@ APPOC
                       data: 'featured', render: (data, type, row) => {
                         let text = data ? row.featured_position : 'AUCUN';
                         let style = data ? "success" : "default";
-                        return `<span class="badge edit-position badge-pill badge-${style}"> ${text} </span>`;
+                        let elClass = style === 'default' ? 'featured-paiement' : '';
+                        return `<span class="badge edit-position badge-pill ${elClass} badge-${style}"> ${text} </span>`;
                       }
                     },
                     {
@@ -1006,11 +1022,18 @@ APPOC
                       $state.go('manager.profil.formation.subscription', {id: Formation.ID});
                     });
 
-                    // Paiement
+                    // Paiement de la formation
                     jQuery('#formation-table tbody').on('click', '.paiement-process', ev => {
                       ev.preventDefault();
                       let Formation = $scope.getDataTableColumn(ev);
                       $state.go('manager.profil.formation.paiement', {id: Formation.ID});
+                    });
+
+                    // Paiement formation à la une
+                    jQuery('#formation-table tbody').on('click', '.featured-paiement', ev => {
+                      ev.preventDefault();
+                      let Formation = $scope.getDataTableColumn(ev);
+                      $state.go('manager.profil.formation.featured', {id: Formation.ID});
                     });
                   },
                   "sDom": 'rtip',

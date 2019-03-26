@@ -225,7 +225,6 @@ trait ModelInterest {
    * Soit on le recuper par le parametre $company_id ou l'entreprise en ligne sur le site
    *
    * @param null $company_id
-   *
    * @return array|null|object
    */
   public function get_interests( $company_id = null ) {
@@ -252,7 +251,6 @@ trait ModelInterest {
    * Récuperer les requetes via un offre
    *
    * @param int|null $id_offer
-   *
    * @return array|bool|null
    */
   public function get_offer_interests( $id_offer = null ) {
