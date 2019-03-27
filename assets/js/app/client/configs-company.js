@@ -215,10 +215,119 @@ APPOC
               if ($rootScope.sector !== 2) {
                 $state.go('manager.profil.index');
               }
+            }],
+            positions: ["$http", function ($http) {
+              return $http.get(`${itOptions.Helper.ajax_url}?action=collect_support_featured&type=formation`).then(results => {
+                return results.data;
+              });
+            }],
+            $id: ['$transition$', function ($transition$) {
+              return $transition$.params().id;
             }]
           },
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/formation-featured.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
+          controller: ["$rootScope", "$scope", "$http", "$id", "positions", function ($rootScope, $scope, $http, $id, positions) {
+            $scope.Formation = {};
+            $scope.supportFeatured = {};
+            $scope.formationTariff = [];
+            $scope.Positions = null;
+            this.$onInit = () => {
+              moment.locale('fr');
+              $rootScope.preloaderToogle();
+              $scope.supportFeatured = _.clone(positions.data);
+              let featured = _.clone($rootScope.options.featured);
+              $scope.formationTariff = _.map(featured.formation_tariff, (tariff) => {
+                let support = _.findWhere(positions.data, {slug: tariff.ugs});
+                tariff.available = support.counts >= 4 ? 0 : 1;
+                return tariff;
+              });
+              $rootScope.WPEndpoint.formation().id($id).then(resp => {
+                $scope.$apply(() => {
+                  $scope.Formation = _.clone(resp);
+                  $rootScope.preloaderToogle();
+                });
+              });
+            };
+
+            $scope.checkout = (ugs, price) => {
+              const key = $rootScope.options.wc._k;
+              const secret = $rootScope.options.wc._s;
+              let support = _.findWhere($scope.supportFeatured, {slug: ugs});
+              let priceFeatured = price.toString();
+              if (!support || support.counts === 4) return false;
+              $rootScope.preloaderToogle();
+              let offer = _.findWhere($rootScope.options.featured.formation_tariff, {ugs: ugs});
+              $rootScope.WPEndpoint
+                .product()
+                .param('consumer_key', key)
+                .param('consumer_secret', secret)
+                .create({
+                  status: 'publish',
+                  type: 'simple',
+                  name: `FORMATION SPONSORISE (${$scope.Formation.title.rendered}) - ${offer.position}`,
+                  price: offer.price, // string accepted
+                  regular_price: offer.price, // string accepted
+                  sold_individually: true,
+                  virtual: true,
+                  sku: `FEATURED${$scope.Formation.id}`,
+                  meta_data: [
+                    {key: '__type', value: 'featured'},
+                    {key: '__id', value: $scope.Formation.id}
+                  ]
+                })
+                .then(product => {
+                  $scope.$apply(() => {
+                    $rootScope.preloaderToogle();
+                    $scope.addProductCart(product.id, offer.ugs);
+                  });
+                })
+                .catch(err => {
+                  if (!_.isUndefined(err.code)) {
+                    if (err.code === "product_invalid_sku") {
+                      let resource_id = err.data.resource_id;
+                      $scope.$apply(() => {
+                        $scope.WPEndpoint
+                          .product()
+                          .param('consumer_key', key)
+                          .param('consumer_secret', secret)
+                          .id(resource_id)
+                          .update({price: offer.price, regular_price: offer.price})
+                          .then(product => {
+                            $scope.addProductCart(resource_id, offer.ugs);
+                          });
+                      });
+                    }
+                  }
+                })
+            };
+
+            $scope.addProductCart = (product_id, position) => {
+              $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`, {cache: false})
+                .then((resp) => {
+                  let response = resp.data;
+                  $scope.WPEndpoint
+                    .formation()
+                    .id($scope.Formation.id)
+                    .update({
+                      featured_position: position,
+                      featured_datelimit: moment().format("YYYY-MM-DD H:mm:ss")
+                    })
+                    .then((formation) => {
+                      if (response.success) {
+                        $scope.$apply(() => {
+                          $rootScope.preloaderToogle();
+                        });
+                        swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                        setTimeout(() => {
+                          window.location.href = response.data;
+                        }, 2000);
+                      }
+                    })
+                })
+                .then(() => {
+                });
+            };
+
 
           }]
         },
@@ -296,19 +405,29 @@ APPOC
                     ]
 
                   }).then(resp => {
-                    let product = _.clone(resp);
-                    $scope.$apply(() => {
-                      $scope.addProductCart(product.id, rate);
-                    });
-                  }).catch(err => {
-                    if (!_.isUndefined(err.code)) {
-                      if (err.code === "product_invalid_sku" || err.code === "product_invalid_sku") {
-                        $scope.$apply(() => {
-                          $scope.addProductCart(err.data.resource_id, rate);
-                        });
-                      }
-                    }
+                  let product = _.clone(resp);
+                  $scope.$apply(() => {
+                    $scope.addProductCart(product.id, rate);
                   });
+                }).catch(err => {
+                  if (!_.isUndefined(err.code)) {
+                    if (err.code === "product_invalid_sku") {
+                      let resource_id = err.data.resource_id;
+                      let offre = _.findWhere(pubTariff.formation, {_t: rate});
+                      $scope.$apply(() => {
+                        $scope.WPEndpoint
+                          .product()
+                          .param('consumer_key', key)
+                          .param('consumer_secret', secret)
+                          .id(resource_id)
+                          .update({price: offre._p, regular_price: offre._p})
+                          .then(product => {
+                            $scope.addProductCart(resource_id, rate);
+                          });
+                      });
+                    }
+                  }
+                });
               });
             };
 
@@ -319,7 +438,7 @@ APPOC
                   $scope.WPEndpoint
                     .formation()
                     .id($scope.Formation.id)
-                    .update({ tariff: rate })
+                    .update({tariff: rate})
                     .then((formation) => {
                       if (response.success) {
                         $scope.$apply(() => {
@@ -398,22 +517,22 @@ APPOC
                     status: "pending",
                     activated: 0
                   }).then(resp => {
-                    swal({
-                      title: 'Succès',
-                      text: "Formation modifier avec succès ",
-                      type: 'info',
-                      showCancelButton: false,
-                      closeOnConfirm: true,
-                      confirmButtonText: "Oui"
-                    }, function () {
-                      $scope.$apply(() => {
-                        $rootScope.preloaderToogle();
-                      });
+                  swal({
+                    title: 'Succès',
+                    text: "Formation modifier avec succès ",
+                    type: 'info',
+                    showCancelButton: false,
+                    closeOnConfirm: true,
+                    confirmButtonText: "Oui"
+                  }, function () {
+                    $scope.$apply(() => {
+                      $rootScope.preloaderToogle();
                     });
-
-                  }).catch(err => {
-
                   });
+
+                }).catch(err => {
+
+                });
               }
             }
           }]
@@ -1033,6 +1152,10 @@ APPOC
                     jQuery('#formation-table tbody').on('click', '.featured-paiement', ev => {
                       ev.preventDefault();
                       let Formation = $scope.getDataTableColumn(ev);
+                      if (!Formation.paid) {
+                        swal('Validation', "Vous devez payée la formation avant de la promouvoir. Merci", 'info');
+                        return false;
+                      }
                       $state.go('manager.profil.formation.featured', {id: Formation.ID});
                     });
                   },

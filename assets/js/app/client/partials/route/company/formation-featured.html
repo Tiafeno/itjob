@@ -1,18 +1,54 @@
 <div class="ibox">
   <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-12">
       <div class="ibox-body">
         <div class="p-relative">
           <div>
-            <p>En construction</p>
-            <div class="ibox-footer pl-0">
-              <div class="d-flex justify-content-start">
-                <div class="ml-2">
-                  <a ui-sref="manager.profil.formation.lists" ng-disabled="preload" class="btn btn-sm btn-primary">Retour</a>
-                </div>
+            <div class="d-flex justify-content-start">
+              <div class="mb-2">
+                <a ui-sref="manager.profil.formation.lists" ng-disabled="preload" class="btn btn-sm btn-primary">Retour</a>
               </div>
             </div>
+            <h3 class="lead mb-3">Emplacements sponsorisés disponibles</h3>
+            <div class="row">
+
+              <div class="col-sm-4">
+                <h5 class="font-strong">[[ Formation.title.rendered ]]</h5>
+                <div class="text-light">
+                  <p ng-bind-html="Formation.content.rendered"></p>
+                </div>
+              </div>
+
+              <div class="col-sm-8">
+                <table class="table table-condensed">
+                  <thead style="background-color: #36c6ac;color: aliceblue;">
+                  <tr>
+                    <th>Emplacements</th>
+                    <th>Disponibilité</th>
+                    <th>Prix</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr ng-repeat="tariff in formationTariff">
+                    <td class="font-bold">[[ tariff.position ]]</td>
+                    <td>
+                      <i ng-if="tariff.available" class="ti-check text-success"></i>
+                      <i ng-if="!tariff.available" class="ti-close text-warning"></i>
+                    </td>
+                    <td>[[ tariff.price | currency ]]</td>
+                    <td>[[ tariff.desc ]]</td>
+                    <td><button ng-click="checkout(tariff.ugs, tariff.price)" ng-disabled="!tariff.available" class="btn btn-sm btn-primary">Acheter</button> </td>
+                  </tr>
+
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
           </div>
+
         </div>
       </div>
     </div>

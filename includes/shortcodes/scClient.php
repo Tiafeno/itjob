@@ -100,6 +100,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_collect_formations', [ &$this, 'collect_formations' ] );
         add_action( 'wp_ajax_collect_works', [ &$this, 'collect_works' ] );
         add_action( 'wp_ajax_collect_annonces', [ &$this, 'collect_annonces' ] );
+        add_action( 'wp_ajax_collect_support_featured', [ &$this, 'collect_support_featured' ] );
         add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
         add_action( 'wp_ajax_get_candidacy', [ &$this, 'get_candidacy' ] );
         add_action( 'wp_ajax_collect_current_user_notices', [ &$this, 'collect_current_user_notices' ] );
@@ -951,6 +952,65 @@ if ( ! class_exists( 'scClient' ) ) :
       if ($User->ID === 0) wp_send_json_error("Vous n'êtes pas connecter à notre service");
       $Model = new itModel();
       wp_send_json_success($Model->collect_notices($User->ID));
+    }
+
+    public function collect_support_featured() {
+      global $wpdb;
+      $results = [];
+      $post_type = Http\Request::getValue('type', false);
+      $dateNow = Date("Y-m-d H:i:s");
+      if (!$post_type)
+        wp_send_json_error("Parametre manquant (type)");
+      // position sur le front
+
+      $sql_position = <<<SQL
+SELECT COUNT(*) FROM $wpdb->posts as pst WHERE pst.post_type = '{$post_type}' AND pst.post_status = 'publish'
+AND (
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm
+    WHERE pm.meta_key = 'featured' AND pm.meta_value = 1)
+  AND
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm 
+    WHERE pm.meta_key = 'featured_datelimit' AND pm.meta_value >= '{$dateNow}')
+)
+AND
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm 
+    WHERE pm.meta_key = 'featured_position' AND pm.meta_value = 1)
+SQL;
+
+      $front_position = $wpdb->get_var($sql_position);
+      $results[] = [
+        'slug' => 'front',
+        'name' =>  ucfirst("à la une"),
+        'value' => 1,
+        'counts' => intval($front_position)
+      ];
+
+      $wpdb->flush();
+
+      // position dans la liste
+      $sql_lists = <<<EOF
+SELECT COUNT(*) FROM $wpdb->posts as pst WHERE pst.post_type = '{$post_type}' AND pst.post_status = 'publish'
+AND (
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm
+    WHERE pm.meta_key = 'featured' AND pm.meta_value = 1)
+  AND
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm 
+    WHERE pm.meta_key = 'featured_datelimit' AND pm.meta_value >= '{$dateNow}')
+)
+AND
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm 
+    WHERE pm.meta_key = 'featured_position' AND pm.meta_value = 2)
+EOF;
+
+      $list_position = $wpdb->get_var($sql_lists);
+      $results[] = [
+        'slug' => 'lists',
+        'name' =>  ucfirst("Liste"),
+        'value' => 2,
+        'counts' => intval($list_position)
+      ];
+
+      wp_send_json_success($results);
     }
 
     /**
