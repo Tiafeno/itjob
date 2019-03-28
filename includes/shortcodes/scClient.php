@@ -4,6 +4,7 @@ namespace includes\shortcode;
 
 use Http;
 use includes\model\itModel;
+use includes\model\Model_Subscription_Formation;
 use includes\object\jobServices;
 use includes\post\Annonce;
 use includes\post\Candidate;
@@ -101,6 +102,7 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_collect_works', [ &$this, 'collect_works' ] );
         add_action( 'wp_ajax_collect_annonces', [ &$this, 'collect_annonces' ] );
         add_action( 'wp_ajax_collect_support_featured', [ &$this, 'collect_support_featured' ] );
+        add_action( 'wp_ajax_collect_candidate_subscribe_formation', [ &$this, 'collect_candidate_subscribe_formation' ] );
         add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
         add_action( 'wp_ajax_get_candidacy', [ &$this, 'get_candidacy' ] );
         add_action( 'wp_ajax_collect_current_user_notices', [ &$this, 'collect_current_user_notices' ] );
@@ -943,6 +945,9 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_send_json_error( "Bad request" );
     }
 
+    /**
+     * Récuperer les notifications de l'utilisateur
+     */
     public function collect_current_user_notices() {
       global $itJob;
       if ( ! is_user_logged_in() ) {
@@ -954,6 +959,10 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_send_json_success($Model->collect_notices($User->ID));
     }
 
+    /**
+     * Récupere les diponibilité des positions à la une dans le site (à la une & la liste)
+     *
+     */
     public function collect_support_featured() {
       global $wpdb;
       $results = [];
@@ -1009,6 +1018,17 @@ EOF;
         'value' => 2,
         'counts' => intval($list_position)
       ];
+
+      wp_send_json_success($results);
+    }
+
+    /**
+     * Récupere la liste des candidats inscrit dans une formation
+     */
+    public function collect_candidate_subscribe_formation() {
+      $formation_id = Http\Request::getValue('ids', false);
+      if (!$formation_id) wp_send_json_error("Parametre manquant (ids)");
+      $results = Model_Subscription_Formation::get_candidates($formation_id);
 
       wp_send_json_success($results);
     }

@@ -1,6 +1,8 @@
 <?php
 namespace includes\model;
 
+use includes\post\Candidate;
+
 final class Model_Subscription_Formation {
     public static $table = "registration_training";
     public function __construct() {}
@@ -36,6 +38,23 @@ final class Model_Subscription_Formation {
       $sql = "SELECT * FROM $table as tb WHERE tb.formation_id = $formation_id";
       $result = $wpdb->get_results($sql, OBJECT);
       return is_array($result) ? $result : [];
+    }
+
+    public static function get_candidates( $formation_id ) {
+      $subscribes = self::get_subscription($formation_id);
+      $Candidates = [];
+      foreach ($subscribes as $subscribe) {
+        $user = get_userdata(intval($subscribe->user_id));
+        if (!in_array('candidate', $user->roles)) continue;
+        $Candidate = Candidate::get_candidate_by(intval($subscribe->user_id), 'user_id', true);
+        $Candidates[] = [
+          'paid' => intval($subscribe->paid),
+          'date' => $subscribe->date_create,
+          "candidate" => $Candidate
+        ];
+      }
+
+      return $Candidates;
     }
 
     public static function update_paid( $registration_id, $paid = 0) {

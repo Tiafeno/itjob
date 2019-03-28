@@ -200,11 +200,53 @@ APPOC
               if ($rootScope.sector !== 2) {
                 $state.go('manager.profil.index');
               }
+            }],
+            Formation: ['$rootScope', '$transition$', function ($rootScope, $transition$) {
+              let id = $transition$.params().id;
+              return $rootScope.WPEndpoint.formation().id(id).then(resp => {
+                return resp;
+              });
             }]
           },
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/formation-subscription.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
+          controller: ["$rootScope", "$scope", "$http", "Formation", function ($rootScope, $scope, $http, Formation) {
+            let self = this;
+            $scope.viewBuyButton = false;
+            $scope.Formation = null;
+            $scope.Error = false;
+            $scope.subscribers = [];
+            this.$onInit = () => {
+              $scope.Formation = _.clone(Formation);
+              // Vérifier la formation
+              if (Formation.paid && Formation.tariff === 'basic') {
+                $scope.Error = { type: "warning", title: "Désolé",
+                  message: "Votre abonnement ne vous permet pas d'accéder à cette option. Veuillez prendre contact" +
+                  " avec le service client pour pouvoir bénéficier de cette offre" };
+                return false;
 
+              } else if (Formation.paid && Formation.tariff === 'premium') {
+                self.getSubscribes(Formation.id);
+              } else {
+                if (Formation.status==='pending' && !Formation.activated)
+                  $scope.Error = { type: "info", title: "Validation de la publication",
+                    message: "Votre annonce est en attente de validation. Merci" };
+
+                if (Formation.status==='publish' && Formation.activated && !Formation.paid) {
+                  $scope.Error = { type: "info", title: "Validation de paiement",
+                    message: "Votre annonce est en attente de paiement. Merci" };
+                  $scope.viewBuyButton = true;
+                }
+                return false;
+              }
+            };
+
+            this.getSubscribes = (formation_id) => {
+              $http.get(`${itOptions.Helper.ajax_url}?action=collect_candidate_subscribe_formation&ids=${Formation.id}`)
+                .then(results => {
+                  let request = _.clone(results.data);
+                  $scope.subscribers = _.filter(request.data, (item) => { return item.paid === 1 });
+                });
+            }
           }]
         },
         {
