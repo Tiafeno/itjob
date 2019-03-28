@@ -1107,7 +1107,7 @@ APPOC
                     },
                     {
                       data: 'featured', render: (data, type, row) => {
-                        let text = data ? row.featured_position : 'AUCUN';
+                        let text = data ? "ACTIVE" : 'AUCUN';
                         let style = data ? "success" : "default";
                         let elClass = style === 'default' ? 'featured-paiement' : '';
                         return `<span class="badge edit-position badge-pill ${elClass} badge-${style}"> ${text} </span>`;
