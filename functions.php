@@ -369,6 +369,14 @@ function payment_complete ($order_id) {
           // Mettre à jour le status de paiement de l'offre
           update_field('paid', 1, $object_id);
           break;
+        
+        case 'featured':
+          $post_type = get_post_type( $object_id );
+          if ($post_type === 'formation') {
+            update_field('featured', 1, $object_id);
+          }
+          break;
+          
       endswitch;
 
     }

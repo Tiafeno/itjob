@@ -1084,7 +1084,6 @@ APPOC
                       data: 'paid', render: (data, type, row) => {
                         let elClass = "";
                         let value, text, style;
-
                         if (data && row.activation && row.status === "publish") {
                           text = 'Terminée';
                           style = "success";
@@ -1153,7 +1152,7 @@ APPOC
                       ev.preventDefault();
                       let Formation = $scope.getDataTableColumn(ev);
                       if (!Formation.paid) {
-                        swal('Validation', "Vous devez payée la formation avant de la promouvoir. Merci", 'info');
+                        swal('Validation', "Pour effectuer cette action vous devez payer le frais d'insertion pour votre annonce. Merci", 'info');
                         return false;
                       }
                       $state.go('manager.profil.formation.featured', {id: Formation.ID});
