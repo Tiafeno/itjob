@@ -373,7 +373,7 @@ APPOC
               const key = $rootScope.options.wc._k;
               const secret = $rootScope.options.wc._s;
               const pubTariff = $rootScope.options.pub;
-              let tariffFormation = _.findWhere(pubTariff.formation, {_t: rate});
+              let tariffFormation = _.findWhere(pubTariff.formation, {_id: rate});
               if (!tariffFormation) return false;
               let priceFormation = tariffFormation._p;
               swal({
@@ -413,14 +413,14 @@ APPOC
                   if (!_.isUndefined(err.code)) {
                     if (err.code === "product_invalid_sku") {
                       let resource_id = err.data.resource_id;
-                      let offre = _.findWhere(pubTariff.formation, {_t: rate});
+                      tariffFormation = _.findWhere(pubTariff.formation, {_id: rate});
                       $scope.$apply(() => {
                         $scope.WPEndpoint
                           .product()
                           .param('consumer_key', key)
                           .param('consumer_secret', secret)
                           .id(resource_id)
-                          .update({price: offre._p, regular_price: offre._p})
+                          .update({price: tariffFormation._p, regular_price: tariffFormation._p})
                           .then(product => {
                             $scope.addProductCart(resource_id, rate);
                           });
