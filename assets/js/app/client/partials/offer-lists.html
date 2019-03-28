@@ -240,9 +240,6 @@
 
     <a class="btn btn-outline-blue" target="_blank" ng-href="[[Helper.add_offer_url]]">Ajouter une offre</a>
     <span class="ml-3"></span>
-    <button class="btn btn-warning btn-fix text-uppercase" data-toggle="modal" data-target="#featured-dialog">
-      <span style="font-size: 11px">Mettre en avant votre annonce</span>
-    </button>
 
   </div>
 </div>
@@ -255,9 +252,8 @@
         <th>Statuts</th>
         <th>En ligne</th>
         <th>Candidat(s)</th>
-        <th>Etat de paiement</th>
+        <th>Diffusion</th>
         <th>Type de contrat</th>
-        <th>Secteur d'activité</th>
         <th>Réference</th>
         <th>Actions</th>
       </tr>
@@ -290,12 +286,12 @@
           </span>
         </td>
         <td>
-          <span class="badge badge-pill" ng-class="{'badge-blue' : offer.paid , 'badge-default' : !offer.paid }">
-            [[offer.paid ? 'Terminée' : 'En attente']]
+          <span class="badge badge-pill" ng-class="{'badge-blue' : offer.paid, 'badge-default' : !offer.paid,
+          'paiement-process': (offer.rateplan !== 'standard' && !offer.paid) }">
+            [[offer.paid ? 'Terminée' : offer.rateplan !== 'standard' ? 'Attente paiement' : "Standard"]]
           </span>
         </td>
         <td>[[ offer.contractType[ 'label' ] ]]</td>
-        <td>[[ offer.branch_activity.name ]]</td>
         <td><span class="badge badge-info badge-pill">[[ offer.reference ]]</span></td>
         <td><span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID, $event)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
       </tr>
