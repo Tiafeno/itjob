@@ -64,6 +64,21 @@ if ( ! class_exists( 'scClient' ) ) :
           $administrator->add_cap( 'delete_private_formations' );
           $administrator->add_cap( 'publish_formations' );
 
+          $administrator->add_cap( 'edit_offer' );
+          $administrator->add_cap( 'edit_offers' );
+          $administrator->add_cap( 'read_private_offer' );
+          $administrator->add_cap( 'read_offer' );
+          $administrator->add_cap( 'edit_published_offers' );
+          $administrator->add_cap( 'edit_others_offers' );
+          $administrator->add_cap( 'edit_private_offers' );
+          $administrator->add_cap( 'delete_offer' );
+          $administrator->add_cap( 'delete_offers' );
+          $administrator->add_cap( 'delete_others_offers' );
+          $administrator->add_cap( 'delete_private_offers' );
+          $administrator->add_cap( 'delete_published_offers' );
+          $administrator->add_cap( 'delete_private_offers' );
+          $administrator->add_cap( 'publish_offers' );
+
         });
 
         add_action( 'wp_ajax_update_request_status', [ &$this, 'update_request_status' ] );
