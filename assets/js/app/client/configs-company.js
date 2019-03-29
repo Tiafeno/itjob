@@ -156,6 +156,160 @@ APPOC
             }]
           },
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/offers.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", "$state", function ($rootScope, $state) {
+            this.$onInit = () => {
+              $state.go("manager.profil.offers.lists");
+            }
+          }]
+        },
+        {
+          name: 'manager.profil.offers.lists',
+          url: '/lists',
+          resolve: {
+            access: ['$rootScope', '$state', function ($rootScope, $state) {
+              if ($rootScope.sector !== 1) {
+                $state.go('manager.profil.index');
+              }
+            }]
+          },
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/offer-lists.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", "$scope", function ($rootScope, $scope) {
+
+          }]
+        },
+        {
+          name: 'manager.profil.offers.paiement',
+          url: '/paiement/{id}',
+          resolve: {
+            access: ['$rootScope', '$state', function ($rootScope, $state) {
+              if ($rootScope.sector !== 1) {
+                $state.go('manager.profil.index');
+              }
+            }],
+            Offer: ['$rootScope', '$transition$', function ($rootScope, $transition$) {
+              let offer_id = $transition$.params().id;
+              $rootScope.preloaderToogle();
+              return $rootScope.WPEndpoint.offer().id(offer_id).then(offer => {
+                $rootScope.preloaderToogle();
+                return offer;
+              })
+            }]
+          },
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/offer-paiement.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", "$scope", "$http", "$state", "Offer",
+            function ($rootScope, $scope, $http, $state, Offer) {
+            let self = this;
+            $scope.Offer = {};
+            $scope.Plan = {};
+            $scope.Publications = {};
+            $scope.selectedPlan = null;
+            this.$onInit = () => {
+              $scope.Offer = _.clone(Offer);
+              let __type = Offer.itjob_offer_rateplan;
+              if (__type === 'standard') {
+                $state.go('manager.profil.offers.lists');
+              }
+              $scope.Publications = _.clone($rootScope.options.pub.offer);
+              let plan = _.findWhere($scope.Publications, {_id: __type});
+              $scope.selectedPlan = _.clone(plan._id);
+
+            };
+
+            $scope.paiementProcess = (plan) => {
+              const __plan = _.findWhere($scope.Publications, {_id: plan});
+              const key = $rootScope.options.wc._k;
+              const secret = $rootScope.options.wc._s;
+              let name = __plan._id.toUpperCase();
+              $scope.WPEndpoint
+                .product()
+                .param('consumer_key', key)
+                .param('consumer_secret', secret)
+                .create({
+                  status: 'publish',
+                  type: 'simple',
+                  name: `OFFER ${name} (${$scope.Offer.title.rendered})`,
+                  price: __plan._p.toString(), // string accepted
+                  regular_price: __plan._p.toString(), // string accepted
+                  sold_individually: true,
+                  virtual: true,
+                  sku: `OFFER${$scope.Offer.id}`,
+                  meta_data: [
+                    {key: '__type', value: 'offers'},
+                    {key: '__id', value: $scope.Offer.id}
+                  ]
+                })
+                .then(resp => {
+                  let product = _.clone(resp);
+                  $scope.$apply(() => {
+                    self.addCart(product.id, __plan._id);
+                  });
+                }).catch(err => {
+                if (!_.isUndefined(err.code)) {
+                  if (err.code === "product_invalid_sku") {
+                    let resource_id = err.data.resource_id;
+                    $scope.$apply(() => {
+                      $scope.WPEndpoint
+                        .product()
+                        .param('consumer_key', key)
+                        .param('consumer_secret', secret)
+                        .id(resource_id)
+                        .update({
+                          name: `OFFER ${__plan._id.toUpperCase()} (${$scope.Offer.title.rendered})`,
+                          price: __plan._p.toString(),
+                          regular_price: __plan._p.toString()})
+                        .then(product => {
+                          $scope.$apply(() => {
+                            self.addCart(product.id, __plan._id);
+                          });
+                        });
+                    });
+                  }
+                }
+              });
+            };
+
+            self.addCart = (product_id, _id) => {
+              $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`)
+                .then(resp => {
+                  let response = resp.data;
+                  const key = $rootScope.options.wc._k;
+                  const secret = $rootScope.options.wc._s;
+                  $scope.WPEndpoint
+                    .offer()
+                    .id($scope.Offer.id)
+                    .update({itjob_offer_rateplan: _id})
+                    .then((offer) => {
+                      if (response.success) {
+                        $scope.$apply(() => {
+                          $rootScope.preloaderToogle();
+                        });
+                        swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                        setTimeout(() => {
+                          window.location.href = response.data;
+                        }, 2000);
+                      }
+                    })
+                });
+            };
+          }]
+        },
+        {
+          name: 'manager.profil.offers.featured',
+          url: '/featured/{id}',
+          resolve: {
+            access: ['$rootScope', '$state', function ($rootScope, $state) {
+              if ($rootScope.sector !== 1) {
+                $state.go('manager.profil.index');
+              }
+            }],
+            Offer: ['$rootScope', '$transition$', function ($rootScope, $transition$) {
+              let offer_id = $transition$.params().id;
+              return $rootScope.WPEndpoint.offer().id(offer_id).then(offer => {
+                return offer;
+              })
+            }]
+          },
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/offer-featured.html?ver=${itOptions.version}`,
           controller: ["$rootScope", function ($rootScope) {
 
           }]
@@ -219,21 +373,27 @@ APPOC
               $scope.Formation = _.clone(Formation);
               // Vérifier la formation
               if (Formation.paid && Formation.tariff === 'basic') {
-                $scope.Error = { type: "warning", title: "Désolé",
+                $scope.Error = {
+                  type: "warning", title: "Désolé",
                   message: "Votre abonnement ne vous permet pas d'accéder à cette option. Veuillez prendre contact" +
-                  " avec le service client pour pouvoir bénéficier de cette offre" };
+                  " avec le service client pour pouvoir bénéficier de cette offre"
+                };
                 return false;
 
               } else if (Formation.paid && Formation.tariff === 'premium') {
                 self.getSubscribes(Formation.id);
               } else {
-                if (Formation.status==='pending' && !Formation.activated)
-                  $scope.Error = { type: "info", title: "Validation de la publication",
-                    message: "Votre annonce est en attente de validation. Merci" };
+                if (Formation.status === 'pending' && !Formation.activated)
+                  $scope.Error = {
+                    type: "info", title: "Validation de la publication",
+                    message: "Votre annonce est en attente de validation. Merci"
+                  };
 
-                if (Formation.status==='publish' && Formation.activated && !Formation.paid) {
-                  $scope.Error = { type: "info", title: "Validation de paiement",
-                    message: "Votre annonce est en attente de paiement. Merci" };
+                if (Formation.status === 'publish' && Formation.activated && !Formation.paid) {
+                  $scope.Error = {
+                    type: "info", title: "Validation de paiement",
+                    message: "Votre annonce est en attente de paiement. Merci"
+                  };
                   $scope.viewBuyButton = true;
                 }
                 return false;
@@ -244,7 +404,9 @@ APPOC
               $http.get(`${itOptions.Helper.ajax_url}?action=collect_candidate_subscribe_formation&ids=${Formation.id}`)
                 .then(results => {
                   let request = _.clone(results.data);
-                  $scope.subscribers = _.filter(request.data, (item) => { return item.paid === 1 });
+                  $scope.subscribers = _.filter(request.data, (item) => {
+                    return item.paid === 1
+                  });
                 });
             }
           }]
@@ -429,7 +591,8 @@ APPOC
                 confirmButtonText: "Oui"
               }, function () {
                 $rootScope.preloaderToogle();
-                $scope.WPEndpoint.product()
+                $scope.WPEndpoint
+                  .product()
                   .param('consumer_key', key)
                   .param('consumer_secret', secret)
                   .create({
@@ -446,11 +609,12 @@ APPOC
                       {key: '__id', value: $scope.Formation.id}
                     ]
 
-                  }).then(resp => {
-                  let product = _.clone(resp);
-                  $scope.$apply(() => {
-                    $scope.addProductCart(product.id, rate);
-                  });
+                  })
+                  .then(resp => {
+                    let product = _.clone(resp);
+                    $scope.$apply(() => {
+                      $scope.addProductCart(product.id, rate);
+                    });
                 }).catch(err => {
                   if (!_.isUndefined(err.code)) {
                     if (err.code === "product_invalid_sku") {
@@ -784,7 +948,7 @@ APPOC
   .directive('offerLists', [function () {
     return {
       restrict: 'E',
-      templateUrl: itOptions.Helper.tpls_partials + '/offer-lists.html?ver=' + itOptions.version,
+      templateUrl: itOptions.Helper.tpls_partials + '/directive-offers.html?ver=' + itOptions.version,
       scope: {
         candidateLists: '=listsCandidate',
         options: '&',
@@ -868,6 +1032,12 @@ APPOC
                 UIkit.modal('#modal-edit-offer-overflow').show();
               }
             });
+          };
+
+          $scope.offerPaiementProcess = (offer_id) => {
+            let offer = _.findWhere($scope.Offers, {ID: parseInt(offer_id)});
+            if (offer.rateplan === 'standard' || !offer.activated ) return false;
+            $state.go('manager.profil.offers.paiement', {id: offer_id});
           };
 
           // Modifier une offre
@@ -1336,9 +1506,11 @@ APPOC
         let namespace = 'wp/v2'; // use the WP API namespace
         let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
         let route_formation = '/formation/(?P<id>\\d+)';
+        let route_offer = '/offers/(?P<id>\\d+)';
         let route_product = '/products/(?P<id>\\d+)';
         $rootScope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
         $rootScope.WPEndpoint.formation = $rootScope.WPEndpoint.registerRoute(namespace, route_formation);
+        $rootScope.WPEndpoint.offer = $rootScope.WPEndpoint.registerRoute(namespace, route_offer);
         $rootScope.WPEndpoint.product = $rootScope.WPEndpoint.registerRoute(wc_namespace, route_product);
       };
 

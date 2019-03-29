@@ -36,9 +36,17 @@ if ( ! class_exists( 'scClient' ) ) :
           $company->add_cap( 'edit_published_formations' );
           $company->add_cap( 'edit_read_formations' );
 
+          $company->add_cap( 'edit_offer' );
+          $company->add_cap( 'read_offer' );
+          $company->add_cap( 'publish_offers' );
+          $company->add_cap( 'edit_offers' );
+          $company->add_cap( 'edit_others_offers' );
+          $company->add_cap( 'edit_published_offers' );
+          $company->add_cap( 'edit_read_offers' );
+
           $candidate = get_role('candidate');
           $candidate->add_cap( 'read_formation' );
-
+          $candidate->add_cap( 'read_offer' );
 
           $administrator = get_role('administrator');
           $administrator->add_cap( 'edit_formation' );

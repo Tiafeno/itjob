@@ -2,6 +2,7 @@
 
 namespace includes\object;
 use includes\post\Offers;
+use Underscore\Types\Arrays;
 
 if ( ! defined( 'ABSPATH' ) ) {
   exit;
@@ -36,8 +37,10 @@ if ( ! class_exists( 'jobServices' ) ) :
     // Récuperer le prixe des plan tarifaire pour les offres
     public function get_plan_option( $slug ) {
       if (empty($slug)) return new \WP_Error('broke', "Parametre manquant (slug)");
-      $plan_price = get_field("product_plan_{$slug}", 'option');
-      return $plan_price ? intval($plan_price) : false;
+      $publication_plan = get_field("publication_tariff", 'option');
+      $offer_plan = $publication_plan['offer'];
+      $query_plan = Arrays::find($offer_plan, function ($value) use ($slug) { return $value['_id'] === $slug; });
+      return $query_plan ? intval($query_plan['_p']) : false;
     }
 
     // Récuperer le prix d'un credit

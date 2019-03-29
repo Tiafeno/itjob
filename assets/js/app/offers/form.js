@@ -46,19 +46,22 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
             }
             return $q.resolve($rootScope.offers);
           }],
-          plan: ['$http', function ($http) {
+          options: ['$http', function ($http) {
             return $http.get(itOptions.helper.rest_url_options, {cache: true}).then(resp => {
               return resp.data;
             }, error => false);
           }]
         },
-        controller: ['$rootScope', '$scope', 'offerFactory', 'plan', function ($rootScope, $scope, offerFactory, plan) {
+        controller: ['$rootScope', '$scope', 'offerFactory', 'options', function ($rootScope, $scope, offerFactory, options) {
           // Mode de diffusion par default
           $scope.loading = false;
           $scope.rateplan = 'standard';
-          $scope.price = {};
+          $scope.Options = {};
+          $scope.Price = {};
           this.$onInit = () => {
-            $scope.price = _.clone(plan);
+            $scope.Options = _.clone(options);
+            $scope.Price.serein = _.findWhere(options.pub.offer, {_id: "serein"});
+            $scope.Price.premium = _.findWhere(options.pub.offer, {_id: "premium"});
           };
           $scope.sendSubscription = () => {
             $scope.loading = true;
@@ -77,7 +80,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                     "Nous vous enverrons une notification quand elle sera prête. merci",
                     type: "info",
                   }, () => {
-                    window.location.href = _.isUndefined(data.checkout) ? itOptions.helper.redir_url : data.checkout;
+                    window.location.href = itOptions.helper.redir_url;
                   });
                 }
                 $scope.loading = false;

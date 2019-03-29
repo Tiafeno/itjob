@@ -252,7 +252,7 @@
         <th>Statuts</th>
         <th>En ligne</th>
         <th>Candidat(s)</th>
-        <th>Diffusion</th>
+        <th>Mode de Diffusion</th>
         <th>Type de contrat</th>
         <th>Réference</th>
         <th>Actions</th>
@@ -286,9 +286,9 @@
           </span>
         </td>
         <td>
-          <span class="badge badge-pill" ng-class="{'badge-blue' : offer.paid, 'badge-default' : !offer.paid,
-          'paiement-process': (offer.rateplan !== 'standard' && !offer.paid) }">
-            [[offer.paid ? 'Terminée' : offer.rateplan !== 'standard' ? 'Attente paiement' : "Standard"]]
+          <span class="badge badge-pill uppercase" ng-click="offerPaiementProcess(offer.ID)" ng-class="{'badge-blue' : offer.paid, 'badge-default' : !offer.paid,
+          'paiement-process': (offer.rateplan !== 'standard' && !offer.paid && offer.activated) }">
+            [[offer.paid ? offer.rateplan : ( offer.rateplan === 'standard' ? "Standard" : (offer.activated ? "Attente paiement" : "Attente validation" ) )]]
           </span>
         </td>
         <td>[[ offer.contractType[ 'label' ] ]]</td>

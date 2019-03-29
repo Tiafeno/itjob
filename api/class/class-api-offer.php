@@ -138,3 +138,24 @@ final class apiOffer
     }
   }
 }
+
+add_action('rest_api_init', function () {
+  $post_type = "offers";
+  $formation_meta = ["activated", "itjob_offer_rateplan", "itjob_offer_paid", "itjob_offer_post",
+    "itjob_offer_featured", "itjob_offer_featured_position", "itjob_offer_featured_datelimit", "itjob_offer_reference",
+    "itjob_offer_datelimit", 'itjob_offer_contrattype', 'itjob_offer_profil', 'itjob_offer_mission',
+    'itjob_offer_proposedsallary', 'itjob_offer_otherinformation', 'itjob_offer_locationcible', "itjob_offer_company",
+    "itjob_offer_abranch"];
+  foreach ($formation_meta as $meta):
+    register_rest_field($post_type, $meta, array(
+      'update_callback' => function ($value, $object, $field_name) {
+        return update_field($field_name, $value, (int) $object->ID);
+      },
+      'get_callback' => function ($object, $field_name) {
+        if (!is_user_logged_in()) return null;
+        $post_id = $object['id'];
+        return get_field($field_name, $post_id);
+      },
+    ));
+  endforeach;
+});

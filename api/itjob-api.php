@@ -1302,8 +1302,6 @@ SQL;
     [
       'methods'             => WP_REST_Server::READABLE,
       'callback'            => function () {
-        $plan_premium = get_field('product_plan_premium', 'option');
-        $plan_sereine = get_field('product_plan_sereine', 'option');
         $credit_price = get_field('product_wallet', 'option');
 
         $featured_tariff = get_field('featured_tariff', 'option');
@@ -1313,8 +1311,6 @@ SQL;
         $woocommerce_api_options['_s'] = $woocommerce_api_options['secret_client'];
         unset($woocommerce_api_options['key_client'], $woocommerce_api_options['secret_client']);
         return new WP_REST_Response([
-          'premium' => $plan_premium,
-          'sereine' => $plan_sereine,
           'credit'  => $credit_price,
           'featured' => $featured_tariff,
           'pub' => $publication_tariff,
