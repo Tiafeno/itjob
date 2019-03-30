@@ -54,6 +54,7 @@ require 'includes/class/class-model.php';
 include 'includes/class/model/class-model-request-formation.php';
 include 'includes/class/model/class-model-subscription-formation.php';
 include 'includes/class/model/class-model-wallet.php';
+include 'includes/class/model/paiementHistory.php';
 
 // widgets
 require 'includes/class/widgets/widget-shortcode.php';
@@ -341,6 +342,7 @@ add_action('init', function () {
 //  print_r($companies);
 
   //payment_complete(13066 );
+  //update_formation_featured();
 });
 
 
@@ -351,27 +353,23 @@ function payment_complete ($order_id) {
     $order->update_status('completed');
   // Iterating through each WC_Order_Item_Product objects
   foreach ($order->get_items() as $item_key => $item ):
-
-    // Item ID is directly accessible from the $item_key in the foreach loop or
     $product = $item->get_product(); // WP_Product
-    $type = $product->get_meta( '__type' );
+    $type    = $product->get_meta( '__type' );
     if ($type) {
-      $post_id = $product->get_meta( '__id' );
+      $post_id   = $product->get_meta( '__id' );
       $object_id = intval($post_id);
+      $post_type = get_post_type( $object_id );
       if (0 === $object_id) return false;
       switch ($type):
         case 'offers':
-          // Mettre à jour le status de paiement de l'offre
           update_field('itjob_offer_paid', 1, $object_id);
           break;
 
         case 'formation':
-          // Mettre à jour le status de paiement de l'offre
           update_field('paid', 1, $object_id);
           break;
         
         case 'featured':
-          $post_type = get_post_type( $object_id );
           if ($post_type === 'formation') {
             update_field('featured', 1, $object_id);
           }
@@ -379,6 +377,18 @@ function payment_complete ($order_id) {
           
       endswitch;
 
+      // Ajouter une historique de paiement
+      $modelPaiement = new \includes\model\paiementHistory();
+      $args = [
+        'data' => [
+          'type' => $type,
+          'object_id' => $object_id,
+          'product_id' => $product->get_id(),
+          'order_id' => $order_id
+        ]
+      ];
+
+      $modelPaiement->add($args);
     }
   endforeach;
 }

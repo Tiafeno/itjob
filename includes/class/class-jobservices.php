@@ -207,7 +207,7 @@ if ( ! class_exists( 'jobServices' ) ) :
     }
 
     protected function getPostContents( &$container, $class_name ) {
-      $Types = ['offers', 'candidate', 'company', 'annonce', 'works'];
+      $Types = ['offers', 'candidate', 'company', 'annonce', 'works', 'formation'];
       $posts = get_posts( $this->args );
       foreach ( $posts as $post ) {
         try {

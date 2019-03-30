@@ -230,6 +230,12 @@ if ( ! class_exists( 'itJob' ) ) {
         ENGINE=InnoDB;";
         $wpdb->query($wallet);
 
+        $paiement_history = "CREATE TABLE `{$wpdb->prefix}paiement_history` (
+  `id_history` BIGINT(20) UNSIGNED AUTO_INCREMENT NOT NULL,
+  `data` LONGTEXT NOT NULL,
+  `date_create` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_history`)) ENGINE = InnoDB;";
+        $wpdb->query($paiement_history);
 
       } );
 

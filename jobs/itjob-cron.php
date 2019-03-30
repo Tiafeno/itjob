@@ -253,6 +253,7 @@ add_action('tous_les_jours', function () { // at 06h00
 
   // Mettre a jour la position de l'offre
   update_offer_featured();
+  update_formation_featured();
 
   // Envoyer les offres avec date de fin d'inscription de 5 jours et 1 jours
   review_offer_limit();
@@ -427,10 +428,31 @@ function update_offer_featured ()
             $featuredDateLimit = $offer->featuredDateLimit;
             if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
                 update_field('itjob_offer_featured', 0, $offer->ID);
+                update_field('itjob_offer_featured_position', null, $offer->ID);
                 update_field('itjob_offer_featured_datelimit', '', $offer->ID);
             }
         }
     }
+}
+
+function update_formation_featured() {
+  global $itJob;
+  $Services = $itJob->services;
+  if ($Services instanceof \includes\object\jobServices) {
+    $featuredFormation = $Services->getFeaturedPost('formation', [
+        'key' => 'featured',
+        'value' => 1,
+    ], 5);
+
+    foreach ($featuredFormation as $formation) {
+      if ($datelimit = $formation->featured_datelimit) {
+        if (strtotime($datelimit) > strtotime(date("Y-m-d H:i:s"))) continue;
+        update_field('featured', 0, $formation->ID);
+        update_field('featured_position', 0, $formation->ID);
+        update_field('featured_datelimit', '', $formation->ID);
+      }
+    }
+  }
 }
 
 function review_offer_limit ()
