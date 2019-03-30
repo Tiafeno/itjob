@@ -7,13 +7,14 @@
           <div class="mb-4">
             <a ui-sref="manager.profil.offers.lists" class="btn btn-sm btn-primary">Retour</a>
           </div>
-          <h5 class="font-strong">Promouvoir mon offre</h5>
+          <h5 class="font-strong">Mode de diffusion de mon offre</h5>
           <p>
-            Soyez visible pendant 1 mois en 1ère sur l'offre <b>[[selectedPlan]]</b> et augmentez votre nombre de contacts mensuels.
+            Soyez visible sur l'offre <b>[[selectedPlan]]</b> et augmentez votre nombre de contacts mensuels.
           </p>
           <div class="d-flex">
             <select ui-select2="{multiple: false, width: 350, minimumResultsForSearch: -1}" ng-model="selectedPlan">
-              <option value="[[publication._id]]" ng-repeat="publication in Publications"> [[publication._id.toUpperCase()]] - 1 mois, 30 jours ([[publication._p | currency]] HT)</option>
+              <option value="[[publication._id]]" ng-repeat="publication in Publications">
+                [[publication._id.toUpperCase()]] ([[publication._p | currency]] HT)</option>
             </select>
             <button ng-click="paiementProcess(selectedPlan)" class="ml-3 btn btn-warning">Acheter</button>
           </div>
@@ -21,8 +22,7 @@
       </div>
     </div>
     <div class="ibox-footer">
-      Une fois la période écoulée, l'emplacement sera automatiquement remis à la vente et disponible pour tous
-      les prestataires Itjobmada.com.
+
     </div>
   </div>
 </div>

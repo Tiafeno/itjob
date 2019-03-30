@@ -253,7 +253,7 @@
         <th>En ligne</th>
         <th>Candidat(s)</th>
         <th>Mode de Diffusion</th>
-        <th>Type de contrat</th>
+        <th>A la une</th>
         <th>Réference</th>
         <th>Actions</th>
       </tr>
@@ -291,7 +291,11 @@
             [[offer.paid ? offer.rateplan : ( offer.rateplan === 'standard' ? "Standard" : (offer.activated ? "Attente paiement" : "Attente validation" ) )]]
           </span>
         </td>
-        <td>[[ offer.contractType[ 'label' ] ]]</td>
+        <td>
+          <span class="badge badge-pill" ng-click="addFeaturedCart(offer.ID)" ng-class="{'badge-blue' : offer.featured, 'badge-default edit-position' : !offer.featured}">
+            [[ offer.featured ? "ACTIVE" : "AUCUN" ]]
+          </span>
+        </td>
         <td><span class="badge badge-info badge-pill">[[ offer.reference ]]</span></td>
         <td><span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID, $event)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
       </tr>

@@ -428,7 +428,7 @@ function update_offer_featured ()
             if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
                 update_field('itjob_offer_featured', 0, $offer->ID);
                 update_field('itjob_offer_featured_position', null, $offer->ID);
-                update_field('itjob_offer_featured_datelimit', '', $offer->ID);
+                update_field('itjob_offer_featured_datelimit', null, $offer->ID);
             }
         }
     }
@@ -448,7 +448,7 @@ function update_formation_featured() {
         if (strtotime($datelimit) > strtotime(date("Y-m-d H:i:s"))) continue;
         update_field('featured', 0, $formation->ID);
         update_field('featured_position', 0, $formation->ID);
-        update_field('featured_datelimit', '', $formation->ID);
+        update_field('featured_datelimit', null, $formation->ID);
       }
     }
   }
