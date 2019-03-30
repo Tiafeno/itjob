@@ -550,6 +550,7 @@ APPOC
           },
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/formation-paiement.html?ver=${itOptions.version}`,
           controller: ["$rootScope", "$scope", "$http", "$id", function ($rootScope, $scope, $http, $id) {
+            $scope.selectedPlan = 'basic'; // basic or premium
             $scope.Formation = {};
             $scope.TARIFFS = [];
             this.$onInit = () => {
@@ -574,6 +575,7 @@ APPOC
             };
 
             $scope.choisePlan = (rate) => {
+              console.log(rate);
               const key = $rootScope.options.wc._k;
               const secret = $rootScope.options.wc._s;
               const pubTariff = $rootScope.options.pub;
@@ -1314,7 +1316,7 @@ APPOC
                           elClass += "paiement-process";
                         }
 
-                        return `<span class="badge badge-pill badge-${style} ${elClass}"> ${text} </span>`;
+                        return `<span class="badge badge-pill uppercase badge-${style} ${elClass}"> ${text} </span>`;
                       }
                     },
                     {
@@ -1406,14 +1408,10 @@ APPOC
               Fm.append('action', 'update_settings');
               Fm.append('newsletter', Form.newsletter.$modelValue ? 1 : 0);
               Fm.append('notification', Form.notification.$modelValue ? 1 : 0);
-              $scope.loading = true;
+              $rootScope.preloaderToogle();
               clientFactory.sendPostForm(Fm).then(resp => {
                 let response = resp.data;
-                if (response.success) {
-                  $scope.loading = false;
-                } else {
-                  $scope.loading = false;
-                }
+                $rootScope.preloaderToogle();
               });
             }
           }
