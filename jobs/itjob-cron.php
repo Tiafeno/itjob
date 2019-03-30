@@ -216,6 +216,9 @@ add_action('tous_les_15_minutes', function () {
   fix_duplicates_cv_reference();
   // Effacer les notifications des administrateur vieux de 15 jours
   remove_notice_after_5days();
+  // Mettre a jour la position des articles à la une
+  update_offer_featured();
+  update_formation_featured();
 });
 
 // Exécuter tous les jours dans la fin de journée
@@ -250,10 +253,6 @@ add_action('tous_les_jours', function () { // at 06h00
 
   // Envoyer les offres en attente de validation
   send_pending_offer();
-
-  // Mettre a jour la position de l'offre
-  update_offer_featured();
-  update_formation_featured();
 
   // Envoyer les offres avec date de fin d'inscription de 5 jours et 1 jours
   review_offer_limit();

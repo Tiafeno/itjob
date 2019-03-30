@@ -372,6 +372,8 @@ function payment_complete ($order_id) {
         case 'featured':
           if ($post_type === 'formation') {
             update_field('featured', 1, $object_id);
+          } else if ($post_type === 'offers') {
+            update_field('itjob_offer_featured', 1, $object_id);
           }
           break;
           
