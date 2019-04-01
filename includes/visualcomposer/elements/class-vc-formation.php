@@ -393,10 +393,10 @@ EOF;
     // Params extraction
     extract(
       shortcode_atts(
-        array(
+        [
           'title'    => 'Nos formation à la une',
           'position' => ''
-        ),
+        ],
         $attrs
       ), EXTR_OVERWRITE);
 
@@ -420,6 +420,12 @@ EOF;
         'key'     => 'paid',
         'compare' => '=',
         'value'   => 1,
+        'type'    => 'NUMERIC'
+      ],
+      [
+        'key'     => 'featured_position',
+        'compare' => '=',
+        'value'   => trim($position) === 'sidebar' ? 2 : 1,
         'type'    => 'NUMERIC'
       ]
     ]);

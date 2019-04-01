@@ -87,6 +87,10 @@ class vcRequestFormation
   public function request_formation_concerned() {
     if (!is_user_logged_in()) wp_send_json_error("Veuillez vous connecter pour continuer");
     $User = wp_get_current_user();
+    if (in_array('company', $User->roles)) {
+      wp_send_json_error("Votre compte ne vous permet pas de s'inscrire pour une formation. " .
+        "Veuillez vous inscrire en tant que particulier et réessayer. Merci");
+    }
     $request_training_id = (int)\Http\Request::getValue('request_formation_id', 0);
     if (is_numeric($request_training_id) && 0 !== $request_training_id) {
       if (Model_Request_Formation::isConcerned($request_training_id, $User)) wp_send_json_success("Vous etes déja inscrit");

@@ -111,7 +111,9 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
       $User = wp_get_current_user();
       if (!in_array('candidate', $User->roles)) {
-        return $message_access_refused;
+        return $Engine->render('@ERROR/403.html.twig', [
+          'home_url' => home_url('/')
+        ]);
       }
       
       if ($this->Candidate->has_cv && $this->Candidate->state === 'pending' ) {

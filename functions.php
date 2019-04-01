@@ -296,7 +296,7 @@ add_action('init', function () {
       $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
       $credit = $Wallet->credit;
       if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
-      if (!in_array($User->ID, $Works->contact_sender)) {
+      if ( ! $Works->has_contact($User->ID) ) {
         $credit = $credit - 1;
         $Wallet->update_wallet($credit);
         $Works->add_contact_sender($User->ID);
@@ -305,7 +305,7 @@ add_action('init', function () {
       $greet = '';
       if (in_array('candidate', $User->roles)) {
         $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
-        $first_name = $Candidate->getFirstName();
+        $first_name = ucfirst($Candidate->getFirstName());
         $greet  = $Candidate->greeting['label'];
       }
 

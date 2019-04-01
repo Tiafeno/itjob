@@ -364,7 +364,7 @@ if (!class_exists('vcOffers')):
       extract(
         shortcode_atts(
           array(
-            'title' => 'Offres à la une',
+            'title'    => 'Offres à la une',
             'position' => ''
           ),
           $attrs
@@ -375,14 +375,21 @@ if (!class_exists('vcOffers')):
       /** @var string $title */
       // Recuperer dans le service les offres publier et à la une
       $offers = $itJob->services->getFeaturedPost('offers', [
-        'key' => 'itjob_offer_featured',
-        'value' => 1,
-        'compare' => '='
+        [
+          'key'     => 'itjob_offer_featured',
+          'value'   => 1,
+          'compare' => '='
+        ],
+        [
+          'key'     => 'itjob_offer_featured_position',
+          'value'   => trim($position) === 'sidebar' ? 2 : 1,
+          'compare' => '='
+        ]
       ]);
       $site_url = get_site_url();
       $added_featured_url = is_user_logged_in() ? null : home_url("connexion/company/?redir={$site_url}/espace-client");
       $args = [
-        'title' => $title,
+        'title'  => $title,
         'offers' => $offers,
         'added_featured_offer_url' => $added_featured_url
       ];

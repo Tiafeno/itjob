@@ -40,8 +40,7 @@ class Works {
   public $count_view = 0;
   private $email = null;
 
-  public
-  function __construct($work_id = null, $private_access = false) {
+  public function __construct($work_id = null, $private_access = false) {
     if (is_null($work_id)) {
       self::$error = new \WP_Error("broken", "L'identification du travail est introuvable");
       return false;
@@ -87,29 +86,26 @@ class Works {
 
     $this->date_create = get_post_meta($this->ID, 'date_create', true);
     $view = get_post_meta($this->ID, 'count_view', true);
+    // Récuperer les utilisateurs qui ont contacté l'annnonce
     $contact_sender = get_post_meta($this->ID, 'sender_contact', true);
     $this->count_view = $view ? (int)$view : 0;
     $this->contact_sender = empty($contact_sender) ? [] : $contact_sender;
   }
 
-  public
-  function is_work() {
+  public function is_work() {
     return get_post_type($this->ID) === $this->post_type;
   }
 
-  public
-  function get_mail() {
+  public function get_mail() {
     return $this->email;
   }
 
-  public
-  function get_user() {
+  public function get_user() {
     $User = get_field('annonce_author', $this->ID); // WP_User
     return $this->author = $User;
   }
 
-  private
-  function get_tax_field() {
+  private function get_tax_field() {
     $regions = wp_get_post_terms($this->ID, 'region', ["fields" => "all"]);
     $towns   = wp_get_post_terms($this->ID, 'city', ["fields" => "all"]);
     $activity_area = wp_get_post_terms($this->ID, 'branch_activity', ["fields" => "all"]);
@@ -119,8 +115,7 @@ class Works {
 
   }
 
-  private
-  function get_acf_field() {
+  private function get_acf_field() {
     $this->featured  = get_field('featured', $this->ID); // false|true
     $this->featured_datelimit = get_field('featured_datelimit', $this->ID); // Y-m-d H:i:s
     $this->type     = get_field('type', $this->ID); // ['value' => <string>, 'label' => <string>]
@@ -132,8 +127,7 @@ class Works {
     $this->address   = get_field('address', $this->ID);
   }
 
-  public static
-  function is_wp_error() {
+  public static function is_wp_error() {
     if (is_wp_error(self::$error)) {
       return self::$error->get_error_message();
     } else {
@@ -141,8 +135,7 @@ class Works {
     }
   }
 
-  public
-  function is_activated() {
+  public function is_activated() {
     return $this->activated ? 1 : 0;
   }
 
@@ -151,6 +144,12 @@ class Works {
     update_post_meta($this->ID, 'count_view', $this->count_view);
   }
 
+  /**
+   * Cette fonction permet d'ajouter les utilisateurs qui ont contacter l'annonceur
+   *
+   * @param $user_id {int}
+   * @return bool
+   */
   public function add_contact_sender( $user_id ) {
     $senders = get_post_meta($this->ID, 'sender_contact', true);
     $senders = is_array($senders) ? $senders : [];
@@ -159,6 +158,11 @@ class Works {
 
     update_post_meta($this->ID, 'sender_contact', $senders);
     return true;
+  }
+
+  public function has_contact( $user_id ) {
+    if (empty($this->contact_sender) || !is_array($this->contact_sender)) return false;
+    return in_array(intval($user_id), $this->contact_sender);
   }
 
 }
