@@ -35,6 +35,7 @@ $it_alerts = [];
 require 'includes/configs.php';
 require 'includes/itjob-functions.php';
 require 'includes/class/class-token.php';
+require 'includes/class/class-admin-manager.php';
 
 // Importation dependancy
 //require 'includes/import/class-import-user.php';
@@ -53,6 +54,7 @@ require 'includes/class/class-model.php';
 include 'includes/class/model/class-model-request-formation.php';
 include 'includes/class/model/class-model-subscription-formation.php';
 include 'includes/class/model/class-model-wallet.php';
+include 'includes/class/model/paiementHistory.php';
 
 // widgets
 require 'includes/class/widgets/widget-shortcode.php';
@@ -199,8 +201,10 @@ add_action('after_setup_theme', function () {
 if (function_exists('acf_add_options_page')) {
   $parent = acf_add_options_page(array(
     'page_title' => 'General Settings',
+    'capability' => 'delete_users',
     'menu_title' => 'ITJOB General Settings',
     'capability' => 'edit_posts',
+    'autoload' => true,
     'redirect' => false
   ));
 }
@@ -270,42 +274,6 @@ add_action('init', function () {
     return $title;
   }, PHP_INT_MAX);
 
-//  $Model = new includes\model\itModel();
-//  add_action('repair_table', [$Model, 'repair_table'], 10);
-
-  add_filter('manage_formation_posts_columns', function ($columns) {
-    return array_merge($columns,
-      array('activated' => __('Activation')));
-  });
-
-  add_action('manage_posts_custom_column', function ($column, $post_id) {
-    $activate = get_field('activated', $post_id);
-    if ($column == 'activated') {
-      echo '<input type="checkbox" disabled', $activate ? ' checked' : '', '/>';
-    }
-  }, 10, 2);
-
-  // Users
-  add_filter('manage_users_custom_column', function ($val, $column_name, $user_id) {
-    switch ($column_name) {
-      case 'CV' :
-        $User = get_user_by('ID', $user_id);
-        if (in_array('candidate', $User->roles)) {
-          $Candidate = \includes\post\Candidate::get_candidate_by($user_id);
-          $edit_link = get_edit_post_link($Candidate->getId());
-          return "<a target='_blank' href='{$edit_link}'>{$Candidate->title}</a>";
-        }
-        break;
-      default:
-    }
-    return $val;
-  }, 10, 3);
-
-  add_filter('manage_users_columns', function ($column) {
-    $column['CV'] = 'CV';
-    return $column;
-  });
-
   function request_phone_number() {
     global $itJob;
     $post_id = Http\Request::getValue('ad_id');
@@ -328,7 +296,7 @@ add_action('init', function () {
       $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
       $credit = $Wallet->credit;
       if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
-      if (!in_array($User->ID, $Works->contact_sender)) {
+      if ( ! $Works->has_contact($User->ID) ) {
         $credit = $credit - 1;
         $Wallet->update_wallet($credit);
         $Works->add_contact_sender($User->ID);
@@ -337,7 +305,7 @@ add_action('init', function () {
       $greet = '';
       if (in_array('candidate', $User->roles)) {
         $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
-        $first_name = $Candidate->getFirstName();
+        $first_name = ucfirst($Candidate->getFirstName());
         $greet  = $Candidate->greeting['label'];
       }
 
@@ -356,6 +324,9 @@ add_action('init', function () {
   add_action('woocommerce_order_status_completed', 'payment_complete', 100, 1);
   add_action('woocommerce_payment_complete', 'payment_complete', 100, 1);
 
+  // Ajouter cette action dans le code du plugins vanilla pay enfin de mettre à jour la commande
+  add_action('itjob_wc_payment_success', 'payment_complete', 100, 1);
+
   // Cette action est utilisé par le plugins mailChimp
   // Plugin Name: MailChimp User Sync
   // @url https://fr.wordpress.org/plugins/mailchimp-sync/
@@ -363,26 +334,63 @@ add_action('init', function () {
     $role = is_array($user->roles) ? $user->roles[0] : '';
     $data['ROLE'] = $role;
     return $data;
-}, 10, 2 );
+  }, 10, 2 );
+
+
+//  $Model = new cronModel();
+//  $companies = $Model->getCompanyNoOffers();
+//  print_r($companies);
+
+  //payment_complete(13066 );
+  //update_formation_featured();
 });
 
 
 function payment_complete ($order_id) {
   // Get an instance of the WC_Order object
   $order = wc_get_order($order_id);
+  if ( ! $order->has_status('completed'))
+    $order->update_status('completed');
   // Iterating through each WC_Order_Item_Product objects
   foreach ($order->get_items() as $item_key => $item ):
-
-    // Item ID is directly accessible from the $item_key in the foreach loop or
     $product = $item->get_product(); // WP_Product
-    $type = get_post_meta($product->get_id(), '__type', true);
-    if ($type && $type === 'offers') {
-      $offer_id = get_post_meta($product->get_id(), '__id', true);
-      $offer_id = intval($offer_id);
-      if (0 === $offer_id) return false;
+    $type    = $product->get_meta( '__type' );
+    if ($type) {
+      $post_id   = $product->get_meta( '__id' );
+      $object_id = intval($post_id);
+      $post_type = get_post_type( $object_id );
+      if (0 === $object_id) return false;
+      switch ($type):
+        case 'offers':
+          update_field('itjob_offer_paid', 1, $object_id);
+          break;
 
-      // Mettre à jour le status de paiement de l'offre
-      update_field('itjob_offer_paid', 1, $offer_id);
+        case 'formation':
+          update_field('paid', 1, $object_id);
+          break;
+        
+        case 'featured':
+          if ($post_type === 'formation') {
+            update_field('featured', 1, $object_id);
+          } else if ($post_type === 'offers') {
+            update_field('itjob_offer_featured', 1, $object_id);
+          }
+          break;
+          
+      endswitch;
+
+      // Ajouter une historique de paiement
+      $modelPaiement = new \includes\model\paiementHistory();
+      $args = [
+        'data' => [
+          'type' => $type,
+          'object_id' => $object_id,
+          'product_id' => $product->get_id(),
+          'order_id' => $order_id
+        ]
+      ];
+
+      $modelPaiement->add($args);
     }
   endforeach;
 }

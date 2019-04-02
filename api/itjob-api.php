@@ -19,6 +19,7 @@ require_once 'class/apiRequestFormation.php';
 require_once 'class/apiSmallAd.php';
 require_once 'class/apiWork.php';
 require_once 'class/apiWallet.php';
+require_once 'class/apiProduct.php';
 
 function post_updated_values ($post_ID)
 {
@@ -885,7 +886,7 @@ add_action('rest_api_init', function () {
 
               break;
 
-            // Remplacer le term par une autre
+            // Remplacer le term par une autres
             case 'replace':
               $params = $_REQUEST['params'];
               $params = json_decode(stripslashes($params));
@@ -1293,6 +1294,28 @@ SQL;
         }
 
         return new WP_REST_Response($terms);
+      }
+    ]
+  ]);
+
+  register_rest_route('api', '/options/', [
+    [
+      'methods'             => WP_REST_Server::READABLE,
+      'callback'            => function () {
+        $credit_price = get_field('product_wallet', 'option');
+
+        $featured_tariff = get_field('featured_tariff', 'option');
+        $publication_tariff = get_field('publication_tariff', 'option');
+        $woocommerce_api_options = get_field('woocommerce_api', 'option');
+        $woocommerce_api_options['_k'] = $woocommerce_api_options['key_client'];
+        $woocommerce_api_options['_s'] = $woocommerce_api_options['secret_client'];
+        unset($woocommerce_api_options['key_client'], $woocommerce_api_options['secret_client']);
+        return new WP_REST_Response([
+          'credit'  => $credit_price,
+          'featured' => $featured_tariff,
+          'pub' => $publication_tariff,
+          'wc' => $woocommerce_api_options
+        ]);
       }
     ]
   ]);

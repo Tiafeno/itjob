@@ -314,6 +314,10 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                 </div>
 
                 <!--                Centre d'intérêt-->
+                <?php
+                $has_various = isset( $candidate->centerInterest->various ) && !empty($candidate->centerInterest->various);
+                $has_projet = isset( $candidate->centerInterest->projet ) && ! empty(trim( $candidate->centerInterest->projet ));
+                ?>
                 <div class="mt-5">
                   <div class="row">
                     <div class="col-6">
@@ -321,19 +325,19 @@ wp_enqueue_style( 'timeline', get_template_directory_uri() . '/assets/css/timeli
                       <hr class="uk-devider">
                       <ol class="candidate-language-list mt-0">
                         <?php
-                        if ( isset( $candidate->centerInterest->various ) && !empty($candidate->centerInterest->various) ) {
+                        if ( $has_various ) {
                           $various = $candidate->centerInterest->various;
                           foreach ( explode( ',', $various ) as $item ) :
                             if (empty($item)) continue;
                             echo sprintf( "<li><p class='mb-0'>%s</p></li>", $item );
                           endforeach;
                         } else {
-                          echo "Neant";
+                          echo "Aucun";
                         }
                         ?>
                       </ol>
                     </div>
-                    <?php if ( isset( $candidate->centerInterest->projet ) && ! empty( trim( $candidate->centerInterest->projet ) ) ) { ?>
+                    <?php if ( $has_projet ) { ?>
                       <div class="col-6 ">
                         <h4>Projet</h4>
                         <hr class="uk-devider">

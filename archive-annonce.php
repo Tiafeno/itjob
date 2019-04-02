@@ -41,7 +41,7 @@ get_header();
       font-weight: 600;
     }
   </style>
-  <div class="uk-section uk-section-transparent">
+  <div class="uk-section uk-section-transparent" style="min-height: 450px;">
     <div class="uk-container uk-container-medium">
       <div class="widget">
         <?php

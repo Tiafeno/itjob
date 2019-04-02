@@ -229,10 +229,10 @@ wp_enqueue_script('sweetalert');
             }
             if (!$annonce instanceof \includes\post\Annonce) continue;
             $author = $annonce->get_author();
-            $name = 'Inconnue';
+            $name = 'Anonyme';
             if (in_array('candidate', $author->roles)) {
               $Candidate = \includes\post\Candidate::get_candidate_by($author->ID);
-              $name = $Candidate->getLastName();
+              $name = $Candidate->getFirstName();
             }
 
             if (in_array('company', $author->roles)) {
@@ -322,7 +322,7 @@ wp_enqueue_script('sweetalert');
               <form name="workcontact" method="post" action="?action=sender&key=<?= $key ?>">
                 <div class="ibox-body pt-0">
                   <?= do_action('get_notice', ''); ?>
-                  <h6 class="mb-4">Envoyer un message à « <?= $author->user_login ?> »</h6>
+                  <h6 class="mb-4">Envoyer un message à « <?= $name ?> »</h6>
                   <div class="alert alert-warning">
                     <b>Attention</b> : Méfiez-vous des propositions trop alléchantes et des prix trop bas.
                     Assurez-vous de ne pas être victime d’une tentative d’escroquerie.

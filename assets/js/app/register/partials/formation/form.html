@@ -8,19 +8,19 @@
     <div class="page-heading mb-4">
       <h4 class="page-title">FORMULAIRE FORMATION</h4>
       <div>
-        Remarque: Cette formation sera liée à votre compte.
+        Remarque: L’enregistrement et la publication d'une formation sur le site Itjob sont payants<br>
       </div>
-      <p>L'insertion d'une formation sur le site Itjob est payant.
-        Nous allons vérifier votre annonce et vous serez notifié après validations.
-        L'annonce apparaîtra sur le site après votre payement dans votre l'espace client</p>
+      <p>Nous devons vérifier votre annonce avant sa publication, et vous serez notifié après sa validation.
+        Elle n’apparaîtra sur le site qu’après votre payement vous trouverez les instructions dans votre espace client </p>
     </div>
     <hr>
     <div class="ibox-body">
       <div class="form-group mb-4 row">
         <label class="col-sm-4 col-form-label">Formation <span style="color: red">*</span></label>
         <div class="col-sm-6">
-          <input class="form-control" name="title" ng-model="Form.title" type="text" autocomplete="off" placeholder="Titre de la formation"
-                  required>
+          <input class="form-control" name="title" ng-model="Form.title" type="text" autocomplete="off"
+                 placeholder="Titre de la formation"
+                 required>
           <div ng-messages="fForm.title.$error" role="alert" class="alert alert-pink"
           ng-show="fForm.title.$touched && fForm.title.$invalid" ng-messages-multiple>
             <div ng-message="required">Ajouter une titre pour votre formation.</div>
@@ -30,7 +30,8 @@
       <div class="form-group mb-4 row">
         <label class="col-sm-4 col-form-label">Nom de l'établissement <span style="color: red">*</span></label>
         <div class="col-sm-6">
-          <input class="form-control" name="establish_name" ng-model="Form.establish_name" type="text" autocomplete="off" placeholder="Nom de l'établissement"
+          <input class="form-control" name="establish_name" ng-model="Form.establish_name" disabled type="text"
+                 autocomplete="off" placeholder="Nom de l'établissement"
                  required>
           <div ng-messages="fForm.establish_name.$error" role="alert" class="alert alert-pink"
           ng-show="fForm.establish_name.$touched && fForm.establish_name.$invalid" ng-messages-multiple>
@@ -40,9 +41,10 @@
         </div>
       </div>
       <div class="form-group mb-4 row">
-        <label class="col-sm-4 col-form-label">Diplôme ou certificat</label>
+        <label class="col-sm-4 col-form-label">Documents délivrés</label>
         <div class="col-sm-6">
-          <input class="form-control" name="diploma" ng-model="Form.diploma" type="text" autocomplete="off" placeholder="Ex: Certificat ou diplôme">
+          <input class="form-control" name="diploma" ng-model="Form.diploma" type="text" autocomplete="off"
+                 placeholder="Ex: Documents délivrés">
         </div>
       </div>
       <div class="form-group mb-4 row ">
@@ -71,7 +73,7 @@
         </div>
       </div>
       <div class="form-group mb-4 row">
-        <label class="col-sm-4 col-form-label">Adresse physique <span style="color: red">*</span></label>
+        <label class="col-sm-4 col-form-label">Lieu de la formation <span style="color: red">*</span></label>
         <div class="col-sm-6">
           <input class="form-control" name="address" ng-model="Form.address" type="text" placeholder="Adresse"
                  required>
@@ -105,7 +107,8 @@
       <div class="form-group mb-4 row">
         <label class="col-sm-4 col-form-label">Date limite d'inscription <span style="color: red">*</span></label>
         <div class="col-sm-6">
-          <input class="form-control date" name="date_limit" readonly="readonly" ng-model="Form.date_limit" type="text" placeholder="Date limite d'inscription"
+          <input class="form-control date" name="date_limit" readonly="readonly" ng-model="Form.date_limit" type="text"
+                 placeholder="Date limite d'inscription"
                  required>
           <div ng-messages="fForm.date_limit.$error" role="alert" class="alert alert-pink"
           ng-show="fForm.date_limit.$touched && fForm.date_limit.$invalid" ng-messages-multiple>
@@ -116,7 +119,8 @@
       <div class="form-group mb-4 row">
         <label class="col-sm-4 col-form-label">Description <span style="color: red">*</span></label>
         <div class="col-sm-6">
-          <textarea class="form-control" name="description" ng-model="Form.description" rows="8" type="text" placeholder="Description pour votre formation"
+          <textarea class="form-control" name="description" ng-model="Form.description" rows="8" type="text"
+                    placeholder="Description pour votre formation"
                  ></textarea>
         </div>
       </div>

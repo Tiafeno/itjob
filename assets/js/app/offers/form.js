@@ -22,8 +22,8 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
           }],
           allCity: ['$http', function ($http) {
             return $http.get(itOptions.ajax_url + '?action=get_city', {
-                cache: true
-              })
+              cache: true
+            })
               .then(function (resp) {
                 return resp.data;
               });
@@ -38,19 +38,31 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
         resolve: {
           offer: ['$q', '$rootScope', function ($q, $rootScope) {
             // for test
-            //return $q.resolve(true);
+            // return $q.resolve(true);
             if (typeof $rootScope.offers === 'undefined' || _.isEmpty($rootScope.offers)) {
               return $q.reject({
                 redirect: 'form.add-offer'
               });
             }
             return $q.resolve($rootScope.offers);
+          }],
+          options: ['$http', function ($http) {
+            return $http.get(itOptions.helper.rest_url_options, {cache: true}).then(resp => {
+              return resp.data;
+            }, error => false);
           }]
         },
-        controller: ['$rootScope', '$scope', 'offerFactory', function ($rootScope, $scope, offerFactory) {
+        controller: ['$rootScope', '$scope', 'offerFactory', 'options', function ($rootScope, $scope, offerFactory, options) {
           // Mode de diffusion par default
           $scope.loading = false;
           $scope.rateplan = 'standard';
+          $scope.Options = {};
+          $scope.Price = {};
+          this.$onInit = () => {
+            $scope.Options = _.clone(options);
+            $scope.Price.serein = _.findWhere(options.pub.offer, {_id: "serein"});
+            $scope.Price.premium = _.findWhere(options.pub.offer, {_id: "premium"});
+          };
           $scope.sendSubscription = () => {
             $scope.loading = true;
             const sendData = new FormData();
@@ -68,7 +80,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                     "Nous vous enverrons une notification quand elle sera prête. merci",
                     type: "info",
                   }, () => {
-                     window.location.href = _.isUndefined(data.checkout) ? itOptions.helper.redir_url : data.checkout;
+                    window.location.href = itOptions.helper.redir_url;
                   });
                 }
                 $scope.loading = false;
@@ -92,13 +104,13 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                 language: 'fr_FR',
                 menubar: false,
                 plugins: ['lists', 'paste'],
-                theme_advanced_buttons3_add : "pastetext,pasteword,selectall",
-                paste_auto_cleanup_on_paste : true,
+                theme_advanced_buttons3_add: "pastetext,pasteword,selectall",
+                paste_auto_cleanup_on_paste: true,
                 paste_remove_styles_if_webkit: true,
                 paste_remove_styles: true,
-                paste_postprocess : function(pl, o) {
+                paste_postprocess: function (pl, o) {
                   // Content DOM node containing the DOM structure of the clipboard
-                  
+
                 },
                 content_css: [
                   '//fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i'
@@ -121,7 +133,6 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                 }
                 return false;
               };
-
               /* jQuery element */
               var jqSelects = jQuery("select.form-control:not(.no-search)");
               jQuery.each(jqSelects, function (index, element) {
@@ -133,11 +144,9 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
                   width: '100%'
                 })
               });
-
               jQuery("select.form-control.no-search").select2({
                 minimumResultsForSearch: -1
-              })
-
+              });
               jQuery(".form-control.country").select2({
                 placeholder: "Tapez le nom d'une ville ou code postal",
                 allowClear: true,
@@ -184,8 +193,6 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
               jQuery('[data-toggle="tooltip"]').tooltip();
             };
 
-
-            /** Valider et envoyer le formulaire */
             $scope.formSubmit = function (isValid) {
               if ($scope.formOffer.$invalid) {
                 angular.forEach($scope.formOffer.$error, function (field) {
@@ -214,7 +221,6 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
               offerForm.append('mission', $rootScope.offers.mission);
               offerForm.append('profil', $rootScope.offers.profil);
               offerForm.append('other', otherInfo);
-
               offerFactory
                 .sendPostForm(offerForm)
                 .then(function (response) {
@@ -245,16 +251,16 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
     return {
       getBranchActivity: function () {
         return $http.get(itOptions.ajax_url + '?action=ajx_get_branch_activity', {
-            cache: true
-          })
+          cache: true
+        })
           .then(function (resp) {
             return resp.data;
           });
       },
       getRegions: function () {
         return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=region', {
-            cache: true
-          })
+          cache: true
+        })
           .then(function (r) {
             return r.data;
           });
@@ -275,6 +281,13 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
       }
     };
   }])
+  .filter('currencyFormat', function () {
+    return function (number) {
+      var value = parseFloat(number);
+      if (_.isNaN(value)) return number;
+      return new Intl.NumberFormat('de-DE', {}).format(value);
+    }
+  })
   .controller('formController', ["$state", "$scope", "$rootScope", "allCity",
     function ($state, $scope, $rootScope, allCity) {
       // Code controller here...

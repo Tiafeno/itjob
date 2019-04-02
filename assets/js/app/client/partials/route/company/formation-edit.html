@@ -1,0 +1,97 @@
+<div class="ibox">
+  <div class="row" ng-if="!preload">
+    <div class="col-sm-8">
+
+      <div class="ibox-body">
+        <div class="ibox-title mb-3">
+          <h4 style="font-weight: 400;">Modification</h4>
+          <div class="alert alert-danger has-icon">
+            <i class="la la-info-circle alert-icon"></i>
+            Nous devons vérifier votre annonce, et vous serez notifié après sa validation.<br>
+            Elle n’apparaîtra sur le site qu’après la validation</div>
+        </div>
+        <div class="p-relative">
+          <div>
+            <form name="editFormation" ng-submit="submitEditFormation( editFormation )" novalidate>
+              <div class="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mb-2 row ">
+                    <div class="col-sm-12">
+                      <label class="col-form-label">Titre formation <span style="color: red">*</span></label>
+                      <input class="form-control" name="title" ng-model="Editor.title" type="text"
+                             required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-form-label ">Documents délivrés <span style="color: red">*</span></label>
+                    <input class="form-control"  name="diploma" ng-model="Editor.diploma" type="text"
+                           required>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-form-label ">Region <span style="color: red">*</span></label>
+                    <select class="form-control" name="region" id="region" ng-model="Editor.region"
+                            ng-value=""
+                            title="Status" required>
+                      <option value=""></option>
+                      <option value="[[region.term_id]]" ng-value="region.term_id" ng-repeat="region in Regions">
+                        [[region.name]]
+                      </option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-form-label ">Lieu de la formation <span style="color: red">*</span></label>
+                    <input class="form-control" name="address" ng-model="Editor.address" type="text"
+                           required>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label class="col-form-label ">Date limite d'inscription <span style="color: red">*</span></label>
+                        <input class="form-control date" name="date_limit" ng-model="Editor.date_limit" type="text"
+                               placeholder="Date limite d'inscription" required>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label class="col-form-label ">Tarif de formation <span style="color: red">*</span></label>
+                        <input class="form-control"  name="price" ng-model="Editor.price" type="number"
+                               required>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-control-label ">Sécteur d'activité  <span style="color: red">*</span></label>
+                    <select class="form-control input-select2" name="branch_activity" id="branch_activity"
+                            ng-model="Editor.branch_activity" required>
+                      <option value=""></option>
+                      <option value="[[area.term_id]]" ng-value="area.term_id" ng-repeat="area in Areas">
+                        [[area.name]]
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="ibox-footer pl-0">
+                <div class="d-flex justify-content-start">
+                  <div>
+                    <button class="btn btn-primary" type="submit" ng-disabled="preload">Enregistrer</button>
+                  </div>
+                  <div class="ml-2">
+                    <a ui-sref="manager.profil.formation.lists" ng-disabled="preload" class="btn btn-default">Retour</a>
+                  </div>
+                </div>
+
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+

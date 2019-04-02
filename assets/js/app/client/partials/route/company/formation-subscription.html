@@ -1,0 +1,65 @@
+<div class="ibox">
+  <div class="row">
+    <div class="col-sm-9">
+      <div class="ibox-body">
+        <div class="p-relative">
+          <div>
+            <div class="ibox-title mb-3">
+              <h4 style="font-weight: 400;">Les candidats inscrits pour la formation:</h4>
+              <p class="text-muted font-15">[[Formation.title.rendered]]</p>
+            </div>
+            <div class="itjob-alert" ng-if="Error">
+              <div class="alert alert-[[Error.type]]"><strong>[[Error.title]]</strong><br> [[Error.message]] </div>
+            </div>
+
+            <div class="mt-4 mb-4" ng-if="subscribers.length > 0">
+
+              <table class="table table-hover">
+                <thead class="thead-default thead-lg">
+                <tr>
+                  <th class="pl-4">Nom & Prénom</th>
+                  <th>Adresse</th>
+                  <th>Numéro de téléphone</th>
+                  <th>Email</th>
+                  <th class="pr-4" style="width:91px;">Date d'inscription</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr ng-repeat="subscribe in subscribers">
+                  <td>
+                    [[subscribe.candidate.privateInformations.firstname]]
+                    [[subscribe.candidate.privateInformations.lastname]]
+                  </td>
+                  <td>
+                    [[subscribe.candidate.privateInformations.address.address]],
+                    [[subscribe.candidate.privateInformations.address.country.name]],
+                    [[subscribe.candidate.privateInformations.address.region.name]]
+                  </td>
+                  <td>[[subscribe.candidate.privateInformations.cellphone.join(', ')]]</td>
+                  <td>[[subscribe.candidate.privateInformations.author.data.user_email]]</td>
+                  <td class="pr-4">[[subscribe.date | moment_notice]]</td>
+                </tr>
+                </tbody>
+              </table>
+
+            </div>
+            <div class="mt-4" ng-if="subscribers.length === 0 && !Error">Aucun candidat inscrit pour le moment</div>
+
+            <div class="ibox-footer pl-0">
+              <div class="d-flex justify-content-start">
+                <div class="ml-2">
+                  <a ui-sref="manager.profil.formation.lists" ng-disabled="preload" class="btn btn-sm btn-primary">Retour</a>
+                </div>
+                <div class="ml-2" ng-if="viewBuyButton">
+                  <a ui-sref="manager.profil.formation.paiement({id: Formation.id})" class="btn-sm btn btn-success">Paiement</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -240,9 +240,6 @@
 
     <a class="btn btn-outline-blue" target="_blank" ng-href="[[Helper.add_offer_url]]">Ajouter une offre</a>
     <span class="ml-3"></span>
-    <button class="btn btn-warning btn-fix text-uppercase" data-toggle="modal" data-target="#featured-dialog">
-      <span style="font-size: 11px">Mettre en avant votre annonce</span>
-    </button>
 
   </div>
 </div>
@@ -251,13 +248,12 @@
 
     <thead class="thead-default thead-lg">
       <tr>
-        <th>ID</th>
-        <th>Status</th>
+        <th>Poste à promouvoir</th>
+        <th>Statuts</th>
         <th>En ligne</th>
         <th>Candidat(s)</th>
-        <th>Poste à promouvoir</th>
-        <th>Type de contrat</th>
-        <th>Secteur d'activité</th>
+        <th>Mode de Diffusion</th>
+        <th>A la une</th>
         <th>Réference</th>
         <th>Actions</th>
       </tr>
@@ -266,7 +262,7 @@
     <tbody>
       <tr ng-repeat="offer in Offers">
 
-        <td>[[offer.ID]]</td>
+        <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
         <td>
           <span class="badge badge-pill" ng-class="{'badge-blue' : offer.offer_status == 'publish', 'badge-warning' : offer.offer_status == 'pending'}">
             [[ offer.offer_status|Status]]
@@ -279,7 +275,7 @@
         </td>
         <td>
           <span style="cursor: pointer" class="p-relative" >
-            <span ng-if="offer.candidat_apply.length <= 0">[[ offer.candidat_apply.length ]]</span>
+            <span ng-if="offer.candidat_apply.length <= 0" class="badge badge-default">[[ offer.candidat_apply.length ]]</span>
             <span ng-click="viewApply(offer.ID)" ng-if="offer.candidat_apply.length > 0" class="badge-success badge ml-2">
               Liste des candidates
             </span>
@@ -289,10 +285,17 @@
             </span>
           </span>
         </td>
-        <td><a href="[[offer.post_url]]" title="{{ offer.postPromote }}">[[ offer.postPromote ]]</a></td>
-
-        <td>[[ offer.contractType[ 'label' ] ]]</td>
-        <td>[[ offer.branch_activity.name ]]</td>
+        <td>
+          <span class="badge badge-pill uppercase" ng-click="offerPaiementProcess(offer.ID)" ng-class="{'badge-blue' : offer.paid, 'badge-default' : !offer.paid,
+          'paiement-process': (offer.rateplan !== 'standard' && !offer.paid && offer.activated) }">
+            [[offer.paid ? offer.rateplan : ( offer.rateplan === 'standard' ? "Standard" : (offer.activated ? "Attente paiement" : "Attente validation" ) )]]
+          </span>
+        </td>
+        <td>
+          <span class="badge badge-pill" ng-click="addFeaturedCart(offer.ID)" ng-class="{'badge-blue' : offer.featured, 'badge-default edit-position' : !offer.featured}">
+            [[ offer.featured ? "ACTIVE" : "AUCUN" ]]
+          </span>
+        </td>
         <td><span class="badge badge-info badge-pill">[[ offer.reference ]]</span></td>
         <td><span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID, $event)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
       </tr>

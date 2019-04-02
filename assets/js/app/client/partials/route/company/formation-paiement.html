@@ -1,0 +1,45 @@
+<div class="ibox">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="ibox-body">
+        <div class="flexbox-b mb-3">
+          <div>
+            <div class="mb-4">
+              <a ui-sref="manager.profil.formation.lists" class="btn btn-sm btn-primary">Retour</a>
+            </div>
+            <div class="text-light">
+              Résumé de la formation:
+            </div>
+            <h5 class="font-strong">[[ Formation.title.rendered ]]</h5>
+          </div>
+        </div>
+        <div class="flexbox-b mb-3">
+          <div>
+            <p>
+              Sélectionner un mode de diffusion pour votre formation. <br>
+              Votre annonce seras visible dans le site apres le paiement effectuer
+            </p>
+            <div class="d-flex">
+              <select ui-select2="{multiple: false, width: 350, minimumResultsForSearch: -1}" ng-model="selectedPlan">
+                <option value="[[tarif._id]]" ng-repeat="tarif in TARIFFS"> OFFRE
+                  ([[tarif._p | currency]] HT)
+                </option>
+              </select>
+              <button ng-click="choisePlan(selectedPlan)" class="ml-3 btn btn-warning">Acheter</button>
+            </div>
+          </div>
+        </div>
+        <div class="ibox-footer pl-0">
+          <h6 class="mb-4">Description de l'offre</h6>
+          <ul>
+            <li ng-repeat="tarif in TARIFFS track by tarif._p">
+              <div class="d-flex">
+                <p>OFFRE [[tarif._p | currency]]: <b>[[tarif._d]]</b></p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

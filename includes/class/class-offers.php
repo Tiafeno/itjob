@@ -73,7 +73,7 @@ final class Offers implements \iOffer {
   public $otherInformation;
 
   /** @var bool $featured - L'offre est à la une ou pas */
-  private $featured;
+  public $featured;
   public $featuredDateLimit = null;
 
 

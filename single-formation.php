@@ -44,13 +44,22 @@ wp_enqueue_style('offers');
                   $user_id = wp_unslash($_GET['user']);
                   // Refuser pour les utilisateurs qui ne sont pas des candidats
                   if (empty($user_id) || $User->ID !== (int)$user_id || !in_array('candidate', $User->roles)) {
-                    $error = TRUE;
+                    $error = new WP_Error('warning', "Une erreur s'est produite, il se peut que votre compte ne vous permet " .
+                      "pas de s'inscrire pour une formation. <br>Veuillez vous connecter en tant que <b>particulier</b> et réessayer. Merci");
                     break;
                   }
                   $args = ['formation_id' => $formation->ID, 'user_id' => $User->ID];
-                  $result = \includes\model\Model_Subscription_Formation::add_resources($args);
+                  $ModelFormation = new \includes\model\Model_Subscription_Formation();
+                  // Vérifier si l'utilisateur s'est déja inscrit
+                  $hasRegister = $ModelFormation::is_register( (int)$formation->ID, $User->ID );
+                  if ($hasRegister && !empty($hasRegister)) {
+                    $error = new WP_Error('warning', "Désolé, Vous étes déja inscrit à cette formation");
+                    break;
+                  }
+
+                  $result = $ModelFormation::add_resources($args);
                   if (!$result) {
-                    new WP_Error('broke', "Impossible d'ajouter votre inscription dans la base de donnée");
+                    $error = new WP_Error('error', "Impossible d'ajouter votre inscription dans la base de donnée");
                   } else {
                     do_action("send_registration_formation", $user_id, $formation->ID);
                   }
@@ -138,8 +147,8 @@ wp_enqueue_style('offers');
               ?>
               <div class="offer-section">
                 <div class="offer-content d-inline-block mt-4">
-                  <h1>Voulez-vous vous inscrire sur cette formation? </h1>
-                  <h4><?= ucfirst($formation->title) ?></h4>
+                  <h1>Voulez-vous vous inscrire à cette formation ?</h1>
+                  <h4 class="mt-3 font-bold" style="color: #18c5a9"><?= ucfirst($formation->title) ?></h4>
                   <div class="offer-description mt-4">
                     <h6 class="mt-3">Description</h6>
                     <div class="mt-4">
@@ -178,20 +187,19 @@ wp_enqueue_style('offers');
             <?php endif; // .end subscription ?>
 
             <?php if (isset($_GET['action']) && $_GET['action'] === "confirmaction"):
-              if ($error) {
-                echo "Une erreur s'est produite, il se peut que votre compte ne vous permet pas de s'inscrire pour une formation. <br>
-                Veuillez vous connecter en tant que <b>particulier</b> et réessayer. Merci";
+              if (is_wp_error($error)) {
+                echo "<span class='badge badge-{$error->get_error_code()} col-12 pt-2 pb-2'>{$error->get_error_message()}</span>";
+                $current_page_link = get_permalink();
               }
               ?>
               <div class="offer-section">
-                <?php if (!$error): ?>
+                <?php if ( ! is_wp_error($error) ): ?>
                   <div class="offer-content d-inline-block mt-4">
                     <h1>Succès! </h1>
                     <div class="offer-description mt-4">
                       <div class="mt-4">
                         <div class="offer-field-value">
-                          Inscription envoyer avec succès. ITJob vous contacteras pour le paiement <br>et les
-                          informations de la formation
+                          Inscription envoyée avec succès. Itjob prendra contact avec vous pour le paiement de la formation
                         </div>
                       </div>
                     </div>
@@ -206,7 +214,7 @@ wp_enqueue_style('offers');
                     <div class="col-md-6">
                       <div>
                         <div class="float-right ml-3">
-                          <?php if (!$error): ?>
+                          <?php if ( ! is_wp_error($error) ): ?>
                             <a href="<?= get_post_type_archive_link('formation') ?>" class="float-right pl-2">
                               <button class="btn btn-outline-success btn-fix">
                                 <span class="btn-icon">Voir les formations</span>
@@ -214,7 +222,7 @@ wp_enqueue_style('offers');
                             </a>
                           <?php endif; ?>
 
-                          <?php if ($error): ?>
+                          <?php if ( is_wp_error($error) ): ?>
                             <a href="<?= site_url($wp->request) ?>" class="float-right pl-2">
                               <button class="btn btn-outline-success btn-fix">
                                 <span class="btn-icon">Retour</span>

@@ -14,6 +14,7 @@ use Http;
 use includes\model\Model_Request_Formation;
 use includes\post\Candidate;
 use includes\post\Company;
+use includes\post\Formation;
 
 class vcFormation
 {
@@ -22,6 +23,7 @@ class vcFormation
   {
     add_action('init', [&$this, 'vc_formation_mapping']);
     add_action('wp_ajax_new_formation', [&$this, 'new_formation']);
+    add_action('wp_ajax_add_cart', [&$this, 'add_cart']);
     add_action('wp_ajax_new_request_formation', [&$this, 'new_request_formation']);
     add_action('wp_ajax_nopriv_new_request_formation', [&$this, 'new_request_formation']);
     if (!shortcode_exists('vc_itjob_formation'))
@@ -154,8 +156,7 @@ class vcFormation
     );
   }
 
-  public
-  function form_formation_render_html ($attrs)
+  public function form_formation_render_html ($attrs)
   {
     global $itJob, $wp_version;
     extract(
@@ -170,8 +171,9 @@ class vcFormation
     $refused_access_msg = '<div class="text-left mt-5">';
     $refused_access_msg .= '<div class="font-bold text-left font-14 badge badge-pink" style="white-space: pre-wrap;">Seule ' .
       'un compte professionnel a le pouvoir d\'ajouté une formation. <br>';
-    $refused_access_msg .= 'Votre compte ne vous permet pas d\'accéder à cette option. Vous devriez vous connecter ou ' .
-      'crée un compte en tanque formateur pour bénéficier cette option.';
+    $refused_access_msg .= "Votre compte ne vous permet pas d'accéder à cette option. Nous vous invitons à vous ' .
+      'connecter avec un compte formateur ou à en créer un pour bénéficier de cette option.<br>";
+    $refused_access_msg .= "Remerciements";
     $refused_access_msg .= '</div></div>';
     $redirection = Http\Request::getValue('redir');
     $redirection = $redirection ? $redirection : get_post_type_archive_link('candidate');
@@ -211,11 +213,14 @@ class vcFormation
 
     wp_localize_script('form-formation', 'itOptions', [
       'version'  => $wp_version,
+      'company'  => $Company,
       'ajax_url' => admin_url('admin-ajax.php'),
       'helper'   => [
         'partials' => get_template_directory_uri() . '/assets/js/app/register/partials',
         'template' => get_template_directory_uri(),
-        'redir'    => $redirection
+        'redir'    => $redirection,
+        'rest_options' =>  get_rest_url(null, 'api/options'),
+        'checkout_url' => get_permalink(wc_get_page_id("checkout"))
       ]
     ]);
 
@@ -237,8 +242,7 @@ EOF;
    * ajax function
    * Cette fonction permet d'ajouter une formation
    */
-  public
-  function new_formation ()
+  public function new_formation ()
   {
     if (!wp_doing_ajax() || !is_user_logged_in()) {
       return;
@@ -278,6 +282,7 @@ EOF;
       // Ajouter une valeur par default
       update_field('featured', 0, $post_id);
       update_field('activated', 0, $post_id);
+      update_field('paid', 0, $post_id);
       // Ajouter les taxonomy
       wp_set_post_terms($post_id, [$form->activity_area], 'branch_activity');
       wp_set_post_terms($post_id, [$form->region], 'region');
@@ -289,19 +294,32 @@ EOF;
       // ********************* Notification ***********************
       do_action('notice-admin-new-formation', $post_id);
       do_action('email_new_formation', $post_id);
+
       // *********************************************************
-      wp_send_json_success("Formation ajouter avec succès");
+      $client_area = get_the_permalink( (int) ESPACE_CLIENT_PAGE );
+      wp_send_json_success($client_area);
     }
 
     wp_send_json_error($thing->get_message());
   }
 
+  public function add_cart() {
+    if (!wp_doing_ajax() || !is_user_logged_in()) {
+      wp_send_json_error(["msg" => "Veuillez vous connecter pour continuer", "code" => "account"]);
+    }
+    WC()->cart->empty_cart(); // Clear cart
+    $product_id = Http\Request::getValue('product_id', 0);
+    if (0 === $product_id)
+      wp_send_json_error(["msg" => "Parametre manquant (product_id)", "code" => "error"]);
+    WC()->cart->add_to_cart($product_id); // Add new product in cart
+    $checkout = get_permalink(wc_get_page_id('checkout'));
+    wp_send_json_success($checkout);
+  }
   /**
    * ajax function
    * Cette fonction permet d'ajouter une demande de formation
    */
-  public
-  function new_request_formation ()
+  public function new_request_formation ()
   {
     if (!wp_doing_ajax() || !is_user_logged_in()) {
       wp_send_json_error(["msg" => "Veuillez vous connecter pour continuer", "code" => "account"]);
@@ -332,8 +350,7 @@ EOF;
     } else wp_send_json_error(["msg" => "Votre compte ne vous permet pas d'envoyer une demande de formation", "code" => "broken"]);
   }
 
-  public
-  function formation_render_html ($attrs)
+  public function formation_render_html ($attrs)
   {
     global $itJob, $Engine;
     // Params extraction
@@ -348,9 +365,14 @@ EOF;
       ), EXTR_OVERWRITE);
 
     $formations = $itJob->services->getRecentlyPost('formation', 4, [
-      // Afficher seulement les offres activé
       [
         'key'     => 'activated',
+        'compare' => '=',
+        'value'   => 1,
+        'type'    => 'NUMERIC'
+      ],
+      [
+        'key'     => 'paid',
         'compare' => '=',
         'value'   => 1,
         'type'    => 'NUMERIC'
@@ -365,17 +387,16 @@ EOF;
     ]);
   }
 
-  public
-  function featured_formation_render_html ($attrs)
+  public function featured_formation_render_html ($attrs)
   {
     global $itJob;
     // Params extraction
     extract(
       shortcode_atts(
-        array(
+        [
           'title'    => 'Nos formation à la une',
           'position' => ''
-        ),
+        ],
         $attrs
       ), EXTR_OVERWRITE);
 
@@ -394,6 +415,18 @@ EOF;
         'key'     => 'activated',
         'value'   => 1,
         'compare' => '='
+      ],
+      [
+        'key'     => 'paid',
+        'compare' => '=',
+        'value'   => 1,
+        'type'    => 'NUMERIC'
+      ],
+      [
+        'key'     => 'featured_position',
+        'compare' => '=',
+        'value'   => trim($position) === 'sidebar' ? 2 : 1,
+        'type'    => 'NUMERIC'
       ]
     ]);
     $args = [
@@ -403,8 +436,7 @@ EOF;
     return (trim($position) === 'sidebar') ? $this->get_position_sidebar($args) : $this->get_position_wide($args);
   }
 
-  private
-  function get_position_sidebar ($args)
+  private function get_position_sidebar ($args)
   {
     global $Engine;
     try {
@@ -416,8 +448,7 @@ EOF;
     }
   }
 
-  private
-  function get_position_wide ($args)
+  private function get_position_wide ($args)
   {
     global $Engine;
     try {

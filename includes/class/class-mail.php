@@ -9,6 +9,8 @@ use includes\post\Formation;
 use includes\post\Offers;
 use includes\post\Annonce;
 use includes\post\Works;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
 use Underscore\Types\Arrays;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -326,6 +328,46 @@ class Mailing {
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     // Envoyer un mail à l'entreprise
     wp_mail( $to, $subject, $content, $headers );
+  }
+
+  /**
+   * Cette fonction permet d'envoie un mail à l'entreprise pour l'informer qu'il peut modifier ces offres
+   * sur le site.
+   * @param $offer_id int
+   * @return bool
+   * @throws Exception
+   */
+  public function new_offer($offer_id ) {
+    if ( ! is_numeric($offer_id) ) return false;
+    $mail = new PHPMailer(true);
+    $company_id = get_field('itjob_offer_company', $offer_id);
+    $company_id = intval($company_id);
+    if (0 === $company_id) return false;
+
+    $Company = new Company($company_id);
+    $mail->CharSet = 'UTF-8';
+    $mail->isHTML(true);
+    $mail->setFrom("no-reply@itjobmada.com", "Equipe ITJob");
+
+    $mail->addReplyTo('commercial@itjobmada.com', 'ITJob Madagascar');
+    $mail->addAddress($Company->author->user_email);
+    $msg = <<<MSG
+Bonjour,<br><br>
+Nous tenons à vous informer que vous avez la possibilité de modifier les dates limites de vos offres que vous avez récemment postées. 
+N’hésitez sur tout pas à prendre contact avec notre service commercial pour en savoir plus.<br>
+Nous vous souhaitons une agréable journée
+<br><br>
+L'équipe ITJob
+MSG;
+;
+    $mail->Body = $msg;
+    $mail->Subject = "Apporter une modification à votre annonce sur Itjobmada.com";
+    try {
+      $mail->send();
+    } catch (Exception $e) {
+      return false;
+    }
+
   }
 
   /**

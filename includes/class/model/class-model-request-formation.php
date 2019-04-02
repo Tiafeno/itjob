@@ -7,13 +7,10 @@ if (!defined('ABSPATH')) {
 }
 
 final
-class Model_Request_Formation
-{
+class Model_Request_Formation {
   public static $table = "request_training";
 
-  public static
-  function get_resources ($id_request = 0)
-  {
+  public static function get_resources($id_request = 0) {
     global $wpdb;
     if (self::request_exists($id_request)) {
       $table = self::$table;
@@ -24,9 +21,7 @@ class Model_Request_Formation
     }
   }
 
-  public static
-  function request_exists ($id_request)
-  {
+  public static function request_exists($id_request) {
     global $wpdb;
     $table = self::$table;
     $sql = "SELECT COUNT(*) FROM {$wpdb->prefix}{$table} WHERE ID = {$id_request}";
@@ -35,18 +30,16 @@ class Model_Request_Formation
     return $query ? true : false;
   }
 
-  public static
-  function add_resources ($args = [])
-  {
+  public static function add_resources($args = []) {
     global $wpdb;
-    $obj = (object)$args;
+    $obj = (object) $args;
     if (!self::hasRequest($obj->subject)) {
       $data = [
-        'user_id'     => $obj->user_id,
-        'subject'     => $wpdb->esc_like($obj->subject),
-        'topic'       => $obj->topic,
+        'user_id' => $obj->user_id,
+        'subject' => $wpdb->esc_like($obj->subject),
+        'topic' => $obj->topic,
         'description' => $obj->description,
-        'concerned'   => serialize([]),
+        'concerned' => serialize([]),
         'date_create' => $obj->date_create
       ];
       $format = ['%d', '%s', '%s', '%s', '%s'];
@@ -56,9 +49,7 @@ class Model_Request_Formation
     } else return null;
   }
 
-  public static
-  function hasRequest ($request_subject)
-  {
+  public static function hasRequest($request_subject) {
     global $wpdb;
     $table = self::$table;
     $sql = "SELECT COUNT(*) FROM {$wpdb->prefix}{$table} WHERE subject = %s";
@@ -68,8 +59,7 @@ class Model_Request_Formation
     return $result ? true : false;
   }
 
-  public static
-  function isConcerned( $request_training_id = 0, $User = null ) {
+  public static function isConcerned($request_training_id = 0, $User = null) {
     global $wpdb;
     $table = $wpdb->prefix . self::$table;
     if ($request_training_id === 0 || is_null($User) || !$User instanceof \WP_User) return false;
@@ -81,9 +71,7 @@ class Model_Request_Formation
     return in_array($User->ID, $concerned) ? true : false;
   }
 
-  public static
-  function set_concerned ($request_training_id = 0, $User = null)
-  {
+  public static function set_concerned($request_training_id = 0, $User = null) {
     global $wpdb;
     if ($request_training_id === 0 || is_null($User) || !$User instanceof \WP_User) return false;
     $table = $wpdb->prefix . self::$table;
@@ -102,9 +90,7 @@ class Model_Request_Formation
     } else return false;
   }
 
-  public static
-  function get_concerned ($request_training_id = 0)
-  {
+  public static function get_concerned($request_training_id = 0) {
     global $wpdb;
     if (!is_numeric($request_training_id) || $request_training_id === 0) return false;
     $table = $wpdb->prefix . self::$table;
@@ -113,31 +99,25 @@ class Model_Request_Formation
     return is_object($result) ? unserialize($result->concerned) : [];
   }
 
-  public static
-  function update_validation ($request_training_id = 0, $validation = 0)
-  {
+  public static function update_validation($request_training_id = 0, $validation = 0) {
     global $wpdb;
     if (!is_numeric($request_training_id) || $request_training_id === 0) return false;
     $result = $wpdb->update($wpdb->prefix . self::$table, ['validated' => $validation],
-      ['ID' => (int)$request_training_id], ['%d'], ['%d']);
+      ['ID' => (int) $request_training_id], ['%d'], ['%d']);
 
     return $result;
   }
 
-  public static
-  function update_activation ($request_training_id = 0, $activation = 0)
-  {
+  public static function update_activation($request_training_id = 0, $activation = 0) {
     global $wpdb;
     if (!is_numeric($request_training_id)) return false;
     $result = $wpdb->update($wpdb->prefix . self::$table, ['disabled' => $activation],
-      ['ID' => (int)$request_training_id], ['%d'], ['%d']);
+      ['ID' => (int) $request_training_id], ['%d'], ['%d']);
 
     return $result;
   }
 
-  public static
-  function collect_resources ($offset = 0, $number = 10)
-  {
+  public static function collect_resources($offset = 0, $number = 10) {
     global $wpdb;
     $table = $wpdb->prefix . self::$table;
     $sql = "SELECT * FROM `{$table}` ORDER BY validated ASC LIMIT %d, %d";
@@ -146,7 +126,7 @@ class Model_Request_Formation
     $subscriber = [];
     foreach ($results as $key => $result) {
       $subscriber[$key] = $result;
-      $User = new \WP_User((int)$result->user_id);
+      $User = new \WP_User((int) $result->user_id);
       unset($subscriber[$key]->user_id);
       $subscriber[$key]->validated = intval($result->validated);
       $subscriber[$key]->disabled = intval($result->disabled);
@@ -155,12 +135,10 @@ class Model_Request_Formation
     }
 
     $sql_count_formation = "SELECT COUNT(*) FROM `{$table}`";
-    return (object)['results' => $subscriber, 'founds' => $wpdb->get_var($sql_count_formation)];
+    return (object) ['results' => $subscriber, 'founds' => $wpdb->get_var($sql_count_formation)];
   }
 
-  public static
-  function collect_validate_resources ()
-  {
+  public static function collect_validate_resources() {
     global $wpdb;
     $table = $wpdb->prefix . self::$table;
     $sql = "SELECT * FROM `{$table}` WHERE validated = 1 AND disabled = 0 ORDER BY ID ASC ";
@@ -168,7 +146,7 @@ class Model_Request_Formation
     $subscriber = [];
     foreach ($results as $key => $result) {
       $subscriber[$key] = $result;
-      $User = new \WP_User((int)$result->user_id);
+      $User = new \WP_User((int) $result->user_id);
       unset($subscriber[$key]->user_id);
       $subscriber[$key]->validated = intval($result->validated);
       $subscriber[$key]->disabled = intval($result->disabled);
@@ -177,11 +155,10 @@ class Model_Request_Formation
     }
 
     $sql_count_formation = "SELECT COUNT(*) FROM `{$table}`";
-    return (object)['results' => $subscriber, 'founds' => $wpdb->get_var($sql_count_formation)];
+    return (object) ['results' => $subscriber, 'founds' => $wpdb->get_var($sql_count_formation)];
   }
 
-  public static
-  function remove_request_formation ($request_training_id = 0) {
+  public static function remove_request_formation($request_training_id = 0) {
     global $wpdb;
     if (is_numeric($request_training_id) && $request_training_id !== 0) {
       $table = $wpdb->prefix . self::$table;

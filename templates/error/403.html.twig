@@ -18,14 +18,14 @@
     color: #5c6bc0;
   }
 </style>
-<div class="error-content flexbox">
+<div class="error-content flexbox mt-5">
   <span class="error-icon"></span>
   <div class="flex-1">
     <h1 class="error-code">403</h1>
     <h3 class="font-strong">FORBIDDEN</h3>
     <p class="mb-4">You don't have permission to access.</p>
     <div>
-      <a class="text-primary" href="<?= home_url('/') ?>">Accueil</a>
+      <a class="btn btn-sm btn-outline-primary" href="{{ home_url }}">Retour</a>
     </div>
   </div>
 </div>

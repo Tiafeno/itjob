@@ -4,6 +4,7 @@ namespace includes\shortcode;
 
 use Http;
 use includes\model\itModel;
+use includes\model\Model_Subscription_Formation;
 use includes\object\jobServices;
 use includes\post\Annonce;
 use includes\post\Candidate;
@@ -24,6 +25,62 @@ if ( ! class_exists( 'scClient' ) ) :
 
     public function __construct() {
       if ( is_user_logged_in() ) {
+
+        add_action('admin_init', function () {
+          $company = get_role('company');
+          $company->add_cap( 'edit_formation' );
+          $company->add_cap( 'read_formation' );
+          $company->add_cap( 'publish_formations' );
+          $company->add_cap( 'edit_formations' );
+          $company->add_cap( 'edit_others_formations' );
+          $company->add_cap( 'edit_published_formations' );
+          $company->add_cap( 'edit_read_formations' );
+
+          $company->add_cap( 'edit_offer' );
+          $company->add_cap( 'read_offer' );
+          $company->add_cap( 'publish_offers' );
+          $company->add_cap( 'edit_offers' );
+          $company->add_cap( 'edit_others_offers' );
+          $company->add_cap( 'edit_published_offers' );
+          $company->add_cap( 'edit_read_offers' );
+
+          $candidate = get_role('candidate');
+          $candidate->add_cap( 'read_formation' );
+          $candidate->add_cap( 'read_offer' );
+
+          $administrator = get_role('administrator');
+          $administrator->add_cap( 'edit_formation' );
+          $administrator->add_cap( 'edit_formations' );
+          $administrator->add_cap( 'read_private_formation' );
+          $administrator->add_cap( 'read_formation' );
+          $administrator->add_cap( 'edit_published_formations' );
+          $administrator->add_cap( 'edit_others_formations' );
+          $administrator->add_cap( 'edit_private_formations' );
+          $administrator->add_cap( 'delete_formation' );
+          $administrator->add_cap( 'delete_formations' );
+          $administrator->add_cap( 'delete_others_formations' );
+          $administrator->add_cap( 'delete_private_formations' );
+          $administrator->add_cap( 'delete_published_formations' );
+          $administrator->add_cap( 'delete_private_formations' );
+          $administrator->add_cap( 'publish_formations' );
+
+          $administrator->add_cap( 'edit_offer' );
+          $administrator->add_cap( 'edit_offers' );
+          $administrator->add_cap( 'read_private_offer' );
+          $administrator->add_cap( 'read_offer' );
+          $administrator->add_cap( 'edit_published_offers' );
+          $administrator->add_cap( 'edit_others_offers' );
+          $administrator->add_cap( 'edit_private_offers' );
+          $administrator->add_cap( 'delete_offer' );
+          $administrator->add_cap( 'delete_offers' );
+          $administrator->add_cap( 'delete_others_offers' );
+          $administrator->add_cap( 'delete_private_offers' );
+          $administrator->add_cap( 'delete_published_offers' );
+          $administrator->add_cap( 'delete_private_offers' );
+          $administrator->add_cap( 'publish_offers' );
+
+        });
+
         add_action( 'wp_ajax_update_request_status', [ &$this, 'update_request_status' ] );
         add_action( 'wp_ajax_get_all_request', [ &$this, 'get_all_request' ] );
 
@@ -67,6 +124,8 @@ if ( ! class_exists( 'scClient' ) ) :
         add_action( 'wp_ajax_collect_formations', [ &$this, 'collect_formations' ] );
         add_action( 'wp_ajax_collect_works', [ &$this, 'collect_works' ] );
         add_action( 'wp_ajax_collect_annonces', [ &$this, 'collect_annonces' ] );
+        add_action( 'wp_ajax_collect_support_featured', [ &$this, 'collect_support_featured' ] );
+        add_action( 'wp_ajax_collect_candidate_subscribe_formation', [ &$this, 'collect_candidate_subscribe_formation' ] );
         add_action( 'wp_ajax_reject_cv', [ &$this, 'reject_cv' ] );
         add_action( 'wp_ajax_get_candidacy', [ &$this, 'get_candidacy' ] );
         add_action( 'wp_ajax_collect_current_user_notices', [ &$this, 'collect_current_user_notices' ] );
@@ -133,13 +192,15 @@ if ( ! class_exists( 'scClient' ) ) :
             'ajax_url'      => admin_url( 'admin-ajax.php' ),
             'tpls_partials' => get_template_directory_uri() . '/assets/js/app/client/partials',
             'img_url'       => get_template_directory_uri() . '/img',
+            'rest_options' =>  get_rest_url(null, 'api/options'),
+            'checkout_url' => get_permalink(wc_get_page_id("checkout"))
           ]
         ];
         define( 'OC_URL', get_template_directory_uri() . '/assets/js/app/client' );
 
         // Load company template
         if ( in_array( 'company', $client_roles, true ) ) {
-          wp_enqueue_script( 'app-company', OC_URL."/configs-company{$suffix}.js", [ 'espace-client' ], $itJob->version, true );
+          wp_enqueue_script( 'app-company', OC_URL."/configs-company{$suffix}.js", [ 'espace-client', 'wp-api' ], $itJob->version, true );
           $wp_localize_script_args['Helper']['add_offer_url'] = get_permalink( (int) ADD_OFFER_PAGE );
           $wp_localize_script_args['client_type']             = 'company';
           $wp_localize_script_args['token']                   = $client->user_pass;
@@ -180,10 +241,6 @@ if ( ! class_exists( 'scClient' ) ) :
      */
     public function client_trash_offer() {
       global $wpdb;
-      /**
-       * @func wp_doing_ajax
-       * (bool) True if it's a WordPress Ajax request, false otherwise.
-       */
       if ( ! wp_doing_ajax() || ! is_user_logged_in() ) {
         return;
       }
@@ -271,39 +328,29 @@ if ( ! class_exists( 'scClient' ) ) :
         'region'          => Http\Request::getValue( 'region' ),
         'city'            => Http\Request::getValue( 'country' ),
       ];
-      if ( ! empty( $company_id ) ) {
+      if ( ! is_null( $company_id ) ) {
+        $company_id = intval($company_id);
         $form = [
-          //'address'  => Http\Request::getValue( 'address' ),
-          'greeting' => Http\Request::getValue( 'greeting', null ),
-          'name'     => Http\Request::getValue( 'name' ),
+          'address'  => Http\Request::getValue( 'address', null ),
+          'name'     => Http\Request::getValue( 'name', null),
           'stat'     => Http\Request::getValue( 'stat', null ),
           'nif'      => Http\Request::getValue( 'nif', null )
         ];
         foreach ( $form as $key => $value ) {
-          if ( ! is_null( $value ) ) {
-            update_field( "itjob_company_{$key}", $value, $company_id );
-          }
-        }
-      } else {
-        $input = [
-          //'address'  => Http\Request::getValue( 'address' ),
-          'greeting' => Http\Request::getValue( 'greeting' ),
-        ];
-        foreach ( $input as $key => $value ) {
-          if ( $value ) {
-            update_field( "itjob_cv_{$key}", $value, $candidate_id );
-          }
+          if (!$value) continue;
+          update_field( "itjob_company_{$key}", $value, $company_id );
         }
       }
-      $post_id = is_null( $candidate_id ) ? $company_id : $candidate_id;
+      $post_id =  $candidate_id ? $candidate_id : $company_id;
       foreach ( $terms as $key => $value ) {
+        $post_id = intval($post_id);
         $isError = wp_set_post_terms( $post_id, [ (int) $value ], $key );
         if ( is_wp_error( $isError ) ) {
           wp_send_json( [ 'success' => false, 'msg' => $isError->get_error_message() ] );
         }
       }
 
-      wp_send_json( [ 'success' => true ] );
+      wp_send_json( [ 'success' => true, 'resource_id' => $candidate_id. '|'.$company_id  ] );
     }
 
     /**
@@ -507,7 +554,7 @@ if ( ! class_exists( 'scClient' ) ) :
       $experiences = get_field( 'itjob_cv_experiences', $this->Candidate->getId() );
 
       do_action('notice-admin-update-cv', $this->Candidate->getId());
-      do_action('update_cv',  $this->Candidate->getId());
+      //do_action('update_cv',  $this->Candidate->getId());
 
       wp_send_json( [ 'success' => true, 'experiences' => $experiences ] );
     }
@@ -541,7 +588,7 @@ if ( ! class_exists( 'scClient' ) ) :
       $trainings = get_field( 'itjob_cv_trainings', $this->Candidate->getId() );
 
       do_action('notice-admin-update-cv', $this->Candidate->getId());
-      do_action('update_cv',  $this->Candidate->getId());
+      //do_action('update_cv',  $this->Candidate->getId());
 
       wp_send_json( [ 'success' => true, 'trainings' => $trainings ] );
     }
@@ -891,9 +938,6 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_send_json_success( $results );
     }
 
-    /**
-     * Function ajax
-     */
     public function collect_favorite_candidates() {
       global $itJob;
       if ( ! is_user_logged_in() ) {
@@ -925,7 +969,6 @@ if ( ! class_exists( 'scClient' ) ) :
     }
 
     /**
-     * Function ajax
      * Récuperer les notifications de l'utilisateur
      */
     public function collect_current_user_notices() {
@@ -937,6 +980,80 @@ if ( ! class_exists( 'scClient' ) ) :
       if ($User->ID === 0) wp_send_json_error("Vous n'êtes pas connecter à notre service");
       $Model = new itModel();
       wp_send_json_success($Model->collect_notices($User->ID));
+    }
+
+    /**
+     * Récupere les diponibilité des positions à la une dans le site (à la une & la liste)
+     *
+     */
+    public function collect_support_featured() {
+      global $wpdb;
+      $results = [];
+      $post_type = Http\Request::getValue('type', false);
+      $dateNow = Date("Y-m-d H:i:s");
+      if (!$post_type)
+        wp_send_json_error("Parametre manquant (type)");
+      // position sur le front
+
+      $sql_position = <<<SQL
+SELECT COUNT(*) FROM $wpdb->posts as pst WHERE pst.post_type = '{$post_type}' AND pst.post_status = 'publish'
+AND (
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm
+    WHERE pm.meta_key = 'featured' AND pm.meta_value = 1)
+  AND
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm 
+    WHERE pm.meta_key = 'featured_datelimit' AND pm.meta_value >= '{$dateNow}')
+)
+AND
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm 
+    WHERE pm.meta_key = 'featured_position' AND pm.meta_value = 1)
+SQL;
+
+      $front_position = $wpdb->get_var($sql_position);
+      $results[] = [
+        'slug' => 'front',
+        'name' =>  ucfirst("à la une"),
+        'value' => 1,
+        'counts' => intval($front_position)
+      ];
+
+      $wpdb->flush();
+
+      // position dans la liste
+      $sql_lists = <<<EOF
+SELECT COUNT(*) FROM $wpdb->posts as pst WHERE pst.post_type = '{$post_type}' AND pst.post_status = 'publish'
+AND (
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm
+    WHERE pm.meta_key = 'featured' AND pm.meta_value = 1)
+  AND
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm 
+    WHERE pm.meta_key = 'featured_datelimit' AND pm.meta_value >= '{$dateNow}')
+)
+AND
+  pst.ID IN (SELECT pm.post_id FROM {$wpdb->postmeta} as pm 
+    WHERE pm.meta_key = 'featured_position' AND pm.meta_value = 2)
+EOF;
+
+      $list_position = $wpdb->get_var($sql_lists);
+      $results[] = [
+        'slug' => 'lists',
+        'name' =>  ucfirst("Liste"),
+        'value' => 2,
+        'counts' => intval($list_position)
+      ];
+
+      wp_send_json_success($results);
+    }
+
+    /**
+     * Récupere la liste des candidats inscrit dans une formation
+     */
+    public function collect_candidate_subscribe_formation() {
+      $formation_id = Http\Request::getValue('ids', false);
+      if (!$formation_id) wp_send_json_error("Parametre manquant (ids)");
+      $results = Model_Subscription_Formation::get_candidates($formation_id);
+
+      wp_send_json_success($results);
     }
 
     /**

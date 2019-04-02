@@ -1,6 +1,5 @@
 angular.module('FormationApp', ['ui.router', 'ngMessages'])
   .config(function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
-    //$interpolateProvider.startSymbol('[[').endSymbol(']]');
     var states = [{
       name: 'form',
       url: '/form',
@@ -11,6 +10,9 @@ angular.module('FormationApp', ['ui.router', 'ngMessages'])
         },
         area: function (services) {
           return services.getTaxonomy('branch_activity');
+        },
+        options: function (services) {
+          return services.getOptions();
         }
       }
     }];
@@ -26,8 +28,8 @@ angular.module('FormationApp', ['ui.router', 'ngMessages'])
     return {
       getTaxonomy: function (Tax) {
         return $http.get(itOptions.ajax_url + '?action=ajx_get_taxonomy&tax=' + Tax, {
-            cache: true
-          })
+          cache: true
+        })
           .then(function (resp) {
             return resp.data;
           });
@@ -41,27 +43,47 @@ angular.module('FormationApp', ['ui.router', 'ngMessages'])
           },
           data: formData
         });
+      },
+      getOptions: function () {
+        return $http.get(itOptions.helper.rest_options, {cache: true}).then(resp => resp.data);
       }
     };
   }])
   .component('formComponent', {
     bindings: {
       region: '<',
-      area: '<'
+      area: '<',
+      options: '<'
     },
     templateUrl: itOptions.helper.partials + '/formation/form.html?ver=' + itOptions.version,
     controllerAs: 'vm',
-    controller: function ($scope, services) {
+    controller: ['$scope', '$http', 'services', function ($scope, $http, services) {
+      $scope.WPEndpoint = null;
+      $scope.Form = {};
       $scope.regions = [];
+      $scope.options = {};
       $scope.sectorArea = [];
       this.$onInit = () => {
+        let origin = document.location.origin;
+        $scope.WPEndpoint = new WPAPI({endpoint: `${origin}/wp-json`});
+        let namespace = 'wp/v2'; // use the WP API namespace
+        let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
+        let route_formation = '/formation/(?P<id>\\d+)';
+        let route_product = '/products/(?P<id>\\d+)';
+        $scope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
+        $scope.WPEndpoint.formation = $scope.WPEndpoint.registerRoute(namespace, route_formation);
+        $scope.WPEndpoint.product = $scope.WPEndpoint.registerRoute(wc_namespace, route_product);
+
+        // Variable dependant du formulaire
         $scope.regions = _.clone(this.region);
         $scope.sectorArea = _.clone(this.area);
+        $scope.options = _.clone(this.options);
+
+        $scope.Form.establish_name = itOptions.company.title;
       };
       $scope.error = false;
       $scope.buttonDisable = false;
       $scope.uri = {};
-      $scope.Form = {};
       $scope.Form.price = 0;
       $scope.Form.distance_learning = '0';
       // Envoyer le formulaire
@@ -91,20 +113,18 @@ angular.module('FormationApp', ['ui.router', 'ngMessages'])
           .sendPostForm(fData)
           .then(
             function (resp) {
-              var status = resp.data;
+              var response = resp.data;
               swal({
                 title: 'Notification',
                 text: "Votre formation modulaire a bien été envoyée. " +
                 "Votre annonce sera validée par nos soins avant la mise en ligne sous 24 heures jours ouvrés et en ligne" +
-                " pour une durée de un mois .",
-                type: status.success ? 'info' : 'error',
+                " pour une durée de un mois.",
+                type: response.success ? 'info' : 'error',
               }, function () {
-                $scope.buttonDisable = false;
-                if (status.success) {
-                  var redirection = itOptions.helper.redir;
-                  window.location.href = redirection;
+                if (response.success) {
+                  window.location.href = response.data;
                 }
-                if (!status.success) $scope.error = true;
+                if (!response.success) $scope.error = true;
               });
             },
             function (error) {
@@ -134,5 +154,5 @@ angular.module('FormationApp', ['ui.router', 'ngMessages'])
         forceParse: false,
         autoclose: true
       });
-    }
-  })
+    }]
+  });

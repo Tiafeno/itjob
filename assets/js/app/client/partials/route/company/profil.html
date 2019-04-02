@@ -153,10 +153,6 @@
         <div class="text-muted font-13">OFFRE(S)</div>
         <div class="h2 mt-2">[[ offerLists.length ]]</div>
       </div>
-      <div class="px-4 text-center" ng-if="sector === 2">
-        <div class="text-muted font-13">FORMATION(S)</div>
-        <div class="h2 mt-2">[[ formationCount ]]</div>
-      </div>
     </div>
   </div>
 </div>
@@ -181,7 +177,7 @@
         </a>
       </li>
       <li class="nav-item" ng-if="sector === 2">
-        <a class="nav-link" ui-sref-active="active" ui-sref="manager.profil.formations" data-toggle="tab">
+        <a class="nav-link" ui-sref-active="active" ui-sref="manager.profil.formation" data-toggle="tab">
           Mes formations
         </a>
       </li>

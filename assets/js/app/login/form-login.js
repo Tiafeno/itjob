@@ -70,7 +70,7 @@ angular.module('formLogin', ['ngMessages', 'ngAria', 'ngSanitize'])
         $scope.buttonDisable = true;
         loginFactory
           .sendPostForm(form)
-          .then(function (resp) {
+          .then(resp => {
             var response = resp.data;
             var query = response.data;
             if (response.success) {
@@ -98,6 +98,9 @@ angular.module('formLogin', ['ngMessages', 'ngAria', 'ngSanitize'])
               $scope.errorMessage = query.msg;
               $scope.buttonDisable = false;
             }
+          }, error => {
+            $scope.buttonDisable = false;
+            alert("Une erreur s'est produite. Connexion introuvable. Veuillez réessayer ultérieurement.");
           })
       };
 

@@ -43,7 +43,7 @@
         <div class="form-group" id="jobsought">
           <label class="font-normal">Emploi recherché ou métier <span style="color: red">*</span></label>
             <!--<input class="form-control tagsinput"  name="jobSought" ng-model="formData.jobSought" type="text"  autocomplete="off" placeholder="Emploi recherché">-->
-          <tags-input ng-model="formData.jobSougths" add-on-paste="true" paste-split-pattern="[,;|/\:.*_]" max-lenght="2" max-tags="2"
+          <tags-input ng-model="formData.jobSougths" add-on-paste="true" paste-split-pattern="[,;|/\:.*_]" min-tags="1" max-lenght="2" max-tags="2"
                       display-property="name" placeholder="Emploi recherché"
                       on-tag-adding="onAddingJobTag($tag)"
                       on-invalid-tag="onTagInvalid($tag)"

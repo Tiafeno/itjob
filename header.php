@@ -196,6 +196,10 @@
       border-color: #12a5d1;
     }
   </style>
+  <script id="mcjs">!function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,
+      p.parentNode.insertBefore(m,p)}(document,"script",
+      "https://chimpstatic.com/mcjs-connected/js/users/7a2d017c582ace6c2a0fd5006/806db73f71a431fd8ac6152cc.js");
+  </script>
 </head>
 <body <?php body_class(); ?> >
 

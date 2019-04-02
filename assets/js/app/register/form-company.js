@@ -287,6 +287,8 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
     $rootScope.regions = _.clone(regions);
     $rootScope.allCity = _.clone(allCity);
     $rootScope.company = {};
+    $rootScope.company.newsletter = 1;
+    $rootScope.company.notification = 1;
     $rootScope.company.greeting = '';
     $rootScope.company.cellphone = [{id: 0, value: ''}];
 

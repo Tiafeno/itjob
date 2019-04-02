@@ -199,8 +199,9 @@ if (!class_exists('vcOffers')):
       wp_set_post_terms($post_id, [(int) $form->region], 'region');
       wp_set_post_terms($post_id, [(int) $form->country], 'city');
 
-      do_action('notice-admin-new-offer', $post_id);
+      //do_action('notice-admin-new-offer', $post_id);
       do_action('create_pending_offer_mail', $post_id);
+      do_action('new_offer', $post_id); // Mail
 
       wp_send_json(['success' => true, 'offer' => new Offers($post_id)]);
     }
@@ -256,6 +257,7 @@ if (!class_exists('vcOffers')):
       update_field('itjob_offer_otherinformation', $form->other, $post_id);
       update_field('itjob_offer_abranch', $form->branch_activity, $post_id);
       update_field('itjob_offer_featured', 0, $post_id);
+      // Ajouter l'identifiant de l'entreprise dans ce champ ACF
       update_field('itjob_offer_company', $form->company_id, $post_id);
 
       // Ne pas activer l'offre, En attente de validation de l'administrateur
@@ -362,7 +364,7 @@ if (!class_exists('vcOffers')):
       extract(
         shortcode_atts(
           array(
-            'title' => 'Offres à la une',
+            'title'    => 'Offres à la une',
             'position' => ''
           ),
           $attrs
@@ -373,14 +375,21 @@ if (!class_exists('vcOffers')):
       /** @var string $title */
       // Recuperer dans le service les offres publier et à la une
       $offers = $itJob->services->getFeaturedPost('offers', [
-        'key' => 'itjob_offer_featured',
-        'value' => 1,
-        'compare' => '='
+        [
+          'key'     => 'itjob_offer_featured',
+          'value'   => 1,
+          'compare' => '='
+        ],
+        [
+          'key'     => 'itjob_offer_featured_position',
+          'value'   => trim($position) === 'sidebar' ? 2 : 1,
+          'compare' => '='
+        ]
       ]);
       $site_url = get_site_url();
       $added_featured_url = is_user_logged_in() ? null : home_url("connexion/company/?redir={$site_url}/espace-client");
       $args = [
-        'title' => $title,
+        'title'  => $title,
         'offers' => $offers,
         'added_featured_offer_url' => $added_featured_url
       ];
@@ -473,6 +482,7 @@ if (!class_exists('vcOffers')):
             'redir_url' => $redir,
             'partials_url' => get_template_directory_uri() . '/assets/js/app/offers/partials',
             'template_url' => get_template_directory_uri(),
+            'rest_url_options' => get_rest_url(null, 'api/options')
           ]
         ]);
 
