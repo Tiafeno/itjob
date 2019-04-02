@@ -45,7 +45,7 @@ APPOC
           name: 'manager.profil',
           url: '/profil',
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/profil.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", "$state", "clientFactory", function ($rootScope, $state, clientFactory) {
+          controller: ["$rootScope", "$state", "$filter", "clientFactory", function ($rootScope, $state, $filter, clientFactory) {
             $rootScope.profilEditor = {};
             $rootScope.profilEditor.loading = false;
             $rootScope.profilEditor.form = {};
