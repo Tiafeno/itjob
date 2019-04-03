@@ -145,9 +145,8 @@
           Ajouter le numéro téléphone un par un.
           <br>Cliquer sur le bouton « + » pour ajouter un autre numéro.
           <span class="mt-1 d-block"></span>
-          <br>Les formats de numéro téléphone validé intègre les préﬁxes suivants (034 ... ou 039... ou +26133.. ou
-          0026132...
-          ou 00261 39 12 345 67).
+          <br>Les formats de numéro téléphone validé intègre les préﬁxes suivants (034 ... ou 039...
+          ou 039XXXXXXX).
         </p>
       </div>
     </div>
@@ -209,7 +208,7 @@
       <div class="col-sm-6">
         <input class="form-control" name="pwd" ng-model="company.pwd" ng-minlength="6" type="password"
                placeholder="Mot de passe" placeholder="Ex: Papaparse29@"
-               ng-pattern="/^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z\d]).{8,}$/"
+               ng-pattern="/^(?=(.*\d){2})(?=.*[a-z])(?=.*[A-Z]).{8,}$/"
                required>
         <div ng-messages="formCompany.pwd.$error" role="alert" class="input-message-animation"
              ng-show="formCompany.pwd.$invalid && formCompany.pwd.$touched">
