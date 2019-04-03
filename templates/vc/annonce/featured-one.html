@@ -18,7 +18,7 @@
   }
 </style>
 <div class="container-annonce uk-padding-remove">
-  <h5 class="container-annonce-title">{{ title }}</h5>
+  <h5 class="container-annonce-title ml3 font-bold uppercase">{{ title }}</h5>
   <div class="row mb-5 ml-0 mr-0">
     {% for annonce in annonces %}
     <div class="col-md-3 col-sm-6 row-annonce">
@@ -60,7 +60,6 @@
 
     {% if annonces.length < 4 %}
     <div class="col-md-3 col-sm-6 row-annonce">
-
       <div class="card ibox mb-4">
         <div class="card-body" style="background-color: lightseagreen;">
           <h4 class="card-title mb-4">
