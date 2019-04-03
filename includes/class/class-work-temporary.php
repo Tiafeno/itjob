@@ -8,8 +8,6 @@
 
 namespace includes\post;
 
-use includes\object\jobServices;
-
 if (!defined('ABSPATH')) {
   exit;
 }
@@ -88,12 +86,42 @@ class Works {
     $view = get_post_meta($this->ID, 'count_view', true);
     // Récuperer les utilisateurs qui ont contacté l'annnonce
     $contact_sender = get_post_meta($this->ID, 'sender_contact', true);
-    $this->count_view = $view ? (int)$view : 0;
+    $this->count_view = $view ? (int) $view : 0;
     $this->contact_sender = empty($contact_sender) ? [] : $contact_sender;
   }
 
   public function is_work() {
     return get_post_type($this->ID) === $this->post_type;
+  }
+
+  private function get_tax_field() {
+    $regions = wp_get_post_terms($this->ID, 'region', ["fields" => "all"]);
+    $towns = wp_get_post_terms($this->ID, 'city', ["fields" => "all"]);
+    $activity_area = wp_get_post_terms($this->ID, 'branch_activity', ["fields" => "all"]);
+    $this->region = is_array($regions) && !empty($regions) ? $regions[0] : null;
+    $this->town = is_array($towns) && !empty($towns) ? $towns[0] : null;
+    $this->activity_area = is_array($activity_area) && !empty($activity_area) ? $activity_area[0] : null;
+
+  }
+
+  private function get_acf_field() {
+    $this->featured = get_field('featured', $this->ID); // false|true
+    $this->featured_datelimit = get_field('featured_datelimit', $this->ID); // Y-m-d H:i:s
+    $this->type = get_field('type', $this->ID); // ['value' => <string>, 'label' => <string>]
+    $this->cellphone = get_field('cellphone', $this->ID); // number
+    $this->gallery = get_field('gallery', $this->ID);
+    $this->activated = get_field('activated', $this->ID);
+    $this->price = get_field('price', $this->ID);
+    $this->reference = get_field('reference', $this->ID);
+    $this->address = get_field('address', $this->ID);
+  }
+
+  public static function is_wp_error() {
+    if (is_wp_error(self::$error)) {
+      return self::$error->get_error_message();
+    } else {
+      return false;
+    }
   }
 
   public function get_mail() {
@@ -103,36 +131,6 @@ class Works {
   public function get_user() {
     $User = get_field('annonce_author', $this->ID); // WP_User
     return $this->author = $User;
-  }
-
-  private function get_tax_field() {
-    $regions = wp_get_post_terms($this->ID, 'region', ["fields" => "all"]);
-    $towns   = wp_get_post_terms($this->ID, 'city', ["fields" => "all"]);
-    $activity_area = wp_get_post_terms($this->ID, 'branch_activity', ["fields" => "all"]);
-    $this->region  = is_array($regions) && !empty($regions) ? $regions[0] : null;
-    $this->town    = is_array($towns) && !empty($towns) ? $towns[0] : null;
-    $this->activity_area = is_array($activity_area) && !empty($activity_area) ? $activity_area[0] : null;
-
-  }
-
-  private function get_acf_field() {
-    $this->featured  = get_field('featured', $this->ID); // false|true
-    $this->featured_datelimit = get_field('featured_datelimit', $this->ID); // Y-m-d H:i:s
-    $this->type     = get_field('type', $this->ID); // ['value' => <string>, 'label' => <string>]
-    $this->cellphone = get_field('cellphone', $this->ID); // number
-    $this->gallery   = get_field('gallery', $this->ID);
-    $this->activated = get_field('activated', $this->ID);
-    $this->price     = get_field('price', $this->ID);
-    $this->reference = get_field('reference', $this->ID);
-    $this->address   = get_field('address', $this->ID);
-  }
-
-  public static function is_wp_error() {
-    if (is_wp_error(self::$error)) {
-      return self::$error->get_error_message();
-    } else {
-      return false;
-    }
   }
 
   public function is_activated() {
@@ -150,7 +148,7 @@ class Works {
    * @param $user_id {int}
    * @return bool
    */
-  public function add_contact_sender( $user_id ) {
+  public function add_contact_sender($user_id) {
     $senders = get_post_meta($this->ID, 'sender_contact', true);
     $senders = is_array($senders) ? $senders : [];
     if (intval($user_id) === 0) return false;
@@ -160,7 +158,7 @@ class Works {
     return true;
   }
 
-  public function has_contact( $user_id ) {
+  public function has_contact($user_id) {
     if (empty($this->contact_sender) || !is_array($this->contact_sender)) return false;
     return in_array(intval($user_id), $this->contact_sender);
   }

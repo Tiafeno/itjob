@@ -14,15 +14,14 @@ if (!defined('ABSPATH')) {
   exit;
 }
 
-final
-class Annonce
+final class Annonce
 {
   private static    $error   = false;
   private           $email   = null;
   private $author            = null;
   public $ID                 = 0;
   public $status             = '';
-  public static $post_type   = 'annonce';
+  public $post_type          = 'annonce';
   public $activated          = false;
   public $title              = null;
   public $price              = 0;
@@ -43,8 +42,7 @@ class Annonce
   public $date_publication = '';
   public $contact_sender = [];
 
-  public
-  function __construct ($annonce_id = null, $private_access = false)
+  public function __construct ($annonce_id = null, $private_access = false)
   {
     if (is_null($annonce_id)) {
       self::$error = new \WP_Error("broken", "L'identification de l'annonce est introuvable");
@@ -91,6 +89,9 @@ class Annonce
     $this->contact_sender = empty($contact_sender) ? [] : $contact_sender;
 
   }
+  public static function getInstance($annonce_id) {
+    return new self($annonce_id);
+  }
 
   public function get_author() {
     if (is_null($this->author)) {
@@ -108,7 +109,7 @@ class Annonce
   function is_annonce ($annonce_id)
   {
     $post_type = get_post_type($annonce_id);
-    return $post_type === self::$post_type;
+    return $post_type === 'annonce';
   }
 
   private

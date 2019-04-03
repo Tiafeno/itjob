@@ -74,8 +74,8 @@ class vcFormation
             'heading'     => 'Position',
             'param_name'  => 'position',
             'value'       => array(
-              'Sur le côté'  => 'sidebar',
-              'Sur le large' => 'content'
+              'Dans la liste'  => 'sidebar',
+              'A la une' => 'content'
             ),
             'std'         => 'content',
             'description' => "Modifier le mode d'affichage",
@@ -303,6 +303,10 @@ EOF;
     wp_send_json_error($thing->get_message());
   }
 
+  /**
+   * Ajouter un produit dns la carte
+   * @throws \Exception
+   */
   public function add_cart() {
     if (!wp_doing_ajax() || !is_user_logged_in()) {
       wp_send_json_error(["msg" => "Veuillez vous connecter pour continuer", "code" => "account"]);
