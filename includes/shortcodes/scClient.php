@@ -1077,6 +1077,7 @@ EOF;
 
       if ( $Model->check_list_limit() && $Offer->rateplan === 'standard') { // Compte standard
         // Nombre limite atteinte
+        // TODO: Rendre le prix modifiable dans le BO
         wp_send_json_error( "Vous venez de sélectionner 5 candidats et vous vous apprêter à en sélectionner un sixième savez 
         vous qu’à partir de là les CV sont payants au prix de 25.000 HT / CV " );
       }

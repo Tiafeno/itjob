@@ -38,8 +38,8 @@ trait ModelCVLists
     }
     // Ici on verifie seulement les entrer mais si le status est actif ou le contraire
     $table = $wpdb->prefix . 'cv_request';
-    $prepare = $wpdb->prepare("SELECT COUNT(*) FROM $table WHERE id_company = %d AND type = %s AND view = %d",
-      $Company->getId(), 'interested', 1);
+    $prepare = $wpdb->prepare("SELECT COUNT(*) FROM $table WHERE id_company = %d AND type = %s AND status = %s",
+      $Company->getId(), 'interested', 'validated');
     $rows = $wpdb->get_var($prepare);
 
     // Verifier pour les même CV sur des differents offre
