@@ -1301,7 +1301,7 @@ APPOC
           };
           // Filtrer les candidats qui sont selectionner et qui sont valider pour postuler
           $scope.filterSelectedCandidates = (item) => {
-            return item.type === "interested" && item.view == 1;
+            return item.type === "interested";
           };
           // Filtre les candidats qui ont postuler mais qui ne sont pas encore validé
           $scope.filterPostuledCandidates = (item) => {
