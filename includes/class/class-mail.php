@@ -316,7 +316,7 @@ class Mailing {
     $subject   = "{$Formation->reference} -  Notification de l’insertion d’une formation modulaire";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
-    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $headers[] = "From: ITJob No-Reply <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
     $content   .= "<p>Une  nouvelle formation modulaire « <b>{$Formation->title}</b> » portant la reférence 
     « <b>{$Formation->reference}</b> » a été insérée sur le site ITJOBMada par <b>{$Company->title}</b></p>";
@@ -385,7 +385,6 @@ Mode de diffusion: <b style="text-transform: uppercase">{$Offer->rateplan}</b>
 <br><br>
 L'équipe ITJob
 MSG;
-    ;
     wp_mail( $to, $subject, $msg, $headers );
   }
 
