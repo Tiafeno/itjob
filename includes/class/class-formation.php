@@ -25,6 +25,7 @@ class Formation {
   public $activity_area = null;
   public $duration = null;
   public $price = 0;
+  public $tariff = null;
   public $description = null;
   public $date_limit = null;
   public $date_create = null;
@@ -73,6 +74,7 @@ class Formation {
     }
     $paid = get_field('paid', $formation_id);
     $this->paid = intval($paid);
+    $this->tariff = get_field('tariff', $formation_id);
 
     $this->region = wp_get_post_terms($formation_id, 'region', ["fields" => "all"]);
     $this->activity_area = wp_get_post_terms($formation_id, 'branch_activity', ["fields" => "all"]);

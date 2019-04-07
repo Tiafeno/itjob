@@ -206,9 +206,6 @@ APPOC
             this.$onInit = () => {
               $scope.Offer = _.clone(Offer);
               let __type = Offer.itjob_offer_rateplan;
-              if (__type === 'standard') {
-                $state.go('manager.profil.offers.lists');
-              }
               $scope.Publications = _.clone($rootScope.options.pub.offer);
               let plan = _.findWhere($scope.Publications, {_id: __type});
               $scope.selectedPlan = _.clone(plan._id);
@@ -1157,7 +1154,7 @@ APPOC
             $state.go('manager.profil.offers.paiement', {id: offerId});
           };
 
-          // Modifier une offre
+          // Modifier une offrefeaturedOffer
           $scope.editOffer = (offerId, ev) => {
             let element = ev.currentTarget;
             let offerForm = new FormData();
@@ -1200,8 +1197,9 @@ APPOC
             $state.go('manager.profil.offers.featured', {id: offerId})
           };
 
-          $scope.featuredOffer = () => {
-            jQuery('#featured-dialog').modal('show');
+          $scope.featuredOffer = (offerId) => {
+            UIkit.modal('#modal-view-candidat').hide();
+            $state.go('manager.profil.offers.paiement', {id: offerId});
           };
 
           // Afficher les candidates qui ont postule

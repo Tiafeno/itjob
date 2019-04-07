@@ -70,6 +70,7 @@ class Mailing {
     add_action( 'new_pending_annonce', [ &$this, 'new_pending_annonce' ], 10, 1 );
     add_action( 'new_pending_works', [ &$this, 'new_pending_works' ], 10, 1 );
     add_action( 'send_registration_formation', [ &$this, 'send_registration_formation' ], 10, 2 );
+    add_action( 'update_offer_rateplan', [ &$this, 'update_offer_rateplan' ], 10, 1 );
 
     add_action( 'acf/save_post', function ( $post_id ) {
       $post_type   = get_post_type( $post_id );
@@ -311,11 +312,7 @@ class Mailing {
     $year = Date('Y');
 
     $admin_emails = $this->getModeratorEmail();
-    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
-    if ( ! $admin_emails ) {
-      return false;
-    }
-    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
+    $to        = $admin_emails;
     $subject   = "{$Formation->reference} -  Notification de l’insertion d’une formation modulaire";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
@@ -367,7 +364,29 @@ MSG;
     } catch (Exception $e) {
       return false;
     }
+  }
 
+  public function update_offer_rateplan ($offer_id) {
+    if ( ! is_numeric($offer_id) ) return false;
+    $admin_emails = $this->getModeratorEmail();
+    $Offer = new Offers(intval($offer_id));
+    $to        = $admin_emails;
+    $subject   = "Paiement de diffusion de l'offre « {$Offer->postPromote} »";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ITJob No-Reply <{$this->no_reply_notification_email}>";
+    $msg = <<<MSG
+Bonjour,<br><br>
+Offre mise à jours:<br>
+ID: <b>{$Offer->ID}</b><br>
+Titre: <b>{$Offer->postPromote}</b><br>
+Reference: <b>{$Offer->reference}</b><br>
+Mode de diffusion: <b style="text-transform: uppercase">{$Offer->rateplan}</b>
+<br><br>
+L'équipe ITJob
+MSG;
+    ;
+    wp_mail( $to, $subject, $msg, $headers );
   }
 
   /**

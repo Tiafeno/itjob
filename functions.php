@@ -362,7 +362,9 @@ function payment_complete ($order_id) {
       if (0 === $object_id) return false;
       switch ($type):
         case 'offers':
-          update_field('itjob_offer_paid', 1, $object_id);
+          update_field('itjob_offer_paid', 1, (int)$object_id);
+          // Envoyer un mail au administrateur pour informer un paiement
+          do_action('update_offer_rateplan', (int)$object_id);
           break;
 
         case 'formation':

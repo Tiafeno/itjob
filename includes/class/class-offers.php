@@ -75,6 +75,7 @@ final class Offers implements \iOffer {
   /** @var bool $featured - L'offre est à la une ou pas */
   public $featured;
   public $featuredDateLimit = null;
+  public $featuredPosition = null;
 
 
   public function __construct( $postId = null, $private_access = false ) {
@@ -184,6 +185,7 @@ final class Offers implements \iOffer {
     if (boolval($this->featured)){
       $featuredDateLimit = get_field('itjob_offer_featured_datelimit', $this->ID);
       $this->featuredDateLimit = strtotime($featuredDateLimit);
+      $this->featuredPosition = get_field('itjob_offer_featured_position', $this->ID);
     }
     $this->branch_activity  = get_field( 'itjob_offer_abranch', $this->ID ); // Objet Term
     $rateplan       = get_field( 'itjob_offer_rateplan', $this->ID ); // String

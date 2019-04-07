@@ -334,7 +334,8 @@ add_action('rest_api_init', function () {
           'itjob_company_greeting' => $company->greeting,
           'itjob_company_name'     => $company->name,
           'itjob_company_nif'      => $company->nif,
-          'itjob_company_stat'     => $company->stat
+          'itjob_company_stat'     => $company->stat,
+          'itjob_company_phone'    => isset($company->phone) ? $company->phone : ''
         ];
 
         foreach ($form as $itemKey => $item) {
