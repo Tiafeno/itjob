@@ -26,6 +26,7 @@ final class Annonce
   public $title              = null;
   public $price              = 0;
   public $reference          = null;
+  public $featured_position  = null;
   public $featured           = 0;
   public $featured_datelimit = null;
   public $description        = null;
@@ -138,6 +139,8 @@ final class Annonce
     $this->reference = get_field('reference', $this->ID);
     $this->address   = get_field('address', $this->ID);
     $this->featured_image = wp_get_attachment_image_src(get_post_thumbnail_id($this->ID), 'medium');
+    $position = get_field('featured_position', $this->ID);
+    $this->featured_position = intval($position) === 0 ? null : intval($position);
   }
 
   public static

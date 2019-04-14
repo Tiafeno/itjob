@@ -23,6 +23,7 @@ class Works {
   public $price = 0;
   public $reference = null;
   public $featured = 0;
+  public $featured_position = null;
   public $featured_datelimit = null;
   public $description = null;
   public $type = null;
@@ -114,6 +115,8 @@ class Works {
     $this->price = get_field('price', $this->ID);
     $this->reference = get_field('reference', $this->ID);
     $this->address = get_field('address', $this->ID);
+    $position = get_field('featured_position', $this->ID);
+    $this->featured_position = intval($position) === 0 ? null : intval($position); // 1: A la une, 2 : Dans la liste
   }
 
   public static function is_wp_error() {

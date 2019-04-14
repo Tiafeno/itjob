@@ -162,7 +162,8 @@ if ( ! class_exists( 'scClient' ) ) :
       wp_enqueue_script( 'moment-locales' );
       wp_enqueue_script( 'jquery-validate' );
       wp_enqueue_script( 'datatable', VENDOR_URL . '/dataTables/datatables.min.js', [ 'jquery' ], $itJob->version, true );
-      wp_register_script( 'espace-client', get_template_directory_uri() . "/assets/js/app/client/clients{$suffix}.js", [
+      wp_register_script( 'espace-client', get_template_directory_uri() . "/assets/js/app/client/clients{$suffix}.js", 
+      [
         'tinymce',
         'angular',
         'angular-ui-tinymce',
@@ -176,8 +177,7 @@ if ( ! class_exists( 'scClient' ) ) :
         'alertify',
         'ng-tags',
         'b-datepicker',
-        'fr-datepicker',
-        
+        'fr-datepicker'
       ], $itJob->version, true );
 
       $client       = get_userdata( $this->User->ID );
