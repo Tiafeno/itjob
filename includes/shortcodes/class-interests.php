@@ -323,9 +323,13 @@ class scInterests
     $args = [
       'post_type'   => 'offers',
       'post_status' => 'publish',
-      'meta_key'    => 'itjob_offer_company',
-      'meta_value'  => $Company->getId(),
-      'meta_compare' => '='
+      'meta_query'  => [
+        [
+          'key' => 'itjob_offer_company',
+          'value' => $Company->getId(),
+
+        ]
+      ]
     ];
     $offers = get_posts($args);
 
@@ -345,7 +349,7 @@ class scInterests
     $offers = array_filter($offers, function ($offer) {
       $today   = strtotime("today");
       $isLimited = strtotime($offer->dateLimit) < $today;
-      return $offer->activated;
+      return $offer->activated && !$isLimited;
     });
 
     wp_send_json_success($offers);

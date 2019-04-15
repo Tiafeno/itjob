@@ -198,65 +198,65 @@ APPOC
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/offer-paiement.html?ver=${itOptions.version}`,
           controller: ["$rootScope", "$scope", "$http", "$state", "Offer",
             function ($rootScope, $scope, $http, $state, Offer) {
-            let self = this;
-            $scope.Offer = {};
-            $scope.Plan = {};
-            $scope.Publications = {};
-            $scope.selectedPlan = null;
-            this.$onInit = () => {
-              $scope.Offer = _.clone(Offer);
-              let __type = Offer.itjob_offer_rateplan;
-              $scope.Publications = _.clone($rootScope.options.pub.offer);
-              let plan = _.findWhere($scope.Publications, {_id: __type});
-              $scope.selectedPlan = _.clone(plan._id);
+              let self = this;
+              $scope.Offer = {};
+              $scope.Plan = {};
+              $scope.Publications = {};
+              $scope.selectedPlan = null;
+              this.$onInit = () => {
+                $scope.Offer = _.clone(Offer);
+                let __type = Offer.itjob_offer_rateplan;
+                $scope.Publications = _.clone($rootScope.options.pub.offer);
+                let plan = _.findWhere($scope.Publications, {_id: __type});
+                $scope.selectedPlan = _.clone(plan._id);
 
-            };
+              };
 
-            $scope.paiementProcess = (plan) => {
-              const __plan = _.findWhere($scope.Publications, {_id: plan});
-              const key = $rootScope.options.wc._k;
-              const secret = $rootScope.options.wc._s;
-              let name = __plan._id.toUpperCase();
-              $rootScope.preloaderToogle();
-              if (plan === 'standard') {
-                $scope.WPEndpoint
-                  .offer()
-                  .id($scope.Offer.id)
-                  .update({itjob_offer_rateplan: plan})
-                  .then((offer) => {
-                    $scope.$apply(() => {
-                      $rootScope.preloaderToogle();
-                      swal("Modification", "Mode de diffusion de l'offre modifier avec succès");
-                      $state.go('manager.profil.offers.lists');
+              $scope.paiementProcess = (plan) => {
+                const __plan = _.findWhere($scope.Publications, {_id: plan});
+                const key = $rootScope.options.wc._k;
+                const secret = $rootScope.options.wc._s;
+                let name = __plan._id.toUpperCase();
+                $rootScope.preloaderToogle();
+                if (plan === 'standard') {
+                  $scope.WPEndpoint
+                    .offer()
+                    .id($scope.Offer.id)
+                    .update({itjob_offer_rateplan: plan})
+                    .then((offer) => {
+                      $scope.$apply(() => {
+                        $rootScope.preloaderToogle();
+                        swal("Modification", "Mode de diffusion de l'offre modifier avec succès");
+                        $state.go('manager.profil.offers.lists');
+                      });
                     });
-                  });
-                return true;
-              }
+                  return true;
+                }
 
-              $scope.WPEndpoint
-                .product()
-                .param('consumer_key', key)
-                .param('consumer_secret', secret)
-                .create({
-                  status: 'publish',
-                  type: 'simple',
-                  name: `OFFER ${name} (${$scope.Offer.title.rendered})`,
-                  price: __plan._p.toString(), // string accepted
-                  regular_price: __plan._p.toString(), // string accepted
-                  sold_individually: true,
-                  virtual: true,
-                  sku: `OFFER${$scope.Offer.id}`,
-                  meta_data: [
-                    {key: '__type', value: 'offers'},
-                    {key: '__id', value: $scope.Offer.id}
-                  ]
-                })
-                .then(resp => {
-                  let product = _.clone(resp);
-                  $scope.$apply(() => {
-                    self.addCart(product.id, __plan._id);
-                  });
-                }).catch(err => {
+                $scope.WPEndpoint
+                  .product()
+                  .param('consumer_key', key)
+                  .param('consumer_secret', secret)
+                  .create({
+                    status: 'publish',
+                    type: 'simple',
+                    name: `OFFER ${name} (${$scope.Offer.title.rendered})`,
+                    price: __plan._p.toString(), // string accepted
+                    regular_price: __plan._p.toString(), // string accepted
+                    sold_individually: true,
+                    virtual: true,
+                    sku: `OFFER${$scope.Offer.id}`,
+                    meta_data: [
+                      {key: '__type', value: 'offers'},
+                      {key: '__id', value: $scope.Offer.id}
+                    ]
+                  })
+                  .then(resp => {
+                    let product = _.clone(resp);
+                    $scope.$apply(() => {
+                      self.addCart(product.id, __plan._id);
+                    });
+                  }).catch(err => {
                   if (!_.isUndefined(err.code)) {
                     if (err.code === "product_invalid_sku") {
                       let resource_id = err.data.resource_id;
@@ -269,7 +269,8 @@ APPOC
                           .update({
                             name: `OFFER ${__plan._id.toUpperCase()} (${$scope.Offer.title.rendered})`,
                             price: __plan._p.toString(),
-                            regular_price: __plan._p.toString()})
+                            regular_price: __plan._p.toString()
+                          })
                           .then(product => {
                             $scope.$apply(() => {
                               self.addCart(product.id, __plan._id);
@@ -278,33 +279,33 @@ APPOC
                       });
                     }
                   }
-              });
-            };
-
-            self.addCart = (product_id, _id) => {
-              $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`)
-                .then(resp => {
-                  let response = resp.data;
-                  const key = $rootScope.options.wc._k;
-                  const secret = $rootScope.options.wc._s;
-                  $scope.WPEndpoint
-                    .offer()
-                    .id($scope.Offer.id)
-                    .update({itjob_offer_rateplan: _id})
-                    .then((offer) => {
-                      if (response.success) {
-                        $scope.$apply(() => {
-                          $rootScope.preloaderToogle();
-                        });
-                        swal("Redirection", "Vous serez rediriger vers la page de paiement");
-                        setTimeout(() => {
-                          window.location.href = response.data;
-                        }, 2000);
-                      }
-                    })
                 });
-            };
-          }]
+              };
+
+              self.addCart = (product_id, _id) => {
+                $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`)
+                  .then(resp => {
+                    let response = resp.data;
+                    const key = $rootScope.options.wc._k;
+                    const secret = $rootScope.options.wc._s;
+                    $scope.WPEndpoint
+                      .offer()
+                      .id($scope.Offer.id)
+                      .update({itjob_offer_rateplan: _id})
+                      .then((offer) => {
+                        if (response.success) {
+                          $scope.$apply(() => {
+                            $rootScope.preloaderToogle();
+                          });
+                          swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                          setTimeout(() => {
+                            window.location.href = response.data;
+                          }, 2000);
+                        }
+                      })
+                  });
+              };
+            }]
         },
         {
           name: 'manager.profil.offers.featured',
@@ -332,101 +333,101 @@ APPOC
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/offer-featured.html?ver=${itOptions.version}`,
           controller: ["$rootScope", "$scope", "$log", "$http", "Offer", 'positions',
             function ($rootScope, $scope, $log, $http, Offer, positions) {
-            $scope.Tariff = {};
-            $scope.Offer = {};
-            $scope.supportFeatured = {};
-            this.$onInit = () => {
-              moment.locale('fr');
-              $scope.supportFeatured = _.clone(positions.data);
-              let featured = _.clone($rootScope.options.featured);
-              if ( ! featured.hasOwnProperty('offer_tariff')) {
-                $log.debug("Property undefined (offer_tariff)");
-                return;
-              }
-              $scope.Tariff = _.map(featured.offer_tariff, (tarif) => {
-                let support = _.findWhere(positions.data, {slug: tarif.ugs});
-                tarif.available = support.counts >= 4 ? 0 : 1;
-                return tarif;
-              });
-              $scope.Offer = _.clone(Offer);
-            };
+              $scope.Tariff = {};
+              $scope.Offer = {};
+              $scope.supportFeatured = {};
+              this.$onInit = () => {
+                moment.locale('fr');
+                $scope.supportFeatured = _.clone(positions.data);
+                let featured = _.clone($rootScope.options.featured);
+                if (!featured.hasOwnProperty('offer_tariff')) {
+                  $log.debug("Property undefined (offer_tariff)");
+                  return;
+                }
+                $scope.Tariff = _.map(featured.offer_tariff, (tarif) => {
+                  let support = _.findWhere(positions.data, {slug: tarif.ugs});
+                  tarif.available = support.counts >= 4 ? 0 : 1;
+                  return tarif;
+                });
+                $scope.Offer = _.clone(Offer);
+              };
 
-            $scope.checkout = (ugs, price) => {
-              const key = $rootScope.options.wc._k;
-              const secret = $rootScope.options.wc._s;
-              let support = _.findWhere($scope.supportFeatured, {slug: ugs});
-              let priceFeatured = price.toString();
-              if (!support || support.counts === 4) return false;
-              $rootScope.preloaderToogle();
-              let offer = _.findWhere($rootScope.options.featured.offer_tariff, {ugs: ugs});
-              $rootScope.WPEndpoint
-                .product()
-                .param('consumer_key', key)
-                .param('consumer_secret', secret)
-                .create({
-                  status: 'publish',
-                  type: 'simple',
-                  name: `OFFRE SPONSORISE (${$scope.Offer.title.rendered}) - ${offer.position}`,
-                  price: offer.price, // string accepted
-                  regular_price: offer.price, // string accepted
-                  sold_individually: true,
-                  virtual: true,
-                  sku: `FEATURED${$scope.Offer.id}`,
-                  meta_data: [
-                    {key: '__type', value: 'featured'},
-                    {key: '__id', value: $scope.Offer.id}
-                  ]
-                })
-                .then(product => {
-                  $scope.$apply(() => {
-                    $rootScope.preloaderToogle();
-                    $scope.addCart(product.id, offer.ugs);
-                  });
-                })
-                .catch(err => {
-                  if (!_.isUndefined(err.code)) {
-                    if (err.code === "product_invalid_sku") {
-                      let resource_id = err.data.resource_id;
-                      $scope.$apply(() => {
-                        $scope.WPEndpoint
-                          .product()
-                          .param('consumer_key', key)
-                          .param('consumer_secret', secret)
-                          .id(resource_id)
-                          .update({price: offer.price, regular_price: offer.price})
-                          .then(product => {
-                            $scope.addCart(resource_id, offer.ugs);
-                          });
-                      });
-                    }
-                  }
-                })
-            };
-            $scope.addCart = (product_id, position) => {
-              $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`, {cache: false})
-                .then((resp) => {
-                  const response = resp.data;
-                  $scope.WPEndpoint
-                    .offer()
-                    .id($scope.Offer.id)
-                    .update({
-                      itjob_offer_featured_position: position,
-                      itjob_offer_featured_datelimit: moment().format("YYYY-MM-DD H:mm:ss")
-                    })
-                    .then(() => {
-                      if (response.success) {
+              $scope.checkout = (ugs, price) => {
+                const key = $rootScope.options.wc._k;
+                const secret = $rootScope.options.wc._s;
+                let support = _.findWhere($scope.supportFeatured, {slug: ugs});
+                let priceFeatured = price.toString();
+                if (!support || support.counts === 4) return false;
+                $rootScope.preloaderToogle();
+                let offer = _.findWhere($rootScope.options.featured.offer_tariff, {ugs: ugs});
+                $rootScope.WPEndpoint
+                  .product()
+                  .param('consumer_key', key)
+                  .param('consumer_secret', secret)
+                  .create({
+                    status: 'publish',
+                    type: 'simple',
+                    name: `OFFRE SPONSORISE (${$scope.Offer.title.rendered}) - ${offer.position}`,
+                    price: offer.price, // string accepted
+                    regular_price: offer.price, // string accepted
+                    sold_individually: true,
+                    virtual: true,
+                    sku: `FEATURED${$scope.Offer.id}`,
+                    meta_data: [
+                      {key: '__type', value: 'featured'},
+                      {key: '__id', value: $scope.Offer.id}
+                    ]
+                  })
+                  .then(product => {
+                    $scope.$apply(() => {
+                      $rootScope.preloaderToogle();
+                      $scope.addCart(product.id, offer.ugs);
+                    });
+                  })
+                  .catch(err => {
+                    if (!_.isUndefined(err.code)) {
+                      if (err.code === "product_invalid_sku") {
+                        let resource_id = err.data.resource_id;
                         $scope.$apply(() => {
-                          swal("Redirection", "Vous serez rediriger vers la page de paiement");
-                          $rootScope.preloaderToogle();
-                          setTimeout(() => {
-                            window.location.href = response.data;
-                          }, 2000);
+                          $scope.WPEndpoint
+                            .product()
+                            .param('consumer_key', key)
+                            .param('consumer_secret', secret)
+                            .id(resource_id)
+                            .update({price: offer.price, regular_price: offer.price})
+                            .then(product => {
+                              $scope.addCart(resource_id, offer.ugs);
+                            });
                         });
                       }
-                    })
-                });
-            };
-          }]
+                    }
+                  })
+              };
+              $scope.addCart = (product_id, position) => {
+                $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`, {cache: false})
+                  .then((resp) => {
+                    const response = resp.data;
+                    $scope.WPEndpoint
+                      .offer()
+                      .id($scope.Offer.id)
+                      .update({
+                        itjob_offer_featured_position: position,
+                        itjob_offer_featured_datelimit: moment().format("YYYY-MM-DD H:mm:ss")
+                      })
+                      .then(() => {
+                        if (response.success) {
+                          $scope.$apply(() => {
+                            swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                            $rootScope.preloaderToogle();
+                            setTimeout(() => {
+                              window.location.href = response.data;
+                            }, 2000);
+                          });
+                        }
+                      })
+                  });
+              };
+            }]
         },
         {
           name: 'manager.profil.formation',
@@ -729,7 +730,7 @@ APPOC
                     $scope.$apply(() => {
                       $scope.addProductCart(product.id, rate);
                     });
-                }).catch(err => {
+                  }).catch(err => {
                   if (!_.isUndefined(err.code)) {
                     if (err.code === "product_invalid_sku") {
                       let resource_id = err.data.resource_id;
@@ -878,7 +879,7 @@ APPOC
       states.forEach(function (state) {
         $stateProvider.state(state);
       });
-      $urlServiceProvider.rules.otherwise({ state: 'manager.profil.index' });
+      $urlServiceProvider.rules.otherwise({state: 'manager.profil.index'});
 
     }])
   .directive('generalInformationCompany', [function () {
@@ -978,7 +979,7 @@ APPOC
         }]
     }
   }])
-  .directive('planPremium',  [function () {
+  .directive('planPremium', [function () {
     return {
       restrict: 'E',
       scope: {},
@@ -1023,7 +1024,7 @@ APPOC
       }]
     }
   }])
-  .directive('historyCv',    [function () {
+  .directive('historyCv', [function () {
     return {
       restrict: "E",
       scope: true,
@@ -1052,7 +1053,7 @@ APPOC
       }]
     }
   }])
-  .directive('offerLists',   [function () {
+  .directive('offerLists', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/directive-offers.html?ver=' + itOptions.version,
@@ -1118,10 +1119,8 @@ APPOC
           $scope.error = "";
           $scope.idCandidate = 0;
           // Ouvrire une boite de dialoge pour modifier une offre
-          $scope.openEditor = (offerId, $event) => {
-            let offer = _.findWhere($scope.Offers, {
-              ID: parseInt(offerId)
-            });
+          $scope.openOfferEditor = (offerId) => {
+            let offer = _.findWhere($scope.Offers, {ID: parseInt(offerId)});
             $rootScope.preloaderToogle();
             $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
               $scope.Regions = _.clone(data[0]);
@@ -1144,7 +1143,7 @@ APPOC
 
           $scope.offerPaiementProcess = (offerId) => {
             let offer = _.findWhere($scope.Offers, {ID: parseInt(offerId)});
-            if (offer.rateplan === 'standard' || !offer.activated ) return false;
+            if (offer.rateplan === 'standard' || !offer.activated) return false;
             $state.go('manager.profil.offers.paiement', {id: offerId});
           };
 
@@ -1182,7 +1181,7 @@ APPOC
           };
 
           $scope.addFeaturedCart = (offerId) => {
-            let offer = _.findWhere($scope.Offers, { ID: parseInt(offerId) });
+            let offer = _.findWhere($scope.Offers, {ID: parseInt(offerId)});
             if (offer.featured || !offer.activated || offer.offer_status !== "publish") {
               swal('Validation', "Désolé, vous ne pouvez pas mettre à la une une annonce désactiver ou en cours " +
                 "de validation ou en attente de paiement. Merci", 'info');
@@ -1303,7 +1302,7 @@ APPOC
         }]
     };
   }])
-  .directive('cvConsult',    [function () {
+  .directive('cvConsult', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/cv-consult.html?ver=' + itOptions.version,
