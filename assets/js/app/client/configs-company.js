@@ -878,7 +878,7 @@ APPOC
       states.forEach(function (state) {
         $stateProvider.state(state);
       });
-      $urlServiceProvider.rules.otherwise({state: 'manager.profil.index'});
+      $urlServiceProvider.rules.otherwise({ state: 'manager.profil.index' });
 
     }])
   .directive('generalInformationCompany', [function () {
@@ -902,9 +902,6 @@ APPOC
             $scope.Towns = _.clone($rootScope.Towns);
           };
 
-          /**
-           * Ouvrir l'editeur d'information utilisateur
-           */
           $scope.openEditor = () => {
             const incInput = ['address', 'name', 'stat', 'nif'];
             const incTerm = ['branch_activity', 'region', 'country'];
@@ -944,9 +941,6 @@ APPOC
             return false;
           };
 
-          /**
-           * Mettre à jours les informations de l'utilisateur
-           */
           $scope.updateUser = () => {
             $scope.status = "Enregistrement en cours ...";
             let userForm = new FormData();

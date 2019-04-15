@@ -321,10 +321,10 @@ class scInterests
     }
     $Company = Company::get_company_by($User->ID);
     $args = [
-      'post_type' => 'offers',
+      'post_type'   => 'offers',
       'post_status' => 'publish',
-      'meta_key' => 'itjob_offer_company',
-      'meta_value' => $Company->getId(),
+      'meta_key'    => 'itjob_offer_company',
+      'meta_value'  => $Company->getId(),
       'meta_compare' => '='
     ];
     $offers = get_posts($args);
@@ -345,7 +345,7 @@ class scInterests
     $offers = array_filter($offers, function ($offer) {
       $today   = strtotime("today");
       $isLimited = strtotime($offer->dateLimit) < $today;
-      return !$isLimited && intval($offer->activated);
+      return !$isLimited && $offer->activated;
     });
 
     wp_send_json_success($offers);
