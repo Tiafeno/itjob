@@ -321,6 +321,7 @@ class scInterests
     }
     $Company = Company::get_company_by($User->ID);
     $args = [
+      'posts_per_page'   => -1,
       'post_type'   => 'offers',
       'post_status' => 'publish',
       'meta_query'  => [

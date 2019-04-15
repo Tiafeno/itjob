@@ -237,23 +237,6 @@ add_action('widgets_init', function () {
 });
 
 add_action('init', function () {
-  $User = wp_get_current_user();
-  $Company = \includes\post\Company::get_company_by($User->ID);
-  $args = [
-    'post_type'   => 'offers',
-    'post_status' => 'publish',
-    'meta_query'  => [
-      [
-        'key' => 'itjob_offer_company',
-        'value' => $Company->getId(),
-
-      ]
-    ]
-  ];
-  $offers = get_posts($args);
-
-  print_r($offers);
-
 
   // Yoast filter
   add_filter('wpseo_metadesc', function ($description) {
