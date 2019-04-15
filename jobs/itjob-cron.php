@@ -10,7 +10,7 @@ require_once 'cron-candidate.php';
 require_once 'cron-company.php';
 
 add_action('init', function () {
-  fix_offer_rateplan();
+  
 });
 
 function getModerators ()
