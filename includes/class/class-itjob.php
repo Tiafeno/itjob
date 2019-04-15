@@ -633,7 +633,7 @@ SQL;
                 ];
               }
 
-              if ($post_type === "offers") {
+              if ($post_type === "__offers") {
                 add_filter('posts_where', function ( $where ) {
                   global $wpdb;
                   if (!is_admin()) {
