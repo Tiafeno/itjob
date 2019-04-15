@@ -79,7 +79,25 @@ wp_enqueue_style('offers');
                     </div>
                     <div class="col-md-6 pt-4">
                       <p class="offer-field-title m-0">Type de contrat: </p>
-                      <p class="offer-field-value m-0"><?= $offers->contractType['label'] ?></p>
+                      <?php
+                      //$groups = acf_get_field_groups(array('post_id' => $offers->getId()));
+                        if ( ! is_array($offers->contractType) && (!empty($offers->contractType) || !is_null($offers->contractType))) {
+                          $CONTRACTS = [
+                            [ 'value' => 0 , 'label' => 'CDD'],
+                            [ 'value' => 1 , 'label' => 'CDI'],
+                            [ 'value' => 2 , 'label' => 'Intérim'],
+                          ];
+                          $type = is_numeric($offers->contractType) ? $offers->contractType : 0;
+                          $value = \Underscore\Types\Arrays::find($CONTRACTS, function($v) use ($type) {
+                            return $v['value'] === intval($type);
+                          });
+                          $value = empty($value) ? $value['label'] = "Non renseigner" : $value;
+                        } else {
+                          $value = $offers->contractType;
+                        }
+
+                      ?>
+                      <p class="offer-field-value m-0"><?= $value['label'] ?></p>
                     </div>
                   </div>
 

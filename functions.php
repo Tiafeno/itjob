@@ -237,6 +237,7 @@ add_action('widgets_init', function () {
 });
 
 add_action('init', function () {
+
   // Yoast filter
   add_filter('wpseo_metadesc', function ($description) {
     global $post;
@@ -253,7 +254,6 @@ add_action('init', function () {
       }
     return $description;
   }, PHP_INT_MAX);
-
   add_filter('wpseo_title', function ($title) {
     global $post;
     if (is_object($post) && !is_archive())
@@ -263,6 +263,9 @@ add_action('init', function () {
           $region = is_array($regions) && !empty($regions) ? $regions[0] : '';
           $region = $region ? ' à ' . $region->name : '';
           $branch_activity = get_field('itjob_offer_abranch', $post->ID);
+          if ( ! is_object($branch_activity)) {
+            $branch_activity = get_term(intval($branch_activity));
+          }
           $branch_activity = $branch_activity ? ', ' . $branch_activity->name : '';
           return 'Emploi - ' . $post->post_title . $region . $branch_activity;
           break;
@@ -276,15 +279,21 @@ add_action('init', function () {
 
   function request_phone_number() {
     global $itJob;
+    $msg_contact_error = "Vous ne pouvez pas contactez cette annonceur car c'est votre annonce. Merci";
     $post_id = Http\Request::getValue('ad_id');
     $post = get_post(intval($post_id));
     $post_type = get_post_type($post->ID);
-    if ( ! in_array($post_type, ['annonce', 'works']))
+    if ( ! in_array($post_type, ['annonce', 'works'])) :
       wp_send_json_error("Ce type de post ne possède pas un numéro de téléphone");
+    endif;
 
     if ($post_type === 'annonce') {
       $Annonce = new \includes\post\Annonce($post->ID, true);
       $User = $itJob->services->getUser();
+      if ($User->ID === $Annonce->get_author()->ID) {
+        wp_send_json_error($msg_contact_error);
+        return false;
+      }
       if (!in_array($User->ID, $Annonce->contact_sender)) {
         $Annonce->add_contact_sender($User->ID);
       }
@@ -293,6 +302,10 @@ add_action('init', function () {
     if ($post_type === 'works') {
       $Works = new \includes\post\Works($post->ID, true);
       $User = $itJob->services->getUser();
+      if ($User->ID === $Works->get_user()->ID) {
+        wp_send_json_error($msg_contact_error);
+        return false;
+      }
       $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
       $credit = $Wallet->credit;
       if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
