@@ -345,7 +345,7 @@ class scInterests
     $offers = array_filter($offers, function ($offer) {
       $today   = strtotime("today");
       $isLimited = strtotime($offer->dateLimit) < $today;
-      return !$isLimited && $offer->activated;
+      return $offer->activated;
     });
 
     wp_send_json_success($offers);
