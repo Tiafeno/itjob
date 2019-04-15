@@ -238,7 +238,7 @@ add_action('widgets_init', function () {
 
 add_action('init', function () {
   $User = wp_get_current_user();
-  $Company = Company::get_company_by($User->ID);
+  $Company = \includes\post\Company::get_company_by($User->ID);
   $args = [
     'post_type'   => 'offers',
     'post_status' => 'publish',
