@@ -52,9 +52,10 @@ if (!class_exists('jePostule')) :
           }
         }
 
-        $attachment_id = 0;
+        $attachment = 0;
         if ( ! empty($_FILES) && is_array($_FILES) ) {
           if ( ! empty($_FILES['motivation']['name']) ) {
+            \print_r($_FILES);
             require_once(ABSPATH . 'wp-admin/includes/image.php');
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             require_once(ABSPATH . 'wp-admin/includes/media.php');
@@ -78,7 +79,7 @@ if (!class_exists('jePostule')) :
 
         $Company   = Company::get_company_by($post_user->ID);
         $Candidate = Candidate::get_candidate_by($User->ID);
-        $result    = $itModel->added_interest($Candidate->getId(), $id_offer, $Company->getId(), 'pending', 'apply', $attachment_id);
+        $result    = $itModel->added_interest($Candidate->getId(), $id_offer, $Company->getId(), 'pending', 'apply', $attachment);
         if (!$result) {
           do_action('add_notice', 'Une erreur s\'est produite pendant la requête. Veuillez réessayer plus tard', 'warning');
 
