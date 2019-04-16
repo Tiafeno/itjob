@@ -4,9 +4,6 @@ trait OfferHelper {
   /** @var int $id_offer - Contient l'identification de l'offre */
   protected $id_offer;
 
-  /** @var WP_User $author - Contient les informations de l'entreprise */
-  protected $author;
-
   /** @var object $company - Contient les informations de l'auteur de l'offre */
   protected $company;
 
@@ -23,10 +20,6 @@ trait OfferHelper {
         'id_cv_request' => (int) $interest->id_cv_request
       ];
     }
-  }
-
-  public function getAuthor() {
-    return $this->author;
   }
 
   public function getCompany() {

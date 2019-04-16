@@ -14,6 +14,7 @@ final class Offers implements \iOffer {
   use \Auth;
   use \OfferHelper;
 
+  private $author;
   /** @var int $ID - Identification de l'offre */
   public $ID = 0;
 
@@ -116,12 +117,16 @@ final class Offers implements \iOffer {
     if (empty($post_company) || !isset($post_company->ID)) return $this;
     $company_email  = get_field( 'itjob_company_email', $post_company->ID );
     $post_user      = get_user_by( 'email', trim($company_email) );
-    $this->author   = Obj\jobServices::getUserData( $post_user->ID );
+    $this->author   = get_userdata( $post_user->ID );
     return $this;
   }
 
   public function getId() {
     return $this->ID;
+  }
+
+  public function getAuthor() {
+    return $this->author;
   }
 
   public function is_offer() {
