@@ -55,7 +55,6 @@ if (!class_exists('jePostule')) :
         $attachment = 0;
         if ( ! empty($_FILES) && is_array($_FILES) ) {
           if ( ! empty($_FILES['motivation']['name']) ) {
-            \print_r($_FILES);
             require_once(ABSPATH . 'wp-admin/includes/image.php');
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             require_once(ABSPATH . 'wp-admin/includes/media.php');
