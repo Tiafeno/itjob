@@ -351,7 +351,6 @@ APPOC
                 });
                 $scope.Offer = _.clone(Offer);
               };
-
               $scope.checkout = (ugs, price) => {
                 const key = $rootScope.options.wc._k;
                 const secret = $rootScope.options.wc._s;

@@ -20,7 +20,7 @@ function run_once_month() {
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
     $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
-    $mail->addReplyTo('no-reply@itjobmada.com', 'Equipe ITJob');
+    $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
     foreach ($companies as $Company) {
       $sender = $Company->author->user_email;
@@ -71,7 +71,7 @@ function run_twice_week() {
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
     $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
-    $mail->addReplyTo('no-reply@itjobmada.com', 'Equipe ITJob');
+    $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
     foreach ($companies as $Company) {
       $sender = $Company->author->user_email;
@@ -124,7 +124,7 @@ function run_week() { // run at 06h30
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
     $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
-    $mail->addReplyTo('no-reply@itjobmada.com', 'Equipe ITJob');
+    $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
     foreach ($companies as $Company) {
       if ( ! $Company instanceof \includes\post\Company) continue;

@@ -2,16 +2,15 @@ APPOC
   .config(['$interpolateProvider', '$stateProvider', '$urlServiceProvider',
     function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
       $interpolateProvider.startSymbol('[[').endSymbol(']]');
-      const states = [
-        {
+      const states = [{
           name: 'manager',
           url: '/manager',
           resolve: {
             Client: ['$http', '$q', function ($http, $q) {
               let access = $q.defer();
               $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
-                cache: false
-              })
+                  cache: false
+                })
                 .then(resp => {
                   let data = resp.data;
                   access.resolve(data);
@@ -19,19 +18,25 @@ APPOC
               return access.promise;
             }],
             Regions: ['$http', function ($http) {
-              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=region', {cache: true})
+              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=region', {
+                  cache: true
+                })
                 .then(function (resp) {
                   return resp.data;
                 });
             }],
             Towns: ['$http', function ($http) {
-              return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {cache: true})
+              return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {
+                  cache: true
+                })
                 .then(function (resp) {
                   return resp.data;
                 });
             }],
             Areas: ['$http', function ($http) {
-              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=branch_activity', {cache: true})
+              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=branch_activity', {
+                  cache: true
+                })
                 .then(function (resp) {
                   return resp.data;
                 });
@@ -150,9 +155,12 @@ APPOC
       states.forEach(function (state) {
         $stateProvider.state(state);
       });
-      $urlServiceProvider.rules.otherwise({state: 'manager.profil.index'});
+      $urlServiceProvider.rules.otherwise({
+        state: 'manager.profil.index'
+      });
 
-    }])
+    }
+  ])
   .directive('generalInformationCandidate', [function () {
     return {
       restrict: 'E',
@@ -264,13 +272,13 @@ APPOC
           form.append('action', 'update_job_search');
           form.append('jobs', JSON.stringify($scope.jobs));
           $http({
-            method: 'POST',
-            url: itOptions.Helper.ajax_url,
-            headers: {
-              'Content-Type': undefined
-            },
-            data: form
-          })
+              method: 'POST',
+              url: itOptions.Helper.ajax_url,
+              headers: {
+                'Content-Type': undefined
+              },
+              data: form
+            })
             .then(response => {
               // Handle success
               let data = response.data;
@@ -290,8 +298,8 @@ APPOC
          */
         $scope.queryJobs = function ($query, taxonomy) {
           return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
-            cache: true
-          })
+              cache: true
+            })
             .then(function (response) {
               const jobs = response.data;
               return jobs.filter(function (job) {
@@ -331,13 +339,13 @@ APPOC
           Form.append('action', "update_candidate_softwares");
           Form.append('softwares', JSON.stringify($scope.form.softwares));
           $http({
-            method: 'POST',
-            url: itOptions.Helper.ajax_url,
-            headers: {
-              'Content-Type': undefined
-            },
-            data: Form
-          })
+              method: 'POST',
+              url: itOptions.Helper.ajax_url,
+              headers: {
+                'Content-Type': undefined
+              },
+              data: Form
+            })
             .then(response => {
               let data = response.data;
               $scope.loading = false;
@@ -401,8 +409,8 @@ APPOC
 
         $scope.querySoftware = function ($query) {
           return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=software', {
-            cache: true
-          })
+              cache: true
+            })
             .then(function (response) {
               const softwares = response.data;
               return softwares.filter(function (software) {
@@ -426,8 +434,7 @@ APPOC
           })
         };
 
-        $scope.$watch('form', (form) => {
-        }, true);
+        $scope.$watch('form', (form) => {}, true);
 
         UIkit.util.on('#modal-software-editor-overflow', 'show', function (e) {
           e.preventDefault();
@@ -485,8 +492,8 @@ APPOC
         };
         self.Initialize = () => {
           $http.get(`${itOptions.Helper.ajax_url}?action=get_candidacy`, {
-            cache: false
-          })
+              cache: false
+            })
             .then(resp => {
               const query = resp.data;
               if (query.success) {
@@ -603,11 +610,11 @@ APPOC
         $scope.onDeleteExperience = (experienceId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-            labels: {
-              ok: 'Supprimer',
-              cancel: 'Annuler'
-            }
-          })
+              labels: {
+                ok: 'Supprimer',
+                cancel: 'Annuler'
+              }
+            })
             .then(function () {
               let Experiences = _.reject($scope.Candidate.experiences, (experience) => experience.id === parseInt(experienceId));
               self.updateExperience(Experiences)
@@ -706,13 +713,13 @@ APPOC
           subForm.append('experiences', JSON.stringify(Experiences));
           $scope.status = "Enregistrement en cours...";
           $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -843,8 +850,7 @@ APPOC
         $scope.Train = {};
         $scope.months = clientService.months;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
-        this.$onInit = () => {
-        };
+        this.$onInit = () => {};
 
         // Ajouter une nouvelle formation
         $scope.newTraining = () => {
@@ -904,11 +910,11 @@ APPOC
         $scope.onDeleteTraining = (trainingId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-            labels: {
-              ok: 'Supprimer',
-              cancel: 'Annuler'
-            }
-          })
+              labels: {
+                ok: 'Supprimer',
+                cancel: 'Annuler'
+              }
+            })
             .then(function () {
               let Trainings = _.reject($scope.Candidate.trainings, (training) => training.id === parseInt(trainingId));
               self.updateTraining(Trainings);
@@ -965,13 +971,13 @@ APPOC
           subForm.append('action', 'update_trainings');
           subForm.append('trainings', JSON.stringify(trainings));
           $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -1233,13 +1239,13 @@ APPOC
        */
       $rootScope.onSaveCandidateProfil = (formData) => {
         $http({
-          url: itOptions.Helper.ajax_url,
-          method: "POST",
-          headers: {
-            'Content-Type': undefined
-          },
-          data: formData
-        })
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: formData
+          })
           .then(
             resp => {
               let data = resp.data;
@@ -1298,4 +1304,5 @@ APPOC
             $rootScope.profilEditor.loading = false;
           });
       };
-    }])
+    }
+  ])
