@@ -55,7 +55,7 @@ add_action('action_scheduler_run_week', function() {
 function send_not_cv_candidate( $candidates ) {
   global $Engine;
 
-  // notification-04
+  // notification-03
   $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
   $mail->CharSet = 'UTF-8';
   $mail->isHTML(true);
@@ -72,7 +72,7 @@ function send_not_cv_candidate( $candidates ) {
   $msg = '';
   try {
     $espace_client = get_the_permalink( (int) ESPACE_CLIENT_PAGE );
-    $msg .= $Engine->render('@MAIL/newsletters/notification-04.html', [
+    $msg .= $Engine->render('@MAIL/newsletters/notification-03.html', [
       'Year' => Date('Y'),
       'unsubscribe' => "{$espace_client}#!/manager/profil/settings", // Espace client
       'url'      => $espace_client,
