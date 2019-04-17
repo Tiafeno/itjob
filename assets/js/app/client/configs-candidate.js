@@ -2,7 +2,8 @@ APPOC
   .config(['$interpolateProvider', '$stateProvider', '$urlServiceProvider',
     function ($interpolateProvider, $stateProvider, $urlServiceProvider) {
       $interpolateProvider.startSymbol('[[').endSymbol(']]');
-      const states = [{
+      const states = [
+        {
           name: 'manager',
           url: '/manager',
           resolve: {
@@ -130,14 +131,6 @@ APPOC
           name: 'manager.profil.candidacy',
           url: '/candidacy',
           templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/view-candidacy.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
-
-          }]
-        },
-        {
-          name: 'manager.profil.works',
-          url: '/works',
-          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/works.html?ver=${itOptions.version}`,
           controller: ["$rootScope", function ($rootScope) {
 
           }]
@@ -1019,7 +1012,6 @@ APPOC
   .controller('candidateController', ['$rootScope', '$scope', '$http', '$filter', 'Upload', 'Client', 'Regions', 'Towns', 'Areas',
     function ($rootScope, $scope, $http, $filter, Upload, Client, Regions, Towns, Areas) {
       const self = this;
-
       $rootScope.alertLoading = false; // Directive alert
       $rootScope.alerts = [];
       $rootScope.jobSearchs = [];
@@ -1102,6 +1094,22 @@ APPOC
 
       this.$onInit = () => {
         var $ = jQuery.noConflict();
+        let origin = document.location.origin;
+        $rootScope.WPEndpoint = new WPAPI({endpoint: `${origin}/wp-json`});
+        let namespace = 'wp/v2'; // use the WP API namespace
+        let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
+        let route_works = '/works/(?P<id>\\d+)';
+        let route_offer = '/offers/(?P<id>\\d+)';
+        let route_formation = '/formation/(?P<id>\\d+)';
+        let route_annonce = '/annonce/(?P<id>\\d+)';
+        let route_product = '/products/(?P<id>\\d+)';
+        $rootScope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
+        $rootScope.WPEndpoint.product = $rootScope.WPEndpoint.registerRoute(wc_namespace, route_product);
+        $rootScope.WPEndpoint.formation = $rootScope.WPEndpoint.registerRoute(namespace, route_formation);
+        $rootScope.WPEndpoint.works = $rootScope.WPEndpoint.registerRoute(namespace, route_works);
+        $rootScope.WPEndpoint.offer = $rootScope.WPEndpoint.registerRoute(namespace, route_offer);
+        $rootScope.WPEndpoint.annonce = $rootScope.WPEndpoint.registerRoute(namespace, route_annonce);
+
         let sexe = Client.iClient.greeting === null || _.isEmpty(Client.iClient.greeting) ? '' :
           (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';
         $rootScope.featuredImage = itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";

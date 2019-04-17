@@ -1,5 +1,54 @@
-const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinymce',
-  'ui.router', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
+const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinymce', 'ui.router', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
+  .config(['$stateProvider', function ($stateProvider) {
+    const states = [
+      {
+        name: 'manager.profil.works',
+        url: '/works',
+        templateUrl: `${itOptions.Helper.tpls_partials}/works.html?ver=${itOptions.version}`,
+        controller: ["$rootScope", "$state", function ($rootScope, $state) {
+          this.$onInit = () => {
+            $state.go('manager.profil.works.lists');
+          };
+        }]
+      },
+      {
+        name: 'manager.profil.works.lists',
+        url: '/lists',
+        templateUrl: `${itOptions.Helper.tpls_partials}/work-lists.html?ver=${itOptions.version}`,
+        controller: ["$rootScope", function ($rootScope) { }]
+      },
+      {
+        name: 'manager.profil.works.featured',
+        url: '/{id}/featured',
+        resolve: {
+          $positions: ["$rootScope", "$http", function ($rootScope, $http) {
+            $rootScope.preloaderToogle();
+            return $http.get(`${itOptions.Helper.ajax_url}?action=collect_support_featured&type=works`).then(results => {
+              $rootScope.preloaderToogle();
+              return results.data;
+            });
+          }],
+          Works: ['$rootScope', '$transition$', function ($rootScope, $transition$) {
+            let workId = $transition$.params().id;
+            return $rootScope.WPEndpoint.works().id(workId).then(works => {
+              return works;
+            })
+          }]
+        },
+        templateUrl: `${itOptions.Helper.tpls_partials}/work-featured.html?ver=${itOptions.version}`,
+        controller: ["$rootScope", "$scope", "Works", "$positions", function ($rootScope, $scope, Works, $positions) {
+          $scope.supportFeatured = {};
+          this.$onInit = () => {
+            $scope.supportFeatured = _.clone($positions.data);
+
+          }
+        }]
+      }
+    ];
+    states.forEach(function (state) {
+      $stateProvider.state(state);
+    });
+  }])
   .factory('clientFactory', ['$http', function ($http) {
     return {
       getCity: function () {
@@ -305,14 +354,12 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
       restrict: 'E',
       templateUrl: `${itOptions.Helper.tpls_partials}/small-annonce.html?ver=${itOptions.version}`,
       scope: true,
-      controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
+      controller: ['$rootScope', '$scope', '$q', '$http', '$state', function ($rootScope, $scope, $q, $http, $state) {
         $scope.Works = [];
         $scope.Loading = false;
         this.$onInit = () => {
           $scope.Loading = true;
-          $http.get(`${itOptions.Helper.ajax_url}?action=collect_works`, {
-            cache: false
-          })
+          $http.get(`${itOptions.Helper.ajax_url}?action=collect_works`, {cache: false})
             .then(resp => {
               const query = resp.data;
               if (query.success) {
@@ -337,14 +384,19 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                         data: 'status', render: (data, type, row, meta) => {
                           var activated = row.activated;
                           var text = data === 'pending' && !activated ? 'En attente' : (data === 'publish' && activated ? 'Publier' : 'Désactiver');
-                          return `<span class="badge badge-pill badge-default"> ${text} </span>`;
+                          var style = data === "publish" && activated ? 'blue' : 'warning';
+                          return `<span class="badge badge-${style}"> ${text} </span>`;
                         }
                       },
                       {data: 'region', render: (data) => data.name},
                       {
                         data: 'featured',
-                        render: (data) => data ? `<span class="badge badge-blue uppercase">à la une</span>`:
-                          `<span class="badge-default badge uppercase">standard</span>`
+                        render: (data, type, row) => {
+                          var text = data ? (!_.isEmpty(row.featured_position) || _.isNull(row.featured_position) ? (row.featured_position === 1 ? 'à la une' : 'la liste') : 'erreur' ) : 'aucun';
+                          var style = data ? "success" : "default";
+                          var elClass = style === 'default' ? 'featured-paiement' : '';
+                          return `<span class="badge-${style} ${elClass} edit-position badge uppercase">${text}</span>`;
+                        }
                       },
                       {
                         data: 'date_publication', render: (data) => {
@@ -357,6 +409,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                       url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
                     }
                   });
+
+                const $ = jQuery.noConflict();
+                $("#small-ad-table tbody").on('click', '.edit-position', e => {
+                  var el = $(e.currentTarget).parents('tr');
+                  var Column = table.row(el).data();
+                  $state.go('manager.profil.works.featured', {id: Column.ID});
+                });
 
                 $scope.Loading = false;
               } else {
@@ -436,6 +495,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
   }])
   .run(['$rootScope', '$state', '$filter', function ($rootScope, $state, $filter) {
       $rootScope.preLoader = false;
+      $rootScope.WPEndpoint = null;
+
+      this.$onInit = () => {
+
+      };
       /**
        * Cette fonction permet de redimensionner une image
        *

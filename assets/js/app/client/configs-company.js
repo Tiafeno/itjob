@@ -225,11 +225,18 @@ APPOC
                     .update({itjob_offer_rateplan: plan})
                     .then((offer) => {
                       $scope.$apply(() => {
-                        $rootScope.preloaderToogle();
-                        swal("Modification", "Mode de diffusion de l'offre modifier avec succès");
-                        $state.go('manager.profil.offers.lists');
+                        $http.get(`${itOptions.Helper.ajax_url}?action=get_offers`).then(response => {
+                          let resp = _.clone(response.data);
+                          if (resp.success) {
+                            $rootScope.preloaderToogle();
+                            swal("Modification", "Mode de diffusion de l'offre modifier avec succès");
+                            $rootScope.offerLists = _.clone(resp.data);
+                          }
+                          $state.go('manager.profil.offers.lists');
+                        });
                       });
                     });
+
                   return true;
                 }
 
@@ -858,14 +865,6 @@ APPOC
           }]
         },
         {
-          name: 'manager.profil.works',
-          url: '/works',
-          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/works.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
-
-          }]
-        },
-        {
           name: 'manager.profil.annonces',
           url: '/annonces',
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/annonces.html?ver=${itOptions.version}`,
@@ -1142,8 +1141,11 @@ APPOC
 
           $scope.offerPaiementProcess = (offerId) => {
             let offer = _.findWhere($scope.Offers, {ID: parseInt(offerId)});
-            if (offer.rateplan === 'standard' || !offer.activated) return false;
-            $state.go('manager.profil.offers.paiement', {id: offerId});
+            if (offer.offer_status === 'publish' && offer.activated) {
+              $state.go('manager.profil.offers.paiement', {id: offerId});
+            } else {
+              return false;
+            }
           };
 
           // Modifier une offrefeaturedOffer
@@ -1182,8 +1184,7 @@ APPOC
           $scope.addFeaturedCart = (offerId) => {
             let offer = _.findWhere($scope.Offers, {ID: parseInt(offerId)});
             if (offer.featured || !offer.activated || offer.offer_status !== "publish") {
-              swal('Validation', "Désolé, vous ne pouvez pas mettre à la une une annonce désactiver ou en cours " +
-                "de validation ou en attente de paiement. Merci", 'info');
+              swal('Validation', "Désolé, vous ne pouvez pas mettre à la une cette annonce. Merci", 'info');
               return false;
             }
             $state.go('manager.profil.offers.featured', {id: offerId})
@@ -1382,10 +1383,12 @@ APPOC
           let namespace = 'wp/v2'; // use the WP API namespace
           let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
           let route_formation = '/formation/(?P<id>\\d+)';
+          let route_works = '/works/(?P<id>\\d+)';
           let route_product = '/products/(?P<id>\\d+)';
           $scope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
           $scope.WPEndpoint.formation = $scope.WPEndpoint.registerRoute(namespace, route_formation);
           $scope.WPEndpoint.product = $scope.WPEndpoint.registerRoute(wc_namespace, route_product);
+          $scope.WPEndpoint.works = $scope.WPEndpoint.registerRoute(namespace, route_works);
 
           $scope.Loading = true;
           $http.get(`${itOptions.Helper.ajax_url}?action=collect_formations`, {cache: false})
@@ -1537,7 +1540,6 @@ APPOC
     'clientService', 'Client', 'Regions', 'Towns', 'Areas', 'Options',
     function ($rootScope, $http, $q, $filter, clientFactory, clientService, Client, Regions, Towns, Areas, Options) {
       const self = this;
-      $rootScope.WPEndpoint = null;
       $rootScope.options = {};
       $rootScope.sector = 0;
       $rootScope.formationCount = 0;
@@ -1597,7 +1599,23 @@ APPOC
       $rootScope.Towns = [];
 
       this.$onInit = () => {
-        var $ = jQuery.noConflict();
+        var $ = jQuery.noConflict()
+        let origin = document.location.origin;
+        $rootScope.WPEndpoint = new WPAPI({endpoint: `${origin}/wp-json`});
+        let namespace = 'wp/v2'; // use the WP API namespace
+        let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
+        let route_works = '/works/(?P<id>\\d+)';
+        let route_offer = '/offers/(?P<id>\\d+)';
+        let route_formation = '/formation/(?P<id>\\d+)';
+        let route_annonce = '/annonce/(?P<id>\\d+)';
+        let route_product = '/products/(?P<id>\\d+)';
+        $rootScope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
+        $rootScope.WPEndpoint.product = $rootScope.WPEndpoint.registerRoute(wc_namespace, route_product);
+        $rootScope.WPEndpoint.formation = $rootScope.WPEndpoint.registerRoute(namespace, route_formation);
+        $rootScope.WPEndpoint.works = $rootScope.WPEndpoint.registerRoute(namespace, route_works);
+        $rootScope.WPEndpoint.offer = $rootScope.WPEndpoint.registerRoute(namespace, route_offer);
+        $rootScope.WPEndpoint.annonce = $rootScope.WPEndpoint.registerRoute(namespace, route_annonce);
+
         $rootScope.preloaderToogle();
         $rootScope.Company = _.clone(Client.iClient);
         $rootScope.Helper = _.clone(Client.Helper);
@@ -1612,19 +1630,6 @@ APPOC
         $rootScope.formationCount = !_.isUndefined(Client.formation_count) ? Client.formation_count : 0;
         $rootScope.sector = _.clone(Client.iClient.sector);
         $rootScope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
-
-
-        let origin = document.location.origin;
-        $rootScope.WPEndpoint = new WPAPI({endpoint: `${origin}/wp-json`});
-        let namespace = 'wp/v2'; // use the WP API namespace
-        let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
-        let route_formation = '/formation/(?P<id>\\d+)';
-        let route_offer = '/offers/(?P<id>\\d+)';
-        let route_product = '/products/(?P<id>\\d+)';
-        $rootScope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
-        $rootScope.WPEndpoint.formation = $rootScope.WPEndpoint.registerRoute(namespace, route_formation);
-        $rootScope.WPEndpoint.offer = $rootScope.WPEndpoint.registerRoute(namespace, route_offer);
-        $rootScope.WPEndpoint.product = $rootScope.WPEndpoint.registerRoute(wc_namespace, route_product);
       };
 
 

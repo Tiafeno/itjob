@@ -288,7 +288,7 @@
           <span class="badge badge-pill uppercase" ng-click="offerPaiementProcess(offer.ID)" ng-class="{'badge-blue' : offer.paid,
           'badge-default' : (!offer.paid && !offer.activated) || offer.rateplan === 'standard',
           'badge-warning' : !offer.paid && offer.activated && offer.rateplan !== 'standard',
-          'paiement-process': (offer.rateplan !== 'standard' && !offer.paid && offer.activated) }">
+          'paiement-process': !offer.paid && offer.activated }">
             [[offer.paid ? offer.rateplan : ( offer.rateplan === 'standard' ? "Standard" : (offer.activated ? "Attente paiement" : "Attente validation" ) )]]
           </span>
         </td>

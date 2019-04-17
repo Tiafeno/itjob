@@ -101,6 +101,7 @@ if ( ! class_exists( 'scClient' ) ) :
 
         add_action( 'wp_ajax_trash_offer', [ &$this, 'client_trash_offer' ] );
         add_action( 'wp_ajax_client_area', [ &$this, 'client_area' ] );
+        add_action( 'wp_ajax_get_offers', [ &$this, 'get_offers' ] );
         add_action( 'wp_ajax_settings_company', [ &$this, 'settings_company' ] );
         add_action( 'wp_ajax_update_offer', [ &$this, 'update_offer' ] );
         add_action( 'wp_ajax_update_profil', [ &$this, 'update_profil' ] );
@@ -1214,6 +1215,20 @@ EOF;
         return (int) $list->id_candidate;
       }, $listsCandidate );
       wp_send_json_success( $listsCandidate );
+    }
+
+    /**
+     * Function ajax
+     * Cette fonction permet de recuperer les offres de l'entreprise
+     * @return object
+     */
+    public function get_offers() {
+      global $itJob;
+      if ( ! is_user_logged_in() ) {
+        wp_send_json( false );
+      }
+
+      wp_send_json_success($this->__get_company_offers());
     }
 
     /**
