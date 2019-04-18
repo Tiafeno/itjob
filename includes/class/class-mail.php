@@ -444,7 +444,7 @@ MSG;
     $Work = new Works($work_id, true);
     $admin_emails = $this->getModeratorEmail();
     $to        = $admin_emails;
-    $subject   = "Une nouvelle travail publier sur ITJobMada";
+    $subject   = "Un nouveau travaille publier sur ITJobMada";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
