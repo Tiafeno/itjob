@@ -11,7 +11,7 @@
                 <h5 class="media-heading">
                   <a href="{{ work.ID | get_permalink}}">{{ work.title }}</a>
                 </h5>
-                <p class="font-13 text-light">{{ work.description|striptags|raw[:150] }} [...]</p>
+                <p class="font-13 text-light">{{ work.description|raw|html_entity_decode|striptags[:150] }} [...]</p>
                 <div class="font-13">
                   <span class="mr-4">Déposé le <span>{{ work.date_publication_format }}</span>
                   </span>
