@@ -15,7 +15,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
         name: 'manager.profil.works.lists',
         url: '/lists',
         templateUrl: `${itOptions.Helper.tpls_partials}/work-lists.html?ver=${itOptions.version}`,
-        controller: ["$rootScope", function ($rootScope) { }]
+        controller: ["$rootScope", function ($rootScope) {
+        }]
       },
       {
         name: 'manager.profil.works.featured',
@@ -36,12 +37,98 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
           }]
         },
         templateUrl: `${itOptions.Helper.tpls_partials}/work-featured.html?ver=${itOptions.version}`,
-        controller: ["$rootScope", "$scope", "Works", "$positions", function ($rootScope, $scope, Works, $positions) {
-          $scope.supportFeatured = {};
+        controller: ["$rootScope", "$scope", "Works", "$positions", "$http", function ($rootScope, $scope, Works, $positions, $http) {
+          $scope.supportFeatured = [];
+          $scope.tariff = [];
+          $scope.works = {};
           this.$onInit = () => {
+            moment.locale("fr");
+            let featured = _.clone($rootScope.options.featured);
             $scope.supportFeatured = _.clone($positions.data);
+            $scope.works = _.clone(Works);
+            $scope.tariff = _.map(featured.work_tariff, (tarif) => {
+              let support = _.findWhere($scope.supportFeatured, {slug: tarif.ugs});
+              tarif.available = support.counts >= 4 ? 0 : 1;
+              return tarif;
+            });
+          };
 
-          }
+          $scope.checkout = (ugs, price) => {
+            const key = $rootScope.options.wc._k;
+            const secret = $rootScope.options.wc._s;
+            let support = _.findWhere($scope.supportFeatured, {slug: ugs});
+            if (!support || support.counts === 4) return false;
+            $rootScope.preloaderToogle();
+            let work = _.findWhere($rootScope.options.featured.work_tariff, {ugs: ugs});
+            $rootScope.WPEndpoint
+              .product()
+              .param('consumer_key', key)
+              .param('consumer_secret', secret)
+              .create({
+                status: 'publish',
+                type: 'simple',
+                name: `TRAVAIL TEMPORAIRE SPONSORISE (${$scope.works.title.rendered}) - ${work.position}`,
+                price: price.toString(), // string accepted
+                regular_price: price.toString(), // string accepted
+                sold_individually: true,
+                virtual: true,
+                sku: `FEATURED${$scope.works.id}`,
+                meta_data: [
+                  {key: '__type', value: 'featured'},
+                  {key: '__id', value: $scope.works.id}
+                ]
+              })
+              .then(product => {
+                $scope.$apply(() => {
+                  $rootScope.preloaderToogle();
+                  $scope.addProductCart(product.id, work.ugs);
+                });
+              })
+              .catch(err => {
+                if (!_.isUndefined(err.code)) {
+                  if (err.code === "product_invalid_sku") {
+                    let resource_id = err.data.resource_id;
+                    $scope.$apply(() => {
+                      $scope.WPEndpoint
+                        .product()
+                        .param('consumer_key', key)
+                        .param('consumer_secret', secret)
+                        .id(resource_id)
+                        .update({price: price.toString(), regular_price: price.toString()})
+                        .then(product => {
+                          $scope.addProductCart(resource_id, work.ugs);
+                        });
+                    });
+                  }
+                }
+              })
+          }; // .end checkout
+
+          $scope.addProductCart = (resource_id, ugs) => {
+            $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${resource_id}`, {cache: false})
+              .then((resp) => {
+                const response = resp.data;
+                $scope.WPEndpoint
+                  .works()
+                  .id($scope.works.id)
+                  .update({
+                    featured_position: ugs,
+                    featured_datelimit: moment().format("YYYY-MM-DD H:mm:ss")
+                  })
+                  .then(() => {
+                    if (response.success) {
+                      $scope.$apply(() => {
+                        swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                        $rootScope.preloaderToogle();
+                        setTimeout(() => {
+                          window.location.href = response.data;
+                        }, 2000);
+                      });
+                    }
+                  })
+              });
+          } // .end addProductCart
+
         }]
       }
     ];
@@ -85,10 +172,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
     };
   }])
   .filter('FormatStatus', [function () {
-    let status = [{
-      slug: 'pending',
-      label: 'En attente'
-    },
+    let status = [
+      {
+        slug: 'pending',
+        label: 'En attente'
+      },
       {
         slug: 'validated',
         label: 'Confirmer'
@@ -165,7 +253,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
       }
     ];
     return (inputValue) => {
-      if (typeof inputValue === 'undefined') return inputValue;
+      if (_.isUndefined(inputValue)) return inputValue;
       return _.findWhere(postStatus, {
         slug: jQuery.trim(inputValue)
       }).label;
@@ -217,7 +305,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
               },
               pwd: {
                 required: "Ce champ est obligatoire",
-                pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, comprenant des chiffres et des lettres minuscules et"+
+                pwdpattern: "Votre mot de passe doit comporter 8 caractères minimum, comprenant des chiffres et des lettres minuscules et" +
                 " majuscules, ainsi 1 caractère spécial (-*/@+\_%$=).",
               },
               confpwd: {
@@ -232,13 +320,13 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
               Fm.append('pwd', scope.password.pwd);
               // Submit form validate
               $http({
-                  url: itOptions.Helper.ajax_url,
-                  method: "POST",
-                  headers: {
-                    'Content-Type': undefined
-                  },
-                  data: Fm
-                })
+                url: itOptions.Helper.ajax_url,
+                method: "POST",
+                headers: {
+                  'Content-Type': undefined
+                },
+                data: Fm
+              })
                 .then(resp => {
                   let data = resp.data;
                   // Update password success
@@ -280,7 +368,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
         message: '@', // String pass
         alertLoading: '='
       },
-      controller: ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
+      controller: ['$scope', '$rootScope', '$http', function ($scope, $rootScope, $http) {
         this.$onInit = () => {
 
         };
@@ -332,8 +420,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
         jQuery('#modal-notification-overflow').on('show.bs.modal', (e) => {
           $scope.Loading = true;
           $http.get(`${itOptions.Helper.ajax_url}?action=collect_current_user_notices`, {
-              cache: false
-            })
+            cache: false
+          })
             .then(response => {
               let query = response.data;
               $scope.Notices = _.map(query.data, (data) => {
@@ -343,7 +431,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                 return data;
               });
               $scope.Loading = false;
-            }, (error) => {});
+            }, (error) => {
+            });
         });
 
       }]
@@ -392,7 +481,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                       {
                         data: 'featured',
                         render: (data, type, row) => {
-                          var text = data ? (!_.isEmpty(row.featured_position) || _.isNull(row.featured_position) ? (row.featured_position === 1 ? 'à la une' : 'la liste') : 'erreur' ) : 'aucun';
+                          var text = data ? (!_.isEmpty(row.featured_position) || _.isNull(row.featured_position) ? (row.featured_position === 1 ? 'à la une' : 'la liste') : 'erreur') : 'aucun';
                           var style = data ? "success" : "default";
                           var elClass = style === 'default' ? 'featured-paiement' : '';
                           return `<span class="badge-${style} ${elClass} edit-position badge uppercase">${text}</span>`;
@@ -469,7 +558,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                       {data: 'region', render: (data) => data.name},
                       {
                         data: 'featured',
-                        render: (data) => data ? `<span class="badge badge-blue uppercase">à la une</span>`:
+                        render: (data) => data ? `<span class="badge badge-blue uppercase">à la une</span>` :
                           `<span class="badge-default badge uppercase">standard</span>`
                       },
                       {
@@ -494,96 +583,96 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
     }
   }])
   .run(['$rootScope', '$state', '$filter', function ($rootScope, $state, $filter) {
-      $rootScope.preLoader = false;
-      $rootScope.WPEndpoint = null;
+    $rootScope.preLoader = false;
+    $rootScope.WPEndpoint = null;
 
-      this.$onInit = () => {
+    this.$onInit = () => {
 
-      };
-      /**
-       * Cette fonction permet de redimensionner une image
-       *
-       * @param imgObj - the image element
-       * @param newWidth - the new width
-       * @param newHeight - the new height
-       * @param startX - the x point we start taking pixels
-       * @param startY - the y point we start taking pixels
-       * @param ratio - the ratio
-       * @returns {string}
-       */
-      const drawImage = (imgObj, newWidth, newHeight, startX, startY, ratio) => {
-        //set up canvas for thumbnail
-        const tnCanvas = document.createElement('canvas');
-        const tnCanvasContext = tnCanvas.getContext('2d');
-        tnCanvas.width = newWidth;
-        tnCanvas.height = newHeight;
+    };
+    /**
+     * Cette fonction permet de redimensionner une image
+     *
+     * @param imgObj - the image element
+     * @param newWidth - the new width
+     * @param newHeight - the new height
+     * @param startX - the x point we start taking pixels
+     * @param startY - the y point we start taking pixels
+     * @param ratio - the ratio
+     * @returns {string}
+     */
+    const drawImage = (imgObj, newWidth, newHeight, startX, startY, ratio) => {
+      //set up canvas for thumbnail
+      const tnCanvas = document.createElement('canvas');
+      const tnCanvasContext = tnCanvas.getContext('2d');
+      tnCanvas.width = newWidth;
+      tnCanvas.height = newHeight;
 
-        /* use the sourceCanvas to duplicate the entire image. This step was crucial for iOS4 and under devices. Follow the link at the end of this post to see what happens when you don’t do this */
-        const bufferCanvas = document.createElement('canvas');
-        const bufferContext = bufferCanvas.getContext('2d');
-        bufferCanvas.width = imgObj.width;
-        bufferCanvas.height = imgObj.height;
-        bufferContext.drawImage(imgObj, 0, 0);
+      /* use the sourceCanvas to duplicate the entire image. This step was crucial for iOS4 and under devices. Follow the link at the end of this post to see what happens when you don’t do this */
+      const bufferCanvas = document.createElement('canvas');
+      const bufferContext = bufferCanvas.getContext('2d');
+      bufferCanvas.width = imgObj.width;
+      bufferCanvas.height = imgObj.height;
+      bufferContext.drawImage(imgObj, 0, 0);
 
-        /* now we use the drawImage method to take the pixels from our bufferCanvas and draw them into our thumbnail canvas */
-        tnCanvasContext.drawImage(bufferCanvas, startX, startY, newWidth * ratio, newHeight * ratio, 0, 0, newWidth, newHeight);
-        return tnCanvas.toDataURL();
-      };
+      /* now we use the drawImage method to take the pixels from our bufferCanvas and draw them into our thumbnail canvas */
+      tnCanvasContext.drawImage(bufferCanvas, startX, startY, newWidth * ratio, newHeight * ratio, 0, 0, newWidth, newHeight);
+      return tnCanvas.toDataURL();
+    };
 
-      /**
-       * Récuperer les valeurs dispensable pour une image pré-upload
-       * @param {File} file
-       * @returns {Promise<any>}
-       */
-      const imgPromise = (file) => {
-        return new Promise((resolve, reject) => {
-          const byteLimite = 2097152; // 2Mb
-          if (file && file.size <= byteLimite) {
-            let fileReader = new FileReader();
-            fileReader.onload = (Event) => {
-              const img = new Image();
-              img.src = Event.target.result;
-              img.onload = () => {
-                const ms = Math.min(img.width, img.height);
-                const mesure = (ms < 600) ? ms : 600;
-                const imgCrop = drawImage(img, mesure, mesure, 0, 0, 1);
-                resolve({
-                  src: imgCrop
-                });
-              };
+    /**
+     * Récuperer les valeurs dispensable pour une image pré-upload
+     * @param {File} file
+     * @returns {Promise<any>}
+     */
+    const imgPromise = (file) => {
+      return new Promise((resolve, reject) => {
+        const byteLimite = 2097152; // 2Mb
+        if (file && file.size <= byteLimite) {
+          let fileReader = new FileReader();
+          fileReader.onload = (Event) => {
+            const img = new Image();
+            img.src = Event.target.result;
+            img.onload = () => {
+              const ms = Math.min(img.width, img.height);
+              const mesure = (ms < 600) ? ms : 600;
+              const imgCrop = drawImage(img, mesure, mesure, 0, 0, 1);
+              resolve({
+                src: imgCrop
+              });
             };
-            fileReader.readAsDataURL(file);
-          } else {
-            reject('Le fichier sélectionné est trop volumineux. La taille maximale est 2Mo.');
-          }
-        });
-      };
-
-      /**
-       * Upload featured image
-       * @param file
-       * @param errFiles
-       */
-      $rootScope.uploadImage = function (file, errFiles) {
-        $rootScope.avatarFile = file;
-        if (_.isNull(file)) return;
-        imgPromise(file)
-          .then(result => {
-            $rootScope.$apply(() => {
-              $rootScope.profilEditor.featuredImage = result.src;
-            });
-          })
-          .catch(e => {
-            alertify.error(e);
-          });
-      };
-
-      $state.defaultErrorHandler(function (error) {
-        // This is a naive example of how to silence the default error handler.
-        if (error.detail !== undefined) {
-          $state.go(error.detail.redirect);
+          };
+          fileReader.readAsDataURL(file);
+        } else {
+          reject('Le fichier sélectionné est trop volumineux. La taille maximale est 2Mo.');
         }
       });
+    };
 
-    }
+    /**
+     * Upload featured image
+     * @param file
+     * @param errFiles
+     */
+    $rootScope.uploadImage = function (file, errFiles) {
+      $rootScope.avatarFile = file;
+      if (_.isNull(file)) return;
+      imgPromise(file)
+        .then(result => {
+          $rootScope.$apply(() => {
+            $rootScope.profilEditor.featuredImage = result.src;
+          });
+        })
+        .catch(e => {
+          alertify.error(e);
+        });
+    };
+
+    $state.defaultErrorHandler(function (error) {
+      // This is a naive example of how to silence the default error handler.
+      if (error.detail !== undefined) {
+        $state.go(error.detail.redirect);
+      }
+    });
+
+  }
   ]);

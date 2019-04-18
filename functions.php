@@ -232,8 +232,67 @@ add_filter('wp_nav_menu_args', function ($args) {
   return $args;
 });
 
-add_action('widgets_init', function () {
-  // code here ...
+add_action('admin_init', function () {
+  $administrator = get_role('administrator');
+  $administrator->add_cap( 'edit_formation' );
+  $administrator->add_cap( 'edit_formations' );
+  $administrator->add_cap( 'read_private_formation' );
+  $administrator->add_cap( 'read_formation' );
+  $administrator->add_cap( 'edit_published_formations' );
+  $administrator->add_cap( 'edit_others_formations' );
+  $administrator->add_cap( 'edit_private_formations' );
+  $administrator->add_cap( 'delete_formation' );
+  $administrator->add_cap( 'delete_formations' );
+  $administrator->add_cap( 'delete_others_formations' );
+  $administrator->add_cap( 'delete_private_formations' );
+  $administrator->add_cap( 'delete_published_formations' );
+  $administrator->add_cap( 'delete_private_formations' );
+  $administrator->add_cap( 'publish_formations' );
+
+  $administrator->add_cap( 'edit_offer' );
+  $administrator->add_cap( 'edit_offers' );
+  $administrator->add_cap( 'read_private_offer' );
+  $administrator->add_cap( 'read_offer' );
+  $administrator->add_cap( 'edit_published_offers' );
+  $administrator->add_cap( 'edit_others_offers' );
+  $administrator->add_cap( 'edit_private_offers' );
+  $administrator->add_cap( 'delete_offer' );
+  $administrator->add_cap( 'delete_offers' );
+  $administrator->add_cap( 'delete_others_offers' );
+  $administrator->add_cap( 'delete_private_offers' );
+  $administrator->add_cap( 'delete_published_offers' );
+  $administrator->add_cap( 'delete_private_offers' );
+  $administrator->add_cap( 'publish_offers' );
+
+  $administrator->add_cap( 'edit_work' );
+  $administrator->add_cap( 'edit_works' );
+  $administrator->add_cap( 'read_private_work' );
+  $administrator->add_cap( 'read_work' );
+  $administrator->add_cap( 'edit_published_works' );
+  $administrator->add_cap( 'edit_others_works' );
+  $administrator->add_cap( 'edit_private_works' );
+  $administrator->add_cap( 'delete_work' );
+  $administrator->add_cap( 'delete_works' );
+  $administrator->add_cap( 'delete_others_works' );
+  $administrator->add_cap( 'delete_private_works' );
+  $administrator->add_cap( 'delete_published_works' );
+  $administrator->add_cap( 'delete_private_works' );
+  $administrator->add_cap( 'publish_works' );
+
+  $administrator->add_cap( 'edit_annonce' );
+  $administrator->add_cap( 'edit_annonces' );
+  $administrator->add_cap( 'read_private_annonce' );
+  $administrator->add_cap( 'read_annonce' );
+  $administrator->add_cap( 'edit_published_annonces' );
+  $administrator->add_cap( 'edit_others_annonces' );
+  $administrator->add_cap( 'edit_private_annonces' );
+  $administrator->add_cap( 'delete_annonce' );
+  $administrator->add_cap( 'delete_annonces' );
+  $administrator->add_cap( 'delete_others_annonces' );
+  $administrator->add_cap( 'delete_private_annonces' );
+  $administrator->add_cap( 'delete_published_annonces' );
+  $administrator->add_cap( 'delete_private_annonces' );
+  $administrator->add_cap( 'publish_annonces' );
 });
 
 add_action('init', function () {
@@ -350,12 +409,7 @@ add_action('init', function () {
   }, 10, 2 );
 
 
-//  $Model = new cronModel();
-//  $companies = $Model->getCompanyNoOffers();
-//  print_r($companies);
-
   //payment_complete(13066 );
-  //update_formation_featured();
 });
 
 
@@ -383,13 +437,20 @@ function payment_complete ($order_id) {
         case 'formation':
           update_field('paid', 1, $object_id);
           break;
-        
+        // Mettre à la une des posts
         case 'featured':
-          if ($post_type === 'formation') {
-            update_field('featured', 1, $object_id);
-          } else if ($post_type === 'offers') {
-            update_field('itjob_offer_featured', 1, $object_id);
-          }
+          switch ($post_type):
+            case 'formation':
+            case 'works':
+            case 'annonce':
+              update_field('featured', 1, $object_id);
+              break;
+
+            case 'offers':
+              update_field('itjob_offer_featured', 1, $object_id);
+              break;
+
+          endswitch;
           break;
           
       endswitch;

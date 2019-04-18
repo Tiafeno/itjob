@@ -28,6 +28,7 @@ if ( ! class_exists( 'scClient' ) ) :
 
         add_action('admin_init', function () {
           $company = get_role('company');
+          // Formation
           $company->add_cap( 'edit_formation' );
           $company->add_cap( 'read_formation' );
           $company->add_cap( 'publish_formations' );
@@ -35,7 +36,7 @@ if ( ! class_exists( 'scClient' ) ) :
           $company->add_cap( 'edit_others_formations' );
           $company->add_cap( 'edit_published_formations' );
           $company->add_cap( 'edit_read_formations' );
-
+          // Offre
           $company->add_cap( 'edit_offer' );
           $company->add_cap( 'read_offer' );
           $company->add_cap( 'publish_offers' );
@@ -47,37 +48,26 @@ if ( ! class_exists( 'scClient' ) ) :
           $candidate = get_role('candidate');
           $candidate->add_cap( 'read_formation' );
           $candidate->add_cap( 'read_offer' );
+          // Travail temporaire
+          $candidate->add_cap( 'edit_work' );
+          $candidate->add_cap( 'read_work' );
+          $candidate->add_cap( 'publish_works' );
+          $candidate->add_cap( 'edit_works' );
+          $candidate->add_cap( 'edit_others_works' );
+          $candidate->add_cap( 'edit_published_works' );
+          $candidate->add_cap( 'edit_read_works' );
 
-          $administrator = get_role('administrator');
-          $administrator->add_cap( 'edit_formation' );
-          $administrator->add_cap( 'edit_formations' );
-          $administrator->add_cap( 'read_private_formation' );
-          $administrator->add_cap( 'read_formation' );
-          $administrator->add_cap( 'edit_published_formations' );
-          $administrator->add_cap( 'edit_others_formations' );
-          $administrator->add_cap( 'edit_private_formations' );
-          $administrator->add_cap( 'delete_formation' );
-          $administrator->add_cap( 'delete_formations' );
-          $administrator->add_cap( 'delete_others_formations' );
-          $administrator->add_cap( 'delete_private_formations' );
-          $administrator->add_cap( 'delete_published_formations' );
-          $administrator->add_cap( 'delete_private_formations' );
-          $administrator->add_cap( 'publish_formations' );
-
-          $administrator->add_cap( 'edit_offer' );
-          $administrator->add_cap( 'edit_offers' );
-          $administrator->add_cap( 'read_private_offer' );
-          $administrator->add_cap( 'read_offer' );
-          $administrator->add_cap( 'edit_published_offers' );
-          $administrator->add_cap( 'edit_others_offers' );
-          $administrator->add_cap( 'edit_private_offers' );
-          $administrator->add_cap( 'delete_offer' );
-          $administrator->add_cap( 'delete_offers' );
-          $administrator->add_cap( 'delete_others_offers' );
-          $administrator->add_cap( 'delete_private_offers' );
-          $administrator->add_cap( 'delete_published_offers' );
-          $administrator->add_cap( 'delete_private_offers' );
-          $administrator->add_cap( 'publish_offers' );
+          $caps = [];
+          $annonce_caps = ['edit_annonce', 'read_annonce', 'publish_annonces', 'edit_annonces',
+            'edit_others_annonces', 'edit_published_annonces', 'edit_read_annonces'];
+          $work_caps = ['edit_work', 'read_work', 'publish_works', 'edit_works', 'edit_others_works',
+            'edit_published_works', 'edit_read_works'];
+          $caps = array_merge($caps, $annonce_caps);
+          $caps = array_merge($caps, $work_caps);
+          foreach ($caps as $cap) {
+            $candidate->add_cap( $cap );
+            $company->add_cap( $cap );
+          }
 
         });
 
