@@ -503,6 +503,10 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                 $("#small-ad-table tbody").on('click', '.edit-position', e => {
                   var el = $(e.currentTarget).parents('tr');
                   var Column = table.row(el).data();
+                  if (!Column.featured) {
+                    swal('Désolé', "Vous ne pouvez pas mettre à la une cette annonce pour le moment. Merci", "warning");
+                    return false;
+                  }
                   $state.go('manager.profil.works.featured', {id: Column.ID});
                 });
 
