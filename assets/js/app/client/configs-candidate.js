@@ -41,6 +41,9 @@ APPOC
                 .then(function (resp) {
                   return resp.data;
                 });
+            }],
+            Options: ['clientFactory', function (clientFactory) {
+              return clientFactory.getOptions();
             }]
           },
           templateUrl: `${itOptions.Helper.tpls_partials}/oc-candidate.html?ver=${itOptions.version}`,
@@ -1009,9 +1012,10 @@ APPOC
       }]
     }
   }])
-  .controller('candidateController', ['$rootScope', '$scope', '$http', '$filter', 'Upload', 'Client', 'Regions', 'Towns', 'Areas',
-    function ($rootScope, $scope, $http, $filter, Upload, Client, Regions, Towns, Areas) {
+  .controller('candidateController', ['$rootScope', '$scope', '$http', '$filter', 'Upload', 'Client', 'Regions', 'Towns', 'Areas', 'Options',
+    function ($rootScope, $scope, $http, $filter, Upload, Client, Regions, Towns, Areas, Options) {
       const self = this;
+      $rootScope.options = {};
       $rootScope.alertLoading = false; // Directive alert
       $rootScope.alerts = [];
       $rootScope.jobSearchs = [];
@@ -1094,6 +1098,7 @@ APPOC
 
       this.$onInit = () => {
         var $ = jQuery.noConflict();
+        $rootScope.options = _.clone(Options);
         let origin = document.location.origin;
         $rootScope.WPEndpoint = new WPAPI({endpoint: `${origin}/wp-json`});
         let namespace = 'wp/v2'; // use the WP API namespace

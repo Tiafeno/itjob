@@ -10,6 +10,7 @@ namespace includes\vc;
 
 use Http;
 use includes\post\Annonce;
+use includes\post\Works;
 
 class vcAnnonce
 {
@@ -256,7 +257,7 @@ class vcAnnonce
         break;
     }
 
-    $annonce = new Annonce($post_id);
+    $annonce = $post_type === 'annonce' ? new Annonce($post_id, true) : new Works($post_id, true);
     wp_send_json_success($annonce);
   }
 
