@@ -299,7 +299,7 @@ trait Register {
         'publish_posts'				  => 'publish_offers',
       ),
       'map_meta_cap'    => true,
-      'rest_base'       => 'offer',
+      'rest_base'       => 'offers',
       'menu_icon'       => 'dashicons-businessman',
       'supports'        => [ 'title', 'excerpt', 'thumbnail', 'custom-fields' ],
       'show_in_rest'    => true

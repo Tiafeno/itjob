@@ -60,8 +60,14 @@ if ( ! class_exists( 'scClient' ) ) :
           $caps = [];
           $annonce_caps = ['edit_annonce', 'read_annonce', 'publish_annonces', 'edit_annonces',
             'edit_others_annonces', 'edit_published_annonces', 'edit_read_annonces'];
-          $work_caps = ['edit_work', 'read_work', 'publish_works', 'edit_works', 'edit_others_works',
-            'edit_published_works', 'edit_read_works'];
+          $work_caps = [
+            'edit_work',
+            'read_work',
+            'publish_works',
+            'edit_works',
+            'edit_others_works',
+            'edit_published_works',
+            'edit_read_works'];
           $caps = array_merge($caps, $annonce_caps);
           $caps = array_merge($caps, $work_caps);
           foreach ($caps as $cap) {
