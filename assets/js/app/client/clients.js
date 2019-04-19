@@ -130,7 +130,33 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
           } // .end addProductCart
 
         }]
-      }
+      },
+      {
+        name: 'manager.profil.annonces',
+        url: '/annonces',
+        templateUrl: `${itOptions.Helper.tpls_partials}/annonces.html?ver=${itOptions.version}`,
+        controller: ["$state", function ($state) {
+            this.$onInit = () => {
+              $state.go('manager.profil.annonces.lists');
+            };
+        }]
+      },
+      {
+        name: 'manager.profil.annonces.lists',
+        url: '/lists',
+        templateUrl: `${itOptions.Helper.tpls_partials}/annonce-lists.html?ver=${itOptions.version}`,
+        controller: ["$rootScope", function ($rootScope) {
+
+        }]
+      },
+      {
+        name: 'manager.profil.annonces.featured',
+        url: '/{id}/featured',
+        templateUrl: `${itOptions.Helper.tpls_partials}/annonce-featured.html?ver=${itOptions.version}`,
+        controller: ["$rootScope", function ($rootScope) {
+
+        }]
+      },
     ];
     states.forEach(function (state) {
       $stateProvider.state(state);
@@ -503,7 +529,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                 $("#small-ad-table tbody").on('click', '.edit-position', e => {
                   var el = $(e.currentTarget).parents('tr');
                   var Column = table.row(el).data();
-                  if (!Column.featured) {
+                  if (!Column.activated) {
                     swal('Désolé', "Vous ne pouvez pas mettre à la une cette annonce pour le moment. Merci", "warning");
                     return false;
                   }
@@ -522,9 +548,9 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
   .directive('annonces', [function () {
     return {
       restrict: 'E',
-      templateUrl: `${itOptions.Helper.tpls_partials}/annonces.html?ver=${itOptions.version}`,
+      templateUrl: `${itOptions.Helper.tpls_partials}/directive-annonces.html?ver=${itOptions.version}`,
       scope: true,
-      controller: ['$scope', '$q', '$http', function ($scope, $q, $http) {
+      controller: ['$scope', '$q', '$http', '$state', function ($scope, $q, $http, $state) {
         $scope.Works = [];
         $scope.Loading = false;
         this.$onInit = () => {
@@ -562,8 +588,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                       {data: 'region', render: (data) => data.name},
                       {
                         data: 'featured',
-                        render: (data) => data ? `<span class="badge badge-blue uppercase">à la une</span>` :
-                          `<span class="badge-default badge uppercase">standard</span>`
+                        render: (data) => {
+                          var text = data ? (!_.isEmpty(row.featured_position) || _.isNull(row.featured_position) ? (row.featured_position === 1 ? 'à la une' : 'la liste') : 'erreur') : 'aucun';
+                          var style = data ? "success" : "default";
+                          return `<span class="badge-${style} edit-position badge uppercase">${text}</span>`;
+                        }
                       },
                       {
                         data: 'date_publication', render: (data) => {
@@ -576,6 +605,18 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                       url: "https://cdn.datatables.net/plug-ins/1.10.16/i18n/French.json"
                     }
                   });
+
+                const $ = jQuery.noConflict();
+                $("#annonce-table tbody").on('click', '.edit-position', e => {
+                  var el = $(e.currentTarget).parents('tr');
+                  var Column = table.row(el).data();
+                  if (!Column.activated) {
+                    swal('Désolé', "Vous ne pouvez pas mettre à la une cette annonce pour le moment. Merci", "warning");
+                    return false;
+                  }
+                  $state.go('manager.profil.annonces.featured', {id: Column.ID});
+                });
+
 
                 $scope.Loading = false;
               } else {

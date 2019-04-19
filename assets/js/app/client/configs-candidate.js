@@ -137,15 +137,7 @@ APPOC
           controller: ["$rootScope", function ($rootScope) {
 
           }]
-        },
-        {
-          name: 'manager.profil.annonces',
-          url: '/annonces',
-          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/annonces.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
-
-          }]
-        },
+        }
       ];
       // Loop over the state definitions and register them
       states.forEach(function (state) {

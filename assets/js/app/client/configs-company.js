@@ -863,15 +863,7 @@ APPOC
               }
             }
           }]
-        },
-        {
-          name: 'manager.profil.annonces',
-          url: '/annonces',
-          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/annonces.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
-
-          }]
-        },
+        }
       ];
       // Loop over the state definitions and register them
       states.forEach(function (state) {
@@ -887,8 +879,6 @@ APPOC
       scope: {
         Entreprise: '=company',
         init: '&init'
-      },
-      link: function (scope, element, attrs) {
       },
       controller: ['$rootScope', '$scope', '$q', '$state', 'clientFactory', 'clientService',
         function ($rootScope, $scope, $q, $state, clientFactory, clientService) {
@@ -1536,8 +1526,8 @@ APPOC
         }]
     }
   }])
-  .controller('companyController', ['$rootScope', '$http', '$q', '$filter', 'clientFactory',
-    'clientService', 'Client', 'Regions', 'Towns', 'Areas', 'Options',
+  .controller('companyController', ['$rootScope', '$http', '$q', '$filter', 'clientFactory', 'clientService', 'Client',
+    'Regions', 'Towns', 'Areas', 'Options',
     function ($rootScope, $http, $q, $filter, clientFactory, clientService, Client, Regions, Towns, Areas, Options) {
       const self = this;
       $rootScope.options = {};
