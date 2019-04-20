@@ -1,3 +1,4 @@
+const MSG_FEATURED = "Vous ne pouvez pas mettre à la une cette annonce pour le moment. Merci";
 const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinymce', 'ui.router', 'ngTagsInput', 'ngSanitize', 'ngFileUpload'])
   .config(['$stateProvider', function ($stateProvider) {
     const states = [
@@ -112,6 +113,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                   .works()
                   .id($scope.works.id)
                   .update({
+                    featured: 0,
                     featured_position: ugs,
                     featured_datelimit: moment().format("YYYY-MM-DD H:mm:ss")
                   })
@@ -151,10 +153,119 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
       },
       {
         name: 'manager.profil.annonces.featured',
+        resolve: {
+          $positions: ["$rootScope", "$http", function ($rootScope, $http) {
+            $rootScope.preloaderToogle();
+            return $http.get(`${itOptions.Helper.ajax_url}?action=collect_support_featured&type=annonce`).then(results => {
+              $rootScope.preloaderToogle();
+              return results.data;
+            });
+          }],
+          Annonce: ['$rootScope', '$transition$', function ($rootScope, $transition$) {
+            let annonceId = $transition$.params().id;
+            return $rootScope.WPEndpoint.annonce().id(annonceId).then(annonces => {
+              return annonces;
+            })
+          }]
+        },
         url: '/{id}/featured',
         templateUrl: `${itOptions.Helper.tpls_partials}/annonce-featured.html?ver=${itOptions.version}`,
-        controller: ["$rootScope", function ($rootScope) {
-
+        controller: ["$rootScope", "$scope", "$http", "$log", "$positions", "Annonce",
+          function ($rootScope, $scope, $http, $log, $positions, Annonce) {
+            $scope.tariff = {};
+            $scope.Annonce = {};
+            $scope.supportFeatured = {};
+            this.$onInit = () => {
+              moment.locale('fr');
+              $scope.supportFeatured = _.clone($positions.data);
+              let featured = _.clone($rootScope.options.featured);
+              if (!featured.hasOwnProperty('ads_tariff')) {
+                $log.debug("Property undefined (ads_tariff)");
+                return;
+              }
+              $scope.tariff = _.map(featured.ads_tariff, (tarif) => {
+                let support = _.findWhere($positions.data, {slug: tarif.ugs});
+                tarif.available = support.counts >= 4 ? 0 : 1;
+                return tarif;
+              });
+              $scope.Annonce = _.clone(Annonce);
+            };
+            $scope.checkout = (ugs, price) => {
+              const key = $rootScope.options.wc._k;
+              const secret = $rootScope.options.wc._s;
+              let support = _.findWhere($scope.supportFeatured, {slug: ugs});
+              let priceFeatured = price.toString();
+              if (!support || support.counts === 4) return false;
+              $rootScope.preloaderToogle();
+              let ads = _.findWhere($rootScope.options.featured.ads_tariff, {ugs: ugs});
+              $rootScope.WPEndpoint
+                .product()
+                .param('consumer_key', key)
+                .param('consumer_secret', secret)
+                .create({
+                  status: 'publish',
+                  type: 'simple',
+                  name: `ANNONCE SPONSORISE (${$scope.Annonce.title.rendered}) - ${ads.position}`,
+                  price: ads.price, // string accepted
+                  regular_price: ads.price, // string accepted
+                  sold_individually: true,
+                  virtual: true,
+                  sku: `FEATURED${$scope.Annonce.id}`,
+                  meta_data: [
+                    {key: '__type', value: 'featured'},
+                    {key: '__id', value: $scope.Annonce.id}
+                  ]
+                })
+                .then(product => {
+                  $scope.$apply(() => {
+                    $rootScope.preloaderToogle();
+                    $scope.addCart(product.id, ads.ugs);
+                  });
+                })
+                .catch(err => {
+                  if (!_.isUndefined(err.code)) {
+                    if (err.code === "product_invalid_sku") {
+                      let resource_id = err.data.resource_id;
+                      $scope.$apply(() => {
+                        $rootScope.WPEndpoint
+                          .product()
+                          .param('consumer_key', key)
+                          .param('consumer_secret', secret)
+                          .id(resource_id)
+                          .update({price: ads.price, regular_price: ads.price})
+                          .then(product => {
+                            $scope.addCart(resource_id, ads.ugs);
+                          });
+                      });
+                    }
+                  }
+                })
+            };
+            $scope.addCart = (product_id, position) => {
+              $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`, {cache: false})
+                .then((resp) => {
+                  const response = resp.data;
+                  $rootScope.WPEndpoint
+                    .annonce()
+                    .id($scope.Annonce.id)
+                    .update({
+                      featured: 0,
+                      featured_position: position,
+                      featured_datelimit: moment().format("YYYY-MM-DD H:mm:ss")
+                    })
+                    .then(() => {
+                      if (response.success) {
+                        $scope.$apply(() => {
+                          swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                          $rootScope.preloaderToogle();
+                          setTimeout(() => {
+                            window.location.href = response.data;
+                          }, 2000);
+                        });
+                      }
+                    })
+                });
+            };
         }]
       },
     ];
@@ -530,7 +641,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                   var el = $(e.currentTarget).parents('tr');
                   var Column = table.row(el).data();
                   if (!Column.activated) {
-                    swal('Désolé', "Vous ne pouvez pas mettre à la une cette annonce pour le moment. Merci", "warning");
+                    swal('Désolé', MSG_FEATURED, "warning");
                     return false;
                   }
                   $state.go('manager.profil.works.featured', {id: Column.ID});
@@ -611,12 +722,11 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                   var el = $(e.currentTarget).parents('tr');
                   var Column = table.row(el).data();
                   if (!Column.activated) {
-                    swal('Désolé', "Vous ne pouvez pas mettre à la une cette annonce pour le moment. Merci", "warning");
+                    swal('Désolé', MSG_FEATURED, "warning");
                     return false;
                   }
                   $state.go('manager.profil.annonces.featured', {id: Column.ID});
                 });
-
 
                 $scope.Loading = false;
               } else {
