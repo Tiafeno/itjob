@@ -13,7 +13,7 @@
                 </h5>
                 <p class="font-13 text-light">{{ work.description|raw|html_entity_decode|striptags[:150] }} [...]</p>
                 <div class="font-13">
-                  <span class="mr-4">Déposé le <span>{{ work.date_publication_format }}</span>
+                  <span class="mr-4">Déposée le <span>{{ work.date_publication_format }}</span>
                   </span>
                   <span class=" mr-4 font-bold"><i class="fa fa-database mr-2"></i>{{ work.reference }}</span>
                   <span class="font-bold"><i class="fa fa-map-marker mr-2"></i>{{ work.region.name }}</span>
@@ -45,7 +45,7 @@
     <div class="d-flex align-items-center">
       <a class="m-auto" href="{{ archive_work_url }}">
         <button class="btn btn-sm btn-secondary btn-fix">
-          <span class="btn-icon">Voir toutes les travails temporaire <i class="la la-plus"></i></span>
+          <span class="btn-icon">Voir tous les travails temporaire <i class="la la-plus"></i></span>
         </button>
       </a>
     </div>
