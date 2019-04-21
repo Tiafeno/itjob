@@ -84,7 +84,7 @@
           <option></option>
           <option value="{{city.term_id}}" ng-repeat="city in formulaire.allCity">({{city.postal_code}}) {{city.name}}</option>
         </select>
-        <span ng-if="!particularForm.region" class="text-muted small">Séléctionnez une region avant d'ajouter une ville</span>
+        <span ng-if="!particularForm.region" class="text-muted small">Sélectionnez une region avant d'ajouter une ville</span>
       </div>
     </div>
 
@@ -129,10 +129,10 @@
           class="la la-plus-circle"></i></button>
 
         <p class="mt-4 mention-text">
-          Ajouter le numéro téléphone un par un.
-          <br>Cliquer sur le bouton « + » pour ajouter un autre numéro.
+          Ajouter les numéros téléphone un par un.
+          <br>Cliquez sur le bouton « + » pour joindre un autre numéro.
           <span class="mt-1 d-block"></span>
-          <br>Les formats de numéro téléphone validé intègre les préﬁxes suivants (034 ... ou 039...).
+          <br>Les formats de numéros de téléphone validé intègrent les préﬁxes suivants (034 ... ou 039...).
         </p>
       </div>
     </div>
@@ -146,7 +146,7 @@
         <div ng-messages="pcForm.email.$error" ng-show="pcForm.email.$invalid && pcForm.email.$touched"
              class="alert alert-pink" role="alert">
           <div ng-message="required">Veuillez saisir une adresse email.</div>
-          <div ng-message="pattern">Vérifiez l'adresse email, son format n'est pas valide.</div>
+          <div ng-message="pattern">Vérifiez l'adresse email, ce format n'est pas valide.</div>
           <div ng-message="mail">Adresse email valide refusée ou déjà enregistrée pour un autre compte.</div>
         </div>
       </div>
