@@ -272,7 +272,7 @@ if ( ! class_exists( 'vcSearch' ) ):
         $search_query   = Http\Request::getValue( 's' );
         $publish_ad_link = get_the_permalink( ADD_ANNONCE_PAGE );
         $type = $args['post_type'] === 'annonce' ? 2 : 1;
-        $btn_msg = $type === 1 ? "Deposer un travail temporaire" : "Deposer une petite annonce";
+        $btn_msg = $type === 1 ? "Deposez un travail temporaire" : "Deposez une petite annonce";
         $args           = array_merge( $args, [
           's'              => $search_query,
           'ab'             => Http\Request::getValue('ab', ''),
