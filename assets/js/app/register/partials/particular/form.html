@@ -19,18 +19,6 @@
 
   <div class="form-group mb-4">
 
-    <div class="row mb-4">
-      <div class="col-sm-3 d-flex align-items-center">
-        <label class="radio radio-grey radio-primary radio-inline">
-          <input type="radio" name="greeting" ng-model="particularForm.greeting" value="mr" required>
-          <span class="input-span"></span>Monsieur</label>
-
-        <label class="radio radio-grey radio-primary radio-inline">
-          <input type="radio" name="greeting" ng-model="particularForm.greeting" value="mrs">
-          <span class="input-span"></span>Madame</label>
-      </div>
-    </div>
-
     <div class="row mb-1">
       <div class="col-md-6 sol-sm-6 mt-2 form-group">
         <label class="form-control-label">Votre prénom <span style="color: red">*</span></label>
@@ -47,6 +35,18 @@
              class="alert alert-pink" role="alert">
           <div ng-message="required">Veuillez saisir votre nom.</div>
         </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-sm-3 d-flex align-items-center">
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="greeting" ng-model="particularForm.greeting" value="mr" required>
+          <span class="input-span"></span>Monsieur</label>
+
+        <label class="radio radio-grey radio-primary radio-inline">
+          <input type="radio" name="greeting" ng-model="particularForm.greeting" value="mrs">
+          <span class="input-span"></span>Madame</label>
       </div>
     </div>
 
