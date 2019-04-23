@@ -6,7 +6,7 @@ if (!$works->is_activated()) {
 $current_url = get_the_permalink(get_the_ID());
 ?>
 
-<li class="media pt-0">
+<li class="media">
   <div class="media-body d-flex">
     <div class="flex-1">
       <h5 class="media-heading">
