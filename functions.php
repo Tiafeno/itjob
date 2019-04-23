@@ -234,65 +234,25 @@ add_filter('wp_nav_menu_args', function ($args) {
 
 add_action('admin_init', function () {
   $administrator = get_role('administrator');
-  $administrator->add_cap( 'edit_formation' );
-  $administrator->add_cap( 'edit_formations' );
-  $administrator->add_cap( 'read_private_formation' );
-  $administrator->add_cap( 'read_formation' );
-  $administrator->add_cap( 'edit_published_formations' );
-  $administrator->add_cap( 'edit_others_formations' );
-  $administrator->add_cap( 'edit_private_formations' );
-  $administrator->add_cap( 'delete_formation' );
-  $administrator->add_cap( 'delete_formations' );
-  $administrator->add_cap( 'delete_others_formations' );
-  $administrator->add_cap( 'delete_private_formations' );
-  $administrator->add_cap( 'delete_published_formations' );
-  $administrator->add_cap( 'delete_private_formations' );
-  $administrator->add_cap( 'publish_formations' );
+  $caps = [
+    'edit_formation', 'edit_formations', 'read_private_formation', 'read_formation',
+    'edit_published_formations', 'edit_others_formations', 'edit_private_formations', 'delete_formation', 'delete_formations',
+    'delete_others_formations', 'delete_private_formations', 'delete_published_formations', 'publish_formations',
+    'edit_offer', 'edit_offers', 'read_private_offer', 'read_offer', 'edit_published_offers', 'edit_others_offers',
+    'edit_private_offers', 'delete_offer', 'delete_offers', 'delete_others_offers', 'delete_private_offers', 'delete_published_offers',
+    'publish_offers',
+    'edit_work', 'edit_works', 'read_private_work', 'read_work', 'edit_published_works', 'edit_others_works',
+    'edit_private_works', 'delete_work', 'delete_works', 'delete_others_works', 'delete_private_works', 'delete_published_works',
+    'publish_works',
+    'edit_annonce', 'edit_annonces', 'read_private_annonce', 'read_annonce', 'edit_published_annonces', 'edit_others_annonces',
+    'edit_private_annonces', 'delete_annonce', 'delete_annonces', 'delete_others_annonces', 'delete_private_annonces',
+    'delete_published_annonces', 'publish_annonces'
+  ];
 
-  $administrator->add_cap( 'edit_offer' );
-  $administrator->add_cap( 'edit_offers' );
-  $administrator->add_cap( 'read_private_offer' );
-  $administrator->add_cap( 'read_offer' );
-  $administrator->add_cap( 'edit_published_offers' );
-  $administrator->add_cap( 'edit_others_offers' );
-  $administrator->add_cap( 'edit_private_offers' );
-  $administrator->add_cap( 'delete_offer' );
-  $administrator->add_cap( 'delete_offers' );
-  $administrator->add_cap( 'delete_others_offers' );
-  $administrator->add_cap( 'delete_private_offers' );
-  $administrator->add_cap( 'delete_published_offers' );
-  $administrator->add_cap( 'delete_private_offers' );
-  $administrator->add_cap( 'publish_offers' );
-
-  $administrator->add_cap( 'edit_work' );
-  $administrator->add_cap( 'edit_works' );
-  $administrator->add_cap( 'read_private_work' );
-  $administrator->add_cap( 'read_work' );
-  $administrator->add_cap( 'edit_published_works' );
-  $administrator->add_cap( 'edit_others_works' );
-  $administrator->add_cap( 'edit_private_works' );
-  $administrator->add_cap( 'delete_work' );
-  $administrator->add_cap( 'delete_works' );
-  $administrator->add_cap( 'delete_others_works' );
-  $administrator->add_cap( 'delete_private_works' );
-  $administrator->add_cap( 'delete_published_works' );
-  $administrator->add_cap( 'delete_private_works' );
-  $administrator->add_cap( 'publish_works' );
-
-  $administrator->add_cap( 'edit_annonce' );
-  $administrator->add_cap( 'edit_annonces' );
-  $administrator->add_cap( 'read_private_annonce' );
-  $administrator->add_cap( 'read_annonce' );
-  $administrator->add_cap( 'edit_published_annonces' );
-  $administrator->add_cap( 'edit_others_annonces' );
-  $administrator->add_cap( 'edit_private_annonces' );
-  $administrator->add_cap( 'delete_annonce' );
-  $administrator->add_cap( 'delete_annonces' );
-  $administrator->add_cap( 'delete_others_annonces' );
-  $administrator->add_cap( 'delete_private_annonces' );
-  $administrator->add_cap( 'delete_published_annonces' );
-  $administrator->add_cap( 'delete_private_annonces' );
-  $administrator->add_cap( 'publish_annonces' );
+  foreach ($caps as $cap) {
+    if ( ! $administrator->has_cap($cap))
+      $administrator->add_cap( $cap );
+  }
 });
 
 add_action('init', function () {
