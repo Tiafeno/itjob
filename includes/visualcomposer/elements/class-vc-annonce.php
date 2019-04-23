@@ -278,7 +278,14 @@ class vcAnnonce
 
     /** @var string $post_type */
     /** @var string $title - Shortcode variable attribute */
-    $posts = $itJob->services->getRecentlyPost($post_type, 4);
+    $posts = $itJob->services->getRecentlyPost($post_type, 4, [
+      [
+        'key'     => 'activated',
+        'compare' => '=',
+        'value'   => 1,
+        'type'    => 'NUMERIC'
+      ]
+    ]);
     $args = [
       'title' => $title,
       'archive_work_url' => get_post_type_archive_link('works'),
