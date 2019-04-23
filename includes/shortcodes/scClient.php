@@ -28,59 +28,44 @@ if (!class_exists('scClient')) :
 
         add_action('admin_init', function () {
           $company = get_role('company');
-          // Formation
-          $company->add_cap('edit_formation');
-          $company->add_cap('read_formation');
-          $company->add_cap('publish_formations');
-          $company->add_cap('edit_formations');
-          $company->add_cap('edit_others_formations');
-          $company->add_cap('edit_published_formations');
-          $company->add_cap('edit_read_formations');
-          // Offre
-          $company->add_cap('edit_offer');
-          $company->add_cap('read_offer');
-          $company->add_cap('publish_offers');
-          $company->add_cap('edit_offers');
-          $company->add_cap('edit_others_offers');
-          $company->add_cap('edit_published_offers');
-          $company->add_cap('edit_read_offers');
-
           $candidate = get_role('candidate');
-          $candidate->add_cap('read_formation');
-          $candidate->add_cap('read_offer');
-          // Travail temporaire
-          $candidate->add_cap('edit_work');
-          $candidate->add_cap('read_work');
-          $candidate->add_cap('publish_works');
-          $candidate->add_cap('edit_works');
-          $candidate->add_cap('edit_others_works');
-          $candidate->add_cap('edit_published_works');
-          $candidate->add_cap('edit_read_works');
+          // Formation
+          $company_caps = [
+            'edit_formation', 'read_formation', 'publish_formations', 'edit_formations', 'edit_others_formations',
+            'edit_published_formations', 'edit_read_formations', 'edit_offer', 'read_offer', 'publish_offers',
+            'edit_offers', 'edit_others_offers', 'edit_published_offers', 'edit_read_offers'
+          ];
+          foreach ($company_caps as $cap) {
+            if ( ! $company->has_cap($cap) ) {
+              $company->add_cap($cap);
+            }
+          }
+
+          $candidate_caps = ['read_formation', 'read_offer'];
+          foreach ($candidate_caps as $cap) {
+            if ( ! $candidate->has_cap($cap) ) {
+              $candidate->add_cap($cap);
+            }
+          }
 
           $caps = [];
           $annonce_caps = [
-            'edit_annonce',
-            'read_annonce',
-            'publish_annonces',
-            'edit_annonces',
-            'edit_others_annonces',
-            'edit_published_annonces',
-            'edit_read_annonces'
+            'edit_annonce', 'read_annonce', 'publish_annonces', 'edit_annonces',
+            'edit_others_annonces', 'edit_published_annonces', 'edit_read_annonces'
           ];
           $work_caps = [
-            'edit_work',
-            'read_work',
-            'publish_works',
-            'edit_works',
-            'edit_others_works',
-            'edit_published_works',
-            'edit_read_works'
+            'edit_work', 'read_work', 'publish_works', 'edit_works',
+            'edit_others_works', 'edit_published_works', 'edit_read_works'
           ];
           $caps = array_merge($caps, $annonce_caps);
           $caps = array_merge($caps, $work_caps);
           foreach ($caps as $cap) {
-            $candidate->add_cap($cap);
-            $company->add_cap($cap);
+            if ( ! $candidate->has_cap($cap) ) {
+              $candidate->add_cap($cap);
+            }
+            if ( ! $company->has_cap($cap) ) {
+              $company->add_cap($cap);
+            }
           }
 
         });
