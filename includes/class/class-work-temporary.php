@@ -58,7 +58,7 @@ class Works {
     }
 
     if (!$this->is_work()) {
-      self::$error = new \WP_Error('broken', "Le post n'est pas une travail temporaire");
+      self::$error = new \WP_Error('broken', "Le post n'est pas un travail temporaire");
       return false;
     }
 

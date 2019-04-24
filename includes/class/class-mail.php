@@ -434,7 +434,7 @@ MSG;
   }
 
   /**
-   * Envoyer un mail à l'administrateur pour informer qu'une nouvelle travail temporaire
+   * Envoyer un mail à l'administrateur pour informer qu'un nouveau travail temporaire
    * est publier
    * @param $work_id int  - post type works id
    */

@@ -180,7 +180,7 @@ class vcAnnonce
 
   /**
    * function ajax
-   * Cette fonction permet d'enregistrer une annonce ou une travail temporaire
+   * Cette fonction permet d'enregistrer une annonce ou un travail temporaire
    */
   public function add_annonce ()
   {
