@@ -252,12 +252,10 @@ SQL;
       global $wpdb;
 
       $sql = <<<SQL
-SELECT pts.ID as reference  
+SELECT pts.ID
 FROM $wpdb->posts as pts 
 WHERE pts.post_type = "candidate" 
-  AND pts.post_status = "publish" 
-  AND pts.ID IN (SELECT pm.post_id as ID FROM $wpdb->postmeta as pm WHERE pm.meta_key = "activated" AND pm.meta_value = 1) 
-  AND pts.ID NOT IN (SELECT pm2.post_id as ID FROM $wpdb->postmeta as pm2 WHERE pm2.meta_key = "itjob_cv_hasCV" AND pm2.meta_value = 1)
+  AND pts.ID NOT IN (SELECT post_id as ID FROM $wpdb->postmeta WHERE meta_key = "itjob_cv_hasCV" AND meta_value = 1)
 SQL;
       $results = $wpdb->get_results($sql);
       $candidats = [];
