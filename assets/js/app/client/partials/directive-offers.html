@@ -43,8 +43,7 @@
         </div>
         <div class="form-group mb-2 row ">
           <div class="col-sm-12">
-            <label class="col-form-label ">Secteur d'activité <span style="color: red">*</span>
-              [[offerEditor.branch_activity]]</label>
+            <label class="col-form-label ">Secteur d'activité <span style="color: red">*</span></label>
             <div class="form-group">
               <select ng-disabled="true" class="form-control" name="branch_activity" ng-model="offerEditor.branch_activity" title="Secteur d'activité"
                 required>
@@ -184,11 +183,11 @@
                 </div>
               </div>
 
-              <div class="ibox mt-5">
+              <div class="ibox mt-5" ng-if="offerView.rateplan !== 'premium'">
                 <div class="ibox-body alert alert-primary">
                   <h5 class="">Découvrez l'offre premium</h5>
                   <p>Pour pouvoir visionner et télécharger plus de CV et de trouver les bons candidats, plus rapidement sans limite</p>
-                  <button  class="btn btn-info uk-modal-close uk-close-large" data-ng-click="featuredOffer()" type="button" >Améliorer l'offre</button>
+                  <button  class="btn btn-info uk-modal-close uk-close-large" data-ng-click="featuredOffer(offerView.ID)" type="button" >Améliorer l'offre</button>
                 </div>
               </div>
             </div>
@@ -286,18 +285,20 @@
           </span>
         </td>
         <td>
-          <span class="badge badge-pill uppercase" ng-click="offerPaiementProcess(offer.ID)" ng-class="{'badge-blue' : offer.paid, 'badge-default' : !offer.paid,
-          'paiement-process': (offer.rateplan !== 'standard' && !offer.paid && offer.activated) }">
+          <span class="badge badge-pill uppercase" ng-click="offerPaiementProcess(offer.ID)" ng-class="{'badge-blue' : offer.paid,
+          'badge-default' : (!offer.paid && !offer.activated) || offer.rateplan === 'standard',
+          'badge-warning' : !offer.paid && offer.activated && offer.rateplan !== 'standard',
+          'paiement-process': !offer.paid && offer.activated }">
             [[offer.paid ? offer.rateplan : ( offer.rateplan === 'standard' ? "Standard" : (offer.activated ? "Attente paiement" : "Attente validation" ) )]]
           </span>
         </td>
         <td>
-          <span class="badge badge-pill" ng-click="addFeaturedCart(offer.ID)" ng-class="{'badge-blue' : offer.featured, 'badge-default edit-position' : !offer.featured}">
+          <span class="badge" ng-click="addFeaturedCart(offer.ID)" ng-class="{'badge-blue' : offer.featured, 'badge-warning edit-position' : !offer.featured}">
             [[ offer.featured ? "ACTIVE" : "AUCUN" ]]
           </span>
         </td>
-        <td><span class="badge badge-info badge-pill">[[ offer.reference ]]</span></td>
-        <td><span class="text-light mr-3 font-16" ng-click="openEditor(offer.ID, $event)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
+        <td><span class="badge badge-default badge-pill">[[ offer.reference ]]</span></td>
+        <td><span class="text-light mr-3 font-16" data-ng-click="openOfferEditor(offer.ID)" style="cursor: pointer"><i class="ti-pencil"></i></span></td>
       </tr>
     </tbody>
 

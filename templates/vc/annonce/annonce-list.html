@@ -61,9 +61,9 @@
                   <a href="{{ annonce.ID | get_permalink }}">{{ annonce.title }}</a>
                 </h5>
                 <p class="font-16"><span class="price">{{ annonce.price }}</span></p>
-                <p class="font-13 text-light">{{ annonce.description|striptags|raw[:150] }} [...]</p>
+                <p class="font-13 text-light">{{ annonce.description|raw|html_entity_decode|striptags[:150] }} [...]</p>
                 <div class="font-12">
-                  <span class="mr-4">Déposé le <span>{{ annonce.date_publication_format }}</span>
+                  <span class="mr-4">Déposée le <span>{{ annonce.date_publication_format }}</span>
                   </span>
                   <span class="font-bold"><i class="fa fa-map-marker mr-2"></i>{{ annonce.region.name }}</span>
                 </div>

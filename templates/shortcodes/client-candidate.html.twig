@@ -7,7 +7,7 @@
 
   .ng-dirty.ng-invalid,
   .ng-touched.ng-invalid,
-  form.ng-submitted .ng-pristine.ng-invalid{
+  form.ng-submitted .ng-pristine.ng-invalid {
     border-color: #f75a5f;
   }
 
@@ -16,21 +16,54 @@
     font-size: 17px;
     font-weight: 500;
   }
+
+
+  .paiement-process,
+  .edit-formation,
+  .edit-position,
+  .view-candidate{
+    cursor: pointer;
+  }
+
   .col-form-label {
     font-size: 13px;
   }
+
   .ibox .ibox-head {
     background-color: #34495f;
     color: aliceblue;
   }
+  .paiement-process:hover,
+  .edit-position:hover {
+    background-color: #4cae4c;
+    color: white;
+  }
+
+  .preloader-backdrop {
+    background-color: transparent !important;
+  }
+
+  .preloader-backdrop .page-preloader {
+    background-color: #f39c12;
+    color: aliceblue;
+    border-radius: 20px;
+  }
+  .preloader-backdrop .page-preloader::before {
+    border-top: 2px solid #ffffff !important;
+  }
+
+
+
   experiences .dropdown-menu .dropdown-item, .dropdown-menu > li > a,
   trainings .dropdown-menu .dropdown-item, .dropdown-menu > li > a {
     color: #34495f !important;
   }
+
   ol.language-list {
     list-style-type: disc;
   }
-  ol.language-list  li {
+
+  ol.language-list li {
     margin-right: 32px;
     float: left;
   }
@@ -38,7 +71,7 @@
 <script type="text/javascript">
 
 </script>
-<div class="page-header mt-5" ng-app="clientApp" >
+<div class="page-header mt-5" ng-app="clientApp">
   <ui-view>
     <div class="mt-4 pt-4 ">
       <h4 class="font-light text-center">Espace client</h4>

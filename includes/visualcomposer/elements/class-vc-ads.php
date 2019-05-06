@@ -55,15 +55,15 @@ class vcAds
                      'Inscription Particular (position-9)'    => 'position-9',
                      'Inscription Professional (position-10)' => 'position-10',
                      'Search Side Right (position-11)'        => 'position-11', // Need post type attr
-                     'Archive Travail Temporaire Top (position-12)' => 'position-12',
+                     'Archive Travail Temporaire Top (position-12)'        => 'position-12',
                      'Archive Travail Temporaire Side Right (position-13)' => 'position-13',
-                     'Single Travail Temporaire Side Right (position-14)' => 'position-14',
-                     'Archive Formation Top (position-15)' => 'position-15',
-                     'Archive Formation Side Right (position-16)' => 'position-16',
-                     'Single Formation Side Right (position-17)' => 'position-17',
-                     'Archive Annonce Top (position-18)' => 'position-18',
+                     'Single Travail Temporaire Side Right (position-14)'  => 'position-14',
+                     'Archive Formation Top (position-15)'                 => 'position-15',
+                     'Archive Formation Side Right (position-16)'          => 'position-16',
+                     'Single Formation Side Right (position-17)'           => 'position-17',
+                     'Archive Annonce Top (position-18)'                   => 'position-18',
                      'Archive Annonce Side Right (position-19)' => 'position-19',
-                     'Single Annonce Side Right (position-20)' => 'position-20',
+                     'Single Annonce Side Right (position-20)'  => 'position-20',
                   ],
                   'std' => null,
                   'description' => "Ajouter une position",
@@ -115,7 +115,7 @@ class vcAds
       $Model = new \includes\model\itModel();
      /** @var string $position */
      /** @var string $size */
-     if (null == $position) return null;
+     if (is_null($position) || empty($position)) return null;
       $dateNow = date_i18n('Y-m-d H:i:s');
       $Ads = $Model->get_ads_by_position($position, $dateNow);
       if (empty($Ads)) {
@@ -133,7 +133,6 @@ class vcAds
          return $content;
       } else {
          foreach ($Ads as $ad) {
-            $attachment = wp_get_attachment_image_src( $ad->id_attachment, 'full' );
             $code = "<div class='mt-4' data-hour='$dateNow'>";
             $code .= sprintf('[vc_single_image image="%d" img_link_target="_blank" img_size="%s" alignment="center"]', $ad->id_attachment, $ad->img_size);
             $code .= "</div>";

@@ -334,7 +334,8 @@ add_action('rest_api_init', function () {
           'itjob_company_greeting' => $company->greeting,
           'itjob_company_name'     => $company->name,
           'itjob_company_nif'      => $company->nif,
-          'itjob_company_stat'     => $company->stat
+          'itjob_company_stat'     => $company->stat,
+          'itjob_company_phone'    => isset($company->phone) ? $company->phone : ''
         ];
 
         foreach ($form as $itemKey => $item) {
@@ -504,6 +505,9 @@ add_action('rest_api_init', function () {
               $rateplan = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
               if (is_null($rateplan)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
               update_field('itjob_offer_rateplan', $rateplan, $Offer->ID);
+              if ($rateplan !== 'standard') {
+                update_field("itjob_offer_paid", 1 , $Offer->ID);
+              }
 
               return new WP_REST_Response(['success' => true, 'msg' => "Offre mise à jour avec succès"]);
 

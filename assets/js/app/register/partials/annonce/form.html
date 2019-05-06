@@ -19,7 +19,7 @@
               <span class="input-span"></span>Prestation service ou Travail temporaire</label>
             <label class="radio radio-grey radio-primary radio-inline">
               <input type="radio" ng-change="loadScript()" name="type_annonce" ng-model="annonce.type_annonce" ng-value="2" value="2" ng-checked="annonce.type_annonce == 2">
-              <span class="input-span"></span>Autres type d'annonce</label>
+              <span class="input-span"></span>Autre type d'annonce</label>
           </div>
           <div class="input-message-animation" ng-if="form.type_annonce.$touched && form.type_annonce.$error.required">Ce champ est obligatoire.</div>
         </div>
@@ -27,10 +27,10 @@
     </div>
     <div ng-show="annonce.type_annonce == 2">
       <div class="form-group mb-4 row ">
-        <label class="col-sm-4 col-form-label font-bold">Categorie <span style="color: red">*</span></label>
+        <label class="col-sm-4 col-form-label font-bold">Catégorie <span style="color: red">*</span></label>
         <div class="col-sm-6">
           <div class="form-group">
-            <select class="form-control categorie" name="categorie" ng-model="annonce.categorie" ng-value="" title="Categorie"
+            <select class="form-control categorie" name="categorie" ng-model="annonce.categorie" ng-value="" title="Catégorie"
                     ng-required="annonce.type_annonce == 2" required>
               <option></option>
               <option ng-repeat="categorie in categories" value="{{ categorie.term_id }}">{{ categorie.name }}</option>
@@ -67,10 +67,10 @@
         </div>
       </div>
       <div class="form-group mb-4 row ">
-        <label class="col-sm-4 col-form-label font-bold">Region <span style="color: red">*</span></label>
+        <label class="col-sm-4 col-form-label font-bold">Région <span style="color: red">*</span></label>
         <div class="col-sm-6">
           <div class="form-group">
-            <select class="form-control" name="region" ng-model="annonce.region" ng-value="" title="Region" required>
+            <select class="form-control" name="region" ng-model="annonce.region" ng-value="" title="Région" required>
               <option></option>
               <option ng-repeat="region in regions" value="{{ region.term_id }}">{{ region.name }}</option>
             </select>
@@ -96,13 +96,13 @@
                ng-show="form.address.$invalid && form.address.$touched">
             <div ng-message="required">Le champ adresse est obligatoire.</div>
           </div>
-          <p class="mention-text mt-1">Cette donnée n’est jamais partagée et utilisée uniquement pour la gestion de votre compte</p>
+          <p class="mention-text mt-1">Cette donnée sera uniquement utilisée à des fins d’analyse.</p>
         </div>
       </div>
       <div class="form-group mb-4 row">
         <label class="col-sm-4 col-form-label font-bold">Prix </label>
         <div class="col-sm-6">
-          <input class="form-control" name="price" ng-model="annonce.price" type="number" placeholder="Budget en ariary (MGA)">
+          <input class="form-control" name="price" ng-model="annonce.price" type="number" placeholder="Budget en Ariary (MGA)">
         </div>
       </div>
 

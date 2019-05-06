@@ -10,8 +10,8 @@ APPOC
             Client: ['$http', '$q', function ($http, $q) {
               let access = $q.defer();
               $http.get(itOptions.Helper.ajax_url + '?action=client_area', {
-                cache: false
-              })
+                  cache: false
+                })
                 .then(resp => {
                   let data = resp.data;
                   access.resolve(data);
@@ -19,22 +19,31 @@ APPOC
               return access.promise;
             }],
             Regions: ['$http', function ($http) {
-              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=region', {cache: true})
+              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=region', {
+                  cache: true
+                })
                 .then(function (resp) {
                   return resp.data;
                 });
             }],
             Towns: ['$http', function ($http) {
-              return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {cache: true})
+              return $http.get(itOptions.Helper.ajax_url + '?action=get_city', {
+                  cache: true
+                })
                 .then(function (resp) {
                   return resp.data;
                 });
             }],
             Areas: ['$http', function ($http) {
-              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=branch_activity', {cache: true})
+              return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=branch_activity', {
+                  cache: true
+                })
                 .then(function (resp) {
                   return resp.data;
                 });
+            }],
+            Options: ['clientFactory', function (clientFactory) {
+              return clientFactory.getOptions();
             }]
           },
           templateUrl: `${itOptions.Helper.tpls_partials}/oc-candidate.html?ver=${itOptions.version}`,
@@ -128,31 +137,18 @@ APPOC
           controller: ["$rootScope", function ($rootScope) {
 
           }]
-        },
-        {
-          name: 'manager.profil.works',
-          url: '/works',
-          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/works.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
-
-          }]
-        },
-        {
-          name: 'manager.profil.annonces',
-          url: '/annonces',
-          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/annonces.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
-
-          }]
-        },
+        }
       ];
       // Loop over the state definitions and register them
       states.forEach(function (state) {
         $stateProvider.state(state);
       });
-      $urlServiceProvider.rules.otherwise({state: 'manager.profil.index'});
+      $urlServiceProvider.rules.otherwise({
+        state: 'manager.profil.index'
+      });
 
-    }])
+    }
+  ])
   .directive('generalInformationCandidate', [function () {
     return {
       restrict: 'E',
@@ -264,13 +260,13 @@ APPOC
           form.append('action', 'update_job_search');
           form.append('jobs', JSON.stringify($scope.jobs));
           $http({
-            method: 'POST',
-            url: itOptions.Helper.ajax_url,
-            headers: {
-              'Content-Type': undefined
-            },
-            data: form
-          })
+              method: 'POST',
+              url: itOptions.Helper.ajax_url,
+              headers: {
+                'Content-Type': undefined
+              },
+              data: form
+            })
             .then(response => {
               // Handle success
               let data = response.data;
@@ -290,8 +286,8 @@ APPOC
          */
         $scope.queryJobs = function ($query, taxonomy) {
           return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=' + taxonomy, {
-            cache: true
-          })
+              cache: true
+            })
             .then(function (response) {
               const jobs = response.data;
               return jobs.filter(function (job) {
@@ -331,13 +327,13 @@ APPOC
           Form.append('action', "update_candidate_softwares");
           Form.append('softwares', JSON.stringify($scope.form.softwares));
           $http({
-            method: 'POST',
-            url: itOptions.Helper.ajax_url,
-            headers: {
-              'Content-Type': undefined
-            },
-            data: Form
-          })
+              method: 'POST',
+              url: itOptions.Helper.ajax_url,
+              headers: {
+                'Content-Type': undefined
+              },
+              data: Form
+            })
             .then(response => {
               let data = response.data;
               $scope.loading = false;
@@ -401,8 +397,8 @@ APPOC
 
         $scope.querySoftware = function ($query) {
           return $http.get(itOptions.Helper.ajax_url + '?action=ajx_get_taxonomy&tax=software', {
-            cache: true
-          })
+              cache: true
+            })
             .then(function (response) {
               const softwares = response.data;
               return softwares.filter(function (software) {
@@ -426,8 +422,7 @@ APPOC
           })
         };
 
-        $scope.$watch('form', (form) => {
-        }, true);
+        $scope.$watch('form', (form) => {}, true);
 
         UIkit.util.on('#modal-software-editor-overflow', 'show', function (e) {
           e.preventDefault();
@@ -485,8 +480,8 @@ APPOC
         };
         self.Initialize = () => {
           $http.get(`${itOptions.Helper.ajax_url}?action=get_candidacy`, {
-            cache: false
-          })
+              cache: false
+            })
             .then(resp => {
               const query = resp.data;
               if (query.success) {
@@ -603,11 +598,11 @@ APPOC
         $scope.onDeleteExperience = (experienceId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-            labels: {
-              ok: 'Supprimer',
-              cancel: 'Annuler'
-            }
-          })
+              labels: {
+                ok: 'Supprimer',
+                cancel: 'Annuler'
+              }
+            })
             .then(function () {
               let Experiences = _.reject($scope.Candidate.experiences, (experience) => experience.id === parseInt(experienceId));
               self.updateExperience(Experiences)
@@ -706,13 +701,13 @@ APPOC
           subForm.append('experiences', JSON.stringify(Experiences));
           $scope.status = "Enregistrement en cours...";
           $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -843,8 +838,7 @@ APPOC
         $scope.Train = {};
         $scope.months = clientService.months;
         $scope.years = _.range(1959, new Date().getFullYear() + 1);
-        this.$onInit = () => {
-        };
+        this.$onInit = () => {};
 
         // Ajouter une nouvelle formation
         $scope.newTraining = () => {
@@ -904,11 +898,11 @@ APPOC
         $scope.onDeleteTraining = (trainingId) => {
           $scope.mode = 2;
           UIkit.modal.confirm('Une fois supprimé, vous ne pourrez plus revenir en arrière', {
-            labels: {
-              ok: 'Supprimer',
-              cancel: 'Annuler'
-            }
-          })
+              labels: {
+                ok: 'Supprimer',
+                cancel: 'Annuler'
+              }
+            })
             .then(function () {
               let Trainings = _.reject($scope.Candidate.trainings, (training) => training.id === parseInt(trainingId));
               self.updateTraining(Trainings);
@@ -965,13 +959,13 @@ APPOC
           subForm.append('action', 'update_trainings');
           subForm.append('trainings', JSON.stringify(trainings));
           $http({
-            url: itOptions.Helper.ajax_url,
-            method: "POST",
-            headers: {
-              'Content-Type': undefined
-            },
-            data: subForm
-          })
+              url: itOptions.Helper.ajax_url,
+              method: "POST",
+              headers: {
+                'Content-Type': undefined
+              },
+              data: subForm
+            })
             .then(resp => {
               let data = resp.data;
               if (data.success) {
@@ -1010,10 +1004,10 @@ APPOC
       }]
     }
   }])
-  .controller('candidateController', ['$rootScope', '$scope', '$http', '$filter', 'Upload', 'Client', 'Regions', 'Towns', 'Areas',
-    function ($rootScope, $scope, $http, $filter, Upload, Client, Regions, Towns, Areas) {
+  .controller('candidateController', ['$rootScope', '$scope', '$http', '$filter', 'Upload', 'Client', 'Regions', 'Towns', 'Areas', 'Options',
+    function ($rootScope, $scope, $http, $filter, Upload, Client, Regions, Towns, Areas, Options) {
       const self = this;
-
+      $rootScope.options = {};
       $rootScope.alertLoading = false; // Directive alert
       $rootScope.alerts = [];
       $rootScope.jobSearchs = [];
@@ -1096,6 +1090,23 @@ APPOC
 
       this.$onInit = () => {
         var $ = jQuery.noConflict();
+        $rootScope.options = _.clone(Options);
+        let origin = document.location.origin;
+        $rootScope.WPEndpoint = new WPAPI({endpoint: `${origin}/wp-json`});
+        let namespace = 'wp/v2'; // use the WP API namespace
+        let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
+        let route_works = '/works/(?P<id>\\d+)';
+        let route_offer = '/offers/(?P<id>\\d+)';
+        let route_formation = '/formation/(?P<id>\\d+)';
+        let route_annonce = '/annonce/(?P<id>\\d+)';
+        let route_product = '/products/(?P<id>\\d+)';
+        $rootScope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
+        $rootScope.WPEndpoint.product = $rootScope.WPEndpoint.registerRoute(wc_namespace, route_product);
+        $rootScope.WPEndpoint.formation = $rootScope.WPEndpoint.registerRoute(namespace, route_formation);
+        $rootScope.WPEndpoint.works = $rootScope.WPEndpoint.registerRoute(namespace, route_works);
+        $rootScope.WPEndpoint.offer = $rootScope.WPEndpoint.registerRoute(namespace, route_offer);
+        $rootScope.WPEndpoint.annonce = $rootScope.WPEndpoint.registerRoute(namespace, route_annonce);
+
         let sexe = Client.iClient.greeting === null || _.isEmpty(Client.iClient.greeting) ? '' :
           (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';
         $rootScope.featuredImage = itOptions.Helper.img_url + "/icons/administrator-" + sexe + ".png";
@@ -1233,13 +1244,13 @@ APPOC
        */
       $rootScope.onSaveCandidateProfil = (formData) => {
         $http({
-          url: itOptions.Helper.ajax_url,
-          method: "POST",
-          headers: {
-            'Content-Type': undefined
-          },
-          data: formData
-        })
+            url: itOptions.Helper.ajax_url,
+            method: "POST",
+            headers: {
+              'Content-Type': undefined
+            },
+            data: formData
+          })
           .then(
             resp => {
               let data = resp.data;
@@ -1298,4 +1309,5 @@ APPOC
             $rootScope.profilEditor.loading = false;
           });
       };
-    }])
+    }
+  ])

@@ -1,0 +1,92 @@
+<style type="text/css">
+  .container-annonce p,
+  .container-annonce a {
+    font-family: 'Montserrat', sans-serif;
+  }
+  .container-annonce a:hover {
+    color: #0a6aa1;
+  }
+  .row-annonce {
+    color: #FFFFFF;
+  }
+  .row-annonce .card-body {
+    background-color: #dd8d2d;
+  }
+  .row-annonce .card-footer {
+    background-color: #e5b62c;
+
+  }
+</style>
+<div class="container-annonce uk-padding-remove">
+  <h5 class="container-annonce-title ml3 font-bold uppercase">{{ title }}</h5>
+  <div class="row mb-5 ml-0 mr-0">
+    {% for annonce in annonces %}
+    <div class="col-md-3 col-sm-6 row-annonce">
+      <div class="card ibox mb-4">
+        <div class="card-body">
+          <h4 class="card-title mb-4">
+            {% if annonce.post_type == 'annonce' %} ANNONCE EN {% endif %}
+            <a href="{{ annonce.url }}" class="text-upper">{{ annonce.title }}</a>
+          </h4>
+          <div class="formation-info mt-2">
+            <div class="mb-1">
+              <p class="mb-0 uk-text-bold">Description</p>
+              <div style="min-height: 86px;">
+                {{ annonce.description|raw|html_entity_decode|striptags[:125] }} [...]
+              </div>
+            </div>
+          </div>
+          <div class="pt-2">
+            <div class="card-info font-14">
+              {% if annonce.price is not empty and annonce.price is not null %}
+              Prix: <b>{{ annonce.price | currency }} MGA</b>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              Voir l'annonce
+            </div>
+            <div>
+              <a href="{{ annonce.url }}" class="view"><i class="la la-plus-circle"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if annonces.length < 4 %}
+    <div class="col-md-3 col-sm-6 row-annonce">
+      <div class="card ibox mb-4">
+        <div class="card-body" style="background-color: lightseagreen;">
+          <h4 class="card-title mb-4">
+            <p  style="font-size: 18px;" >
+              Mettez vos annones ici pour plus de visibilité
+            </p>
+          </h4>
+          <div style="min-height: 86px;">
+            <h4 class="card-title uk-margin-remove">
+              <div class="mb-2 d-flex load-25"></div>
+            </h4>
+            <div class="mb-1 mt-2 d-flex load-100">
+              <a  href="{{client_area_url}}#!{{profil}}"
+                  style="font-size: 90px;margin: auto;">
+                <i class="fa fa-plus-square" style="opacity: 0.6;"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer" style="background-color: darkcyan; min-height: 47px;">
+          <div class="d-flex align-items-center justify-content-between">
+
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>

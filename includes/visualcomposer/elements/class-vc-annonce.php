@@ -10,16 +10,19 @@ namespace includes\vc;
 
 use Http;
 use includes\post\Annonce;
+use includes\post\Works;
 
 class vcAnnonce
 {
 
-  public
-  function __construct ()
+  public function __construct ()
   {
     add_action('init', [$this, 'mapping']);
     if (!shortcode_exists('vc_annonce')) {
       add_shortcode('vc_annonce', [$this, 'form_annonce_render']);
+    }
+    if (!shortcode_exists('vc_featured_annonce')) {
+      add_shortcode('vc_featured_annonce', [$this, 'featured_annonce_render']);
     }
 
     if (!shortcode_exists('vc_annonce_list')) {
@@ -66,9 +69,9 @@ class vcAnnonce
     });
   }
 
-  public
-  function mapping ()
+  public function mapping ()
   {
+    // Formulaire d'ajout
     vc_map([
       'name'     => 'Le formulaire annonce',
       'base'     => 'vc_annonce',
@@ -122,14 +125,64 @@ class vcAnnonce
         ]
       ]
     );
+
+    // Les annonces à la une
+    vc_map(
+      array(
+        'name'        => 'Annonce à la une',
+        'base'        => 'vc_featured_annonce',
+        'description' => 'Afficher les travail temporaire ou les petites annonces à la une.',
+        'category'    => 'itJob',
+        'params'      => array(
+          array(
+            'type'        => 'textfield',
+            'holder'      => 'h3',
+            'class'       => 'vc-ij-title',
+            'heading'     => 'Titre',
+            'param_name'  => 'title',
+            'value'       => 'Nos annonces à la une',
+            'description' => "Une titre de mise en avant",
+            'admin_label' => false,
+            'weight'      => 0
+          ),
+          array(
+            'type'        => 'dropdown',
+            'class'       => 'vc-ij-position',
+            'heading'     => 'Position',
+            'param_name'  => 'position',
+            'value'       => array(
+              'Dans la liste'  => 2,
+              'A la une' => 1
+            ),
+            'std'         => 'content',
+            'description' => "Modifier le mode d'affichage",
+            'admin_label' => false,
+            'weight'      => 0
+          ),
+          array(
+            'type'        => 'dropdown',
+            'class'       => 'vc-ij-type',
+            'heading'     => 'Post type',
+            'param_name'  => 'type',
+            'value'       => array(
+              'Petit annonce'  => 'annonce',
+              'Travail temporaire' => 'works'
+            ),
+            'std'         => 'annonce',
+            'description' => "",
+            'admin_label' => false,
+            'weight'      => 0
+          ),
+        )
+      )
+    );
   }
 
   /**
    * function ajax
-   * Cette fonction permet d'enregistrer une annonce ou une travail temporaire
+   * Cette fonction permet d'enregistrer une annonce ou un travail temporaire
    */
-  public
-  function add_annonce ()
+  public function add_annonce ()
   {
     if ($_SERVER['REQUEST_METHOD'] != 'POST' || !wp_doing_ajax() || !is_user_logged_in()) {
       wp_send_json_error("Votre session a expirer");
@@ -204,7 +257,7 @@ class vcAnnonce
         break;
     }
 
-    $annonce = new Annonce($post_id);
+    $annonce = $post_type === 'annonce' ? new Annonce($post_id, true) : new Works($post_id, true);
     wp_send_json_success($annonce);
   }
 
@@ -213,8 +266,7 @@ class vcAnnonce
    * @param $attrs Array
    * @return string
    */
-  public
-  function annonce_list_render ($attrs) {
+  public function annonce_list_render ($attrs) {
     global $Engine, $itJob;
     extract(shortcode_atts(
       array(
@@ -226,7 +278,14 @@ class vcAnnonce
 
     /** @var string $post_type */
     /** @var string $title - Shortcode variable attribute */
-    $posts = $itJob->services->getRecentlyPost($post_type, 4);
+    $posts = $itJob->services->getRecentlyPost($post_type, 4, [
+      [
+        'key'     => 'activated',
+        'compare' => '=',
+        'value'   => 1,
+        'type'    => 'NUMERIC'
+      ]
+    ]);
     $args = [
       'title' => $title,
       'archive_work_url' => get_post_type_archive_link('works'),
@@ -258,8 +317,7 @@ class vcAnnonce
 
   }
 
-  public
-  function form_annonce_render ($attrs)
+  public function form_annonce_render ($attrs)
   {
     global $itJob, $wp_version;
     extract(shortcode_atts(
@@ -326,8 +384,75 @@ EOF;
     return $content;
   }
 
-  public
-  function upload_annonce_img ()
+  public function featured_annonce_render($attrs) {
+    global $itJob, $Engine;
+    extract(
+      shortcode_atts(
+        array(
+          'title'   => 'Nos annonces à la une',
+          'position' => 'front',
+          'type' => 'annonce',
+          'orderby' => 'ID',
+          'order'   => 'DESC'
+        ),
+        $attrs
+      ), EXTR_OVERWRITE);
+    /** @var string $type */
+    /** @var string $position */
+    /** @var string $title */
+    $type = !$type ? 'annonce' : $type;
+    $annonces = $itJob->services->getRecentlyPost($type, 4, [
+      [
+        'key'     => 'activated',
+        'compare' => '=',
+        'value'   => 1,
+        'type'    => 'NUMERIC'
+      ],
+      [
+        'key'     => 'featured',
+        'compare' => '=',
+        'value'   => 1,
+        'type'    => 'NUMERIC'
+      ],
+      [
+        'key'     => 'featured_position',
+        'compare' => '=',
+        'value'   => intval($position),
+        'type'    => 'NUMERIC'
+      ]
+    ]);
+    $args = [
+      'title'      => $title,
+      'annonces' => $annonces,
+      'profil'   => $type === 'annonce' ? "/manager/profil/annonces" : "/manager/profil/works",
+      'client_area_url' => get_permalink((int) ESPACE_CLIENT_PAGE)
+    ];
+    return intval($position) === 2 ? $this->get_position_two($args) : $this->get_position_one($args);
+  }
+
+  private function get_position_two($args) {
+    global $Engine;
+    try {
+      return $Engine->render('@VC/annonce/featured-two.html', $args);
+    } catch (\Twig_Error_Loader $e) {
+    } catch (\Twig_Error_Runtime $e) {
+    } catch (\Twig_Error_Syntax $e) {
+      return $e->getRawMessage();
+    }
+  }
+
+  private function get_position_one($args) {
+    global $Engine;
+    try {
+      return $Engine->render('@VC/annonce/featured-one.html', $args);
+    } catch (\Twig_Error_Loader $e) {
+    } catch (\Twig_Error_Runtime $e) {
+    } catch (\Twig_Error_Syntax $e) {
+      return $e->getRawMessage();
+    }
+  }
+
+  public function upload_annonce_img ()
   {
     if ($_SERVER['REQUEST_METHOD'] != 'POST' || !wp_doing_ajax()) {
       return false;

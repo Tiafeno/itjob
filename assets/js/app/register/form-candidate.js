@@ -345,7 +345,8 @@ angular.module('formCandidateApp', ['ngAnimate', 'ngMessages', 'ui.select2', 'ui
                 alertify.error("Veillez remplir correctement les champs obligatoire");
                 return false;
               }
-              if (typeof $rootScope.formData.featuredImage === 'undefined') {
+              if (_.isUndefined($rootScope.formData.featuredImage) ||
+                _.isUndefined($rootScope.formData.featuredImage.src)) {
                 alertify
                   .okBtn("Oui")
                   .cancelBtn("Plus tard")

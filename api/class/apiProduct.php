@@ -38,6 +38,10 @@ class apiProduct {
       add_action('woocommerce_process_product_meta', 'itjob_save_custom_field', 10, 1);
     });
 
+    add_action('init', function () {
+      
+    });
+
 
     /**
      * Add meta fields support in rest API for post type `Wallets`

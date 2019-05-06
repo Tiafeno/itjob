@@ -107,7 +107,6 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       if ( ! is_user_logged_in() ) {
         return do_shortcode( "[vc_register_particular title='Créer votre compte itJob' redir='$redirect']" );
       }
-
       // FEATURED: Ne pas autoriser les utilisateurs sauf les candidates avec un CV non activé
       $User = wp_get_current_user();
       if (!in_array('candidate', $User->roles)) {

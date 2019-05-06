@@ -9,6 +9,10 @@ require_once 'class/class-cron.php';
 require_once 'cron-candidate.php';
 require_once 'cron-company.php';
 
+add_action('init', function () {
+
+});
+
 function getModerators ()
 {
   // Les address email des administrateurs qui recoivent les notifications
@@ -206,6 +210,23 @@ function fix_pending_cv ()
     $walk_cv += $number;
   }
   update_option('walk_fix_last_offset', $walk_cv, true);
+}
+
+function fix_offer_rateplan() {
+  global $wpdb;
+  $request_offers = <<<OFFERS
+SELECT ID FROM $wpdb->posts WHERE post_type = 'offers'
+OFFERS;
+  $offers = $wpdb->get_results($request_offers);
+  $wpdb->flush();
+  foreach ($offers as $offer):
+    $request = <<<SQL
+INSERT INTO {$wpdb->postmeta} (`post_id`, `meta_key`, `meta_value`) VALUES
+ ( {$offer->ID}, "itjob_offer_rateplan", "standard" )
+SQL;
+    $wpdb->query($request);
+    $wpdb->flush();
+  endforeach;
 }
 
 

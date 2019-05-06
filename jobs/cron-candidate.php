@@ -9,7 +9,7 @@
 function send_not_applied_candidate( $candidates ) {
   $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
   $mail->addAddress('no-reply@itjobmada.com', 'ITJOB Team');
-  $mail->addReplyTo('no-reply@itjobmada.com', 'ITJOB Team');
+  $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
   foreach ($candidates as $candidate) {
     $author = $candidate->privateInformations->author;
     $mail->addBCC($author->user_email);
@@ -45,9 +45,60 @@ function send_not_applied_candidate( $candidates ) {
   }
 }
 
+// Envoyer une (1) fois par semaine
 add_action('action_scheduler_run_week', function() {
   $model = new cronModel();
-  send_not_applied_candidate($model->getCandidatsNotApplied());
+  $candidates = $model->getCandidatsNotApplied();
+  send_not_applied_candidate($candidates);
+}, 10);
 
-});
+function send_not_cv_candidate( $candidates ) {
+  global $Engine;
+
+  // notification-03
+  $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+  $mail->CharSet = 'UTF-8';
+  $mail->isHTML(true);
+  $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
+  $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
+
+  foreach ($candidates as $Candidate) {
+    $author = $Candidate->getAuthor();
+    $sender = $author->user_email;
+    $mail->addBCC($sender);
+  }
+
+  // Envoyer une mail de notification au candidate
+  $msg = '';
+  try {
+    $espace_client = get_the_permalink( (int) ESPACE_CLIENT_PAGE );
+    $msg .= $Engine->render('@MAIL/newsletters/notification-03.html', [
+      'Year' => Date('Y'),
+      'unsubscribe' => "{$espace_client}#!/manager/profil/settings", // Espace client
+      'url'      => $espace_client,
+      'home_url' => home_url("/")
+    ]);
+
+    $mail->addAddress('no-reply@itjobmada.com', 'Equipe ITJob');
+    $mail->Body = $msg;
+    $mail->Subject = "Cela fait un moment que vous êtes inscrit sur le site Itjobmada.com";
+    // Envoyer le mail
+    $mail->send();
+
+  } catch (Twig_Error_Loader $e) {
+  } catch (Twig_Error_Runtime $e) {
+  } catch (Twig_Error_Syntax $e) {
+
+  } catch (\PHPMailer\PHPMailer\Exception $e) {
+
+  }
+
+}
+
+// Envoyer 2 fois par semaine
+add_action('action_scheduler_run_twice_week', function () {
+  $model = new cronModel();
+  $candidates = $model->getCandidatsNoCV();
+  send_not_cv_candidate($candidates);
+}, 10);
 

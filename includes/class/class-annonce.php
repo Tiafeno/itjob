@@ -14,19 +14,19 @@ if (!defined('ABSPATH')) {
   exit;
 }
 
-final
-class Annonce
+final class Annonce
 {
   private static    $error   = false;
   private           $email   = null;
   private $author            = null;
   public $ID                 = 0;
   public $status             = '';
-  public static $post_type   = 'annonce';
+  public $post_type          = 'annonce';
   public $activated          = false;
   public $title              = null;
   public $price              = 0;
   public $reference          = null;
+  public $featured_position  = null;
   public $featured           = 0;
   public $featured_datelimit = null;
   public $description        = null;
@@ -43,8 +43,7 @@ class Annonce
   public $date_publication = '';
   public $contact_sender = [];
 
-  public
-  function __construct ($annonce_id = null, $private_access = false)
+  public function __construct ($annonce_id = null, $private_access = false)
   {
     if (is_null($annonce_id)) {
       self::$error = new \WP_Error("broken", "L'identification de l'annonce est introuvable");
@@ -91,6 +90,9 @@ class Annonce
     $this->contact_sender = empty($contact_sender) ? [] : $contact_sender;
 
   }
+  public static function getInstance($annonce_id) {
+    return new self($annonce_id);
+  }
 
   public function get_author() {
     if (is_null($this->author)) {
@@ -108,7 +110,7 @@ class Annonce
   function is_annonce ($annonce_id)
   {
     $post_type = get_post_type($annonce_id);
-    return $post_type === self::$post_type;
+    return $post_type === 'annonce';
   }
 
   private
@@ -137,6 +139,8 @@ class Annonce
     $this->reference = get_field('reference', $this->ID);
     $this->address   = get_field('address', $this->ID);
     $this->featured_image = wp_get_attachment_image_src(get_post_thumbnail_id($this->ID), 'medium');
+    $position = get_field('featured_position', $this->ID);
+    $this->featured_position = intval($position) === 0 ? null : intval($position);
   }
 
   public static

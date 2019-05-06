@@ -1,0 +1,59 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="">
+      <div class="p-relative" >
+        <div>
+          <div class="d-flex justify-content-start">
+            <div class="mb-2">
+              <a ui-sref="manager.profil.works.lists" ng-disabled="preload" class="btn btn-sm btn-primary">Retour</a>
+            </div>
+          </div>
+          <h3 class="lead mt-4">Emplacements sponsorisés disponibles</h3>
+          <p class="mb-4">Soyez visible pendant 1 mois et augmentez votre nombre de contacts mensuels.</p>
+          <h3 class="lead mt-4">Résumé de l'offre:</h3>
+          <h5 class="font-strong">[[ works.title.rendered ]]</h5>
+
+          <div class="row mt-4">
+            <div class="col-sm-12">
+              <table class="table table-condensed">
+                <thead style="background-color: #36c6ac;color: aliceblue;">
+                <tr>
+                  <th>Emplacements</th>
+                  <th>Disponibilité</th>
+                  <th>Prix</th>
+                  <th>Description</th>
+                  <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="support in tariff">
+                  <td class="font-bold">[[ support.position ]]</td>
+                  <td>
+                    <i ng-if="support.available" class="ti-check text-success"></i>
+                    <i ng-if="!support.available" class="ti-close text-warning"></i>
+                  </td>
+                  <td>[[ support.price | currency ]]</td>
+                  <td>[[ support.desc ]]</td>
+                  <td>
+                    <button ng-click="checkout(support.ugs, support.price)" ng-disabled="!support.available"
+                            class="btn btn-sm btn-primary">Acheter
+                    </button>
+                  </td>
+                </tr>
+
+                </tbody>
+              </table>
+              <div class="ibox-footer">
+                Une fois la période écoulée, l'emplacement sera automatiquement remis à la vente et disponible pour tous
+                les prestataires Itjobmada.com.
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+

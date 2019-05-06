@@ -20,7 +20,7 @@ function run_once_month() {
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
     $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
-    $mail->addReplyTo('no-reply@itjobmada.com', 'Equipe ITJob');
+    $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
     foreach ($companies as $Company) {
       $sender = $Company->author->user_email;
@@ -66,12 +66,12 @@ function run_twice_week() {
    */
   $companies = $Model->getCompanyNoOffers();
   if ( ! empty($companies) ):
-    // notification-03
+    // notification-04
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
     $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
-    $mail->addReplyTo('no-reply@itjobmada.com', 'Equipe ITJob');
+    $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
     foreach ($companies as $Company) {
       $sender = $Company->author->user_email;
@@ -83,7 +83,7 @@ function run_twice_week() {
     try {
       $espace_client = get_the_permalink( (int) ESPACE_CLIENT_PAGE );
       $add_offer = get_the_permalink( (int) ADD_OFFER_PAGE );
-      $msg .= $Engine->render('@MAIL/newsletters/notification-03.html', [
+      $msg .= $Engine->render('@MAIL/newsletters/notification-04.html', [
         'Year' => Date('Y'),
         'unsubscribe' => "{$espace_client}#!/manager/profil/settings", // Espace client
         'url' => $add_offer
@@ -124,7 +124,7 @@ function run_week() { // run at 06h30
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
     $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
-    $mail->addReplyTo('no-reply@itjobmada.com', 'Equipe ITJob');
+    $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
     foreach ($companies as $Company) {
       if ( ! $Company instanceof \includes\post\Company) continue;

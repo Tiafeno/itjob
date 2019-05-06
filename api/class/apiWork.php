@@ -159,7 +159,7 @@ new apiWork();
 
 add_action('rest_api_init', function() {
   $post_type = "works";
-  $formation_meta = ["activated", "type", "reference", "featured", "featured_date_limit", "email", "annonce_author",
+  $formation_meta = ["activated", "type", "reference", "featured", "featured_position","featured_datelimit", "email", "annonce_author",
     "address", 'cellphone', 'price'];
   foreach ($formation_meta as $meta):
     register_rest_field($post_type, $meta, array(

@@ -67,7 +67,7 @@
     </div>
     <div class="row pt-5">
       <div class="col-lg-12">
-        <div class="text-right">STRATÉGIE, CONCEPTION SOUTENU PAR FALICREA</div>
+        <div class="text-right">STRATÉGIE, CONCEPTION SOUTENUES PAR FALICREA</div>
       </div>
     </div>
   </div>

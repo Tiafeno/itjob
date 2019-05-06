@@ -323,7 +323,7 @@ var companyApp = angular.module('AnnonceApp', ['ui.router', 'ngMessages', 'ui.ti
             };
             $rootScope.loadScript();
             $(".form-control.country, .form-control.categorie").select2({
-              placeholder: "Selectioner un choix",
+              placeholder: "Sélectionez un choix",
               allowClear: true,
               matcher: function (params, data) {
                 var inTerm = [];

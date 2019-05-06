@@ -281,7 +281,8 @@ var companyApp = angular.module('formCompanyApp', ['ui.router', 'ngMessages', 'n
       }
     }
   }])
-  .controller('formController', ['$scope', '$rootScope', 'abranchs', 'regions', 'allCity', function ($scope, $rootScope, abranchs, regions, allCity) {
+  .controller('formController', ['$scope', '$rootScope', 'abranchs', 'regions', 'allCity',
+    function ($scope, $rootScope, abranchs, regions, allCity) {
     $rootScope.isSubmit = !1;
     $rootScope.abranchs = _.clone(abranchs);
     $rootScope.regions = _.clone(regions);

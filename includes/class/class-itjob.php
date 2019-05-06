@@ -265,7 +265,7 @@ if ( ! class_exists( 'itJob' ) ) {
             $region  = Http\Request::getValue( 'rg' );
             $abranch = Http\Request::getValue( 'ab' );
             $categorie = Http\Request::getValue( 'ctg' );
-            $s       = $_GET['s'];
+            $s       = sanitize_text_field($_GET['s']);
 
             // Region
             if ( ! empty( $region ) ) {
@@ -574,12 +574,14 @@ SQL;
                   $s = $wpdb->esc_like( $s );
                   $s = implode('|', explode(' ', $s));
                   if (!is_admin()) {
-                    $where .= " AND ({$wpdb->posts}.post_title REGEXP '({$s}).*$'
-                                    OR {$wpdb->posts}.post_content REGEXP '({$s}).*$')
-                                  AND ({$wpdb->posts}.ID IN (
-                                    SELECT {$wpdb->postmeta}.post_id as post_id
-                                      FROM {$wpdb->postmeta}
-                                      WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1))";
+                    $where .= <<<SQL
+AND ({$wpdb->posts}.post_title REGEXP '({$s}).*$'
+  OR {$wpdb->posts}.post_content REGEXP '({$s}).*$')
+AND ({$wpdb->posts}.ID IN (
+  SELECT {$wpdb->postmeta}.post_id as post_id
+    FROM {$wpdb->postmeta}
+    WHERE {$wpdb->postmeta}.meta_key = 'activated' AND {$wpdb->postmeta}.meta_value = 1))
+SQL;
                   }
                   return $where;
                 });
@@ -629,6 +631,28 @@ SQL;
                   'compare' => '=',
                   'type'    => 'NUMERIC'
                 ];
+              }
+
+              if ($post_type === "offers") {
+                add_filter('posts_where', function ( $where ) {
+                  global $wpdb;
+                  if (!is_admin()) {
+                    $where .= <<<SQL
+AND ({$wpdb->posts}.ID IN (
+   SELECT {$wpdb->postmeta}.post_id as post_id
+     FROM {$wpdb->postmeta}
+     WHERE ( {$wpdb->postmeta}.meta_key = 'itjob_offer_rateplan' AND {$wpdb->postmeta}.meta_value = 'standard')
+      OR ( 
+        ({$wpdb->postmeta}.meta_key = 'itjob_offer_paid' AND {$wpdb->postmeta}.meta_value = 1) 
+        AND ({$wpdb->postmeta}.meta_key = 'itjob_offer_rateplan' AND {$wpdb->postmeta}.meta_value != 'standard')
+      )
+    GROUP BY post_id HAVING COUNT(*) > 0
+   )
+)
+SQL;
+                  }
+                  return $where;
+                });
               }
 
               if ( isset( $meta_query ) && ! empty( $meta_query ) ):

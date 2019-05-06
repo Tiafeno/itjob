@@ -110,11 +110,6 @@ class scInterests
 
     $User = wp_get_current_user();
     if ($User->ID === 0 && !is_null($key)) {
-      /**
-       * Il es plus sécurisé de mettre à jours la clé tous les jours avec le tache "cron" de wordpress
-       * Crée une tache pour mettre à jour cette clé
-       * TODO: //
-       */
       $backOfficeKey = get_field('bo_key', 'option');
       if ($backOfficeKey !== $key) return "<p class='text-center mt-4 badge badge-pink'>Votre clé a expiré ou vous n'avez pas l'accès a cette page veuillez réessayer</p>";
       $hasKey = true;
@@ -124,8 +119,7 @@ class scInterests
     $Candidate = new Candidate($candidate_id);
     if ( is_user_logged_in() && !$hasKey ) {
       // Autoriser l'administratuer et les commercials
-      if ( in_array('administrator', $User->roles) || in_array('editor', $User->roles) )
-      {
+      if ( in_array('administrator', $User->roles) || in_array('editor', $User->roles) ) {
         // Autoriser l'administratuer et les commercials
       } else {
         $Entreprise = Company::get_company_by($User->ID);
@@ -327,11 +321,16 @@ class scInterests
     }
     $Company = Company::get_company_by($User->ID);
     $args = [
-      'post_type' => 'offers',
+      'posts_per_page'   => -1,
+      'post_type'   => 'offers',
       'post_status' => 'publish',
-      'meta_key' => 'itjob_offer_company',
-      'meta_value' => $Company->getId(),
-      'meta_compare' => '='
+      'meta_query'  => [
+        [
+          'key' => 'itjob_offer_company',
+          'value' => $Company->getId(),
+
+        ]
+      ]
     ];
     $offers = get_posts($args);
 
@@ -351,7 +350,7 @@ class scInterests
     $offers = array_filter($offers, function ($offer) {
       $today   = strtotime("today");
       $isLimited = strtotime($offer->dateLimit) < $today;
-      return !$isLimited && intval($offer->activated);
+      return $offer->activated && !$isLimited;
     });
 
     wp_send_json_success($offers);

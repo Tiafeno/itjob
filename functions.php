@@ -232,11 +232,31 @@ add_filter('wp_nav_menu_args', function ($args) {
   return $args;
 });
 
-add_action('widgets_init', function () {
-  // code here ...
+add_action('admin_init', function () {
+  $administrator = get_role('administrator');
+  $caps = [
+    'edit_formation', 'edit_formations', 'read_private_formation', 'read_formation',
+    'edit_published_formations', 'edit_others_formations', 'edit_private_formations', 'delete_formation', 'delete_formations',
+    'delete_others_formations', 'delete_private_formations', 'delete_published_formations', 'publish_formations',
+    'edit_offer', 'edit_offers', 'read_private_offer', 'read_offer', 'edit_published_offers', 'edit_others_offers',
+    'edit_private_offers', 'delete_offer', 'delete_offers', 'delete_others_offers', 'delete_private_offers', 'delete_published_offers',
+    'publish_offers',
+    'edit_work', 'edit_works', 'read_private_work', 'read_work', 'edit_published_works', 'edit_others_works',
+    'edit_private_works', 'delete_work', 'delete_works', 'delete_others_works', 'delete_private_works', 'delete_published_works',
+    'publish_works',
+    'edit_annonce', 'edit_annonces', 'read_private_annonce', 'read_annonce', 'edit_published_annonces', 'edit_others_annonces',
+    'edit_private_annonces', 'delete_annonce', 'delete_annonces', 'delete_others_annonces', 'delete_private_annonces',
+    'delete_published_annonces', 'publish_annonces'
+  ];
+
+  foreach ($caps as $cap) {
+    if ( ! $administrator->has_cap($cap))
+      $administrator->add_cap( $cap );
+  }
 });
 
 add_action('init', function () {
+
   // Yoast filter
   add_filter('wpseo_metadesc', function ($description) {
     global $post;
@@ -253,7 +273,6 @@ add_action('init', function () {
       }
     return $description;
   }, PHP_INT_MAX);
-
   add_filter('wpseo_title', function ($title) {
     global $post;
     if (is_object($post) && !is_archive())
@@ -263,6 +282,9 @@ add_action('init', function () {
           $region = is_array($regions) && !empty($regions) ? $regions[0] : '';
           $region = $region ? ' à ' . $region->name : '';
           $branch_activity = get_field('itjob_offer_abranch', $post->ID);
+          if ( ! is_object($branch_activity)) {
+            $branch_activity = get_term(intval($branch_activity));
+          }
           $branch_activity = $branch_activity ? ', ' . $branch_activity->name : '';
           return 'Emploi - ' . $post->post_title . $region . $branch_activity;
           break;
@@ -276,15 +298,21 @@ add_action('init', function () {
 
   function request_phone_number() {
     global $itJob;
+    $msg_contact_error = "Vous ne pouvez pas contactez cette annonceur car c'est votre annonce. Merci";
     $post_id = Http\Request::getValue('ad_id');
     $post = get_post(intval($post_id));
     $post_type = get_post_type($post->ID);
-    if ( ! in_array($post_type, ['annonce', 'works']))
+    if ( ! in_array($post_type, ['annonce', 'works'])) :
       wp_send_json_error("Ce type de post ne possède pas un numéro de téléphone");
+    endif;
 
     if ($post_type === 'annonce') {
       $Annonce = new \includes\post\Annonce($post->ID, true);
       $User = $itJob->services->getUser();
+      if ($User->ID === $Annonce->get_author()->ID) {
+        wp_send_json_error($msg_contact_error);
+        return false;
+      }
       if (!in_array($User->ID, $Annonce->contact_sender)) {
         $Annonce->add_contact_sender($User->ID);
       }
@@ -293,6 +321,10 @@ add_action('init', function () {
     if ($post_type === 'works') {
       $Works = new \includes\post\Works($post->ID, true);
       $User = $itJob->services->getUser();
+      if ($User->ID === $Works->get_user()->ID) {
+        wp_send_json_error($msg_contact_error);
+        return false;
+      }
       $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
       $credit = $Wallet->credit;
       if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
@@ -337,12 +369,7 @@ add_action('init', function () {
   }, 10, 2 );
 
 
-//  $Model = new cronModel();
-//  $companies = $Model->getCompanyNoOffers();
-//  print_r($companies);
-
   //payment_complete(13066 );
-  //update_formation_featured();
 });
 
 
@@ -362,19 +389,28 @@ function payment_complete ($order_id) {
       if (0 === $object_id) return false;
       switch ($type):
         case 'offers':
-          update_field('itjob_offer_paid', 1, $object_id);
+          update_field('itjob_offer_paid', 1, (int)$object_id);
+          // Envoyer un mail au administrateur pour informer un paiement
+          do_action('update_offer_rateplan', (int)$object_id);
           break;
 
         case 'formation':
           update_field('paid', 1, $object_id);
           break;
-        
+        // Mettre à la une des posts
         case 'featured':
-          if ($post_type === 'formation') {
-            update_field('featured', 1, $object_id);
-          } else if ($post_type === 'offers') {
-            update_field('itjob_offer_featured', 1, $object_id);
-          }
+          switch ($post_type):
+            case 'formation':
+            case 'works':
+            case 'annonce':
+              update_field('featured', 1, $object_id);
+              break;
+
+            case 'offers':
+              update_field('itjob_offer_featured', 1, $object_id);
+              break;
+
+          endswitch;
           break;
           
       endswitch;

@@ -70,6 +70,7 @@ class Mailing {
     add_action( 'new_pending_annonce', [ &$this, 'new_pending_annonce' ], 10, 1 );
     add_action( 'new_pending_works', [ &$this, 'new_pending_works' ], 10, 1 );
     add_action( 'send_registration_formation', [ &$this, 'send_registration_formation' ], 10, 2 );
+    add_action( 'update_offer_rateplan', [ &$this, 'update_offer_rateplan' ], 10, 1 );
 
     add_action( 'acf/save_post', function ( $post_id ) {
       $post_type   = get_post_type( $post_id );
@@ -311,17 +312,13 @@ class Mailing {
     $year = Date('Y');
 
     $admin_emails = $this->getModeratorEmail();
-    $admin_emails = empty( $admin_emails ) ? false : $admin_emails;
-    if ( ! $admin_emails ) {
-      return false;
-    }
-    $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
-    $subject   = "{$Formation->reference} -  Notification de l’insertion d’une formation modulaire";
+    $to        = $admin_emails;
+    $subject   = "{$Formation->reference} - Insertion de formation sur ITJOBMada";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
-    $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
+    $headers[] = "From: ITJob No-Reply <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p>Une  nouvelle formation modulaire « <b>{$Formation->title}</b> » portant la reférence 
+    $content   .= "<p>Une nouvelle formation « <b>{$Formation->title}</b> » portant la reférence 
     « <b>{$Formation->reference}</b> » a été insérée sur le site ITJOBMada par <b>{$Company->title}</b></p>";
     $content   .= "<p>Voir la formation: <a href='{$this->dashboard_url}/formation/{$Formation->ID}/edit'>Back office</a> </p> <br/>";
     $content   .= 'A bientôt. <br/><br/><br/>';
@@ -354,7 +351,7 @@ class Mailing {
     $msg = <<<MSG
 Bonjour,<br><br>
 Nous tenons à vous informer que vous avez la possibilité de modifier les dates limites de vos offres que vous avez récemment postées. 
-N’hésitez sur tout pas à prendre contact avec notre service commercial pour en savoir plus.<br>
+N’hésitez surtout pas à prendre contact avec notre service commercial pour en savoir plus.<br>
 Nous vous souhaitons une agréable journée
 <br><br>
 L'équipe ITJob
@@ -367,7 +364,28 @@ MSG;
     } catch (Exception $e) {
       return false;
     }
+  }
 
+  public function update_offer_rateplan ($offer_id) {
+    if ( ! is_numeric($offer_id) ) return false;
+    $admin_emails = $this->getModeratorEmail();
+    $Offer = new Offers(intval($offer_id));
+    $to        = $admin_emails;
+    $subject   = "Paiement de diffusion de l'offre « {$Offer->postPromote} »";
+    $headers   = [];
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+    $headers[] = "From: ITJob No-Reply <{$this->no_reply_notification_email}>";
+    $msg = <<<MSG
+Bonjour,<br><br>
+Offre mise à jours:<br>
+ID: <b>{$Offer->ID}</b><br>
+Titre: <b>{$Offer->postPromote}</b><br>
+Reference: <b>{$Offer->reference}</b><br>
+Mode de diffusion: <b style="text-transform: uppercase">{$Offer->rateplan}</b>
+<br><br>
+L'équipe ITJob
+MSG;
+    wp_mail( $to, $subject, $msg, $headers );
   }
 
   /**
@@ -380,12 +398,12 @@ MSG;
 
     $admin_emails = $this->getModeratorEmail();
     $to        = $admin_emails;
-    $subject   = "Une nouvelle demande de formation sur ITJobMada";
+    $subject   = "Une nouvelle demande de formation a été insérée sur ITJobMada";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p><b>{$Candidate->reference}</b> viens d'inserée une demande de formation « <b>{$sujet}</b> »</p>";
+    $content   .= "<p><b>{$Candidate->reference}</b> vient d'insérer une demande de formation « <b>{$sujet}</b> »</p>".
     $content   .= "<p>Voir la demande: <a href='{$this->dashboard_url}/request-formations'>Back office</a> </p> <br/>";
     $content   .= 'A bientôt. <br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
@@ -403,12 +421,12 @@ MSG;
     $Annonce = new Annonce($annonce_id, true);
     $admin_emails = $this->getModeratorEmail();
     $to        = $admin_emails;
-    $subject   = "Une nouvelle petite annonce sur ITJobMada";
+    $subject   = "Une nouvelle petite annonce a été insérée sur ITJobMada";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p><b>Une nouvelle annonce a été inserée « <b>{$Annonce->title}</b> » portant la réfrence</p> « <b>{$Annonce->reference}</b> » sur le site ITJOBMada ";
+    $content   .= "<p><b>Une nouvelle annonce a été insérée « <b>{$Annonce->title}</b> » portant la réfrence</p> « <b>{$Annonce->reference}</b> » sur le site ITJOBMada ";
     $content   .= '<br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     // Envoyer un mail à l'entreprise
@@ -416,7 +434,7 @@ MSG;
   }
 
   /**
-   * Envoyer un mail à l'administrateur pour informer qu'une nouvelle travail temporaire
+   * Envoyer un mail à l'administrateur pour informer qu'un nouveau travail temporaire
    * est publier
    * @param $work_id int  - post type works id
    */
@@ -426,12 +444,12 @@ MSG;
     $Work = new Works($work_id, true);
     $admin_emails = $this->getModeratorEmail();
     $to        = $admin_emails;
-    $subject   = "Une nouvelle travail publier sur ITJobMada";
+    $subject   = "Un nouveau travail a été inséré sur ITJobMada";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p><b>Un nouveau travail a été inseré « <b>{$Work->title}</b> » portant la réfrence</p> « <b>{$Work->reference}</b> » sur le site ITJOBMada ";
+    $content   .= "<p><b>Un nouveau travail a été inséré « <b>{$Work->title}</b> » portant la réfrence</p> « <b>{$Work->reference}</b> » sur le site ITJOBMada ";
     $content   .= '<br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © {$year}</p>";
     // Envoyer un mail à l'entreprise
@@ -521,12 +539,12 @@ MSG;
     $firstname = $Candidate->getFirstName();
     $admin_emails = $this->getModeratorEmail();
     $to        = $admin_emails;
-    $subject   = "Le CV « {$Candidate->title} » a reçus une modification";
+    $subject   = "Le CV « {$Candidate->title} » a reçu une modification";
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p>{$firstname} viens de modifier son CV portant la reférence « {$Candidate->title} »";
+    $content   .= "<p>{$firstname} vient de modifier son CV portant la reférence « {$Candidate->title} »";
     $content   .= "<p>Voir la modification: <a href='{$this->dashboard_url}/candidate/{$candidate_id}/edit'>Back office</a> </p> <br/>";
     $content   .= 'A bientôt. <br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © 2018</p>";
@@ -559,7 +577,7 @@ MSG;
       return false;
     }
     $to        = is_array( $admin_emails ) ? implode( ',', $admin_emails ) : $admin_emails;
-    $subject   = 'Un candidat « ' . $current_candidate->title . ' » a postule pour un offre - ItJobMada';
+    $subject   = 'Un candidat « ' . $current_candidate->title . ' » a postulé pour une offre - ItJobMada';
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
@@ -635,7 +653,7 @@ MSG;
     }
   }
 
-  // Envoyer un email de confirmation d'envoie de la candidaturea l'entreprise
+  // Envoyer un email de confirmation d'envoie de la candidature a l'entreprise
   private function email_candidate_confirm_postuled( $Offer, $Candidate = null ) {
     global $Engine;
     if ( $Offer instanceof Offers ) {
@@ -723,9 +741,9 @@ MSG;
             $headers[] = 'Content-Type: text/html; charset=UTF-8';
             $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
             $content   = 'Bonjour, <br/>';
-            $content   .= "<p>Le CV portant la référence « {$Candidate->title} » que vous avez sélectionner pour l'offre " .
-                          "« {$Offre->title} » est maintenant disponible " .
-                          "et vous pouvez le consulter dans votre espace client sur ITJobMada.</p>";
+            $content   .= "<p>Le CV portant la référence « {$Candidate->title} » que vous avez sélectionné pour l'offre " .
+                          "« {$Offre->title} » est maintenant disponible.<br> " .
+                          "Vous pouvez le consulter dans votre espace client sur ITJobMada.</p>";
             $content   .= "<p>Espace client: {$this->espace_client}</p> <br/>";
             $content   .= 'A bientôt. <br/><br/><br/>';
             $content   .= "<p style='text-align: center'>ITJobMada © 2018</p>";
@@ -806,7 +824,7 @@ MSG;
     do_action('notice_publish_cv', (int)$candidat_id);
 
     $to        = $email;
-    $subject   = 'Votre CV viens d\'être validé - ItJobMada';
+    $subject   = 'Votre CV vient d\'être validé - ItJobMada';
     $headers   = [];
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
@@ -959,7 +977,7 @@ MSG;
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = 'Bonjour, <br/>';
-    $content   .= "<p>{$first_name} {$last_name} viens de s'inscrire sur une formation modulaire « <b>{$Formation->title}</b> » portant la réference « <b>{$Formation->reference}</b> »";
+    $content   .= "<p>{$first_name} {$last_name} vient de s'inscrire sur une formation modulaire « <b>{$Formation->title}</b> » portant la réference « <b>{$Formation->reference}</b> »".
     $content   .= "<p>Voir la formation: <a href='{$this->dashboard_url}/formation/{$formation_id}/edit'>Back office</a> </p> <br/>";
     $content   .= '<br/><br/><br/>';
     $content   .= "<p style='text-align: center'>ITJobMada © 2018</p>";
@@ -1064,7 +1082,7 @@ MSG;
           return $alert->alert;
         } );
         $keys      = implode( ', ', $keys );
-        $subject   = "Votre alerte - ItJobMada";
+        $subject   = "Alerte(s) - ItJobMada";
         $headers   = [];
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
         $headers[] = "From: ItJobMada <{$this->no_reply_email}>";
@@ -1273,7 +1291,7 @@ MSG;
       // Erreur d'envoie
       wp_send_json_error( [
         "msg"   => "Le message n’a pas pu être envoyé. " .
-                   "Cause possible : votre hébergeur a peut-être désactivé la fonction mail().",
+                   "Cause possible : Votre hébergeur a peut-être désactivé la fonction mail().",
         "key"   => $key,
         "login" => $User->user_login
       ] );

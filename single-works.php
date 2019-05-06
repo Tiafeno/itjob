@@ -160,10 +160,16 @@ wp_enqueue_script('sweetalert');
   </style>
   <script type="text/javascript">
     (function ($) {
+      var credit = <?= intval($credit) ?>;
+      var hasContact = !!<?= intval($works->has_contact($User->ID)); ?>;
+      var post_id = <?= $post->ID ?>;
       $(document).ready(function () {
-        var noCredit = `Vous avez actuellement 0 unité disponible sur votre compte ItJob`;
+        var noCredit = `Vous avez actuellement ${credit} unité disponible sur votre compte ItJob`;
+        if (!_.isUndefined(Storage)) {
+          // Code for localStorage/sessionStorage.
+          localStorage.setItem('itjob_credit', btoa(parseInt(credit)));
+        }
         fixWorkWrap();
-
         function fixWorkWrap() {
           // (x1 - x2) / 2 - x1~pL
           var work_wrap = $('#work-wrap');
@@ -180,13 +186,12 @@ wp_enqueue_script('sweetalert');
             left: value
           });
         }
-
         function __get_phone_number() {
           $.ajax({
             url: `<?= admin_url('admin-ajax.php') ?>`,
             cache: true,
             method: "GET",
-            data: {action: 'request_phone_number', ad_id: <?= $post->ID ?> },
+            data: {action: 'request_phone_number', ad_id: post_id },
             dataType: "json"
           })
             .done(function (resp) {
@@ -194,8 +199,12 @@ wp_enqueue_script('sweetalert');
               if (query.success) {
                 swal(query.data.greet + " " + query.data.first_name, query.data.phone);
               } else {
-                swal(noCredit, '' +
-                  'Pour contacter directement cet annonceur, vous devez crediter votre compte en credit ITJob ', 'info');
+                var currentCredit = _.isUndefined(Storage) ? credit : atob(localStorage.getItem('itjob_credit'));
+                currentCredit = parseInt(currentCredit);
+                var title = currentCredit === 0 ? noCredit : "Désolé";
+                var msg = currentCredit === 0 ? 'Pour contacter directement cet annonceur, vous devez crediter votre compte en credit ITJob' :
+                  query.data;
+                swal(title, msg, 'info');
               }
 
             })
@@ -208,8 +217,6 @@ wp_enqueue_script('sweetalert');
           fixWorkWrap();
         });
         $('.view-phone-number').on('click', function (ev) {
-          var credit = <?= intval($credit) ?>;
-          var hasContact = !!<?= intval($works->has_contact($User->ID)); ?>;
           if (!hasContact) {
             swal({
                 title: "1 contact avec coordonnees = 1 credit",

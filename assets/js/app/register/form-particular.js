@@ -167,7 +167,6 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
 
         if (!isValid) return;
         $scope.buttonDisable = true;
-        // Submit form here ...
         var particularData = new FormData();
         particularData.append('action', 'insert_user_particular');
         var particularFormObject = Object.keys($scope.particularForm);

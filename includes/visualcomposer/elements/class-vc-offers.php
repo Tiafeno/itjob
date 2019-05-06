@@ -382,7 +382,7 @@ if (!class_exists('vcOffers')):
         ],
         [
           'key'     => 'itjob_offer_featured_position',
-          'value'   => trim($position) === 'sidebar' ? 2 : 1,
+          'value'   => trim($position) === 'sidebar' || $position == 2 ? 2 : 1,
           'compare' => '='
         ]
       ]);

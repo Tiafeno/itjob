@@ -45,7 +45,7 @@ APPOC
           name: 'manager.profil',
           url: '/profil',
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/profil.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", "$state", "clientFactory", function ($rootScope, $state, clientFactory) {
+          controller: ["$rootScope", "$state", "$filter", "clientFactory", function ($rootScope, $state, $filter, clientFactory) {
             $rootScope.profilEditor = {};
             $rootScope.profilEditor.loading = false;
             $rootScope.profilEditor.form = {};
@@ -198,68 +198,72 @@ APPOC
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/offer-paiement.html?ver=${itOptions.version}`,
           controller: ["$rootScope", "$scope", "$http", "$state", "Offer",
             function ($rootScope, $scope, $http, $state, Offer) {
-            let self = this;
-            $scope.Offer = {};
-            $scope.Plan = {};
-            $scope.Publications = {};
-            $scope.selectedPlan = null;
-            this.$onInit = () => {
-              $scope.Offer = _.clone(Offer);
-              let __type = Offer.itjob_offer_rateplan;
-              if (__type === 'standard') {
-                $state.go('manager.profil.offers.lists');
-              }
-              $scope.Publications = _.clone($rootScope.options.pub.offer);
-              let plan = _.findWhere($scope.Publications, {_id: __type});
-              $scope.selectedPlan = _.clone(plan._id);
+              let self = this;
+              $scope.Offer = {};
+              $scope.Plan = {};
+              $scope.Publications = {};
+              $scope.selectedPlan = null;
+              this.$onInit = () => {
+                $scope.Offer = _.clone(Offer);
+                let __type = Offer.itjob_offer_rateplan;
+                $scope.Publications = _.clone($rootScope.options.pub.offer);
+                let plan = _.findWhere($scope.Publications, {_id: __type});
+                $scope.selectedPlan = _.clone(plan._id);
 
-            };
+              };
 
-            $scope.paiementProcess = (plan) => {
-              const __plan = _.findWhere($scope.Publications, {_id: plan});
-              const key = $rootScope.options.wc._k;
-              const secret = $rootScope.options.wc._s;
-              let name = __plan._id.toUpperCase();
-              $rootScope.preloaderToogle();
-              if (plan === 'standard') {
-                $scope.WPEndpoint
-                  .offer()
-                  .id($scope.Offer.id)
-                  .update({itjob_offer_rateplan: plan})
-                  .then((offer) => {
-                    $scope.$apply(() => {
-                      $rootScope.preloaderToogle();
-                      swal("Modification", "Mode de diffusion de l'offre modifier avec succès");
-                      $state.go('manager.profil.offers.lists');
+              $scope.paiementProcess = (plan) => {
+                const __plan = _.findWhere($scope.Publications, {_id: plan});
+                const key = $rootScope.options.wc._k;
+                const secret = $rootScope.options.wc._s;
+                let name = __plan._id.toUpperCase();
+                $rootScope.preloaderToogle();
+                if (plan === 'standard') {
+                  $scope.WPEndpoint
+                    .offer()
+                    .id($scope.Offer.id)
+                    .update({itjob_offer_rateplan: plan})
+                    .then((offer) => {
+                      $scope.$apply(() => {
+                        $http.get(`${itOptions.Helper.ajax_url}?action=get_offers`).then(response => {
+                          let resp = _.clone(response.data);
+                          if (resp.success) {
+                            $rootScope.preloaderToogle();
+                            swal("Modification", "Mode de diffusion de l'offre modifier avec succès");
+                            $rootScope.offerLists = _.clone(resp.data);
+                          }
+                          $state.go('manager.profil.offers.lists');
+                        });
+                      });
                     });
-                  });
-                return true;
-              }
 
-              $scope.WPEndpoint
-                .product()
-                .param('consumer_key', key)
-                .param('consumer_secret', secret)
-                .create({
-                  status: 'publish',
-                  type: 'simple',
-                  name: `OFFER ${name} (${$scope.Offer.title.rendered})`,
-                  price: __plan._p.toString(), // string accepted
-                  regular_price: __plan._p.toString(), // string accepted
-                  sold_individually: true,
-                  virtual: true,
-                  sku: `OFFER${$scope.Offer.id}`,
-                  meta_data: [
-                    {key: '__type', value: 'offers'},
-                    {key: '__id', value: $scope.Offer.id}
-                  ]
-                })
-                .then(resp => {
-                  let product = _.clone(resp);
-                  $scope.$apply(() => {
-                    self.addCart(product.id, __plan._id);
-                  });
-                }).catch(err => {
+                  return true;
+                }
+
+                $scope.WPEndpoint
+                  .product()
+                  .param('consumer_key', key)
+                  .param('consumer_secret', secret)
+                  .create({
+                    status: 'publish',
+                    type: 'simple',
+                    name: `OFFER ${name} (${$scope.Offer.title.rendered})`,
+                    price: __plan._p.toString(), // string accepted
+                    regular_price: __plan._p.toString(), // string accepted
+                    sold_individually: true,
+                    virtual: true,
+                    sku: `OFFER${$scope.Offer.id}`,
+                    meta_data: [
+                      {key: '__type', value: 'offers'},
+                      {key: '__id', value: $scope.Offer.id}
+                    ]
+                  })
+                  .then(resp => {
+                    let product = _.clone(resp);
+                    $scope.$apply(() => {
+                      self.addCart(product.id, __plan._id);
+                    });
+                  }).catch(err => {
                   if (!_.isUndefined(err.code)) {
                     if (err.code === "product_invalid_sku") {
                       let resource_id = err.data.resource_id;
@@ -272,7 +276,8 @@ APPOC
                           .update({
                             name: `OFFER ${__plan._id.toUpperCase()} (${$scope.Offer.title.rendered})`,
                             price: __plan._p.toString(),
-                            regular_price: __plan._p.toString()})
+                            regular_price: __plan._p.toString()
+                          })
                           .then(product => {
                             $scope.$apply(() => {
                               self.addCart(product.id, __plan._id);
@@ -281,33 +286,33 @@ APPOC
                       });
                     }
                   }
-              });
-            };
-
-            self.addCart = (product_id, _id) => {
-              $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`)
-                .then(resp => {
-                  let response = resp.data;
-                  const key = $rootScope.options.wc._k;
-                  const secret = $rootScope.options.wc._s;
-                  $scope.WPEndpoint
-                    .offer()
-                    .id($scope.Offer.id)
-                    .update({itjob_offer_rateplan: _id})
-                    .then((offer) => {
-                      if (response.success) {
-                        $scope.$apply(() => {
-                          $rootScope.preloaderToogle();
-                        });
-                        swal("Redirection", "Vous serez rediriger vers la page de paiement");
-                        setTimeout(() => {
-                          window.location.href = response.data;
-                        }, 2000);
-                      }
-                    })
                 });
-            };
-          }]
+              };
+
+              self.addCart = (product_id, _id) => {
+                $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`)
+                  .then(resp => {
+                    let response = resp.data;
+                    const key = $rootScope.options.wc._k;
+                    const secret = $rootScope.options.wc._s;
+                    $scope.WPEndpoint
+                      .offer()
+                      .id($scope.Offer.id)
+                      .update({itjob_offer_rateplan: _id})
+                      .then((offer) => {
+                        if (response.success) {
+                          $scope.$apply(() => {
+                            $rootScope.preloaderToogle();
+                          });
+                          swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                          setTimeout(() => {
+                            window.location.href = response.data;
+                          }, 2000);
+                        }
+                      })
+                  });
+              };
+            }]
         },
         {
           name: 'manager.profil.offers.featured',
@@ -335,101 +340,100 @@ APPOC
           templateUrl: `${itOptions.Helper.tpls_partials}/route/company/offer-featured.html?ver=${itOptions.version}`,
           controller: ["$rootScope", "$scope", "$log", "$http", "Offer", 'positions',
             function ($rootScope, $scope, $log, $http, Offer, positions) {
-            $scope.Tariff = {};
-            $scope.Offer = {};
-            $scope.supportFeatured = {};
-            this.$onInit = () => {
-              moment.locale('fr');
-              $scope.supportFeatured = _.clone(positions.data);
-              let featured = _.clone($rootScope.options.featured);
-              if ( ! featured.hasOwnProperty('offer_tariff')) {
-                $log.debug("Property undefined (offer_tariff)");
-                return;
-              }
-              $scope.Tariff = _.map(featured.offer_tariff, (tarif) => {
-                let support = _.findWhere(positions.data, {slug: tarif.ugs});
-                tarif.available = support.counts >= 4 ? 0 : 1;
-                return tarif;
-              });
-              $scope.Offer = _.clone(Offer);
-            };
-
-            $scope.checkout = (ugs, price) => {
-              const key = $rootScope.options.wc._k;
-              const secret = $rootScope.options.wc._s;
-              let support = _.findWhere($scope.supportFeatured, {slug: ugs});
-              let priceFeatured = price.toString();
-              if (!support || support.counts === 4) return false;
-              $rootScope.preloaderToogle();
-              let offer = _.findWhere($rootScope.options.featured.offer_tariff, {ugs: ugs});
-              $rootScope.WPEndpoint
-                .product()
-                .param('consumer_key', key)
-                .param('consumer_secret', secret)
-                .create({
-                  status: 'publish',
-                  type: 'simple',
-                  name: `OFFRE SPONSORISE (${$scope.Offer.title.rendered}) - ${offer.position}`,
-                  price: offer.price, // string accepted
-                  regular_price: offer.price, // string accepted
-                  sold_individually: true,
-                  virtual: true,
-                  sku: `FEATURED${$scope.Offer.id}`,
-                  meta_data: [
-                    {key: '__type', value: 'featured'},
-                    {key: '__id', value: $scope.Offer.id}
-                  ]
-                })
-                .then(product => {
-                  $scope.$apply(() => {
-                    $rootScope.preloaderToogle();
-                    $scope.addCart(product.id, offer.ugs);
-                  });
-                })
-                .catch(err => {
-                  if (!_.isUndefined(err.code)) {
-                    if (err.code === "product_invalid_sku") {
-                      let resource_id = err.data.resource_id;
-                      $scope.$apply(() => {
-                        $scope.WPEndpoint
-                          .product()
-                          .param('consumer_key', key)
-                          .param('consumer_secret', secret)
-                          .id(resource_id)
-                          .update({price: offer.price, regular_price: offer.price})
-                          .then(product => {
-                            $scope.addCart(resource_id, offer.ugs);
-                          });
-                      });
-                    }
-                  }
-                })
-            };
-            $scope.addCart = (product_id, position) => {
-              $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`, {cache: false})
-                .then((resp) => {
-                  const response = resp.data;
-                  $scope.WPEndpoint
-                    .offer()
-                    .id($scope.Offer.id)
-                    .update({
-                      itjob_offer_featured_position: position,
-                      itjob_offer_featured_datelimit: moment().format("YYYY-MM-DD H:mm:ss")
-                    })
-                    .then(() => {
-                      if (response.success) {
+              $scope.Tariff = {};
+              $scope.Offer = {};
+              $scope.supportFeatured = {};
+              this.$onInit = () => {
+                moment.locale('fr');
+                $scope.supportFeatured = _.clone(positions.data);
+                let featured = _.clone($rootScope.options.featured);
+                if (!featured.hasOwnProperty('offer_tariff')) {
+                  $log.debug("Property undefined (offer_tariff)");
+                  return;
+                }
+                $scope.Tariff = _.map(featured.offer_tariff, (tarif) => {
+                  let support = _.findWhere(positions.data, {slug: tarif.ugs});
+                  tarif.available = support.counts >= 4 ? 0 : 1;
+                  return tarif;
+                });
+                $scope.Offer = _.clone(Offer);
+              };
+              $scope.checkout = (ugs, price) => {
+                const key = $rootScope.options.wc._k;
+                const secret = $rootScope.options.wc._s;
+                let support = _.findWhere($scope.supportFeatured, {slug: ugs});
+                let priceFeatured = price.toString();
+                if (!support || support.counts === 4) return false;
+                $rootScope.preloaderToogle();
+                let offer = _.findWhere($rootScope.options.featured.offer_tariff, {ugs: ugs});
+                $rootScope.WPEndpoint
+                  .product()
+                  .param('consumer_key', key)
+                  .param('consumer_secret', secret)
+                  .create({
+                    status: 'publish',
+                    type: 'simple',
+                    name: `OFFRE SPONSORISE (${$scope.Offer.title.rendered}) - ${offer.position}`,
+                    price: offer.price, // string accepted
+                    regular_price: offer.price, // string accepted
+                    sold_individually: true,
+                    virtual: true,
+                    sku: `FEATURED${$scope.Offer.id}`,
+                    meta_data: [
+                      {key: '__type', value: 'featured'},
+                      {key: '__id', value: $scope.Offer.id}
+                    ]
+                  })
+                  .then(product => {
+                    $scope.$apply(() => {
+                      $rootScope.preloaderToogle();
+                      $scope.addCart(product.id, offer.ugs);
+                    });
+                  })
+                  .catch(err => {
+                    if (!_.isUndefined(err.code)) {
+                      if (err.code === "product_invalid_sku") {
+                        let resource_id = err.data.resource_id;
                         $scope.$apply(() => {
-                          swal("Redirection", "Vous serez rediriger vers la page de paiement");
-                          $rootScope.preloaderToogle();
-                          setTimeout(() => {
-                            window.location.href = response.data;
-                          }, 2000);
+                          $scope.WPEndpoint
+                            .product()
+                            .param('consumer_key', key)
+                            .param('consumer_secret', secret)
+                            .id(resource_id)
+                            .update({price: offer.price, regular_price: offer.price})
+                            .then(product => {
+                              $scope.addCart(resource_id, offer.ugs);
+                            });
                         });
                       }
-                    })
-                });
-            };
-          }]
+                    }
+                  })
+              };
+              $scope.addCart = (product_id, position) => {
+                $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`, {cache: false})
+                  .then((resp) => {
+                    const response = resp.data;
+                    $scope.WPEndpoint
+                      .offer()
+                      .id($scope.Offer.id)
+                      .update({
+                        itjob_offer_featured_position: position,
+                        itjob_offer_featured_datelimit: moment().format("YYYY-MM-DD H:mm:ss")
+                      })
+                      .then(() => {
+                        if (response.success) {
+                          $scope.$apply(() => {
+                            swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                            $rootScope.preloaderToogle();
+                            setTimeout(() => {
+                              window.location.href = response.data;
+                            }, 2000);
+                          });
+                        }
+                      })
+                  });
+              };
+            }]
         },
         {
           name: 'manager.profil.formation',
@@ -732,7 +736,7 @@ APPOC
                     $scope.$apply(() => {
                       $scope.addProductCart(product.id, rate);
                     });
-                }).catch(err => {
+                  }).catch(err => {
                   if (!_.isUndefined(err.code)) {
                     if (err.code === "product_invalid_sku") {
                       let resource_id = err.data.resource_id;
@@ -859,23 +863,7 @@ APPOC
               }
             }
           }]
-        },
-        {
-          name: 'manager.profil.works',
-          url: '/works',
-          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/works.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
-
-          }]
-        },
-        {
-          name: 'manager.profil.annonces',
-          url: '/annonces',
-          templateUrl: `${itOptions.Helper.tpls_partials}/route/company/annonces.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
-
-          }]
-        },
+        }
       ];
       // Loop over the state definitions and register them
       states.forEach(function (state) {
@@ -892,8 +880,6 @@ APPOC
         Entreprise: '=company',
         init: '&init'
       },
-      link: function (scope, element, attrs) {
-      },
       controller: ['$rootScope', '$scope', '$q', '$state', 'clientFactory', 'clientService',
         function ($rootScope, $scope, $q, $state, clientFactory, clientService) {
           $scope.status = false;
@@ -905,9 +891,6 @@ APPOC
             $scope.Towns = _.clone($rootScope.Towns);
           };
 
-          /**
-           * Ouvrir l'editeur d'information utilisateur
-           */
           $scope.openEditor = () => {
             const incInput = ['address', 'name', 'stat', 'nif'];
             const incTerm = ['branch_activity', 'region', 'country'];
@@ -947,9 +930,6 @@ APPOC
             return false;
           };
 
-          /**
-           * Mettre à jours les informations de l'utilisateur
-           */
           $scope.updateUser = () => {
             $scope.status = "Enregistrement en cours ...";
             let userForm = new FormData();
@@ -987,7 +967,7 @@ APPOC
         }]
     }
   }])
-  .directive('planPremium',  [function () {
+  .directive('planPremium', [function () {
     return {
       restrict: 'E',
       scope: {},
@@ -1032,7 +1012,7 @@ APPOC
       }]
     }
   }])
-  .directive('historyCv',    [function () {
+  .directive('historyCv', [function () {
     return {
       restrict: "E",
       scope: true,
@@ -1058,11 +1038,10 @@ APPOC
               });
           })
         })(jQuery)
-
       }]
     }
   }])
-  .directive('offerLists',   [function () {
+  .directive('offerLists', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/directive-offers.html?ver=' + itOptions.version,
@@ -1128,10 +1107,8 @@ APPOC
           $scope.error = "";
           $scope.idCandidate = 0;
           // Ouvrire une boite de dialoge pour modifier une offre
-          $scope.openEditor = (offerId, $event) => {
-            let offer = _.findWhere($scope.Offers, {
-              ID: parseInt(offerId)
-            });
+          $scope.openOfferEditor = (offerId) => {
+            let offer = _.findWhere($scope.Offers, {ID: parseInt(offerId)});
             $rootScope.preloaderToogle();
             $q.all([$scope.regions(), $scope.abranchs(), $scope.allCity()]).then(data => {
               $scope.Regions = _.clone(data[0]);
@@ -1154,11 +1131,14 @@ APPOC
 
           $scope.offerPaiementProcess = (offerId) => {
             let offer = _.findWhere($scope.Offers, {ID: parseInt(offerId)});
-            if (offer.rateplan === 'standard' || !offer.activated ) return false;
-            $state.go('manager.profil.offers.paiement', {id: offerId});
+            if (offer.offer_status === 'publish' && offer.activated) {
+              $state.go('manager.profil.offers.paiement', {id: offerId});
+            } else {
+              return false;
+            }
           };
 
-          // Modifier une offre
+          // Modifier une offrefeaturedOffer
           $scope.editOffer = (offerId, ev) => {
             let element = ev.currentTarget;
             let offerForm = new FormData();
@@ -1192,17 +1172,17 @@ APPOC
           };
 
           $scope.addFeaturedCart = (offerId) => {
-            let offer = _.findWhere($scope.Offers, { ID: parseInt(offerId) });
+            let offer = _.findWhere($scope.Offers, {ID: parseInt(offerId)});
             if (offer.featured || !offer.activated || offer.offer_status !== "publish") {
-              swal('Validation', "Désolé, vous ne pouvez pas mettre à la une une annonce désactiver ou en cours " +
-                "de validation ou en attente de paiement. Merci", 'info');
+              swal('Validation', "Désolé, vous ne pouvez pas mettre à la une cette annonce. Merci", 'info');
               return false;
             }
             $state.go('manager.profil.offers.featured', {id: offerId})
           };
 
-          $scope.featuredOffer = () => {
-            jQuery('#featured-dialog').modal('show');
+          $scope.featuredOffer = (offerId) => {
+            UIkit.modal('#modal-view-candidat').hide();
+            $state.go('manager.profil.offers.paiement', {id: offerId});
           };
 
           // Afficher les candidates qui ont postule
@@ -1306,13 +1286,13 @@ APPOC
           };
           // Filtre les candidats qui ont postuler mais qui ne sont pas encore validé
           $scope.filterPostuledCandidates = (item) => {
-            return item.type === 'apply' && item.view === 1;
+            return item.type === 'apply' && item.view == 1;
           };
 
         }]
     };
   }])
-  .directive('cvConsult',    [function () {
+  .directive('cvConsult', [function () {
     return {
       restrict: 'E',
       templateUrl: itOptions.Helper.tpls_partials + '/cv-consult.html?ver=' + itOptions.version,
@@ -1393,10 +1373,12 @@ APPOC
           let namespace = 'wp/v2'; // use the WP API namespace
           let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
           let route_formation = '/formation/(?P<id>\\d+)';
+          let route_works = '/works/(?P<id>\\d+)';
           let route_product = '/products/(?P<id>\\d+)';
           $scope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
           $scope.WPEndpoint.formation = $scope.WPEndpoint.registerRoute(namespace, route_formation);
           $scope.WPEndpoint.product = $scope.WPEndpoint.registerRoute(wc_namespace, route_product);
+          $scope.WPEndpoint.works = $scope.WPEndpoint.registerRoute(namespace, route_works);
 
           $scope.Loading = true;
           $http.get(`${itOptions.Helper.ajax_url}?action=collect_formations`, {cache: false})
@@ -1544,11 +1526,10 @@ APPOC
         }]
     }
   }])
-  .controller('companyController', ['$rootScope', '$http', '$q', '$filter', 'clientFactory',
-    'clientService', 'Client', 'Regions', 'Towns', 'Areas', 'Options',
+  .controller('companyController', ['$rootScope', '$http', '$q', '$filter', 'clientFactory', 'clientService', 'Client',
+    'Regions', 'Towns', 'Areas', 'Options',
     function ($rootScope, $http, $q, $filter, clientFactory, clientService, Client, Regions, Towns, Areas, Options) {
       const self = this;
-      $rootScope.WPEndpoint = null;
       $rootScope.options = {};
       $rootScope.sector = 0;
       $rootScope.formationCount = 0;
@@ -1608,7 +1589,23 @@ APPOC
       $rootScope.Towns = [];
 
       this.$onInit = () => {
-        var $ = jQuery.noConflict();
+        var $ = jQuery.noConflict()
+        let origin = document.location.origin;
+        $rootScope.WPEndpoint = new WPAPI({endpoint: `${origin}/wp-json`});
+        let namespace = 'wp/v2'; // use the WP API namespace
+        let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
+        let route_works = '/works/(?P<id>\\d+)';
+        let route_offer = '/offers/(?P<id>\\d+)';
+        let route_formation = '/formation/(?P<id>\\d+)';
+        let route_annonce = '/annonce/(?P<id>\\d+)';
+        let route_product = '/products/(?P<id>\\d+)';
+        $rootScope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
+        $rootScope.WPEndpoint.product = $rootScope.WPEndpoint.registerRoute(wc_namespace, route_product);
+        $rootScope.WPEndpoint.formation = $rootScope.WPEndpoint.registerRoute(namespace, route_formation);
+        $rootScope.WPEndpoint.works = $rootScope.WPEndpoint.registerRoute(namespace, route_works);
+        $rootScope.WPEndpoint.offer = $rootScope.WPEndpoint.registerRoute(namespace, route_offer);
+        $rootScope.WPEndpoint.annonce = $rootScope.WPEndpoint.registerRoute(namespace, route_annonce);
+
         $rootScope.preloaderToogle();
         $rootScope.Company = _.clone(Client.iClient);
         $rootScope.Helper = _.clone(Client.Helper);
@@ -1623,19 +1620,6 @@ APPOC
         $rootScope.formationCount = !_.isUndefined(Client.formation_count) ? Client.formation_count : 0;
         $rootScope.sector = _.clone(Client.iClient.sector);
         $rootScope.alerts = _.reject(Client.Alerts, alert => _.isEmpty(alert));
-
-
-        let origin = document.location.origin;
-        $rootScope.WPEndpoint = new WPAPI({endpoint: `${origin}/wp-json`});
-        let namespace = 'wp/v2'; // use the WP API namespace
-        let wc_namespace = 'wc/v3'; // use the WOOCOMMERCE API namespace
-        let route_formation = '/formation/(?P<id>\\d+)';
-        let route_offer = '/offers/(?P<id>\\d+)';
-        let route_product = '/products/(?P<id>\\d+)';
-        $rootScope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
-        $rootScope.WPEndpoint.formation = $rootScope.WPEndpoint.registerRoute(namespace, route_formation);
-        $rootScope.WPEndpoint.offer = $rootScope.WPEndpoint.registerRoute(namespace, route_offer);
-        $rootScope.WPEndpoint.product = $rootScope.WPEndpoint.registerRoute(wc_namespace, route_product);
       };
 
 
