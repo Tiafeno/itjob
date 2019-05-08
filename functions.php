@@ -203,7 +203,6 @@ if (function_exists('acf_add_options_page')) {
     'page_title' => 'General Settings',
     'capability' => 'delete_users',
     'menu_title' => 'ITJOB General Settings',
-    'capability' => 'edit_posts',
     'autoload' => true,
     'redirect' => false
   ));

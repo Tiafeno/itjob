@@ -138,14 +138,12 @@ if (!class_exists('vcRegisterParticular')) :
     if (!wp_doing_ajax()) {
       return;
     }
-
     $userEmail = Http\Request::getValue('email', false);
     if (!$userEmail) return false;
     $userExist = get_user_by('email', $userEmail);
     if ($userExist || !is_email( $userEmail )) {
       wp_send_json(['success' => false, 'msg' => 'L\'adresse e-mail valide refusé ou existe déja pour un autre compte']);
     }
-
     $form = (object)[
       'firstname' => Http\Request::getValue('firstname'),
       'lastname' => Http\Request::getValue('lastname'),
@@ -153,15 +151,13 @@ if (!class_exists('vcRegisterParticular')) :
       'address' => Http\Request::getValue('address'),
       'region' => Http\Request::getValue('region'), // region ID
       'city' => Http\Request::getValue('country'), // city ID
-      'cellphone' => Http\Request::getValue('cellphone'),
+      'cellphone' => Http\Request::getValue('phone'),
       'greeting' => Http\Request::getValue('greeting'),
       'email' => $userEmail
     ];
-
     // Récupérer l'incrementation des CV
     $Increment = get_field('cv_increment', 'option');
     $Increment = (int) $Increment;
-
     // Press CTRL + Q, for documentation
     $result = wp_insert_post([
       'post_title' => 'CV' . $Increment,
@@ -173,29 +169,22 @@ if (!class_exists('vcRegisterParticular')) :
     if (is_wp_error($result)) {
       wp_send_json(['success' => false, 'msg' => $result->get_error_message()]);
     }
-
     $post_id = (int)$result;
     $Increment = $Increment + 1;
     update_field('cv_increment', $Increment, 'option');
-
-    // save repeater field
+    // Save repeater field
     $value = [];
     $phones = json_decode(stripslashes($form->cellphone));
-    foreach ($phones as $row => $phone) {
-      $value[] = ['number' => $phone->value];
+    foreach ($phones as $phone) {
+      $value[] = ['number' => $phone];
     }
     update_field('itjob_cv_phone', $value, $post_id);
-
     $this->update_acf_field($post_id, $form);
     wp_set_post_terms($post_id, [(int)$form->region], 'region');
     wp_set_post_terms($post_id, [(int)$form->city], 'city');
-
-      // featured: Envoie une email de confirmation pour le changement de mot de passe
     $user = get_user_by('email', trim($form->email));
-
     // Envoyer une email pour une nouvelle utilisateur
     do_action('register_user_particular', $user->ID);
-
     // Ne pas activer le CV de l'utilisateur
     update_field('activated', 0, $post_id);
     update_field('itjob_cv_hasCV', 0, $post_id);

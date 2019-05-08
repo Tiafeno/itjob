@@ -132,21 +132,8 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
       $scope.uri.redir = itOptions.urlHelper.redir;
       $scope.particularForm = {};
       $scope.particularForm.greeting = '';
-      $scope.particularForm.cellphone = [{
-        id: 0,
-        value: ''
-      }];
-      $scope.addPhone = function () {
-        $scope.particularForm.cellphone.push({
-          id: Math.random().toString(36).replace(/[^a-z]+/g, '').substr(2, 10),
-          value: ''
-        });
-      };
-      $scope.removePhone = function (id) {
-        $scope.particularForm.cellphone = _.filter($scope.particularForm.cellphone, function (cellphone) {
-          return cellphone.id !== id;
-        });
-      };
+      $scope.particularForm.phone = [];
+
       $scope.formSubmit = function (isValid) {
         if ($scope.pcForm.$invalid) {
           angular.forEach($scope.pcForm.$error, function (field) {
@@ -167,16 +154,20 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
 
         if (!isValid) return;
         $scope.buttonDisable = true;
-        var particularData = new FormData();
-        particularData.append('action', 'insert_user_particular');
-        var particularFormObject = Object.keys($scope.particularForm);
-        particularFormObject.forEach(function (property) {
-          particularData.set(property, Reflect.get($scope.particularForm, property));
+        let Data = new FormData();
+        Data.append('action', 'insert_user_particular');
+        const dataObject = Object.keys($scope.particularForm);
+        dataObject.forEach(function (property) {
+          if (property === "phone") {
+            let phoneNumbers = Reflect.get($scope.particularForm, property);
+            Data.set(property, JSON.stringify(phoneNumbers));
+            return true;
+          }
+          Data.set(property, Reflect.get($scope.particularForm, property));
         });
-        particularData.append('cellphone', JSON.stringify($scope.particularForm.cellphone));
         $scope.error = false;
         services
-          .sendPostForm(particularData)
+          .sendPostForm(Data)
           .then(
             function (resp) {
             var status = resp.data;
