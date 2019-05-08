@@ -170,29 +170,27 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
           .sendPostForm(Data)
           .then(
             function (resp) {
-            var status = resp.data;
-            var _type = status.success ? 'info' : 'error';
-            swal({
-              title: 'Notification',
-              text: status.msg,
-              type: _type,
-            }, function () {
+              const status = resp.data;
+              var _type = status.success ? 'info' : 'error';
+              swal({
+                title: 'Notification',
+                text: status.msg,
+                type: _type,
+              }, function () {
+                $scope.buttonDisable = false;
+                if (status.success) {
+                  var redirection = itOptions.urlHelper.redir;
+                  window.location.href = _.isNull(redirection) ? itOptions.urlHelper.singin : redirection;
+                }
+                if (!status.success) $scope.error = true;
+              });
+            },
+            function (error) {
               $scope.buttonDisable = false;
-              if (status.success) {
-                var redirection = itOptions.urlHelper.redir;
-                window.location.href = _.isNull(redirection) ? itOptions.urlHelper.singin : redirection;
-              }
-              if (!status.success) $scope.error = true;
-            });
-          }, function (error) {
-            $scope.buttonDisable = false;
-            $scope.error = true;
-          })
+              $scope.error = true;
+            })
       };
 
-      $scope.$watch('particularForm', value => {
-
-      }, true);
       //  JQLite
       var jqSelects = jQuery("select.form-control.find");
       jQuery.each(jqSelects, function (index, element) {
@@ -221,17 +219,14 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
             findRegion = findRegion === "amoron'i mania" ? 'mania' : findRegion;
             searchTyping += ` ${findRegion} `;
           }
-
           // If there are no search terms, return all of the data
           if (jQuery.trim(searchTyping) === '') {
             return data;
           }
-
           // Do not display the item if there is no 'text' property
           if (typeof data.text === 'undefined') {
             return null;
           }
-
           // `params.term` should be the term that is used for searching
           var paramTerms = jQuery.trim(searchTyping).split(' ');
           paramTerms = _.reject(paramTerms, term => term === 'undefined');
@@ -247,14 +242,10 @@ angular.module('formParticular', ['ui.router', 'ngMessages'])
           });
           if (isEveryTrue) {
             var modifiedData = jQuery.extend({}, data, true);
-            // modifiedData.text += ' (matched)';
             return modifiedData;
           } else {
             return null;
           }
-
-          // Return `null` if the term should not be displayed
-          return null;
         }
       });
 
