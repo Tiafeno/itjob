@@ -29,6 +29,7 @@ if (!class_exists('scClient')) :
         add_action('admin_init', function () {
           $company = get_role('company');
           $candidate = get_role('candidate');
+
           // Formation
           $company_caps = [
             'edit_formation', 'read_formation', 'publish_formations', 'edit_formations', 'edit_others_formations',
@@ -48,6 +49,8 @@ if (!class_exists('scClient')) :
             }
           }
 
+
+          // Annonce
           $caps = [];
           $annonce_caps = [
             'edit_annonce', 'read_annonce', 'publish_annonces', 'edit_annonces',
@@ -67,6 +70,17 @@ if (!class_exists('scClient')) :
               $company->add_cap($cap);
             }
           }
+
+
+          // Post type candidate
+          $caps = ['read_candidate', 'edit_candidate', 'edit_candidates', 'edit_others_candidates', 'publish_candidates'];
+          foreach ($caps as $cap) {
+            if ( ! $candidate->has_cap($cap) ) {
+              $candidate->add_cap($cap);
+            }
+          }
+
+
 
         });
 

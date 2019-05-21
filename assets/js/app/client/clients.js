@@ -48,7 +48,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
             $scope.supportFeatured = _.clone($positions.data);
             $scope.works = _.clone(Works);
             $scope.tariff = _.map(featured.work_tariff, (tarif) => {
-              let support = _.findWhere($scope.supportFeatured, {slug: tarif.ugs});
+              let support = _.findWhere($scope.supportFeatured, {value: parseInt(tarif.ugs)});
               tarif.available = support.counts >= 4 ? 0 : 1;
               return tarif;
             });
@@ -57,7 +57,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
           $scope.checkout = (ugs, price) => {
             const key = $rootScope.options.wc._k;
             const secret = $rootScope.options.wc._s;
-            let support = _.findWhere($scope.supportFeatured, {slug: ugs});
+            let support = _.findWhere($scope.supportFeatured, {value: parseInt(ugs)});
             if (!support || support.counts === 4) return false;
             $rootScope.preloaderToogle();
             let work = _.findWhere($rootScope.options.featured.work_tariff, {ugs: ugs});
@@ -184,7 +184,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                 return;
               }
               $scope.tariff = _.map(featured.ads_tariff, (tarif) => {
-                let support = _.findWhere($positions.data, {slug: tarif.ugs});
+                let support = _.findWhere($positions.data, {value: parseInt(tarif.ugs)});
                 tarif.available = support.counts >= 4 ? 0 : 1;
                 return tarif;
               });
@@ -193,8 +193,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
             $scope.checkout = (ugs, price) => {
               const key = $rootScope.options.wc._k;
               const secret = $rootScope.options.wc._s;
-              let support = _.findWhere($scope.supportFeatured, {slug: ugs});
-              let priceFeatured = price.toString();
+              let support = _.findWhere($scope.supportFeatured, {value: parseInt(ugs)});
               if (!support || support.counts === 4) return false;
               $rootScope.preloaderToogle();
               let ads = _.findWhere($rootScope.options.featured.ads_tariff, {ugs: ugs});

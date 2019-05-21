@@ -233,24 +233,40 @@ add_filter('wp_nav_menu_args', function ($args) {
 
 add_action('admin_init', function () {
   $administrator = get_role('administrator');
+  $editor = get_role('editor');
+
+
   $caps = [
     'edit_formation', 'edit_formations', 'read_private_formation', 'read_formation',
     'edit_published_formations', 'edit_others_formations', 'edit_private_formations', 'delete_formation', 'delete_formations',
     'delete_others_formations', 'delete_private_formations', 'delete_published_formations', 'publish_formations',
+
     'edit_offer', 'edit_offers', 'read_private_offer', 'read_offer', 'edit_published_offers', 'edit_others_offers',
     'edit_private_offers', 'delete_offer', 'delete_offers', 'delete_others_offers', 'delete_private_offers', 'delete_published_offers',
     'publish_offers',
+
     'edit_work', 'edit_works', 'read_private_work', 'read_work', 'edit_published_works', 'edit_others_works',
     'edit_private_works', 'delete_work', 'delete_works', 'delete_others_works', 'delete_private_works', 'delete_published_works',
     'publish_works',
+
     'edit_annonce', 'edit_annonces', 'read_private_annonce', 'read_annonce', 'edit_published_annonces', 'edit_others_annonces',
     'edit_private_annonces', 'delete_annonce', 'delete_annonces', 'delete_others_annonces', 'delete_private_annonces',
-    'delete_published_annonces', 'publish_annonces'
+    'delete_published_annonces', 'publish_annonces',
+
+    'edit_candidate', 'edit_candidates', 'read_private_candidate', 'read_candidate', 'edit_published_candidates', 'edit_others_candidates',
+    'edit_private_candidates', 'delete_candidate', 'delete_candidates', 'delete_others_candidates', 'delete_private_candidates',
+    'delete_published_candidates', 'publish_candidates'
   ];
 
   foreach ($caps as $cap) {
-    if ( ! $administrator->has_cap($cap))
+    if ( ! $administrator->has_cap($cap)):
       $administrator->add_cap( $cap );
+    endif;
+
+    if ( ! $editor->has_cap($cap)):
+      $editor->add_cap( $cap );
+    endif;
+
   }
 });
 
@@ -367,7 +383,6 @@ add_action('init', function () {
     return $data;
   }, 10, 2 );
 
-
   //payment_complete(13066 );
 });
 
@@ -407,6 +422,10 @@ function payment_complete ($order_id) {
 
             case 'offers':
               update_field('itjob_offer_featured', 1, $object_id);
+              break;
+
+            case 'candidate':
+              update_field('itjob_cv_featured', 1, $object_id);
               break;
 
           endswitch;

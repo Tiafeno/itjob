@@ -352,7 +352,7 @@ APPOC
                   return;
                 }
                 $scope.Tariff = _.map(featured.offer_tariff, (tarif) => {
-                  let support = _.findWhere(positions.data, {slug: tarif.ugs});
+                  let support = _.findWhere(positions.data, {value: parseInt(tarif.ugs)});
                   tarif.available = support.counts >= 4 ? 0 : 1;
                   return tarif;
                 });
@@ -562,7 +562,7 @@ APPOC
               $scope.supportFeatured = _.clone(positions.data);
               let featured = _.clone($rootScope.options.featured);
               $scope.formationTariff = _.map(featured.formation_tariff, (tariff) => {
-                let support = _.findWhere(positions.data, {slug: tariff.ugs});
+                let support = _.findWhere(positions.data, {value: parseInt(tariff.ugs)});
                 tariff.available = support.counts >= 4 ? 0 : 1;
                 return tariff;
               });
