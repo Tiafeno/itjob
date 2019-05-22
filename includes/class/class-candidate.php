@@ -143,6 +143,7 @@ final class Candidate extends UserParticular implements \iCandidate {
     $featured    = get_field( 'itjob_cv_featured', $this->getId());
     $this->featured = boolval($featured);
     $this->featuredDateLimit = $this->featured ? get_field('itjob_cv_featured_datelimit', $this->getId()) : null;
+    $this->featuredPosition = $this->featured ? (int)get_field('itjob_cv_featured_position', $this->getId()) : null;
     $this->trainings   = $this->acfRepeaterElements( 'itjob_cv_trainings', [] );
     $this->experiences = $this->acfRepeaterElements( 'itjob_cv_experiences', [] );
 

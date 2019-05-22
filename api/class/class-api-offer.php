@@ -107,7 +107,6 @@ final class apiOffer
         $args = array_merge($args, ['tax_query' => $tax_query]);
     }
     $the_query = new WP_Query($args);
-    $offers = [];
     if ($the_query->have_posts()) {
       $offers = array_map(function ($offer) {
         $response = new \includes\post\Offers($offer->ID, true);

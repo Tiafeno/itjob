@@ -122,16 +122,17 @@ add_action('rest_api_init', function () {
               break;
 
             case 'featured':
-              $featured = isset($_REQUEST['val']) ? $_REQUEST['val'] : null;
+              $value = isset($_REQUEST['val']) ? (int)$_REQUEST['val'] : null;
               $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;
 
               // Seul l'adminstrateur peuvent modifier cette option
               if (!current_user_can('delete_users')) return new WP_REST_Response(['success' => false, 'msg' => 'Accès refusé']);
-              if (is_null($featured) || is_null($dateLimit)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
-              $featured = (int)$featured;
+              if (is_null($value) || is_null($dateLimit)) new WP_REST_Response(['success' => false, 'msg' => 'Parametre manquant']);
+              $featured = $value === 0 ? 0 : 1;
               update_field('itjob_cv_featured', $featured, $Candidate->getId());
               if ($featured) {
                 update_field('itjob_cv_featured_datelimit', date("Y-m-d H:i:s", (int)$dateLimit), $Candidate->getId());
+                update_field('itjob_cv_featured_position', $value, $Candidate->getId());
               }
 
               return new WP_REST_Response(['success' => true, 'msg' => "Position mise à jour avec succès"]);
@@ -241,7 +242,6 @@ add_action('rest_api_init', function () {
       'args'                => []
     )
   ]);
-
   register_rest_route('it-api', '/company/(?P<id>\d+)', [
     array(
       'methods'             => WP_REST_Server::READABLE,
@@ -367,38 +367,6 @@ add_action('rest_api_init', function () {
           }
         ),
       ),
-    )
-  ]);
-
-  register_rest_route('it-api', '/offers/', [
-    array(
-      'methods'             => WP_REST_Server::CREATABLE,
-      'callback'            => [new apiOffer(), 'get_offers'],
-      'permission_callback' => function ($data) {
-        return current_user_can('edit_posts');
-      },
-      'args'                => []
-    ),
-  ]);
-
-  register_rest_route('it-api', '/formations', [
-    array(
-      'methods'  => WP_REST_Server::CREATABLE,
-      'callback' => [new apiFormation(), 'get_formations']
-    )
-  ]);
-
-  register_rest_route('it-api', '/formation/(?P<id>\d+)', [
-    array(
-      'methods'  => WP_REST_Server::READABLE,
-      'callback' => [new apiFormation(), 'formation_resources']
-    ),
-    array(
-      'methods'             => WP_REST_Server::CREATABLE,
-      'callback'            => [new apiFormation(), 'update_formation'],
-      'permission_callback' => function ($data) {
-        return current_user_can('edit_posts');
-      },
     )
   ]);
 
@@ -605,6 +573,36 @@ add_action('rest_api_init', function () {
       ),
     )
   ]);
+  register_rest_route('it-api', '/offers/', [
+    array(
+      'methods'             => WP_REST_Server::CREATABLE,
+      'callback'            => [new apiOffer(), 'get_offers'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
+      'args'                => []
+    ),
+  ]);
+
+  register_rest_route('it-api', '/formations', [
+    array(
+      'methods'  => WP_REST_Server::CREATABLE,
+      'callback' => [new apiFormation(), 'get_formations']
+    )
+  ]);
+  register_rest_route('it-api', '/formation/(?P<id>\d+)', [
+    array(
+      'methods'  => WP_REST_Server::READABLE,
+      'callback' => [new apiFormation(), 'formation_resources']
+    ),
+    array(
+      'methods'             => WP_REST_Server::CREATABLE,
+      'callback'            => [new apiFormation(), 'update_formation'],
+      'permission_callback' => function ($data) {
+        return current_user_can('edit_posts');
+      },
+    )
+  ]);
 
   register_rest_route('it-api', '/dashboard/', [
     array(
@@ -720,7 +718,6 @@ add_action('rest_api_init', function () {
       ]
     ),
   ]);
-
   register_rest_route('it-api', '/taxonomy/(?P<taxonomy>\w+)', [
     array(
       'methods'  => WP_REST_Server::READABLE,
@@ -855,7 +852,6 @@ add_action('rest_api_init', function () {
       ]
     )
   ]);
-
   register_rest_route('it-api', '/taxonomy/(?P<id>\d+)/(?P<action>\w+)', [
     array(
       'methods'             => WP_REST_Server::CREATABLE,
@@ -967,9 +963,7 @@ add_action('rest_api_init', function () {
     )
   ]);
 
-
-  register_rest_route('it-api', '/newsletters/',
-    [
+  register_rest_route('it-api', '/newsletters/', [
       // Récuperer les newsletters
       [
         'methods'             => WP_REST_Server::READABLE,
@@ -1067,8 +1061,7 @@ add_action('rest_api_init', function () {
           return current_user_can('edit_posts');
         }
       ]
-    ]
-  );
+  ]);
 
   register_rest_route('it-api', '/blogs/', [
       // Récuperer les blogs
@@ -1198,7 +1191,6 @@ add_action('rest_api_init', function () {
       }
     ]
   ]);
-
   register_rest_route('it-api', '/ads/(?P<id>\d+)', [
     [
       'methods'  => WP_REST_Server::DELETABLE,
@@ -1297,6 +1289,49 @@ SQL;
         }
 
         return new WP_REST_Response($terms);
+      }
+    ]
+  ]);
+
+  register_rest_route('it-api', '/paiement-history/', [
+    [
+      'methods' => WP_REST_Server::CREATABLE,
+      'callback' => function (WP_REST_Request $rq) {
+        $length = isset($_REQUEST['length']) ? intval($_REQUEST['length']) : 10;
+        $start = isset($_REQUEST['start']) ? intval($_REQUEST['start']) : 0;
+
+        $args = array(
+          'limit' => $length,
+          'offset' => $start,
+          'paginate' => true,
+        );
+        $results = wc_get_orders( $args );
+
+        if (empty($results) || is_null($results)) {
+          return [
+            "recordsTotal" => 0,
+            "recordsFiltered" => 0,
+            'data' => []
+          ];
+        }
+
+        $data = [];
+        $request = new \WP_REST_Request();
+        $request->set_param('dp', '1'); // Chiffre apres virgule (les prix, tax)
+        $request->set_param('context', 'view');
+        $rest_order = new \WC_REST_Orders_V2_Controller();
+        foreach ($results->orders as $order) {
+          $data[] = $rest_order->prepare_object_for_response(new \WC_Order($order->get_id()), $request)->data;
+        }
+        return [
+          "recordsTotal" => (int)$results->total,
+          "recordsFiltered" => (int)$results->total,
+          'data' => $data
+        ];
+      },
+      'permission_callback' => function ($data) {
+        //return current_user_can('delete_posts');
+        return true;
       }
     ]
   ]);

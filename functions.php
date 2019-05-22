@@ -54,7 +54,7 @@ require 'includes/class/class-model.php';
 include 'includes/class/model/class-model-request-formation.php';
 include 'includes/class/model/class-model-subscription-formation.php';
 include 'includes/class/model/class-model-wallet.php';
-include 'includes/class/model/paiementHistory.php';
+include 'includes/class/model/paiementModel.php';
 
 // widgets
 require 'includes/class/widgets/widget-shortcode.php';
@@ -80,6 +80,7 @@ require_once 'includes/class/class-candidate.php';
 require_once 'includes/class/class-annonce.php';
 require_once 'includes/class/class-wallet.php';
 require_once 'includes/class/class-work-temporary.php';
+require_once 'includes/class/class-paiement-history.php';
 
 $itJob = (object) [
   'version' => $wp_version,
@@ -333,6 +334,7 @@ add_action('init', function () {
       }
       wp_send_json_success($Annonce->cellphone);
     }
+
     if ($post_type === 'works') {
       $Works = new \includes\post\Works($post->ID, true);
       $User = $itJob->services->getUser();
@@ -342,13 +344,12 @@ add_action('init', function () {
       }
       $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
       $credit = $Wallet->credit;
-      if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
+      if ( ! $credit ) wp_send_json_error("Il ne vous reste plus de credit.");
       if ( ! $Works->has_contact($User->ID) ) {
         $credit = $credit - 1;
         $Wallet->update_wallet($credit);
         $Works->add_contact_sender($User->ID);
       }
-      $first_name = '';
       $greet = '';
       if (in_array('candidate', $User->roles)) {
         $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
@@ -370,6 +371,22 @@ add_action('init', function () {
   // Status de paiement
   add_action('woocommerce_order_status_completed', 'payment_complete', 100, 1);
   add_action('woocommerce_payment_complete', 'payment_complete', 100, 1);
+  add_action('woocommerce_thankyou', function ($order_id) {
+    $Order = new WC_Order($order_id);
+    $payment_method = $Order->get_payment_method(); // cheque, vanillapay
+  }, 100, 1);
+
+  // Custom action order
+  add_action('woocommerce_order_action_send_admin_order_details', function ($order) {
+    // Send the admin new order email.
+    WC()->payment_gateways();
+    WC()->shipping();
+    WC()->mailer()->emails['WC_Email_New_Order']->trigger( $order->get_id(), $order );
+    // Note the event.
+    $order->add_order_note( __( 'Order details manually sent to admin.', 'woocommerce' ), false, true );
+    do_action( 'woocommerce_after_resend_order_email', $order, 'new_order' );
+    add_filter( 'redirect_post_location', array( 'WC_Meta_Box_Order_Actions', 'set_email_sent_message' ) );
+  }, 10, 1);
 
   // Ajouter cette action dans le code du plugins vanilla pay enfin de mettre à jour la commande
   add_action('itjob_wc_payment_success', 'payment_complete', 100, 1);
@@ -388,11 +405,13 @@ add_action('init', function () {
 
 
 function payment_complete ($order_id) {
-  // Get an instance of the WC_Order object
+
   $order = wc_get_order($order_id);
-  if ( ! $order->has_status('completed'))
+
+  if ( ! $order->has_status('completed')):
     $order->update_status('completed');
-  // Iterating through each WC_Order_Item_Product objects
+  endif;
+
   foreach ($order->get_items() as $item_key => $item ):
     $product = $item->get_product(); // WP_Product
     $type    = $product->get_meta( '__type' );
@@ -419,22 +438,19 @@ function payment_complete ($order_id) {
             case 'annonce':
               update_field('featured', 1, $object_id);
               break;
-
             case 'offers':
               update_field('itjob_offer_featured', 1, $object_id);
               break;
-
             case 'candidate':
               update_field('itjob_cv_featured', 1, $object_id);
               break;
-
           endswitch;
           break;
           
       endswitch;
 
       // Ajouter une historique de paiement
-      $modelPaiement = new \includes\model\paiementHistory();
+      $modelPaiement = new \includes\model\paiementModel();
       $args = [
         'data' => [
           'type' => $type,
