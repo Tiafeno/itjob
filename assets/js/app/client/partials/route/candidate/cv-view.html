@@ -18,9 +18,11 @@
           <div class="text-muted uppercase">CANDIDATURES ENVOYÉES</div>
           <h2 class="text-success mt-1">[[ Candidate.postuled ? Candidate.postuled.length : 0 ]]</h2>
         </div>
-        <div class="col-4 text-center" style="border-right: 1px solid rgba(0,0,0,.1);">
-          <div class="text-muted uppercase">METTRE à LA UNE</div>
-          <a class="btn btn-sm btn-outline-warning mt-2" ui-sref="manager.profil.cv.featured({id: Candidate.ID})">Acheter</a>
+        <div class="col-4 text-center" style="border-right: 1px solid rgba(0,0,0,.1);" >
+          <div ng-if="Candidate.featured" class="text-muted uppercase">CV EN AVANT</div>
+
+          <div ng-if="!Candidate.featured" class="text-muted uppercase">METTRE à LA UNE</div>
+          <a ng-if="!Candidate.featured" class="btn btn-sm btn-outline-warning mt-2" ui-sref="manager.profil.cv.featured({id: Candidate.ID})">Acheter</a>
         </div>
         <div class="col-4 text-center" style="border-right: 1px solid rgba(0,0,0,.1);">
           <div class="text-muted uppercase">VUE(S)</div>
