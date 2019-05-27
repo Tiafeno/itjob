@@ -160,6 +160,7 @@ wp_enqueue_script('sweetalert');
   </style>
   <script type="text/javascript">
     (function ($) {
+      var isLogged = <?= is_user_logged_in() ?>;
       var credit = <?= intval($credit) ?>;
       var hasContact = !!<?= intval($works->has_contact($User->ID)); ?>;
       var post_id = <?= $post->ID ?>;
@@ -217,6 +218,11 @@ wp_enqueue_script('sweetalert');
           fixWorkWrap();
         });
         $('.view-phone-number').on('click', function (ev) {
+          ev.preventDefault();
+          if (!isLogged) {
+            swal("Désolé", "Vos informations de connexion n'ont pas été reconnues. Inscrivez-vous gratuitement");
+            return false;
+          }
           if (!hasContact) {
             swal({
                 title: "1 contact avec coordonnees = 1 credit",
