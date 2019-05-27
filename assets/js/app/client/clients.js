@@ -617,8 +617,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                       {
                         data: 'featured',
                         render: (data, type, row) => {
-                          var text = data ? (!_.isEmpty(row.featured_position) || _.isNull(row.featured_position) ? (row.featured_position === 1 ? 'à la une' : 'la liste') : 'erreur') : 'aucun';
-                          var style = data ? "success" : "default";
+                          var text = data ? (!_.isEmpty(row.featured_position) || _.isNull(row.featured_position) ? (row.featured_position === 1 ? 'à la une' : 'la liste') : 'erreur') : 'acheter';
+                          var style = data ? "success" : "pink";
                           var elClass = style === 'default' ? 'featured-paiement' : '';
                           return `<span class="badge-${style} ${elClass} edit-position badge uppercase">${text}</span>`;
                         }
@@ -699,8 +699,8 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
                       {
                         data: 'featured',
                         render: (data) => {
-                          var text = data ? (!_.isEmpty(row.featured_position) || _.isNull(row.featured_position) ? (row.featured_position === 1 ? 'à la une' : 'la liste') : 'erreur') : 'aucun';
-                          var style = data ? "success" : "default";
+                          var text = data ? (!_.isEmpty(row.featured_position) || _.isNull(row.featured_position) ? (row.featured_position === 1 ? 'à la une' : 'la liste') : 'erreur') : 'acheter';
+                          var style = data ? "success" : "pink";
                           return `<span class="badge-${style} edit-position badge uppercase">${text}</span>`;
                         }
                       },

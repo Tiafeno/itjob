@@ -441,8 +441,8 @@ if (!class_exists('scClient')) :
       $args = [
         'post_type' => 'offers',
         'post_status' => ['publish', 'pending'],
-        'meta_key' => 'itjob_offer_company',
-        'meta_value' => $company_id
+        'meta_key'    => 'itjob_offer_company',
+        'meta_value'  => $company_id
       ];
       $offers = get_posts($args);
       foreach ($offers as $offer) {
@@ -464,7 +464,7 @@ if (!class_exists('scClient')) :
         $terms = [
           'branch_activity' => Http\Request::getValue('abranch'),
           'region' => Http\Request::getValue('region'),
-          'city' => Http\Request::getValue('country')
+          'city'   => Http\Request::getValue('country')
         ];
         foreach ($terms as $key => $value) {
           if (!$value) continue;
@@ -490,7 +490,7 @@ if (!class_exists('scClient')) :
       if (!wp_doing_ajax() || !is_user_logged_in()) {
         wp_send_json(false);
       }
-      if (!isset($_POST['softwares'])) wp_send_json_error("Les conditions ne sont pas remplie");
+      if ( ! isset($_POST['softwares']) ) wp_send_json_error("Les conditions ne sont pas remplie");
       $softwares = Http\Request::getValue("softwares");
       $softwares = json_decode($softwares);
       $taxonomy = "software";
@@ -530,7 +530,7 @@ if (!class_exists('scClient')) :
      * @route admin-ajax.php?action=update_experiences&experiences=<json>
      */
     public function update_experiences() {
-      if (!is_user_logged_in() || !wp_doing_ajax()) {
+      if ( ! is_user_logged_in() || ! wp_doing_ajax()) {
         wp_send_json(false);
       }
       $new_experiences = [];
