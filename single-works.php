@@ -160,7 +160,7 @@ wp_enqueue_script('sweetalert');
   </style>
   <script type="text/javascript">
     (function ($) {
-      var isLogged = <?= (bool)is_user_logged_in() ?>;
+      var isLogged = <?= is_user_logged_in() ? 1 : 0 ?>;
       var credit = <?= intval($credit) ?>;
       var hasContact = !!<?= intval($works->has_contact($User->ID)); ?>;
       var post_id = <?= $post->ID ?>;
