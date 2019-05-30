@@ -391,6 +391,8 @@ add_action('init', function () {
   // Ajouter cette action dans le code du plugins vanilla pay enfin de mettre à jour la commande
   add_action('itjob_wc_payment_success', 'payment_complete', 100, 1);
 
+  add_action('');
+
   // Cette action est utilisé par le plugins mailChimp
   // Plugin Name: MailChimp User Sync
   // @url https://fr.wordpress.org/plugins/mailchimp-sync/
@@ -400,7 +402,6 @@ add_action('init', function () {
     return $data;
   }, 10, 2 );
 
-  //payment_complete(13066 );
 });
 
 
