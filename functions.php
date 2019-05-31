@@ -404,7 +404,22 @@ add_action('init', function () {
 });
 
 add_action('wp_loaded', function () {
-
+  // Activer seulement vanillapay pour acheter de credit
+  add_filter('woocommerce_available_payment_gateways', function ($available_gateways) {
+    global $woocommerce;
+    $items = $woocommerce->cart->get_cart();
+    $vanillapay = $available_gateways['vanillapay'];
+    foreach ($items as $key => $value) {
+      $_product = wc_get_product( $value['data']->get_id() );
+      $type = $_product->get_meta("__type");
+      if ($type === 'credit') {
+        $available_gateways = [];
+        $available_gateways[] = &$vanillapay;
+      }
+    }
+    
+    return $available_gateways;
+  });
 });
 
 function payment_complete ($order_id) {
