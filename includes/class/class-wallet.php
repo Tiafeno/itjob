@@ -40,6 +40,9 @@ class Wallet {
     $this->author = get_field('user', $this->ID); // return WP_User (object)
     $credits = get_field('wallet', $this->ID);
     $this->credit = intval($credits);
+
+    // Ajouter un meta user "wallet" pour l'identification
+    self::update_user_wallet_meta($this->author->ID, $this->ID);
   }
 
   public static function getInstance($value = null, $handler = "user_id", $create_if_not_exist = false) {
@@ -60,11 +63,13 @@ class Wallet {
         $wallets = get_posts($args);
         if (is_array($wallets) && !empty($wallets)) {
           $instance = new self($wallets[0]->ID);
+
         } else {
           if ($create_if_not_exist) {
             // Crée une portefeuille
             $wallet_id = credit::create_wallet($User->ID);
             if ( is_wp_error($wallet_id) ) { return $wallet_id; } ;
+
             $instance = new self($wallet_id);
           } else {
             $instance = new \WP_Error('broken', "Portefeuille introuvable");
@@ -72,6 +77,13 @@ class Wallet {
         }
         return $instance;
         BREAK;
+    }
+  }
+
+  private static function update_user_wallet_meta($user_id, $value) {
+    $user_wallet = get_user_meta($user_id, 'wallet', true);
+    if (empty($user_wallet)) {
+      update_user_meta($user_id, 'wallet', $value);
     }
   }
 

@@ -13,10 +13,28 @@
                 <div class="col-6 badge badge-dark text-right">{{ credit }}</div>
               </div>
               <div class="mt-5">
-                <h5>Acheter de credit</h5>
-                <p>
+                <h5>Achetez du credit ITJob</h5>
+                <div>
+                  <form method="post">
+                    <div class="mb-2">
+                      <b>1</b> Crédit = <b>{{price}} MGA</b>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <input type="number" min="1" name="credit" value="1" class="form-control">
+                      </div>
+                      <div class="col-sm-6">
+                        <input type="hidden" value="{{nonce}}" name="wp_credit_nonce">
+                        <button class="btn btn-outline-primary">Acheter</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+
+                <p class="mt-4">
                   Pour toutes informations veuillez contacter le service commercial aux numéros suivants: <br>
-                  032 45 378 60 - 033 82 591 13 - 034 93 962 18.
+                  <b>032 45 378 60 - 033 82 591 13 - 034 93 962 18</b>.
                 </p>
               </div>
               <div class="text-center">

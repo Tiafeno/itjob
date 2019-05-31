@@ -17,6 +17,7 @@
 define('__SITENAME__', 'itJob');
 define('minify', false);
 define('__CREDITS__', 10);
+define('__CREDIT_PRICE__', 2000); // En ariary
 define('__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj');
 define('TWIG_TEMPLATE_PATH', get_template_directory() . '/templates');
 if (!defined('VENDOR_URL')) {
@@ -391,8 +392,6 @@ add_action('init', function () {
   // Ajouter cette action dans le code du plugins vanilla pay enfin de mettre à jour la commande
   add_action('itjob_wc_payment_success', 'payment_complete', 100, 1);
 
-  add_action('');
-
   // Cette action est utilisé par le plugins mailChimp
   // Plugin Name: MailChimp User Sync
   // @url https://fr.wordpress.org/plugins/mailchimp-sync/
@@ -404,11 +403,13 @@ add_action('init', function () {
 
 });
 
+add_action('wp_loaded', function () {
+  
+});
 
 function payment_complete ($order_id) {
 
   $order = wc_get_order($order_id);
-
   if ( ! $order->has_status('completed')):
     $order->update_status('completed');
   endif;
@@ -417,11 +418,24 @@ function payment_complete ($order_id) {
     $product = $item->get_product(); // WP_Product
     $type    = $product->get_meta( '__type' );
     if ($type) {
-      $post_id   = $product->get_meta( '__id' );
-      $object_id = intval($post_id);
-      $post_type = get_post_type( $object_id );
+      $__id   = $product->get_meta( '__id' );
+      $object_id = intval($__id);
       if (0 === $object_id) return false;
       switch ($type):
+        case 'credit':
+
+          $user_id = intval($__id);
+          $wallet_id = (int) get_user_meta($user_id, 'wallet', true);
+          if ($wallet_id) {
+            $Wallet = new \includes\post\Wallet($wallet_id);
+            $credit = (int) $item->get_quantity();
+            $new_credit = $credit + $Wallet->credit;
+
+            $Wallet->update_wallet($new_credit);
+            do_action('payment_complete_credit', $user_id, $credit);
+          }
+
+          break;
         case 'offers':
           update_field('itjob_offer_paid', 1, (int)$object_id);
           // Envoyer un mail au administrateur pour informer un paiement
@@ -433,6 +447,7 @@ function payment_complete ($order_id) {
           break;
         // Mettre à la une des posts
         case 'featured':
+          $post_type = get_post_type( $object_id );
           switch ($post_type):
             case 'formation':
             case 'works':
