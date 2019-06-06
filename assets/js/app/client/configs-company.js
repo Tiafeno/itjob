@@ -358,11 +358,11 @@ APPOC
                 });
                 $scope.Offer = _.clone(Offer);
               };
-              $scope.checkout = (ugs, price) => {
+              $scope.checkout = (ugs) => {
                 const key = $rootScope.options.wc._k;
                 const secret = $rootScope.options.wc._s;
-                let support = _.findWhere($scope.supportFeatured, {slug: ugs});
-                let priceFeatured = price.toString();
+                let support = _.findWhere($scope.supportFeatured, {value: parseInt(ugs)});
+                console.log($scope.Tariff);
                 if (!support || support.counts === 4) return false;
                 $rootScope.preloaderToogle();
                 let offer = _.findWhere($rootScope.options.featured.offer_tariff, {ugs: ugs});

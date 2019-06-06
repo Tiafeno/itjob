@@ -190,7 +190,7 @@ const APPOC = angular.module('clientApp', ['ngMessages', 'ui.select2', 'ui.tinym
               });
               $scope.Annonce = _.clone(Annonce);
             };
-            $scope.checkout = (ugs, price) => {
+            $scope.checkout = (ugs) => {
               const key = $rootScope.options.wc._k;
               const secret = $rootScope.options.wc._s;
               let support = _.findWhere($scope.supportFeatured, {value: parseInt(ugs)});
