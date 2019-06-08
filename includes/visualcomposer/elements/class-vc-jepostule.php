@@ -190,13 +190,13 @@ class="btn btn-success btn-sm">Voir les offres</a></div>';
       }
 
       if (!$Candidate->is_publish() && !$Candidate->is_activated()) {
-        do_action('add_notice', 'Votre CV est en cours de validation. Veuillez réessayer plus tard s\'il vous plaît', 'warning');
+        do_action('add_notice', 'Votre CV est en cours de validation. Veuillez réessayer plus tard s\'il vous plaît', 'warning', false);
         itjob_get_notice();
         return;
       }
 
       if ($Candidate->is_publish() && !$Candidate->is_activated()) {
-        do_action('add_notice', 'Votre CV est désactiver.', 'danger');
+        do_action('add_notice', 'Votre CV est désactiver.', 'danger', false);
         itjob_get_notice();
         return;
       }
