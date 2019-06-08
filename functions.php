@@ -407,6 +407,11 @@ add_action('wp_loaded', function () {
   // Activer seulement vanillapay pour acheter de credit
   add_filter('woocommerce_available_payment_gateways', function ($allowed_gateways) {
     global $woocommerce;
+
+
+    print_r($allowed_gateways);
+
+
     $items = $woocommerce->cart->get_cart();
     $vanillapay = isset($allowed_gateways['vanillapay']) ? $allowed_gateways['vanillapay'] : $allowed_gateways['ariarynet'];
     if (isset($vanillapay)) return $allowed_gateways;
