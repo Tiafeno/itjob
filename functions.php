@@ -419,7 +419,7 @@ add_action('wp_loaded', function () {
     }
     
     return $available_gateways;
-  });
+  }, 10);
 });
 
 function payment_complete ($order_id) {
