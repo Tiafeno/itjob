@@ -12,7 +12,7 @@ if (is_user_logged_in()) {
   $role = $User->roles[0];
   $current_role = $role === 'candidate' ? 'particular' : 'company';
 
-  if ($current_role !== $path_array[1]) {
+  if ($current_role !== $path_array[1] && $role !== 'administrator') {
     wp_redirect(home_url('/faq-'.$current_role));
     exit;
   }
