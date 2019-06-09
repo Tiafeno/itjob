@@ -1,7 +1,7 @@
 <?php
 get_header();
 ?>
-  <div class="main-section uk-section uk-section-transparent pt-3 pb-0">
+  <div class="main-section uk-section uk-section-transparent pt-0 pb-0">
 
     <div class="uk-container uk-container-medium">
       <?php
