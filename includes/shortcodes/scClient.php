@@ -1267,7 +1267,7 @@ EOF;
             'archive_candidate_link' => get_post_type_archive_link('candidate'),
             'archive_annonce_link' => get_post_type_archive_link('annonce'),
             'archive_works_link' => get_post_type_archive_link('works'),
-            'faq_link' => home_url('/faq')
+            'faq_link' => home_url('/faq-company')
           ]
         ];
         if ($Company->sector === 1) {
@@ -1293,7 +1293,7 @@ EOF;
             'archive_offer_link' => get_post_type_archive_link('offers'),
             'archive_annonce_link' => get_post_type_archive_link('annonce'),
             'archive_works_link' => get_post_type_archive_link('works'),
-            'faq_link' => home_url('/faq')
+            'faq_link' => home_url('/faq-particular')
           ]
         ]);
       }
