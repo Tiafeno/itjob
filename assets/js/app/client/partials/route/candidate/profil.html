@@ -270,8 +270,19 @@
         <div class="text-pink"><i class="ti-location-pin mr-2"></i>[[ Candidate.privateInformations.address.address ]]
         </div>
         <p class="mt-4 mb-4"> [[biography]] </p>
-        <div class="d-block justify-content-around align-items-center">
-          <notifications></notifications>
+
+        <div class="row">
+          <div class="col-12">
+            <notifications></notifications>
+          </div>
+          <div class="col-12 mt-2">
+            <a ng-href="[[Helper.faq_link]]" target="_blank" class="ml-2" >
+              <button class="btn btn-danger">
+                <span class="btn-icon"><i class="fa fa-question-circle"></i> Aide & Astuces</span>
+              </button>
+            </a>
+          </div>
+
         </div>
       </div>
     </div>

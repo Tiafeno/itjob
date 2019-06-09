@@ -13,8 +13,7 @@ add_action('init', function () {
 
 });
 
-function getModerators ()
-{
+function getModerators() {
   // Les address email des administrateurs qui recoivent les notifications
   // La valeur de cette option est un tableau
   $admin_email = get_field('admin_mail', 'option'); // return string (mail)
@@ -22,16 +21,14 @@ function getModerators ()
   return $admin_email;
 }
 
-function update_hash_key_field ()
-{
+function update_hash_key_field() {
   // Mettre à jours la clé
   $now = date('Y-m-d H:i:s');
   $new_key = password_hash($now . rand(10, 80 * date('s')), PASSWORD_DEFAULT);
   update_field('bo_key', $new_key, 'option');
 }
 
-function fix_duplicates_cv_reference ()
-{
+function fix_duplicates_cv_reference() {
   // Corriger les doublons
   global $wpdb;
   $query_doublon
@@ -41,7 +38,7 @@ function fix_duplicates_cv_reference ()
 
   if ($rows) {
     $Increment = get_field('cv_increment', 'option');
-    $Increment = (int)$Increment;
+    $Increment = (int) $Increment;
     foreach ($rows as $row) {
       $sql = "SELECT * FROM {$wpdb->posts} pst WHERE pst.post_title = '{$row->post_title}' ORDER BY pst.post_date ASC";
       $posts = $wpdb->get_results($sql);
@@ -49,7 +46,7 @@ function fix_duplicates_cv_reference ()
         if ($key === 0) continue;
         $title = "CV{$Increment}";
         $date_create = $post->post_date;
-        wp_update_post(['ID' => (int)$post->ID, 'post_title' => $title, 'post_date' => $date_create]);
+        wp_update_post(['ID' => (int) $post->ID, 'post_title' => $title, 'post_date' => $date_create]);
         $Increment = $Increment + 1;
       }
     }
@@ -58,8 +55,7 @@ function fix_duplicates_cv_reference ()
   }
 }
 
-function remove_notice_after_5days ()
-{
+function remove_notice_after_5days() {
   $cronModel = new cronModel();
   $user_query = $cronModel->getUserAdmin();
   //An array containing a list of found users.
@@ -67,8 +63,7 @@ function remove_notice_after_5days ()
   $cronModel->deleteNoticeforLastDays(5, $users);
 }
 
-function newsletter_daily_company ()
-{
+function newsletter_daily_company() {
   global $wpdb, $Engine;
   $today = Date("Y-m-d");
   $sql
@@ -83,17 +78,17 @@ function newsletter_daily_company ()
     $posts = &$query;
     $candidates = [];
     foreach ($posts as $post) {
-      $candidates[] = new \includes\post\Candidate((int)$post->ID, true);
+      $candidates[] = new \includes\post\Candidate((int) $post->ID, true);
     }
 
     $queryCompany = "SELECT * FROM {$wpdb->posts} as pts  WHERE pts.post_type ='company' AND pts.post_status = 'publish'";
     $postCompany = $wpdb->get_results($queryCompany, OBJECT);
 
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-    $mail->addAddress('david@itjobmada.com', 'David Andrianaivo');
+    $mail->addAddress('no-reply@itjobmada.com', 'Équipe ITJob');
     $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
     foreach ($postCompany as $pts) {
-      $company = new \includes\post\Company((int)$pts->ID);
+      $company = new \includes\post\Company((int) $pts->ID);
       // Envoyer au abonnée au notification seulement
       if (!$company->notification) continue;
       $sender = $company->author->user_email;
@@ -106,8 +101,8 @@ function newsletter_daily_company ()
       $custom_logo_id = get_theme_mod('custom_logo');
       $logo = wp_get_attachment_image_src($custom_logo_id, 'full');
       $content .= $Engine->render('@MAIL/notification-company-new-cv.html', [
-        'Year'       => Date('Y'),
-        'logo'       => $logo[0],
+        'Year' => Date('Y'),
+        'logo' => $logo[0],
         'candidates' => $candidates
       ]);
     } catch (Twig_Error_Loader $e) {
@@ -130,8 +125,7 @@ function newsletter_daily_company ()
   }
 }
 
-function alert_daily_company()
-{
+function alert_daily_company() {
   global $wpdb, $itHelper;
   $today = Date("Y-m-d");
   $sql = "SELECT * FROM {$wpdb->posts} as pts WHERE pts.post_type = 'candidate' 
@@ -144,13 +138,12 @@ function alert_daily_company()
     $posts = &$query;
     foreach ($posts as $post) {
       // Envoyer une alert au entreprise
-      $itHelper->Mailing->alert_for_new_candidate( $post->ID );
+      $itHelper->Mailing->alert_for_new_candidate($post->ID);
     }
   }
 }
 
-function fix_pending_cv ()
-{
+function fix_pending_cv() {
   global $wpdb;
   $walk_cv = get_option('walk_fix_last_offset', 0);
   $walk_cv = intval($walk_cv);
@@ -438,21 +431,20 @@ function send_pending_interest() {
   wp_mail($to, $subject, $msg, $headers);
 }
 
-function update_offer_featured ()
-{
-    $cronModel = new cronModel();
-    $featuredOffers = $cronModel->getFeaturedOffers();
-    foreach ($featuredOffers as $offer) {
-        $isFeatured = $offer->isFeatured();
-        if ($isFeatured) {
-            $featuredDateLimit = $offer->featuredDateLimit;
-            if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
-                update_field('itjob_offer_featured', 0, $offer->ID);
-                update_field('itjob_offer_featured_position', null, $offer->ID);
-                update_field('itjob_offer_featured_datelimit', null, $offer->ID);
-            }
-        }
+function update_offer_featured() {
+  $cronModel = new cronModel();
+  $featuredOffers = $cronModel->getFeaturedOffers();
+  foreach ($featuredOffers as $offer) {
+    $isFeatured = $offer->isFeatured();
+    if ($isFeatured) {
+      $featuredDateLimit = $offer->featuredDateLimit;
+      if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
+        update_field('itjob_offer_featured', 0, $offer->ID);
+        update_field('itjob_offer_featured_position', null, $offer->ID);
+        update_field('itjob_offer_featured_datelimit', null, $offer->ID);
+      }
     }
+  }
 }
 
 function update_formation_featured() {
@@ -460,8 +452,8 @@ function update_formation_featured() {
   $Services = $itJob->services;
   if ($Services instanceof \includes\object\jobServices) {
     $featuredFormation = $Services->getFeaturedPost('formation', [
-        'key' => 'featured',
-        'value' => 1,
+      'key' => 'featured',
+      'value' => 1,
     ], 5);
 
     foreach ($featuredFormation as $formation) {
@@ -475,8 +467,7 @@ function update_formation_featured() {
   }
 }
 
-function review_offer_limit ()
-{
+function review_offer_limit() {
   global $Engine;
   $cronModel = new cronModel();
   $results = $cronModel->getOffer5DaysLimitDate();
@@ -491,14 +482,14 @@ function review_offer_limit ()
       $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
 
       // Envoyer une mail de notification au entreprise
-      $Offer = new includes\post\Offers((int)$result->offer_id);
+      $Offer = new includes\post\Offers((int) $result->offer_id);
       $msg = '';
       try {
         $custom_logo_id = get_theme_mod('custom_logo');
         $logo = wp_get_attachment_image_src($custom_logo_id, 'full');
         $msg .= $Engine->render('@MAIL/review-offer-limit.html', [
-          'offer'    => $Offer,
-          'logo'     => $logo[0],
+          'offer' => $Offer,
+          'logo' => $logo[0],
           'home_url' => home_url("/")
         ]);
 
@@ -521,9 +512,9 @@ function review_offer_limit ()
     if (!empty($offers)) {
       try {
         $msg = $Engine->render('@MAIL/admin/review-admin-offer-limit.html', [
-          'offers'              => $offers,
+          'offers' => $offers,
           'dashboard_offer_url' => "https://admin.itjobmada.com/offer-lists",
-          'Year'                => Date('Y')
+          'Year' => Date('Y')
         ]);
 
       } catch (\Twig_Error_Loader $e) {
