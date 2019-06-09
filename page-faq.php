@@ -28,7 +28,7 @@ get_header();
       while (have_posts()) : the_post();
         if ( ! is_user_logged_in()) {
           echo '<div class="alert alert-danger text-center"><i class="fa fa-warning mr-2"></i>' .
-            'Vous devez disposer d\'une autorisation pour effectuer accéder à cette page. Merci</div>';
+            'Vous devez disposer d\'une autorisation pour accéder à cette page. Merci</div>';
           break;
         }
 
