@@ -87,6 +87,7 @@ function newsletter_daily_company() {
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     $mail->addAddress('no-reply@itjobmada.com', 'Équipe ITJob');
     $mail->addReplyTo('david@itjobmada.com', 'David Andrianaivo');
+    $mail->addBCC('david@itjobmada.com', 'David Andrianaivo');
     foreach ($postCompany as $pts) {
       $company = new \includes\post\Company((int) $pts->ID);
       // Envoyer au abonnée au notification seulement
