@@ -408,6 +408,9 @@ add_action('wp_loaded', function () {
   add_filter('woocommerce_available_payment_gateways', function ($allowed_gateways) {
     global $woocommerce;
 
+    $User = wp_get_current_user();
+    if ( is_admin() && in_array('administrator', $User->roles) ) return $allowed_gateways;
+
     $items = $woocommerce->cart->get_cart();
     $vanillapay = isset($allowed_gateways['vanillapay']) ? $allowed_gateways['vanillapay'] : $allowed_gateways['ariarynet'];
     if ( ! isset($vanillapay) ) return $allowed_gateways;
