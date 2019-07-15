@@ -37,9 +37,13 @@ class Wallet {
 
     $this->ID = $wallet->ID;
     $this->reference = $wallet->post_title;
-    $this->author = get_field('user', $this->ID); // return WP_User (object)
+
     $credits = get_field('wallet', $this->ID);
     $this->credit = intval($credits);
+
+    $author = get_field('user', $this->ID); // return WP_User (object)
+    $author = is_object($author) ? $author : new \WP_User( (int) $author);
+    $this->author = $author;
 
     // Ajouter un meta user "wallet" pour l'identification
     self::update_user_wallet_meta($this->author->ID, $this->ID);
