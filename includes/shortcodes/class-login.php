@@ -44,6 +44,12 @@ if ( ! class_exists( 'scLogin' ) ) :
         ? get_user_by( 'email', $log )
         : get_user_by( 'login', $log );
       $loginUser = &$filterUser;
+
+      // Vérifier si l'utilisateur existe ou pas
+      if (false === $loginUser) {
+        wp_send_json_error( [ 'msg' => "Nom d’utilisateur ou mot de passe non valide", 'code' => 2 ] );
+      }
+
       $recoverUserPassword_ = get_user_meta($loginUser->ID, "__recovery_password", true);
       $recoverUserPassword = (int)$recoverUserPassword_;
       if ($recoverUserPassword) {
@@ -54,7 +60,7 @@ if ( ! class_exists( 'scLogin' ) ) :
         ]);
       }
 
-      if ( $filterUser && wp_check_password( $pwd, $filterUser->data->user_pass, $filterUser->ID ) ) {
+      if ( $loginUser && wp_check_password( $pwd, $loginUser->data->user_pass, $loginUser->ID ) ) {
         $creds = array(
           'user_login'    => $log,
           'user_password' => $pwd,
