@@ -346,7 +346,7 @@ add_action('init', function () {
       $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
       $credit = $Wallet->credit;
       if ( ! $credit ) wp_send_json_error("Il ne vous reste plus de credit.");
-      if ( ! $Works->has_contact($User->ID) ) {
+      if ( ! $Works->has_contact($User) ) {
         $credit = $credit - 1;
         $Wallet->update_wallet($credit);
         $Works->add_contact_sender($User->ID);
