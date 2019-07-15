@@ -208,7 +208,9 @@ SQL;
       $results = $wpdb->get_results($sql);
       $candidats = [];
       foreach ($results as $result):
-        $candidats[] = new \includes\post\Candidate((int)$result->ID, true);
+        $email_candidate = get_field( 'itjob_cv_email', (int) $result->ID );
+        if (!empty($email_candidate) && !is_null($email_candidate))
+            $candidates[] = $email_candidate;
       endforeach;
 
       $notAppliedLonTime = $this->getCandidatsNotAppliedLongTime();
@@ -237,7 +239,10 @@ SQL;
         $time_limit = strtotime($last_datetime->format('Y-m-d H:i:s'));
         $current_apply_datetime = strtotime($request->date_create);
         if ($current_apply_datetime <= $time_limit) {
-            $candidates[] = new \includes\post\Candidate((int)$request->id_candidate, true);
+          $email_candidate = get_field( 'itjob_cv_email', (int) $request->id_candidate );
+          //$User           = get_user_by( 'email', $email_candidat );
+          if (!empty($email_candidate) && !is_null($email_candidate))
+            $candidates[] = $email_candidate;
         }
       }
 
@@ -260,7 +265,9 @@ SQL;
       $results = $wpdb->get_results($sql);
       $candidats = [];
       foreach ($results as $result):
-        $candidats[] = new \includes\post\Candidate((int)$result->ID, true);
+        $email_candidate = get_field( 'itjob_cv_email', (int) $result->ID );
+        if (!empty($email_candidate) && !is_null($email_candidate))
+            $candidates[] = $email_candidate;
       endforeach;
 
       return $candidats;
