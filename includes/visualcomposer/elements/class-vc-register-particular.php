@@ -229,7 +229,7 @@ if (!class_exists('vcRegisterParticular')) :
     $userFirstName = get_field('itjob_cv_firstname', $post_id);
     $userLastName  = get_field('itjob_cv_lastname', $post_id);
     $args = [
-      "user_pass"  => substr(str_shuffle($this->chars), 0, 8),
+      "user_pass"  => substr(str_shuffle("AZERTYUIOPQSDFGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn123456789"), 0, 8),
       "user_login" => 'user-' . $post_id,
       "user_email" => $email,
       "display_name" => $post->post_title,
