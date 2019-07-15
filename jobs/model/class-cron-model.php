@@ -288,7 +288,7 @@ SQL;
       global $wpdb;
 
       $sql = <<<SQL
-SELECT cp.ID FROM {$wpdb->posts} as cp 
+SELECT cp.ID as id_company FROM {$wpdb->posts} as cp 
 WHERE cp.post_type = "company" 
   AND cp.post_status = "publish" 
   AND cp.ID IN (SELECT post_id as ID FROM {$wpdb->postmeta} WHERE meta_key = "activated" AND meta_value = 1) 
@@ -298,7 +298,9 @@ SQL;
       $results = $wpdb->get_results($sql);
       $companies = [];
       foreach ($results as $result):
-        $companies[] = new \includes\post\Company((int)$result->ID, true);
+        $email_company = get_field( 'itjob_company_email', (int) $result->id_company );
+        if (!empty($email_company) && !is_null($email_company))
+            $companies[] = $email_company;
       endforeach;
 
       return $companies;
@@ -337,7 +339,9 @@ SQL;
       $results = $wpdb->get_results($sql);
       $companies = [];
       foreach ($results as $result):
-        $companies[] = new \includes\post\Company((int)$result->id_company, true);
+        $email_company = get_field( 'itjob_company_email', (int) $result->id_company );
+        if (!empty($email_company) && !is_null($email_company))
+            $companies[] = $email_company;
       endforeach;
 
       return $companies;
@@ -345,7 +349,7 @@ SQL;
 
   /**
    *
-   * (notification-03.html)
+   * (notification-04.html)
    *
    * Bonjour,
    *
@@ -362,7 +366,7 @@ SQL;
       global $wpdb;
 
       $sql = <<<SQL
-SELECT cp.ID FROM {$wpdb->posts} as cp 
+SELECT cp.ID as id_company FROM {$wpdb->posts} as cp 
 JOIN {$wpdb->prefix}cv_request as request ON ( request.id_company = cp.ID ) 
 WHERE cp.post_type = "company" 
   AND cp.post_status = "publish" 
@@ -375,7 +379,9 @@ SQL;
       $results = $wpdb->get_results($sql);
       $companies = [];
       foreach ($results as $result):
-        $companies[] = new \includes\post\Company($result->ID, true);
+        $email_company = get_field( 'itjob_company_email', (int) $result->id_company );
+        if (!empty($email_company) && !is_null($email_company))
+            $companies[] = $email_company;
       endforeach;
 
       return $companies;
