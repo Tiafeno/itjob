@@ -326,6 +326,11 @@ add_action('init', function () {
     if ($post_type === 'annonce') {
       $Annonce = new \includes\post\Annonce($post->ID, true);
       $User = $itJob->services->getUser();
+      if (is_wp_error( $User )) {
+        wp_send_json_error( "Merci de vous connecter pour voir le contact. Merci" );
+        return false;
+      }
+
       if ($User->ID === $Annonce->get_author()->ID) {
         wp_send_json_error($msg_contact_error);
         return false;
