@@ -131,12 +131,21 @@ wp_enqueue_style('offers');
               </div>
 
               <div class="offer-footer mt-3">
+                <div class="mt-4">
+                  Si cette offre vous intéresse, veuillez vous inscrire à notre site et créez votre compte gratuitement. 
+                  Vous pourrez ainsi postuler à toutes les offres qui vous correspondent, disponibles dans votre espace client. <br>
+                  Cliquez ensuite sur le bouton <span class="badge badge-blue">je postule</span> en dessous de l’offre pour envoyer votre candidature. <br>
+                  Une fois fait , votre CV sera transmis directement aux recruteurs. <br><br>
+                  N'oubliez pas de bien remplir votre CV (photo + expériences professionnelles + formations) pour augmenter 
+                  votre chance d'être recruté. 
+                </div>
                 <div class="row pt-5">
                   <div class="col-md-6">
 
                   </div>
                   <div class="col-md-6">
                     <div>
+                      
                       <?= do_action('je_postule'); ?>
                       <div class="float-right ml-3">
                         <a href="<?= get_post_type_archive_link('offers') ?>" class="float-right">
