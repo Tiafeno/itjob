@@ -200,23 +200,23 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
       $newsletter      = Http\Request::getValue( 'newsletter', 0 );
 
       $jobSougths = Http\Request::getValue( 'jobSougths' );
-      $jobSougths = \json_decode( $jobSougths );
+      $jobSougths = \json_decode( \stripslashes($jobSougths) );
 
       $driveLicences = Http\Request::getValue( 'driveLicence', [] );
       if ( $driveLicences && !empty($driveLicences) ) {
-        $driveLicences = \json_decode( $driveLicences );
+        $driveLicences = \json_decode( \stripslashes($driveLicences) );
       }
 
       $notiEmploi = Http\Request::getValue( 'notiEmploi', false );
       if ( $notiEmploi ) {
-        $notiEmploi = \json_decode( $notiEmploi );
+        $notiEmploi = \json_decode( \stripslashes($notiEmploi) );
       }
 
       $trainings = Http\Request::getValue( 'trainings' );
-      $trainings = \json_decode( $trainings );
+      $trainings = \json_decode( stripslashes($trainings) );
 
       $experiences = Http\Request::getValue( 'experiences' );
-      $experiences = \json_decode( $experiences );
+      $experiences = \json_decode( stripslashes($experiences) );
 
       $languages = \json_decode( Http\Request::getValue( 'languages' ) );
       $softwares = \json_decode( Http\Request::getValue( 'softwares' ) );
@@ -383,6 +383,7 @@ if ( ! class_exists( 'vcRegisterCandidate' ) ) :
      */
     private function add_term_submit( $tabs = [], $taxonomy ) {
       $tabContainer = [];
+      if (!is_array($tabs)) return [];
       foreach ( $tabs as $tab ) {
         if ( isset( $tab->term_id ) ) {
           array_push( $tabContainer, $tab->term_id );
