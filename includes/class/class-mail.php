@@ -830,7 +830,7 @@ MSG;
     $headers[] = "From: ItJobMada <{$this->no_reply_notification_email}>";
     $content   = '';
     try {
-      $Candidate      = new Candidate( (int) $candidat_id );
+      $Candidate      = new Candidate( (int) $candidat_id, true );
       $custom_logo_id = get_theme_mod( 'custom_logo' );
       $logo           = wp_get_attachment_image_src( $custom_logo_id, 'full' );
       $content        .= $Engine->render( '@MAIL/confirm-validate-candidate.html.twig', [

@@ -302,7 +302,8 @@ add_action('init', function () {
           if ( ! is_object($branch_activity)) {
             $branch_activity = get_term(intval($branch_activity));
           }
-          $branch_activity = $branch_activity ? ', ' . $branch_activity->name : '';
+
+          $branch_activity = is_object($branch_activity)  ? ', ' . $branch_activity->name : '';
           return 'Emploi - ' . $post->post_title . $region . $branch_activity;
           break;
 
