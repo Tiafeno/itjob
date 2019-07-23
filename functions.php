@@ -257,7 +257,11 @@ add_action('admin_init', function () {
 
     'edit_candidate', 'edit_candidates', 'read_private_candidate', 'read_candidate', 'edit_published_candidates', 'edit_others_candidates',
     'edit_private_candidates', 'delete_candidate', 'delete_candidates', 'delete_others_candidates', 'delete_private_candidates',
-    'delete_published_candidates', 'publish_candidates'
+    'delete_published_candidates', 'publish_candidates',
+
+    'edit_wallet', 'edit_wallets', 'read_private_wallet', 'read_wallet', 'edit_published_wallets', 'edit_others_wallets',
+    'edit_private_wallets', 'delete_wallet', 'delete_wallets', 'delete_others_wallets', 'delete_private_wallets',
+    'delete_published_wallets', 'publish_wallets'
   ];
 
   foreach ($caps as $cap) {
