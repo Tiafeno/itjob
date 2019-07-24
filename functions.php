@@ -307,7 +307,7 @@ add_action('init', function () {
             $branch_activity = get_term(intval($branch_activity));
           }
 
-          $branch_activity = is_object($branch_activity)  ? ', ' . $branch_activity->name : '';
+          $branch_activity = is_wp_error($branch_activity) ? '' : (isset($branch_activity->name) ? ', ' . $branch_activity->name : '');
           return 'Emploi - ' . $post->post_title . $region . $branch_activity;
           break;
 
