@@ -111,7 +111,7 @@
                 if (query.success) {
                   let interests = query.data.interests;
                   interests = _.reject(interests, (interest) => interest.type === 'apply');
-                  if (interests.length >= 6) {
+                  if (interests.length >= 5) {
                     jQuery('#modal-offer-interest').modal('hide');
                     $scope.successMessage.limit_reach = true;
                     $scope.successMessage.body = reach_limit_msg;
