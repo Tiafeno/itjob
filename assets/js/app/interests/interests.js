@@ -170,15 +170,15 @@
             $scope.errorMessage.body = _.clone(resp.msg);
             $scope.loadingWorklow = false;
             jQuery('#modal-error').modal('show');
-          }
+          };
 
           $scope.gtArchiveCandidat = () => {
             window.location.href = itOptions.Helper.archived_candidat_url;
-          }
+          };
 
           $scope.gtClientArea = () => {
             window.location.href = itOptions.Helper.client_area_url;
-          }
+          };
 
           jQuery('#modal-offer-interest')
             .on('hidden.bs.modal', () => {

@@ -1068,28 +1068,32 @@ EOF;
       if (!is_user_logged_in()) {
         wp_send_json_error('Désolé, Votre session a expiré');
       }
+      global $wpdb;
       $id_candidate = (int) Http\Request::getValue('id_candidate');
       $id_request = (int) Http\Request::getValue('id_request');
 
-      // FEATURED: Verifier si l'entreprise n'a pas atteint le nombre limite de CV
+      // FEATURED: Verifier si l'entreprise n'a pas atteint le nombre limite de CV pour cette offre
       if ($id_request === 0) wp_send_json_error('Aucune requete ne correspont à votre demande');
       $Model = new itModel();
       $request = $Model->get_request($id_request);
-      $Candidate = new Candidate($id_candidate);
       $Offer = new Offers((int) $request->id_offer);
 
-      if ($Model->check_list_limit() && $Offer->rateplan === 'standard') { // Compte standard
-        // Nombre limite atteinte
-        // TODO: Rendre le prix modifiable dans le BO
+      $table = $wpdb->prefix . 'cv_request';
+      $prepare = $wpdb->prepare("SELECT COUNT(*) FROM $table WHERE id_company = %d AND type = %s AND status = %s AND id_offer = %d",
+        intval($request->id_company), 'interested', 'validated', intval($request->id_offer));
+      $rows = $wpdb->get_var($prepare);
+      $wpdb->flush();
+      if ($rows >= 5 && $Offer->rateplan === 'standard') { // Compte standard
+        // Nombre limite atteinte pour cette offre
         wp_send_json_error("Vous venez de sélectionner 5 candidats et vous vous apprêter à en sélectionner un sixième savez 
         vous qu’à partir de là les CV sont payants au prix de 25.000 HT / CV ");
       }
-      if ($Candidate->getId() !== 0) {
-        $response = $Model->add_list($Candidate->getId());
+      if ($id_candidate !== 0) {
+        $response = $Model->add_list($id_candidate);
         if ($response) {
           $Model->update_interest_status($id_request, 'validated');
           if ($request->type === 'apply') {
-            do_action('notice-candidate-selected-cv', $Candidate->getId(), $request->id_offer);
+            do_action('notice-candidate-selected-cv', $id_candidate, $request->id_offer);
           }
           wp_send_json_success("Le candidat a bien étés sélectionner avec succès.");
         } else {
