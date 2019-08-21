@@ -104,6 +104,10 @@ class Formation {
     return $user_data;
   }
 
+  public function get_email() {
+    return $this->email;
+  }
+
   private function get_subscription() {
     $subscription = Model_Subscription_Formation::get_subscription($this->ID);
     return $subscription;

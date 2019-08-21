@@ -232,7 +232,7 @@ final class Candidate extends UserParticular implements \iCandidate {
    */
   public function __client_premium_access() {
     if ( ! is_user_logged_in() ) {
-      return false;
+      //return false;
     }
     $this->getInformations();
 

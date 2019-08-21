@@ -3,6 +3,7 @@
 use includes\model\itModel;
 use includes\post\Candidate;
 use includes\post\Company;
+use PHPMailer\PHPMailer\PHPMailer;
 
 if (!defined('ABSPATH')) {
   exit;
@@ -43,6 +44,8 @@ add_action('post_updated', 'post_updated_values', 10, 3);
  * WP_REST_Server::ALLMETHODS = ‘GET, POST, PUT, PATCH, DELETE’
  */
 add_action('rest_api_init', function () {
+  // Ceci autorise tous les sites web d'accéder au contenue via l'API
+  header("Access-Control-Allow-Origin: *");
 
   // Ajouter des informations utilisateur dans la reponse
   add_filter('jwt_auth_token_before_dispatch', function ($data, $user) {
@@ -227,6 +230,73 @@ add_action('rest_api_init', function () {
         ),
       ]
     ),
+  ]);
+
+  register_rest_route('it-api', '/mail/(?P<type>\w+)/(?P<id>\d+)/(?P<action>\w+)', [
+    array(
+      'methods'             => WP_REST_Server::CREATABLE,
+      'callback'            => function (WP_REST_Request $rq) {
+        global $Engine;
+        $type = $rq['type'];
+        $action = $rq['action'];
+        if ($type === 'formation') {
+          if ($action === 'subscription') {
+            if (!isset($_REQUEST) || empty($_REQUEST)) wp_send_json_error( "Formulaire non envoyer" );
+            $subject = stripslashes($_REQUEST['subject']);
+            $message = html_entity_decode(stripslashes($_REQUEST['message']));
+
+            $formation_id = intval($rq['id']);
+            /**
+             * Recuperer les candidats accepter pour cette formation
+             */
+            $subscriptions = \includes\model\Model_Subscription_Formation::get_subscription($formation_id, 1);
+            $candidates = [];
+            foreach ($subscriptions as $subscription) {
+              $User = get_userdata((int)$subscription->user_id);
+              if (in_array('candidate', $User->roles)) {
+                $candidates[] = \includes\post\Candidate::get_candidate_by($User->ID, 'user_id', true);
+              }
+            }
+            /**
+             * Déclarer une objet formation
+             */
+            $Formation = new \includes\post\Formation($formation_id);
+            $content = $Engine->render('@MAIL/formation-subscribers.html', [
+              'Year' => date('Y'),
+              'helper' => [
+                'dashboard_formation_url' => get_the_permalink( ESPACE_CLIENT_PAGE ),
+                'home_url' => home_url('/')
+              ],
+              'candidates' => $candidates,
+              'formation' => $Formation,
+              'message' => $message
+            ]);
+
+            $to        = $Formation->get_email();
+            $headers   = [];
+            $headers[] = 'Content-Type: text/html; charset=UTF-8';
+            $headers[] = "From: ITJob No-Reply <no-reply@itjobmada.com>";
+            // Envoyer
+            $result = wp_mail( $to, $subject, $content, $headers );
+            if ($result) {
+              wp_send_json_success("Email envoyer avec succès");
+            } else {
+              wp_send_json_error( "Une erreur s'est produit pendant l'envoie, veuillez réessayer plus tard. Merci" );
+            }
+
+          } else {
+            wp_send_json_eror( "Action introuvable");
+          }
+        } else {
+          wp_send_json_error( "Type introuvable" );
+        }
+      },
+      'permission_callback' => function ($data) {
+        //return current_user_can('edit_posts');
+        return true;
+      },
+      
+    )
   ]);
 
   /**
