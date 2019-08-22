@@ -458,6 +458,7 @@ if (!class_exists('vcOffers')):
         wp_enqueue_style('alertify');
         wp_enqueue_style('b-datepicker-3');
         wp_enqueue_style('themify-icons');
+        wp_enqueue_script('moment-locales');
         wp_enqueue_script('offers', get_template_directory_uri() . '/assets/js/app/offers/form.js',
           [
             'tinymce',
