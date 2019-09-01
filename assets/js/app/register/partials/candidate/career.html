@@ -151,7 +151,7 @@
             <div ng-form="abForm" class="form-group">
               <label class="col-form-label ">Secteur d’activité <span style="color: red">*</span></label>
               <select class="form-control" name="abranch" ui-select2="select2Options" data-placeholder="Secteur d’activité"
-                ng-model="experience.abranch" ng-required="true">
+                ng-model="experience.abranch" required>
                 <option></option>
                 <option ng-value="abranch.term_id" ng-repeat="abranch in abranchs">{{abranch.name}}</option>
               </select>

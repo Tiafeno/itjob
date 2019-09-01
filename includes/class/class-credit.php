@@ -17,6 +17,59 @@ if (!defined('ABSPATH')) {
 
 class credit {
   public function __construct() {
+    add_action('wp_loaded', function () {
+      if (isset($_POST['wp_credit_nonce'])) {
+        if (wp_verify_nonce($_POST['wp_credit_nonce'], 'order-credit')) {
+          $quantity = isset($_POST['credit']) ? intval($_POST['credit']) : 1;
+          $User = wp_get_current_user();
+          $result = wp_insert_post([
+            'post_status' => 'publish',
+            'post_type' => 'product',
+            'post_title' => "#CREDIT",
+            'post_author' => $User->ID
+          ], true);
+
+          if (is_wp_error($result)) { return false; }
+          $product_id = $result;
+          $_product = new \WC_Product($product_id);
+          $_product->set_price(__CREDIT_PRICE__);
+          $_product->set_regular_price(__CREDIT_PRICE__);
+          $_product->set_sku("CRD{$product_id}");
+
+          $_product->add_meta_data('__type', 'credit');
+          $_product->add_meta_data('__id', $User->ID);
+
+          $_product->save();
+
+          WC()->cart->empty_cart(); // Clear cart
+          WC()->cart->add_to_cart($product_id, $quantity); // Add new product in cart
+          // https://docs.woocommerce.com/wc-apidocs/function-wc_get_page_id.html
+          $checkout = get_permalink(wc_get_page_id('cart'));
+
+          wp_redirect($checkout);
+		      exit;
+        }
+      }
+
+      add_action('payment_complete_credit', function ($user_id, $qty) {
+        $from = "no-reply@itjobmada.ccom";
+        $admin_email = get_field( 'admin_mail', 'option' ); // return string (mail)
+        $admin_email = !$admin_email || empty($admin_email) ? "david@itjobmada.com" : $admin_email;
+        $to = $admin_email;
+        $headers   = [];
+        $headers[] = 'Content-Type: text/html; charset=UTF-8';
+        $headers[] = "From: ITJOB <{$from}>";
+
+        $User = get_user_by('ID', intval($user_id));
+
+        $content = "Bonjour, <br><br>";
+        $content .= "{$User->first_name} {$User->last_name} ({$User->user_email}) vient d'acheter <b>{$qty}</b> credit(s). <br> Bonne journée";
+        $subject = "Paiement effectuer avec succès sur le site ITJob";
+
+        wp_mail($to, $subject, $content, $headers);
+      }, 10, 2);
+
+    }, 10);
     add_shortcode( 'wallets', [ &$this, 'sc_render_html' ] );
     vc_map( [
       'name'     => 'Wallets',
@@ -67,7 +120,9 @@ class credit {
       return $Engine->render('@VC/wallet.html', [
         'title' => $title,
         'credit' => $credit,
-        'histories' => $wModel->collect_history( $wallet->getId() )
+        'price' => __CREDIT_PRICE__,
+        'histories' => $wModel->collect_history( $wallet->getId() ),
+        'nonce' => wp_create_nonce('order-credit')
       ]);
     } catch (\Twig_Error_Loader $e) {
     } catch (\Twig_Error_Runtime $e) {

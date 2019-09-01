@@ -13,10 +13,28 @@
                 <div class="col-6 badge badge-dark text-right">{{ credit }}</div>
               </div>
               <div class="mt-5">
-                <h5>Acheter de credit</h5>
-                <p>
+                <h5>Achat de crédits ITJob</h5>
+                <div>
+                  <form method="post">
+                    <div class="mb-2">
+                      <b>1</b> Crédit = <b>{{price}} MGA</b>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <input type="number" min="1" name="credit" value="1" class="form-control">
+                      </div>
+                      <div class="col-sm-6">
+                        <input type="hidden" value="{{nonce}}" name="wp_credit_nonce">
+                        <button class="btn btn-outline-primary">Acheter</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+
+                <p class="mt-4">
                   Pour toutes informations veuillez contacter le service commercial aux numéros suivants: <br>
-                  032 45 378 60 - 033 82 591 13 - 034 93 962 18.
+                  <b>032 45 378 60 - 033 82 591 13 - 034 93 962 18</b>.
                 </p>
               </div>
               <div class="text-center">
@@ -43,12 +61,15 @@
               <h4>A quoi servent les credits ITJob ?</h4>
               <ul>
                 <li>Les credits vous servent à obtenir les coordonnées désirées des autres membres: 1 credit consommée = 1 contact</li>
-                <li>en consommant une credit vous obtenez à l'écran sur l'annonce choisie les coordonnées complètes de l'annonceur.</li>
+                <li>Vous pouvez par exemple dans la rubrique « travail temporaire » obtenir les coordonnées complètes de l'annonceur
+                  en utilisant un crédit ainsi vous augmentez vos chances de trouver de meilleur interlocuteurs d'affaire
+                </li>
                 <li>Ces coordonnées resteront affichées sur l'annonce tant que cette annonce ne sera pas supprimée.</li>
                 <li>La durée d'utilisation des credits n'est pas limité dans le temps.</li>
                 <li>Quand vous chargez votre compte en credit, vous garder toujours sur la partie droite en haut de l'ecran le nombre de credit qu'il vous reste de disponible.</li>
-                <li>La vente de credit est la seule rémunération du site www.itjobmada.com. En souscrivant des credits vous nous aidez aussi à faire progresser notre système.
-                  Vous augmentez ainsi vos chances de trouver de meilleurs interlocuteurs d'affaire</li>
+                <li>La vente de credit est la seule rémunération du site www.itjobmada.com.
+                  En souscrivant des credits vous nous aidez aussi à faire progresser notre système.</li>
+                <li>Vous augmentez ainsi vos chances de trouver de meilleurs interlocuteurs d'affaire</li>
               </ul>
               </p>
             </div>

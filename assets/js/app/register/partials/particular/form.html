@@ -89,8 +89,8 @@
     </div>
 
     <div class="row mb-1">
-      <div class="col-md-8 form-group">
-        <label class="form-control-label">Adresse <span style="color: red">*</span></label>
+      <div class="col-md-6 form-group">
+        <label class="form-control-label">Votre adresse <span style="color: red">*</span></label>
         <input class="form-control" type="text" name="address" ng-model="particularForm.address" autocomplete="off"
                placeholder="" required>
         <div ng-messages="pcForm.address.$error" ng-show="pcForm.address.$invalid && pcForm.address.$touched"
@@ -101,39 +101,36 @@
     </div>
 
     <div class="form-group mb-4 row">
-      <label class="col-sm-4 col-form-label">Numéros de téléphone <span style="color: red">*</span></label>
+      <label class="col-sm-12 col-form-label">Numéros de téléphone <span style="color: red">*</span></label>
       <div class="col-sm-6">
-        <div ng-form="setPhone" ng-repeat="phone in particularForm.cellphone track by phone.id" class="form-group row">
-          <div class="col-sm-10 pr-0">
-            <input class="form-control mt-1" name="cellphone" ng-model="phone.value" type="text"
-                   ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/"
-                   placeholder="Numéro de téléphone" required>
-
-            <div ng-messages="setPhone.cellphone.$error" role="alert" class="input-message-animation"
-                 ng-show="setPhone.cellphone.$invalid && setPhone.cellphone.$touched">
-              <div ng-message="required" class="alert alert-danger d-block mt-1">Veuillez saisir un numero de téléphone.</div>
-              <div ng-message="pattern" class="alert alert-danger d-block mt-1">Numéro de téléphone invalide</div>
-            </div>
-
-          </div>
-          <div class="col-sm-2">
-            <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" tabindex="0"
-                    data-toggle="tooltip" ng-show="!$first" data-placement="left" title="Enlever ce numero"
-                    ng-click="removePhone(phone.id)">
-              <i class="la la-minus-circle"></i></button>
+        <div class="pr-0 mb-3">
+          <input class="form-control mt-1" name="cellphone_0" ng-model="particularForm.phone[0]" type="text"
+                 ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/"
+                 placeholder="Numéro de téléphone" required>
+          <div ng-messages="pcForm.cellphone_0.$error" role="alert" class="input-message-animation"
+               ng-show="pcForm.cellphone_0.$invalid && pcForm.cellphone_0.$touched">
+            <div ng-message="required" class="alert alert-danger d-block mt-1">Veuillez saisir un numero de téléphone.</div>
+            <div ng-message="pattern" class="alert alert-danger d-block mt-1">Numéro de téléphone invalide</div>
           </div>
         </div>
-
-        <button class="btn btn-outline-success btn-icon-only btn-sm mt-2" data-placement="right"
-                data-toggle="tooltip" title="Ajouter un numero" ng-click="addPhone()"><i
-          class="la la-plus-circle"></i></button>
-
-        <p class="mt-4 mention-text">
-          Ajoutez les numéros téléphone un par un.
-          <br>Cliquez sur le bouton « + » pour joindre un autre numéro.
-          <span class="mt-1 d-block"></span>
-          <br>Le format des numéros de téléphone validés intègre les préﬁxes suivants (034 ... ou 039...).
-        </p>
+        <div class="pr-0 mb-3">
+          <input class="form-control mt-1" name="cellphone_1" ng-model="particularForm.phone[1]" type="text"
+                 ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/"
+                 placeholder="Numéro de téléphone">
+          <div ng-messages="pcForm.cellphone_1.$error" role="alert" class="input-message-animation"
+               ng-show="pcForm.cellphone_1.$invalid && pcForm.cellphone_1.$touched">
+            <div ng-message="pattern" class="alert alert-danger d-block mt-1">Numéro de téléphone invalide</div>
+          </div>
+        </div>
+        <div class="pr-0 mb-3">
+          <input class="form-control mt-1" name="cellphone_2" ng-model="particularForm.phone[2]" type="text"
+                 ng-pattern="/^\+?\d{2}[- ]?\d{3}[- ]?\d{5}$/"
+                 placeholder="Numéro de téléphone">
+          <div ng-messages="pcForm.cellphone_2.$error" role="alert" class="input-message-animation"
+               ng-show="pcForm.cellphone_2.$invalid && pcForm.cellphone_2.$touched">
+            <div ng-message="pattern" class="alert alert-danger d-block mt-1">Numéro de téléphone invalide</div>
+          </div>
+        </div>
       </div>
     </div>
 

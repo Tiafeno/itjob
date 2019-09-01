@@ -15,16 +15,15 @@ function run_once_month() {
    * ***********************************************************************************
    */
 
-  $companies = $Model->getCompanyNoSaveOfferLongTime();
-  if ( ! empty($companies) ) :
+  $companie_emails = $Model->getCompanyNoSaveOfferLongTime();
+  if ( ! empty($companie_emails) ) :
     $mail->CharSet = 'UTF-8';
     $mail->isHTML(true);
     $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
     $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
-    foreach ($companies as $Company) {
-      $sender = $Company->author->user_email;
-      $mail->addBCC($sender);
+    foreach ($companie_emails as $companie_email) {
+      $mail->addBCC($companie_email);
     }
 
     // Envoyer une mail de notification au entreprise
@@ -64,8 +63,10 @@ function run_twice_week() {
    *  Savez-vous que vous pouvez sélectionné des candidats pour sur le site Itjobmada.com ?
    * ***************************************************************************************
    */
-  $companies = $Model->getCompanyNoOffers();
-  if ( ! empty($companies) ):
+  $companie_emails_not_interest = $Model->getCompanyNoInterestedCandidate();
+  $companie_emails = $Model->getCompanyNoOffers();
+  $companie_emails = array_merge($companie_emails, $companie_emails_not_interest);
+  if ( ! empty($companie_emails) ):
     // notification-04
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     $mail->CharSet = 'UTF-8';
@@ -73,9 +74,8 @@ function run_twice_week() {
     $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
     $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
-    foreach ($companies as $Company) {
-      $sender = $Company->author->user_email;
-      $mail->addBCC($sender);
+    foreach ($companie_emails as $companie_email) {
+      $mail->addBCC($companie_email);
     }
 
     // Envoyer une mail de notification au entreprise
@@ -117,8 +117,8 @@ function run_week() { // run at 06h30
    *  Ajouter une offre sur le site Itjobmada.com
    * *********************************************
    */
-  $companies = $Model->getCompanyNoOffers();
-  if ( ! empty($companies) ):
+  $companie_emails = $Model->getCompanyNoOffers();
+  if ( ! empty($companie_emails) ):
     // notification-01
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     $mail->CharSet = 'UTF-8';
@@ -126,10 +126,8 @@ function run_week() { // run at 06h30
     $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
     $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
-    foreach ($companies as $Company) {
-      if ( ! $Company instanceof \includes\post\Company) continue;
-      $sender = $Company->author->user_email;
-      $mail->addBCC($sender);
+    foreach ($companie_emails as $companie_email) {
+      $mail->addBCC($companie_email);
     }
 
     // Envoyer une mail de notification au entreprise

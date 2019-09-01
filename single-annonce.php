@@ -286,7 +286,7 @@ wp_enqueue_script('sweetalert');
                   <div class="price font-15"><span class="price"><?= $annonce->price ?></span></div>
                 <?php endif; ?>
 
-                <div>Déposer le <?= $annonce->date_publication_format ?> par <b><?= $name ?></b></div>
+                <div>Déposée le <?= $annonce->date_publication_format ?> par <b><?= $name ?></b></div>
                 <hr class="mt-5">
                 <div>
                   <div class="row mt-4">

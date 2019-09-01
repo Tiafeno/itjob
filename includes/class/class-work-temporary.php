@@ -161,7 +161,9 @@ class Works {
     return true;
   }
 
-  public function has_contact($user_id) {
+  public function has_contact($User) {
+    if (is_wp_error( $User )) return false;
+    $user_id = $User instanceof \WP_User ? $User->ID : 0;
     if (empty($this->contact_sender) || !is_array($this->contact_sender)) return false;
     return in_array(intval($user_id), $this->contact_sender);
   }

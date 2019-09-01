@@ -111,7 +111,7 @@
                 if (query.success) {
                   let interests = query.data.interests;
                   interests = _.reject(interests, (interest) => interest.type === 'apply');
-                  if (interests.length >= 6) {
+                  if (interests.length >= 5) {
                     jQuery('#modal-offer-interest').modal('hide');
                     $scope.successMessage.limit_reach = true;
                     $scope.successMessage.body = reach_limit_msg;
@@ -170,15 +170,15 @@
             $scope.errorMessage.body = _.clone(resp.msg);
             $scope.loadingWorklow = false;
             jQuery('#modal-error').modal('show');
-          }
+          };
 
           $scope.gtArchiveCandidat = () => {
             window.location.href = itOptions.Helper.archived_candidat_url;
-          }
+          };
 
           $scope.gtClientArea = () => {
             window.location.href = itOptions.Helper.client_area_url;
-          }
+          };
 
           jQuery('#modal-offer-interest')
             .on('hidden.bs.modal', () => {

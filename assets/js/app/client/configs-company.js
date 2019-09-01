@@ -352,17 +352,17 @@ APPOC
                   return;
                 }
                 $scope.Tariff = _.map(featured.offer_tariff, (tarif) => {
-                  let support = _.findWhere(positions.data, {slug: tarif.ugs});
+                  let support = _.findWhere(positions.data, {value: parseInt(tarif.ugs)});
                   tarif.available = support.counts >= 4 ? 0 : 1;
                   return tarif;
                 });
                 $scope.Offer = _.clone(Offer);
               };
-              $scope.checkout = (ugs, price) => {
+              $scope.checkout = (ugs) => {
                 const key = $rootScope.options.wc._k;
                 const secret = $rootScope.options.wc._s;
-                let support = _.findWhere($scope.supportFeatured, {slug: ugs});
-                let priceFeatured = price.toString();
+                let support = _.findWhere($scope.supportFeatured, {value: parseInt(ugs)});
+                console.log($scope.Tariff);
                 if (!support || support.counts === 4) return false;
                 $rootScope.preloaderToogle();
                 let offer = _.findWhere($rootScope.options.featured.offer_tariff, {ugs: ugs});
@@ -562,7 +562,7 @@ APPOC
               $scope.supportFeatured = _.clone(positions.data);
               let featured = _.clone($rootScope.options.featured);
               $scope.formationTariff = _.map(featured.formation_tariff, (tariff) => {
-                let support = _.findWhere(positions.data, {slug: tariff.ugs});
+                let support = _.findWhere(positions.data, {value: parseInt(tariff.ugs)});
                 tariff.available = support.counts >= 4 ? 0 : 1;
                 return tariff;
               });
@@ -1429,7 +1429,7 @@ APPOC
                     },
                     {
                       data: 'featured', render: (data, type, row) => {
-                        let text = data ? "ACTIVE" : 'AUCUN';
+                        let text = data ? "ACTIVE" : 'ACHETER';
                         let style = data ? "success" : "default";
                         let elClass = style === 'default' ? 'featured-paiement' : '';
                         return `<span class="badge edit-position badge-pill ${elClass} badge-${style}"> ${text} </span>`;

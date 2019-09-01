@@ -11,8 +11,7 @@ function send_not_applied_candidate( $candidates ) {
   $mail->addAddress('no-reply@itjobmada.com', 'ITJOB Team');
   $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
   foreach ($candidates as $candidate) {
-    $author = $candidate->privateInformations->author;
-    $mail->addBCC($author->user_email);
+    $mail->addBCC($candidate);
   }
   $subject = "Cela fait un moment que vous êtes inscrit sur Itjobmada";
   $archive_offers_link = get_post_type_archive_link("offers");
@@ -62,10 +61,8 @@ function send_not_cv_candidate( $candidates ) {
   $mail->setFrom("no-reply-notification@itjobmada.com", "Equipe ITJob");
   $mail->addReplyTo('commercial@itjobmada.com', 'Responsable commercial');
 
-  foreach ($candidates as $Candidate) {
-    $author = $Candidate->getAuthor();
-    $sender = $author->user_email;
-    $mail->addBCC($sender);
+  foreach ($candidates as $candidate) {
+    $mail->addBCC($candidate);
   }
 
   // Envoyer une mail de notification au candidate

@@ -31,11 +31,15 @@ final class Model_Subscription_Formation {
     }
 
 
-    public static function get_subscription( $formation_id = 0 ) {
+    public static function get_subscription( $formation_id = 0, $paid = null ) {
       global $wpdb;
       if (!is_numeric($formation_id) || $formation_id === 0) return false;
       $table = $wpdb->prefix . self::$table;
-      $sql = "SELECT * FROM $table as tb WHERE tb.formation_id = $formation_id";
+      $condition = '';
+      if (!is_null($paid)) {
+        $condition = " AND tb.paid = $paid";
+      }
+      $sql = "SELECT * FROM $table as tb WHERE tb.formation_id = $formation_id $condition";
       $result = $wpdb->get_results($sql, OBJECT);
       return is_array($result) ? $result : [];
     }

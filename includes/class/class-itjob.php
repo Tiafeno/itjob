@@ -33,8 +33,9 @@ if ( ! class_exists( 'itJob' ) ) {
         $post_status = get_post_status( $post_id );
 
         // Activer les experiences et les formations si le post est publier
+        $activated = get_field('activated', $post_id);
         if ( $post_type === 'candidate' && $post_status === 'publish' ) {
-          update_field( 'activated', 1, $post_id );
+          $activated = intval($activated);
           $Experiences = get_field( 'itjob_cv_experiences', $post_id );
           $Trainings   = get_field( 'itjob_cv_trainings', $post_id );
           if ( is_array( $Experiences ) && ! empty( $Experiences ) ) {
@@ -55,9 +56,11 @@ if ( ! class_exists( 'itJob' ) ) {
             update_field( 'itjob_cv_trainings', $Values, $post_id );
           }
 
-          // Crée une notification pour informer que le CV est validé
-
-          do_action("notice-publish-cv", $post_id);
+          if ( ! $activated ):
+            // Crée une notification pour informer que le CV est validé
+            update_field( 'activated', 1, $post_id );
+            do_action("notice-publish-cv", $post_id);
+            endif;
         }
       }, 10, 1 );
 

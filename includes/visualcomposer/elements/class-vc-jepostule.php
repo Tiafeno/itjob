@@ -35,21 +35,26 @@ if (!class_exists('jePostule')) :
         $pId = Http\Request::getValue('post_id', 0);
         $id_offer = intval($pId);
         $User = wp_get_current_user();
-        if (!$User->ID) {
-          do_action("add_notice", 'Une erreur s\'est produite', 'danger');
+        if (!is_user_logged_in() || !$User->ID) {
+          do_action("add_notice", "Vous n'êtes pas connecté. Veuillez vous connecter avant de continuer", 'danger');
 
           return false;
         }
 
         $itModel = new itModel();
 
-          // FEATURED: Vérifier si l'entreprise s'est déja interesser pour ce candidat
+        // Vérifier si le compte de l'utilisateur est désactiver
+
+        // FEATURED: Vérifier si l'entreprise s'est déja interesser pour ce candidat
         if (in_array('candidate', $User->roles)) {
           $Candidate = Candidate::get_candidate_by($User->ID);
           if ($itModel->exist_interest($Candidate->getId(), $id_offer)) {
             do_action('add_notice', "L'entreprise s'intéresse déjà à votre CV pour cette offre. Veuillez patienter", 'info');
             return true;
           }
+        } else {
+          do_action('add_notice', "Vous devez disposer d'une autorisation ou un compte particulier pour effectuer cette action. Merci", 'warning');
+          return false;
         }
 
         $attachment = 0;
@@ -185,7 +190,13 @@ class="btn btn-success btn-sm">Voir les offres</a></div>';
       }
 
       if (!$Candidate->is_publish() && !$Candidate->is_activated()) {
-        do_action('add_notice', 'Votre CV est en cours de validation. Veuillez réessayer plus tard s\'il vous plaît', 'warning');
+        do_action('add_notice', 'Votre CV est en cours de validation. Veuillez réessayer plus tard s\'il vous plaît', 'warning', false);
+        itjob_get_notice();
+        return;
+      }
+
+      if ($Candidate->is_publish() && !$Candidate->is_activated()) {
+        do_action('add_notice', 'Votre CV est désactiver.', 'danger', false);
         itjob_get_notice();
         return;
       }

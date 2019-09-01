@@ -126,7 +126,134 @@ APPOC
           name: 'manager.profil.cv',
           url: '/cv',
           templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/cv.html?ver=${itOptions.version}`,
-          controller: ["$rootScope", function ($rootScope) {
+          controller: ["$rootScope", "$state", function ($rootScope, $state) {
+            this.$onInit = () => {
+              $state.go('manager.profil.cv.view');
+            };
+          }]
+        },
+        {
+          name: 'manager.profil.cv.view',
+          url: '/view',
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/cv-view.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", "$state", function ($rootScope, $state) {
+
+          }]
+        },
+        {
+          name: 'manager.profil.cv.featured',
+          url: '/{id}/featured',
+          resolve: {
+            $positions: ["$rootScope", "$http", function ($rootScope, $http) {
+              $rootScope.preloaderToogle();
+              return $http.get(`${itOptions.Helper.ajax_url}?action=collect_support_featured&type=candidate`).then(results => {
+                $rootScope.preloaderToogle();
+                return results.data;
+              });
+            }]
+          },
+          templateUrl: `${itOptions.Helper.tpls_partials}/route/candidate/cv-featured.html?ver=${itOptions.version}`,
+          controller: ["$rootScope", "$http", "$state", "$scope", "$positions", function ($rootScope, $http, $state, $scope, $positions) {
+            $scope.tariff = {};
+            $scope.supportFeatured = {};
+
+            this.$onInit = () => {
+              moment.locale('fr');
+              $scope.supportFeatured = _.clone($positions.data);
+              let featured = _.clone($rootScope.options.featured);
+              if (!featured.hasOwnProperty('cv_tariff')) {
+                $log.debug("Property undefined (cv_tariff)");
+                return;
+              }
+              $scope.tariff = _.map(featured.cv_tariff, (tarif) => {
+                let support = _.findWhere($positions.data, {value: parseInt(tarif.ugs)});
+                tarif.available = support.counts >= 4 ? 0 : 1;
+                return tarif;
+              });
+            };
+
+            $scope.checkout = (ugs, price) => {
+              const key = $rootScope.options.wc._k;
+              const secret = $rootScope.options.wc._s;
+              let support = _.findWhere($scope.supportFeatured, {value: parseInt(ugs)});
+              if (!support || support.counts === 4) return false;
+              $rootScope.preloaderToogle();
+              let candidateTariff = _.findWhere($rootScope.options.featured.cv_tariff, {ugs: ugs});
+              $rootScope.WPEndpoint
+                .product()
+                .param('consumer_key', key)
+                .param('consumer_secret', secret)
+                .create({
+                  status: 'publish',
+                  type: 'simple',
+                  name: `CANDIDAT SPONSORISE (${$rootScope.Candidate.title}) - ${candidateTariff.position}`,
+                  price: candidateTariff.price, // string accepted
+                  regular_price: candidateTariff.price, // string accepted
+                  sold_individually: true,
+                  virtual: true,
+                  sku: `FEATURED${$rootScope.Candidate.ID}`,
+                  meta_data: [
+                    {key: '__type', value: 'featured'},
+                    {key: '__id', value: $rootScope.Candidate.ID}
+                  ]
+                })
+                .then(product => {
+                  $scope.$apply(() => {
+                    $rootScope.preloaderToogle();
+                    $scope.addCart(product.id, candidateTariff.ugs);
+                  });
+                })
+                .catch(err => {
+                  if (!_.isUndefined(err.code)) {
+                    if (err.code === "product_invalid_sku") {
+                      let resource_id = err.data.resource_id;
+                      $scope.$apply(() => {
+                        $rootScope.WPEndpoint
+                          .product()
+                          .param('consumer_key', key)
+                          .param('consumer_secret', secret)
+                          .id(resource_id)
+                          .update({price: candidateTariff.price, regular_price: candidateTariff.price})
+                          .then(product => {
+                            $scope.addCart(resource_id, candidateTariff.ugs);
+                          });
+                      });
+                    }
+                  }
+                })
+            };
+
+            $scope.addCart = (product_id, position) => {
+              $http.get(`${itOptions.Helper.ajax_url}?action=add_cart&product_id=${product_id}`, {cache: false})
+                .then((resp) => {
+                  const response = resp.data;
+                  $rootScope.WPEndpoint
+                    .candidate()
+                    .id($rootScope.Candidate.ID)
+                    .update({
+                      itjob_cv_featured: 0,
+                      itjob_cv_featured_position: parseInt(position),
+                      itjob_cv_featured_datelimit: moment().format("YYYY-MM-DD H:mm:ss")
+                    })
+                    .then(() => {
+                      if (response.success) {
+                        $scope.$apply(() => {
+                          swal("Redirection", "Vous serez rediriger vers la page de paiement");
+                          $rootScope.preloaderToogle();
+                          setTimeout(() => {
+                            window.location.href = response.data;
+                          }, 2000);
+                        });
+                      }
+                    })
+                    .catch(err => {
+                      $scope.$apply(() => {
+                        $rootScope.preloaderToogle();
+                      });
+                      alert(err.message);
+                    })
+                });
+            };
 
           }]
         },
@@ -1100,12 +1227,14 @@ APPOC
         let route_formation = '/formation/(?P<id>\\d+)';
         let route_annonce = '/annonce/(?P<id>\\d+)';
         let route_product = '/products/(?P<id>\\d+)';
+        let route_candidate = '/candidate/(?P<id>\\d+)';
         $rootScope.WPEndpoint.setHeaders({'X-WP-Nonce': `${WP.nonce}`});
         $rootScope.WPEndpoint.product = $rootScope.WPEndpoint.registerRoute(wc_namespace, route_product);
         $rootScope.WPEndpoint.formation = $rootScope.WPEndpoint.registerRoute(namespace, route_formation);
         $rootScope.WPEndpoint.works = $rootScope.WPEndpoint.registerRoute(namespace, route_works);
         $rootScope.WPEndpoint.offer = $rootScope.WPEndpoint.registerRoute(namespace, route_offer);
         $rootScope.WPEndpoint.annonce = $rootScope.WPEndpoint.registerRoute(namespace, route_annonce);
+        $rootScope.WPEndpoint.candidate = $rootScope.WPEndpoint.registerRoute(namespace, route_candidate);
 
         let sexe = Client.iClient.greeting === null || _.isEmpty(Client.iClient.greeting) ? '' :
           (Client.iClient.greeting.value === 'mr') ? 'male' : 'female';

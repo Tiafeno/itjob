@@ -160,8 +160,9 @@ wp_enqueue_script('sweetalert');
   </style>
   <script type="text/javascript">
     (function ($) {
+      var isLogged = <?= is_user_logged_in() ? 1 : 0 ?>;
       var credit = <?= intval($credit) ?>;
-      var hasContact = !!<?= intval($works->has_contact($User->ID)); ?>;
+      var hasContact = !!<?= intval($works->has_contact($User)); ?>;
       var post_id = <?= $post->ID ?>;
       $(document).ready(function () {
         var noCredit = `Vous avez actuellement ${credit} unité disponible sur votre compte ItJob`;
@@ -217,6 +218,11 @@ wp_enqueue_script('sweetalert');
           fixWorkWrap();
         });
         $('.view-phone-number').on('click', function (ev) {
+          ev.preventDefault();
+          if (!isLogged) {
+            swal("Désolé", "Vos informations de connexion n'ont pas été reconnues. Inscrivez-vous gratuitement");
+            return false;
+          }
           if (!hasContact) {
             swal({
                 title: "1 contact avec coordonnees = 1 credit",
@@ -352,7 +358,7 @@ wp_enqueue_script('sweetalert');
                   <button type="button" class="view-phone-number btn btn-danger btn-fix btn-block">
                   <span class="btn-icon"><i class="la la-phone"></i>
                     Voir ses coordonées
-                    <?php if (!$works->has_contact($User->ID)) : ?>
+                    <?php if (!$works->has_contact($User)) : ?>
                       <span class="badge badge-pill badge-default">1 Credit</span>
                     <?php endif; ?>
                   </span>
@@ -360,7 +366,7 @@ wp_enqueue_script('sweetalert');
                   <a href="?action=contact" class="btn btn-info btn-fix d-block mt-2">
                   <span class="btn-icon"><i class="la la-envelope-o"></i>
                     Evoyer un message
-                    <?php if (!$works->has_contact($User->ID)) : ?>
+                    <?php if (!$works->has_contact($User)) : ?>
                       <span class="badge badge-pill badge-default">1 Credit</span>
                     <?php endif; ?>
                   </a>

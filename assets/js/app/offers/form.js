@@ -98,6 +98,7 @@ angular.module('addOfferApp', ['ui.router', 'ui.tinymce', 'ngMessages', 'ngAria'
         controller: ['$rootScope', '$scope', '$state', 'abranchs', 'regions', 'offerFactory',
           function ($rootScope, $scope, $state, abranchs, regions, offerFactory) {
             this.$onInit = function () {
+              moment.locale("fr");
               $scope.abranchs = _.clone(abranchs);
               $scope.regions = _.clone(regions);
               $scope.tinymceOptions = {

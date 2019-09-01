@@ -3,14 +3,12 @@
 final
 class apiCandidate
 {
-  public
-  function __construct ()
+  public function __construct ()
   {
 
   }
 
-  public
-  function get_candidate_archived (WP_REST_Request $rq)
+  public function get_candidate_archived (WP_REST_Request $rq)
   {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
@@ -81,8 +79,7 @@ class apiCandidate
     }
   }
 
-  private
-  function add_filter_search ($search, $params)
+  private function add_filter_search ($search, $params)
   {
     add_filter('posts_where', function ($where) use ($search, $params) {
       global $wpdb;
@@ -148,8 +145,7 @@ class apiCandidate
   /**
    * Récuperer seulement les utilisateurs ou les candidats qui ont un CV
    */
-  public
-  function get_candidates (WP_REST_Request $rq)
+  public function get_candidates (WP_REST_Request $rq)
   {
     $length = (int)$_POST['length'];
     $start = (int)$_POST['start'];
@@ -292,8 +288,7 @@ class apiCandidate
     }
   }
 
-  public
-  function update_candidate (WP_REST_Request $request)
+  public function update_candidate (WP_REST_Request $request)
   {
     $candidate_id = (int)$request['id'];
     $candidate = stripslashes_deep($_REQUEST['candidat']);
@@ -355,8 +350,7 @@ class apiCandidate
   }
 
   // Cette fonction permet de mettre à jours l'experiences et les formations d'un candidat
-  public
-  function update_module_candidate (WP_REST_Request $request)
+  public function update_module_candidate (WP_REST_Request $request)
   {
     $ref = $request['ref'];
     $candidate_id = (int)$request['candidate_id'];
@@ -414,3 +408,22 @@ class apiCandidate
     return new WP_REST_Response($fields);
   }
 }
+
+
+add_action('rest_api_init', function () {
+  $post_type = "candidate";
+  $metas = ["activated", "archived", "itjob_cv_hasCV", "itjob_cv_featured", "itjob_cv_featured_position", "itjob_cv_featured_datelimit",
+    "itjob_cv_greeting", "itjob_cv_firstname", "itjob_cv_lastname", 'itjob_cv_address', 'itjob_cv_phone', 'itjob_cv_status',
+    'itjob_cv_birthdayDate', 'itjob_cv_newsletter', 'itjob_cv_offer_apply'];
+  foreach ($metas as $meta):
+    register_rest_field($post_type, $meta, array(
+      'update_callback' => function ($value, $object, $field_name) {
+        return update_field($field_name, $value, (int) $object->ID);
+      },
+      'get_callback' => function ($object, $field_name) {
+        $post_id = $object['id'];
+        return get_field($field_name, (int)$post_id);
+      },
+    ));
+  endforeach;
+});

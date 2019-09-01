@@ -1,25 +1,18 @@
 <div class="row">
   <div class="col-sm-12">
-    <div class="ibox-body">
-      <div class="p-relative">
+    <div class="">
+      <div class="p-relative" >
         <div>
           <div class="d-flex justify-content-start">
             <div class="mb-2">
-              <a ui-sref="manager.profil.offers.lists" ng-disabled="preload" class="btn btn-sm btn-primary">Retour</a>
+              <a ui-sref="manager.profil.cv.view" ng-disabled="preload" class="btn btn-sm btn-primary">Retour</a>
             </div>
           </div>
           <h3 class="lead mt-4">Emplacements sponsorisés disponibles</h3>
           <p class="mb-4">Soyez visible pendant 1 mois et augmentez votre nombre de contacts mensuels.</p>
-          <div class="row">
-            <div class="col-sm-4">
-              <h3 class="lead mt-4">Résumé de l'offre:</h3>
-              <h5 class="font-strong">[[ Offer.title.rendered ]]</h5>
-              <div class="text-light">
-                <p ng-bind-html="Offer.itjob_offer_mission"></p>
-              </div>
-            </div>
 
-            <div class="col-sm-8">
+          <div class="row mt-4">
+            <div class="col-sm-12">
               <table class="table table-condensed">
                 <thead style="background-color: #36c6ac;color: aliceblue;">
                 <tr>
@@ -31,16 +24,16 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="tariff in Tariff">
-                  <td class="font-bold">[[ tariff.position ]]</td>
+                <tr ng-repeat="support in tariff">
+                  <td class="font-bold">[[ support.position ]]</td>
                   <td>
-                    <i ng-if="tariff.available" class="ti-check text-success"></i>
-                    <i ng-if="!tariff.available" class="ti-close text-warning"></i>
+                    <i ng-if="support.available" class="ti-check text-success"></i>
+                    <i ng-if="!support.available" class="ti-close text-warning"></i>
                   </td>
-                  <td>[[ tariff.price | currency ]]</td>
-                  <td>[[ tariff.desc ]]</td>
+                  <td>[[ support.price | currency ]]</td>
+                  <td>[[ support.desc ]]</td>
                   <td>
-                    <button ng-click="checkout(tariff.ugs)" ng-disabled="!tariff.available"
+                    <button ng-click="checkout(support.ugs, support.price)" ng-disabled="!support.available"
                             class="btn btn-sm btn-primary">Acheter
                     </button>
                   </td>

@@ -9,7 +9,7 @@
 namespace includes\model;
 
 
-final class paiementHistory {
+final class paiementModel {
   public static $table = "paiement_history";
   public function __construct() {
   }
@@ -26,13 +26,17 @@ final class paiementHistory {
     return $result;
   }
 
+  /**
+   * @param int $id
+   * @return array|bool|null|object|void
+   */
   public function get_history( $id = 0 ) {
     global $wpdb;
     if (!is_numeric($id) || $id === 0) return false;
 
     $table = $wpdb->prefix . self::$table;
     $sql = "SELECT * FROM $table as tb WHERE tb.id_history = $id";
-    $result = $wpdb->get_results($sql, OBJECT);
-    return is_array($result) ? $result : [];
+    $result = $wpdb->get_row($sql, OBJECT);
+    return $result;
   }
 }

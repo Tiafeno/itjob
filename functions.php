@@ -17,6 +17,7 @@
 define('__SITENAME__', 'itJob');
 define('minify', false);
 define('__CREDITS__', 10);
+define('__CREDIT_PRICE__', 2000); // En ariary
 define('__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj');
 define('TWIG_TEMPLATE_PATH', get_template_directory() . '/templates');
 if (!defined('VENDOR_URL')) {
@@ -54,7 +55,7 @@ require 'includes/class/class-model.php';
 include 'includes/class/model/class-model-request-formation.php';
 include 'includes/class/model/class-model-subscription-formation.php';
 include 'includes/class/model/class-model-wallet.php';
-include 'includes/class/model/paiementHistory.php';
+include 'includes/class/model/paiementModel.php';
 
 // widgets
 require 'includes/class/widgets/widget-shortcode.php';
@@ -80,6 +81,7 @@ require_once 'includes/class/class-candidate.php';
 require_once 'includes/class/class-annonce.php';
 require_once 'includes/class/class-wallet.php';
 require_once 'includes/class/class-work-temporary.php';
+require_once 'includes/class/class-paiement-history.php';
 
 $itJob = (object) [
   'version' => $wp_version,
@@ -203,7 +205,6 @@ if (function_exists('acf_add_options_page')) {
     'page_title' => 'General Settings',
     'capability' => 'delete_users',
     'menu_title' => 'ITJOB General Settings',
-    'capability' => 'edit_posts',
     'autoload' => true,
     'redirect' => false
   ));
@@ -234,24 +235,44 @@ add_filter('wp_nav_menu_args', function ($args) {
 
 add_action('admin_init', function () {
   $administrator = get_role('administrator');
+  $editor = get_role('editor');
+
+
   $caps = [
     'edit_formation', 'edit_formations', 'read_private_formation', 'read_formation',
     'edit_published_formations', 'edit_others_formations', 'edit_private_formations', 'delete_formation', 'delete_formations',
     'delete_others_formations', 'delete_private_formations', 'delete_published_formations', 'publish_formations',
+
     'edit_offer', 'edit_offers', 'read_private_offer', 'read_offer', 'edit_published_offers', 'edit_others_offers',
     'edit_private_offers', 'delete_offer', 'delete_offers', 'delete_others_offers', 'delete_private_offers', 'delete_published_offers',
     'publish_offers',
+
     'edit_work', 'edit_works', 'read_private_work', 'read_work', 'edit_published_works', 'edit_others_works',
     'edit_private_works', 'delete_work', 'delete_works', 'delete_others_works', 'delete_private_works', 'delete_published_works',
     'publish_works',
+
     'edit_annonce', 'edit_annonces', 'read_private_annonce', 'read_annonce', 'edit_published_annonces', 'edit_others_annonces',
     'edit_private_annonces', 'delete_annonce', 'delete_annonces', 'delete_others_annonces', 'delete_private_annonces',
-    'delete_published_annonces', 'publish_annonces'
+    'delete_published_annonces', 'publish_annonces',
+
+    'edit_candidate', 'edit_candidates', 'read_private_candidate', 'read_candidate', 'edit_published_candidates', 'edit_others_candidates',
+    'edit_private_candidates', 'delete_candidate', 'delete_candidates', 'delete_others_candidates', 'delete_private_candidates',
+    'delete_published_candidates', 'publish_candidates',
+
+    'edit_wallet', 'edit_wallets', 'read_private_wallet', 'read_wallet', 'edit_published_wallets', 'edit_others_wallets',
+    'edit_private_wallets', 'delete_wallet', 'delete_wallets', 'delete_others_wallets', 'delete_private_wallets',
+    'delete_published_wallets', 'publish_wallets'
   ];
 
   foreach ($caps as $cap) {
-    if ( ! $administrator->has_cap($cap))
+    if ( ! $administrator->has_cap($cap)):
       $administrator->add_cap( $cap );
+    endif;
+
+    if ( ! $editor->has_cap($cap)):
+      $editor->add_cap( $cap );
+    endif;
+
   }
 });
 
@@ -285,7 +306,8 @@ add_action('init', function () {
           if ( ! is_object($branch_activity)) {
             $branch_activity = get_term(intval($branch_activity));
           }
-          $branch_activity = $branch_activity ? ', ' . $branch_activity->name : '';
+
+          $branch_activity = is_wp_error($branch_activity) ? '' : (isset($branch_activity->name) ? ', ' . $branch_activity->name : '');
           return 'Emploi - ' . $post->post_title . $region . $branch_activity;
           break;
 
@@ -309,6 +331,11 @@ add_action('init', function () {
     if ($post_type === 'annonce') {
       $Annonce = new \includes\post\Annonce($post->ID, true);
       $User = $itJob->services->getUser();
+      if (is_wp_error( $User )) {
+        wp_send_json_error( "Merci de vous connecter pour voir le contact. Merci" );
+        return false;
+      }
+
       if ($User->ID === $Annonce->get_author()->ID) {
         wp_send_json_error($msg_contact_error);
         return false;
@@ -318,6 +345,7 @@ add_action('init', function () {
       }
       wp_send_json_success($Annonce->cellphone);
     }
+
     if ($post_type === 'works') {
       $Works = new \includes\post\Works($post->ID, true);
       $User = $itJob->services->getUser();
@@ -327,13 +355,12 @@ add_action('init', function () {
       }
       $Wallet = \includes\post\Wallet::getInstance($User->ID, 'user_id', true);
       $credit = $Wallet->credit;
-      if (!$credit) wp_send_json_error("Il ne vous reste plus de credit.");
-      if ( ! $Works->has_contact($User->ID) ) {
+      if ( ! $credit ) wp_send_json_error("Il ne vous reste plus de credit.");
+      if ( ! $Works->has_contact($User) ) {
         $credit = $credit - 1;
         $Wallet->update_wallet($credit);
         $Works->add_contact_sender($User->ID);
       }
-      $first_name = '';
       $greet = '';
       if (in_array('candidate', $User->roles)) {
         $Candidate = \includes\post\Candidate::get_candidate_by($User->ID);
@@ -355,6 +382,22 @@ add_action('init', function () {
   // Status de paiement
   add_action('woocommerce_order_status_completed', 'payment_complete', 100, 1);
   add_action('woocommerce_payment_complete', 'payment_complete', 100, 1);
+  add_action('woocommerce_thankyou', function ($order_id) {
+    $Order = new WC_Order($order_id);
+    $payment_method = $Order->get_payment_method(); // cheque, vanillapay
+  }, 100, 1);
+
+  // Custom action order
+  add_action('woocommerce_order_action_send_admin_order_details', function ($order) {
+    // Send the admin new order email.
+    WC()->payment_gateways();
+    WC()->shipping();
+    WC()->mailer()->emails['WC_Email_New_Order']->trigger( $order->get_id(), $order );
+    // Note the event.
+    $order->add_order_note( __( 'Order details manually sent to admin.', 'woocommerce' ), false, true );
+    do_action( 'woocommerce_after_resend_order_email', $order, 'new_order' );
+    add_filter( 'redirect_post_location', array( 'WC_Meta_Box_Order_Actions', 'set_email_sent_message' ) );
+  }, 10, 1);
 
   // Ajouter cette action dans le code du plugins vanilla pay enfin de mettre à jour la commande
   add_action('itjob_wc_payment_success', 'payment_complete', 100, 1);
@@ -368,26 +411,61 @@ add_action('init', function () {
     return $data;
   }, 10, 2 );
 
-
-  //payment_complete(13066 );
 });
 
+add_action('wp_loaded', function () {
+  // Activer seulement vanillapay pour acheter de credit
+  add_filter('woocommerce_available_payment_gateways', function ($allowed_gateways) {
+    global $woocommerce;
+
+    $User = wp_get_current_user();
+    if ( is_admin() && in_array('administrator', $User->roles) ) return $allowed_gateways;
+
+    $items = $woocommerce->cart->get_cart();
+    $vanillapay = isset($allowed_gateways['vanillapay']) ? $allowed_gateways['vanillapay'] : $allowed_gateways['ariarynet'];
+    if ( ! isset($vanillapay) ) return $allowed_gateways;
+    foreach ($items as $key => $value) {
+      $_product = wc_get_product( $value['data']->get_id() );
+      $type = $_product->get_meta("__type");
+      if ($type === 'credit') {
+        $allowed_gateways = [];
+        $allowed_gateways[] = &$vanillapay;
+      }
+    }
+    
+    return $allowed_gateways;
+  }, 10);
+});
 
 function payment_complete ($order_id) {
-  // Get an instance of the WC_Order object
+
   $order = wc_get_order($order_id);
-  if ( ! $order->has_status('completed'))
+  if ( ! $order->has_status('completed')):
     $order->update_status('completed');
-  // Iterating through each WC_Order_Item_Product objects
+  endif;
+
   foreach ($order->get_items() as $item_key => $item ):
     $product = $item->get_product(); // WP_Product
     $type    = $product->get_meta( '__type' );
     if ($type) {
-      $post_id   = $product->get_meta( '__id' );
-      $object_id = intval($post_id);
-      $post_type = get_post_type( $object_id );
+      $__id   = $product->get_meta( '__id' );
+      $object_id = intval($__id);
       if (0 === $object_id) return false;
       switch ($type):
+        case 'credit':
+
+          $user_id = intval($__id);
+          $wallet_id = (int) get_user_meta($user_id, 'wallet', true);
+          if ($wallet_id) {
+            $Wallet = new \includes\post\Wallet($wallet_id);
+            $credit = (int) $item->get_quantity();
+            $new_credit = $credit + $Wallet->credit;
+
+            $Wallet->update_wallet($new_credit);
+            do_action('payment_complete_credit', $user_id, $credit);
+          }
+
+          break;
         case 'offers':
           update_field('itjob_offer_paid', 1, (int)$object_id);
           // Envoyer un mail au administrateur pour informer un paiement
@@ -399,24 +477,26 @@ function payment_complete ($order_id) {
           break;
         // Mettre à la une des posts
         case 'featured':
+          $post_type = get_post_type( $object_id );
           switch ($post_type):
             case 'formation':
             case 'works':
             case 'annonce':
               update_field('featured', 1, $object_id);
               break;
-
             case 'offers':
               update_field('itjob_offer_featured', 1, $object_id);
               break;
-
+            case 'candidate':
+              update_field('itjob_cv_featured', 1, $object_id);
+              break;
           endswitch;
           break;
           
       endswitch;
 
       // Ajouter une historique de paiement
-      $modelPaiement = new \includes\model\paiementHistory();
+      $modelPaiement = new \includes\model\paiementModel();
       $args = [
         'data' => [
           'type' => $type,
