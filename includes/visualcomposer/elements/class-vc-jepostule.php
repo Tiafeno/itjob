@@ -169,7 +169,7 @@ if (!class_exists('jePostule')) :
 
       // Vérifier si l'offre est périmé
       $today = strtotime("today");
-      $date_limit = \DateTime::createFromFormat( 'Ymd', $offers->dateLimit )->format( 'Y-m-d' );
+      $date_limit = \DateTime::createFromFormat( 'd/m/Y', $offers->dateLimit )->format( 'Y/m/d' );
       $limited = strtotime($date_limit) < $today;
       if ($limited) {
         $archive_offer_url = get_post_type_archive_link('offers');
