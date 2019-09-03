@@ -349,7 +349,8 @@ class scInterests
     // Ajouter dans la liste les offres actif et non perimée 
     $offers = array_filter($offers, function ($offer) {
       $today   = strtotime("today");
-      $isLimited = strtotime($offer->dateLimit) < $today;
+      $dteLimit = \DateTime::createFromFormat( 'm/d/Y', $offer->dateLimit )->format( 'Y-m-d' );
+      $isLimited = strtotime($dteLimit) < $today;
       return $offer->activated && !$isLimited;
     });
 

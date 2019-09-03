@@ -169,7 +169,8 @@ if (!class_exists('jePostule')) :
 
       // Vérifier si l'offre est périmé
       $today = strtotime("today");
-      $limited = strtotime($Offer->dateLimit) < $today;
+      $dateLimit = \DateTime::createFromFormat( 'm/d/Y', $Offer->dateLimit )->format( 'Y-m-d' );
+      $limited = strtotime($dateLimit) < $today;
       if ($limited) {
         $archive_offer_url = get_post_type_archive_link('offers');
         return '<div class="uk-margin-large-top uk-margin-auto-left uk-margin-auto-right "><p class="font-15">Cette offre a expiré depuis 
