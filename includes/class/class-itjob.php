@@ -18,6 +18,35 @@ if ( ! class_exists( 'itJob' ) ) {
 
       add_action( 'init', function () {
         $this->initRegister();
+
+        /**
+         * Ajouter dans les variables global pour nom post-types le contenue du post
+         */
+        add_action( 'the_post', function ( $post_object ) {
+          switch ( $post_object->post_type ) {
+            case 'candidate':
+              $GLOBALS[ 'candidate' ] = new Post\Candidate( $post_object->ID );
+              break;
+
+            case 'offers':
+              $GLOBALS[ 'offers' ] = new Post\Offers( $post_object->ID );
+              break;
+
+            case 'formation':
+              $GLOBALS[ 'formation' ] = new Post\Formation( $post_object->ID );
+              break;
+
+            case 'annonce':
+              $annonce = new Post\Annonce( $post_object->ID );
+              $GLOBALS[ 'annonce' ] = $annonce;
+              break;
+
+            case 'works':
+              $work = new Post\Works( $post_object->ID );
+              $GLOBALS[ 'works' ] = $work;
+              break;
+          }
+        } );
       } );
 
 
@@ -669,34 +698,7 @@ SQL;
       } );
 
 
-      /**
-       * Ajouter dans les variables global pour nom post-types le contenue du post
-       */
-      add_action( 'the_post', function ( $post_object ) {
-        switch ( $post_object->post_type ) {
-          case 'candidate':
-            $GLOBALS[ 'candidate' ] = new Post\Candidate( $post_object->ID );
-            break;
-
-          case 'offers':
-            $GLOBALS[ 'offers' ] = new Post\Offers( $post_object->ID );
-            break;
-
-          case 'formation':
-            $GLOBALS[ 'formation' ] = new Post\Formation( $post_object->ID );
-            break;
-
-          case 'annonce':
-            $annonce = new Post\Annonce( $post_object->ID );
-            $GLOBALS[ 'annonce' ] = $annonce;
-            break;
-
-          case 'works':
-            $work = new Post\Works( $post_object->ID );
-            $GLOBALS[ 'works' ] = $work;
-            break;
-        }
-      } );
+      
 
       add_action( 'admin_init', function () {
         if ( is_null( get_role( 'company' ) ) || is_null( get_role( 'candidate' ) ) ) {
