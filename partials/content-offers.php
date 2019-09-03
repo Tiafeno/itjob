@@ -8,7 +8,8 @@ $title = get_the_title();
 
 // Vérifier la date limite de l'offre
 $today = strtotime("today");
-$limited = strtotime($offers->dateLimit) < $today;
+$dateLimit = DateTime::createFromFormat( 'm/d/Y', $offers->dateLimit )->format( 'Y-m-d' );
+$limited = strtotime($dateLimit) < $today;
 ?>
 <div class="col-md-12">
   <div class="card ibox mb-4">
