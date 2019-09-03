@@ -8,7 +8,7 @@ $title = get_the_title();
 
 // Vérifier la date limite de l'offre
 $today = strtotime("today");
-$date_limit = \DateTime::createFromFormat( 'd/m/Y', $offers->dateLimit )->format( 'Y/m/d' );
+$date_limit = \DateTime::createFromFormat( 'Ymd', $offers->dateLimit )->format( 'Y/m/d' );
 $limited = strtotime($date_limit) < $today;
 ?>
 <div class="col-md-12">
