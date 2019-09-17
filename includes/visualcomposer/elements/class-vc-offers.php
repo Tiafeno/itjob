@@ -165,6 +165,10 @@ if (!class_exists('vcOffers')):
         wp_send_json_error($Company->get_error_message());
       }
 
+      $dateLimit = Http\Request::getValue('datelimit', false);
+      $dateLimitObject = $dateLimit ? \DateTime::createFromFormat('d/m/Y', Http\Request::getValue('datelimit')) : null;
+      $dateLimitACFValue = is_null($dateLimitObject) ? null : $dateLimitObject->format('Ymd');
+
       $form = (object) [
         'post' => Http\Request::getValue('post'),
         // reference'       => Http\Request::getValue( 'reference' ),
@@ -172,7 +176,7 @@ if (!class_exists('vcOffers')):
         'salary_proposed' => Http\Request::getValue('salary_proposed', 0),
         'region' => Http\Request::getValue('region'),
         'branch_activity' => Http\Request::getValue('ba'),
-        'datelimit' => Http\Request::getValue('datelimit'),
+        'datelimit' => $dateLimitACFValue,
         'mission' => Http\Request::getValue('mission'),
         'profil' => Http\Request::getValue('profil'),
         'other' => Http\Request::getValue('other'),
