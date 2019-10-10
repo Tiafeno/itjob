@@ -137,14 +137,10 @@ class vcAds
          $content .= '</div>';
          return $content;
       } else {
-         $code = '<div class="owl-carousel owl-theme">';
-         $code .=  "<ul class='mt-4' data-hour='$dateNow'>";
+         $code = '<div  class="owl-carousel owl-theme mt-4" data-hour="' . $dateNow . '">';
          foreach ($Ads as $ad) {
-            $code .= '<li>';
             $code .= sprintf('[vc_single_image image="%d" img_link_target="_blank" img_size="%s" alignment="center"]', $ad->id_attachment, $ad->img_size);
-            $code .= '</li>';
          }
-         $code .=  "</ul>";
          $code .= "</div>";
          
          echo do_shortcode( $code );
