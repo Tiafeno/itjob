@@ -115,7 +115,7 @@ class vcAds
       wp_enqueue_style( 'owlCarousel' );
       wp_enqueue_style( 'owlCarousel-green' );
       wp_enqueue_script( 'owlCarousel' );
-      wp_enqueue_script( 'carousel', get_stylesheet_directory_uri() . '/assets/js/carousel.js', ['owlCarousel'], '1.0.1', true );
+      wp_enqueue_script( 'carousel', get_stylesheet_directory_uri() . '/assets/js/carousel.js', ['owlCarousel'], '1.0.2', true );
 
       $Model = new \includes\model\itModel();
      /** @var string $position */

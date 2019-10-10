@@ -8,7 +8,7 @@
             autoplayTimeout: 5000,
             autoplayHoverPause: false,
             pagination: false,
-            dots: true,
+            dots: false,
             margin: 10,
             autoHeight: false,
         });
