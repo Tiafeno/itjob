@@ -143,7 +143,7 @@ class vcAds
          }
          $code .= "</div>";
          
-         echo do_shortcode( $code );
+         return do_shortcode( $code );
 
       }
    }
