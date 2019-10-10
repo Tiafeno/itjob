@@ -552,6 +552,7 @@ add_action('rest_api_init', function () {
 
             case 'update_date_limit':
               $dateLimit = isset($_REQUEST['datelimit']) ? $_REQUEST['datelimit'] : null;
+              if (is_null($dateLimit)) return new WP_REST_Reponse(['success' => false, 'msg' => '']);
               $dateTime = DateTime::createFromFormat("m/d/Y", $dateLimit);
               $acfDateLimit = $dateTime->format('Ymd');
               update_field('itjob_offer_datelimit', $acfDateLimit, $Offer->ID);

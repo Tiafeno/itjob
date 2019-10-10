@@ -132,12 +132,14 @@ class vcAds
          $content .= '</div>';
          return $content;
       } else {
+         $code = "<ul class='mt-4' data-hour='$dateNow'>";
          foreach ($Ads as $ad) {
-            $code = "<div class='mt-4' data-hour='$dateNow'>";
+            $code .= '<li>';
             $code .= sprintf('[vc_single_image image="%d" img_link_target="_blank" img_size="%s" alignment="center"]', $ad->id_attachment, $ad->img_size);
-            $code .= "</div>";
-            echo do_shortcode( $code );
+            $code .= '</li>';
          }
+         $code .= "</ul>";
+         echo do_shortcode( $code );
 
       }
    }
