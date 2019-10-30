@@ -674,12 +674,22 @@ AND ({$wpdb->posts}.ID IN (
    SELECT {$wpdb->postmeta}.post_id as post_id
      FROM {$wpdb->postmeta}
      WHERE ( {$wpdb->postmeta}.meta_key = 'itjob_offer_rateplan' AND {$wpdb->postmeta}.meta_value = 'standard')
-      OR ( 
-        ({$wpdb->postmeta}.meta_key = 'itjob_offer_paid' AND {$wpdb->postmeta}.meta_value = 1) 
-        AND ({$wpdb->postmeta}.meta_key = 'itjob_offer_rateplan' AND {$wpdb->postmeta}.meta_value != 'standard')
-      )
-    GROUP BY post_id HAVING COUNT(*) > 0
+     GROUP BY post_id HAVING COUNT(*) > 0
    )
+   OR
+   (
+   {$wpdb->posts}.ID IN (
+    SELECT {$wpdb->postmeta}.post_id as post_id
+      FROM {$wpdb->postmeta}
+      WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_paid' AND {$wpdb->postmeta}.meta_value = 1
+      GROUP BY post_id HAVING COUNT(*) > 0
+  ) AND
+  {$wpdb->posts}.ID IN (
+    SELECT {$wpdb->postmeta}.post_id as post_id
+      FROM {$wpdb->postmeta}
+      WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_rateplan' AND {$wpdb->postmeta}.meta_value != 'standard'
+      GROUP BY post_id HAVING COUNT(*) > 0
+  ))
 )
 SQL;
                   }
