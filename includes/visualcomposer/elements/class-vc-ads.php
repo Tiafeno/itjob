@@ -112,6 +112,11 @@ class vcAds
          EXTR_OVERWRITE
       );
 
+      wp_enqueue_style( 'owlCarousel' );
+      wp_enqueue_style( 'owlCarousel-green' );
+      wp_enqueue_script( 'owlCarousel' );
+      wp_enqueue_script( 'carousel', get_stylesheet_directory_uri() . '/assets/js/carousel.js', ['owlCarousel'], '1.0.2', true );
+
       $Model = new \includes\model\itModel();
      /** @var string $position */
      /** @var string $size */
@@ -132,12 +137,13 @@ class vcAds
          $content .= '</div>';
          return $content;
       } else {
+         $code = '<div  class="owl-carousel owl-theme mt-4" data-hour="' . $dateNow . '">';
          foreach ($Ads as $ad) {
-            $code = "<div class='mt-4' data-hour='$dateNow'>";
             $code .= sprintf('[vc_single_image image="%d" img_link_target="_blank" img_size="%s" alignment="center"]', $ad->id_attachment, $ad->img_size);
-            $code .= "</div>";
-            echo do_shortcode( $code );
          }
+         $code .= "</div>";
+         
+         return do_shortcode( $code );
 
       }
    }

@@ -18,6 +18,35 @@ if ( ! class_exists( 'itJob' ) ) {
 
       add_action( 'init', function () {
         $this->initRegister();
+
+        /**
+         * Ajouter dans les variables global pour nom post-types le contenue du post
+         */
+        add_action( 'the_post', function ( $post_object ) {
+          switch ( $post_object->post_type ) {
+            case 'candidate':
+              $GLOBALS[ 'candidate' ] = new Post\Candidate( $post_object->ID );
+              break;
+
+            case 'offers':
+              $GLOBALS[ 'offers' ] = new Post\Offers( $post_object->ID );
+              break;
+
+            case 'formation':
+              $GLOBALS[ 'formation' ] = new Post\Formation( $post_object->ID );
+              break;
+
+            case 'annonce':
+              $annonce = new Post\Annonce( $post_object->ID );
+              $GLOBALS[ 'annonce' ] = $annonce;
+              break;
+
+            case 'works':
+              $work = new Post\Works( $post_object->ID );
+              $GLOBALS[ 'works' ] = $work;
+              break;
+          }
+        } );
       } );
 
 
@@ -645,12 +674,22 @@ AND ({$wpdb->posts}.ID IN (
    SELECT {$wpdb->postmeta}.post_id as post_id
      FROM {$wpdb->postmeta}
      WHERE ( {$wpdb->postmeta}.meta_key = 'itjob_offer_rateplan' AND {$wpdb->postmeta}.meta_value = 'standard')
-      OR ( 
-        ({$wpdb->postmeta}.meta_key = 'itjob_offer_paid' AND {$wpdb->postmeta}.meta_value = 1) 
-        AND ({$wpdb->postmeta}.meta_key = 'itjob_offer_rateplan' AND {$wpdb->postmeta}.meta_value != 'standard')
-      )
-    GROUP BY post_id HAVING COUNT(*) > 0
+     GROUP BY post_id HAVING COUNT(*) > 0
    )
+   OR
+   (
+   {$wpdb->posts}.ID IN (
+    SELECT {$wpdb->postmeta}.post_id as post_id
+      FROM {$wpdb->postmeta}
+      WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_paid' AND {$wpdb->postmeta}.meta_value = 1
+      GROUP BY post_id HAVING COUNT(*) > 0
+  ) AND
+  {$wpdb->posts}.ID IN (
+    SELECT {$wpdb->postmeta}.post_id as post_id
+      FROM {$wpdb->postmeta}
+      WHERE {$wpdb->postmeta}.meta_key = 'itjob_offer_rateplan' AND {$wpdb->postmeta}.meta_value != 'standard'
+      GROUP BY post_id HAVING COUNT(*) > 0
+  ))
 )
 SQL;
                   }
@@ -669,34 +708,7 @@ SQL;
       } );
 
 
-      /**
-       * Ajouter dans les variables global pour nom post-types le contenue du post
-       */
-      add_action( 'the_post', function ( $post_object ) {
-        switch ( $post_object->post_type ) {
-          case 'candidate':
-            $GLOBALS[ 'candidate' ] = new Post\Candidate( $post_object->ID );
-            break;
-
-          case 'offers':
-            $GLOBALS[ 'offers' ] = new Post\Offers( $post_object->ID );
-            break;
-
-          case 'formation':
-            $GLOBALS[ 'formation' ] = new Post\Formation( $post_object->ID );
-            break;
-
-          case 'annonce':
-            $annonce = new Post\Annonce( $post_object->ID );
-            $GLOBALS[ 'annonce' ] = $annonce;
-            break;
-
-          case 'works':
-            $work = new Post\Works( $post_object->ID );
-            $GLOBALS[ 'works' ] = $work;
-            break;
-        }
-      } );
+      
 
       add_action( 'admin_init', function () {
         if ( is_null( get_role( 'company' ) ) || is_null( get_role( 'candidate' ) ) ) {

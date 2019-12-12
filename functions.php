@@ -435,6 +435,13 @@ add_action('wp_loaded', function () {
     
     return $allowed_gateways;
   }, 10);
+
+  add_action('wp_enqueue_scripts', function () {
+    wp_register_style( 'owlCarousel', get_stylesheet_directory_uri() . '/assets/js/libs/owlcarousel/assets/owl.carousel.min.css', '', '2.0.0' );
+    wp_register_style( 'owlCarousel-green', get_stylesheet_directory_uri() . '/assets/js/libs/owlcarousel/assets/owl.theme.green.min.css', '', '2.0.0' );
+    wp_register_script( 'owlCarousel', get_stylesheet_directory_uri() . '/assets/js/libs/owlcarousel/owl.carousel.min.js', ['jquery'], '2.0.0', true );
+  });
+  
 });
 
 function payment_complete ($order_id) {

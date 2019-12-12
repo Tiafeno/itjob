@@ -11,7 +11,7 @@
             <div class="">
               <h4 class="card-title uk-margin-remove">Mission: </h4>
               <p class="text-description mt-2">
-                {{ offer.mission|striptags|raw[:100] }} {% if offer.mission|striptags|length > 100 %}...{% endif %}
+                {{ offer.mission|striptags|html_entity_decode|raw[:100] }} {% if offer.mission|striptags|html_entity_decode|length > 100 %}...{% endif %}
               </p>
             </div>
             <div class="card-information pt-3">

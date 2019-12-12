@@ -46,7 +46,8 @@ function itjob_filter_engine($Engine) {
   $Engine->addFilter(new Twig_SimpleFilter('dateLimited', function ($dateLimit) {
     $badge = '';
     $today = strtotime('today');
-    $limited = strtotime($dateLimit) < $today;
+    $date_limit = \DateTime::createFromFormat( 'Ymd', $dateLimit )->format( 'Y/m/d' );
+    $limited = strtotime($date_limit) < $today;
     if ($limited) {
       $badge .= '<span class="badge badge-danger">Date limite atteinte</span>';
     }

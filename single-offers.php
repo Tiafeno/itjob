@@ -44,7 +44,8 @@ wp_enqueue_style('offers');
 
           // Vérifier la date limite de l'offre
           $today = strtotime("today");
-          $limited = strtotime($offers->dateLimit) < $today;
+          $date_limit = \DateTime::createFromFormat( 'Ymd', $offers->dateLimit )->format( 'Y/m/d' );
+          $limited = strtotime($date_limit) < $today;
 
           ?>
             <div class="offer-section">
