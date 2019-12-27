@@ -438,8 +438,7 @@ function update_offer_featured() {
   foreach ($featuredOffers as $offer) {
     $isFeatured = $offer->isFeatured();
     if ($isFeatured) {
-      $featuredDateLimit = $offer->featuredDateLimit;
-      if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
+      if ($offer->featuredDateLimit < strtotime(date("Y-m-d H:i:s"))) {
         update_field('itjob_offer_featured', 0, $offer->ID);
         update_field('itjob_offer_featured_position', null, $offer->ID);
         update_field('itjob_offer_featured_datelimit', null, $offer->ID);
