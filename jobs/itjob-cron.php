@@ -248,9 +248,7 @@ add_action('end_of_the_day', function () { // at 16h38 (Une fois par jour)
 
 
 /**
- *
  * Cette action permet d'envoyer des mails au administrateurs du site tous les jours.
- *
  */
 add_action('tous_les_jours', function () { // at 06h00
 

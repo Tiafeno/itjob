@@ -174,8 +174,11 @@ final class Offers implements \iOffer {
     $this->company = get_field( 'itjob_offer_company', $this->ID ); // Object article
 
     $this->dateLimit        = get_field( 'itjob_offer_datelimit', $this->ID ); // Date
-    $date_limit = \DateTime::createFromFormat( 'Ymd', $this->dateLimit )->format( 'Y/m/d' );
-    $this->dateLimitFormat  = date_i18n( 'j F Y', strtotime($date_limit)); //\DateTime::createFromFormat( 'd/m/Y', $this->dateLimit )->format( 'F j, Y' ); 
+    $createDateFormat = \DateTime::createFromFormat( 'Ymd', $this->dateLimit );
+    if ($createDateFormat) {
+      $date_limit = \DateTime::createFromFormat( 'Ymd', $this->dateLimit )->format( 'Y/m/d' );
+      $this->dateLimitFormat  = date_i18n( 'j F Y', strtotime($date_limit)); //\DateTime::createFromFormat( 'd/m/Y', $this->dateLimit )->format( 'F j, Y' ); 
+    }
     $this->activated        = get_field( 'activated', $this->ID ); // Bool
     $this->postPromote      = get_field( 'itjob_offer_post', $this->ID ); // Date
     $this->reference        = get_field( 'itjob_offer_reference', $this->ID );
