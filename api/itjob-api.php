@@ -57,10 +57,10 @@ add_action('rest_api_init', function () {
     curl_setopt( $curl, CURLOPT_POST, true );
     curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
         'client_id' => get_field('com_itjobmada_api_client_id', 'options'),
-        'client_secret' => get_field('com_itjobmada_api_client_sk', 'options'),
+        'client_secret' => get_field('com_itjobmada_api_sk', 'options'),
         'grant_type' => 'password',
-        'username' => get_field('com_itjobmada_api_client_username', 'options'),
-        'password' => get_field('com_itjobmada_api_client_password', 'options'),
+        'username' => get_field('com_itjobmada_api_username', 'options'),
+        'password' => get_field('com_itjobmada_api_password', 'options'),
     ) );
     curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
     $auth = curl_exec( $curl );
