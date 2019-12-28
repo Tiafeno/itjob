@@ -52,7 +52,7 @@ add_action('rest_api_init', function () {
     // Tells wordpress the user is authenticated
     if (!is_array($data)) return $data;
 
-    // com.itjobmada.com app
+    // com.itjobmada.api app
     $curl = curl_init( 'https://public-api.wordpress.com/oauth2/token' );
     curl_setopt( $curl, CURLOPT_POST, true );
     curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
