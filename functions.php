@@ -16,6 +16,7 @@
 
 define('__SITENAME__', 'itJob');
 define('minify', false);
+
 define('__CREDITS__', 10);
 define('__CREDIT_PRICE__', 2000); // En ariary
 define('__google_api__', 'QUl6YVN5Qng3LVJKbGlwbWU0YzMtTGFWUk5oRnhiV19xWG5DUXhj');
