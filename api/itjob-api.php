@@ -50,9 +50,27 @@ add_action('rest_api_init', function () {
   // Ajouter des informations utilisateur dans la reponse
   add_filter('jwt_auth_token_before_dispatch', function ($data, $user) {
     // Tells wordpress the user is authenticated
+    if (!is_array($data)) return $data;
+
+    // com.itjobmada.api app
+    $curl = curl_init( 'https://public-api.wordpress.com/oauth2/token' );
+    curl_setopt( $curl, CURLOPT_POST, true );
+    curl_setopt( $curl, CURLOPT_POSTFIELDS, array(
+        'client_id' => get_field('com_itjobmada_api_client_id', 'options'),
+        'client_secret' => get_field('com_itjobmada_api_sk', 'options'),
+        'grant_type' => 'password',
+        'username' => get_field('com_itjobmada_api_username', 'options'),
+        'password' => get_field('com_itjobmada_api_password', 'options'),
+    ) );
+    curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
+    $auth = curl_exec( $curl );
+    $auth = json_decode($auth);
+    $access_key = $auth->access_token;
+
     wp_set_current_user($user->ID);
     $user_data = get_userdata($user->ID);
     $data['data'] = $user_data;
+    $data['com_itjobmada_api'] = $access_key;
     return $data;
   }, 10, 2);
 

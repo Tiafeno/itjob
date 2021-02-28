@@ -248,9 +248,7 @@ add_action('end_of_the_day', function () { // at 16h38 (Une fois par jour)
 
 
 /**
- *
  * Cette action permet d'envoyer des mails au administrateurs du site tous les jours.
- *
  */
 add_action('tous_les_jours', function () { // at 06h00
 
@@ -438,8 +436,7 @@ function update_offer_featured() {
   foreach ($featuredOffers as $offer) {
     $isFeatured = $offer->isFeatured();
     if ($isFeatured) {
-      $featuredDateLimit = $offer->featuredDateLimit;
-      if (strtotime($featuredDateLimit) < strtotime(date("Y-m-d H:i:s"))) {
+      if ($offer->featuredDateLimit < strtotime(date("Y-m-d H:i:s"))) {
         update_field('itjob_offer_featured', 0, $offer->ID);
         update_field('itjob_offer_featured_position', null, $offer->ID);
         update_field('itjob_offer_featured_datelimit', null, $offer->ID);
